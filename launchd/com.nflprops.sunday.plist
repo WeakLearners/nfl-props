@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.nflprops.sunday</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/Sean/Code/nfl-props/.venv/bin/python</string>
+    <string>/Users/Sean/Code/nfl-props/scripts/run_report.py</string>
+    <string>sunday</string>
+  </array>
+  <key>WorkingDirectory</key><string>/Users/Sean/Code/nfl-props</string>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Weekday</key><integer>0</integer>
+    <key>Hour</key><integer>11</integer>
+    <key>Minute</key><integer>45</integer>
+  </dict>
+  <key>StandardOutPath</key><string>/Users/Sean/Code/nfl-props/reports/launchd.log</string>
+  <key>StandardErrorPath</key><string>/Users/Sean/Code/nfl-props/reports/launchd.err</string>
+</dict>
+</plist>

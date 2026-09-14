@@ -1,0 +1,19 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+
+# Rebuildable from nflverse in ~7s.
+data/*.db
+
+# Backtest outputs — regenerable from code + the cached odds below.
+reports/*.csv
+reports/*.md
+reports/launchd.log
+reports/launchd.err
+
+# Cached odds responses from The Odds API. Kept locally (re-fetching costs real
+# quota) but NOT published: this is licensed third-party market data, and
+# redistributing it in a public repo is not ours to do.
+data/hist/
+data/*.parquet

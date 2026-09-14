@@ -1,0 +1,74 @@
+
+==============================================================================
+  2026 WEEK 1 — top 2 props per matchup
+==============================================================================
+
+NE @ SEA  (Wednesday 2026-09-09)
+   WIN  Cooper Kupp           receptions       UNDER proj    2.6  line~   6.0  actual     2
+   WIN  Cooper Kupp           receiving_yards  UNDER proj   32.5  line~  71.5  actual    35
+
+SF @ LA  (Thursday 2026-09-10)
+   WIN  Davante Adams         receptions       UNDER proj    5.0  line~   6.4  actual     3
+   loss Colby Parkinson       receptions       OVER  proj    3.4  line~   2.0  actual     1
+
+CHI @ CAR  (Sunday 2026-09-13)
+   WIN  Darren Waller         receiving_yards  UNDER proj   31.2  line~  58.7  actual    28
+   WIN  Darren Waller         receptions       UNDER proj    2.9  line~   4.9  actual     2
+
+TB @ CIN  (Sunday 2026-09-13)
+   WIN  Chris Godwin Jr.      receptions       UNDER proj    3.7  line~   5.9  actual     4
+   WIN  Chris Godwin Jr.      receiving_yards  UNDER proj   44.7  line~  71.1  actual    40
+
+NO @ DET  (Sunday 2026-09-13)
+   WIN  Juwan Johnson         receptions       OVER  proj    4.0  line~   2.8  actual     3
+   WIN  Jameson Williams      receptions       OVER  proj    4.3  line~   3.0  actual     4
+
+BUF @ HOU  (Sunday 2026-09-13)
+   loss DJ Moore              receptions       UNDER proj    2.6  line~   4.8  actual     5
+   loss David Montgomery      rushing_yards    UNDER proj   37.2  line~  58.2  actual    60
+
+BAL @ IND  (Sunday 2026-09-13)
+   WIN  Mark Andrews          receiving_yards  UNDER proj   27.0  line~  51.4  actual    49
+   WIN  Mark Andrews          receptions       UNDER proj    2.7  line~   4.3  actual     4
+
+CLE @ JAX  (Sunday 2026-09-13)
+   WIN  Deshaun Watson        passing_yards    UNDER proj  183.3  line~ 240.8  actual   205
+   WIN  Brian Thomas Jr.      receiving_yards  UNDER proj   47.2  line~  64.2  actual    40
+
+ATL @ PIT  (Sunday 2026-09-13)
+   loss Pat Freiermuth        receptions       UNDER proj    2.8  line~   3.5  actual     5
+   WIN  Jaylen Warren         rushing_yards    OVER  proj   58.1  line~  41.1  actual    46
+
+NYJ @ TEN  (Sunday 2026-09-13)
+        Calvin Ridley         receptions       UNDER proj    2.9  line~   4.6  actual     —
+   loss Wan'Dale Robinson     receiving_yards  OVER  proj   77.1  line~  45.6  actual    38
+
+ARI @ LAC  (Sunday 2026-09-13)
+        Jacoby Brissett       passing_yards    OVER  proj  226.2  line~ 154.3  actual     —
+        Jacoby Brissett       completions      OVER  proj   21.9  line~  14.8  actual     —
+
+MIA @ LV  (Sunday 2026-09-13)
+        Kirk Cousins          passing_yards    UNDER proj  196.4  line~ 252.0  actual     —
+        Kirk Cousins          completions      UNDER proj   18.9  line~  22.3  actual     —
+
+GB @ MIN  (Sunday 2026-09-13)
+        T.J. Hockenson        receptions       UNDER proj    2.8  line~   4.5  actual     —
+        Justin Jefferson      receiving_yards  UNDER proj   60.1  line~  90.2  actual     —
+
+WAS @ PHI  (Sunday 2026-09-13)
+        Marquise Brown        receptions       UNDER proj    2.3  line~   4.2  actual     —
+        Stefon Diggs          receptions       UNDER proj    3.5  line~   6.0  actual     —
+
+DAL @ NYG  (Sunday 2026-09-13)
+        Najee Harris          rushing_yards    UNDER proj   39.1  line~  61.6  actual     —
+        Malik Nabers          receptions       UNDER proj    4.5  line~   6.7  actual     —
+
+DEN @ KC  (Monday 2026-09-14)
+        Travis Kelce          receiving_yards  UNDER proj   43.9  line~  69.3  actual     —
+        Evan Engram           receptions       UNDER proj    3.2  line~   4.5  actual     —
+
+==============================================================================
+  14/19 correct (74%) on games with final data
+  NOTE: 'line~' is the naive career average, NOT a FanDuel line.
+  A real book line is far sharper, so this overstates true hit rate.
+==============================================================================
