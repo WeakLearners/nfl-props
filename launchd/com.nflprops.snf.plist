@@ -6,8 +6,10 @@
   <key>ProgramArguments</key>
   <array>
     <string>/Users/Sean/Code/nfl-props/.venv/bin/python</string>
-    <string>/Users/Sean/Code/nfl-props/scripts/run_report.py</string>
+    <string>/Users/Sean/Code/nfl-props/scripts/run_reports.py</string>
     <string>snf</string>
+    <string>--picks</string>
+    <string>6</string>
   </array>
   <key>WorkingDirectory</key><string>/Users/Sean/Code/nfl-props</string>
   <key>StartCalendarInterval</key>

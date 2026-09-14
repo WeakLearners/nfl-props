@@ -94,7 +94,14 @@ def clear_rate(hist, player_key, stat, line):
 # position, and to lines big enough to be worth watching. Costs little in
 # reliability -- validation showed high-bar props hit 74.6% in the top tercile,
 # identical to low-bar props -- so this is a preference knob, not a trade-off.
-STAR_DEPTH = {"QB": 16, "RB": 20, "WR": 30, "TE": 10}
+# Depth WITHIN a team, not across the league: QB1, RB1/RB2, WR1/2/3, TE1.
+# League-wide top-N leaves whole teams with nobody at a position, which is not
+# what "the featured guys in this game" means. Rank is by recent usage, since
+# published depth charts are loosely maintained.
+STAR_DEPTH = {"QB": 1, "RB": 2, "WR": 3, "TE": 1}
+
+# What defines the pecking order at each position.
+DEPTH_STAT = {"QB": "attempts", "RB": "carries", "WR": "targets", "TE": "targets"}
 
 # Below these, the bet is not fun to watch even if it is safe.
 STAR_MIN_LINE = {"passing_yards": 200.0, "rushing_yards": 30.0,
@@ -102,23 +109,50 @@ STAR_MIN_LINE = {"passing_yards": 200.0, "rushing_yards": 30.0,
 
 
 def star_pool(season, week, lookback=DEFAULT_LOOKBACK):
-    """Players ranking inside STAR_DEPTH at their position by PPR points per
-    game. PPR per game is a decent single proxy for 'is this someone you would
-    turn the TV on for' -- it blends volume and scoring across positions."""
+    """The featured players on each team: QB1, RB1/2, WR1/2/3, TE1.
+
+    Depth is measured by recent usage on the player's CURRENT team -- carries
+    for backs, targets for pass-catchers, attempts for quarterbacks -- using
+    only games before the target week. Usage beats the published depth chart,
+    which lists three receivers as starters in a two-receiver formation.
+    """
     with connect() as con:
         pg = pd.read_sql_query(
-            """SELECT season, week, player_display_name, position, fantasy_points_ppr
+            """SELECT season, week, player_display_name, position, team,
+                      attempts, carries, targets
                FROM player_games
                WHERE season_type='REG' AND (season < ? OR (season = ? AND week < ?))""",
             con, params=[season, season, week])
+        cur = pd.read_sql_query(
+            """SELECT DISTINCT gsis_id, full_name, team AS cur_team, position AS cur_pos
+               FROM rosters WHERE season=? AND week=? AND status='ACT'""",
+            con, params=[season, week])
     pg["player_key"] = pg.player_display_name.map(name_key)
     pg = pg.sort_values(["season", "week"], ascending=False).groupby("player_key").head(lookback)
-    avg = (pg.groupby(["player_key", "position"], as_index=False)
-             .fantasy_points_ppr.mean().rename(columns={"fantasy_points_ppr": "ppg"}))
-    keep = []
-    for pos, depth in STAR_DEPTH.items():
-        keep.append(avg[avg.position == pos].nlargest(depth, "ppg"))
-    return pd.concat(keep, ignore_index=True)
+
+    cur = cur.dropna(subset=["cur_team"])
+    cur["player_key"] = cur.full_name.map(name_key)
+    cur = cur[cur.cur_pos.isin(STAR_DEPTH)].drop_duplicates("player_key")
+
+    usage = []
+    for pos, col in DEPTH_STAT.items():
+        sub = pg[pg.position == pos]
+        if sub.empty:
+            continue
+        # No position column here: the CURRENT roster's position is
+        # authoritative, and carrying a second one produced a duplicate column.
+        usage.append(sub.groupby("player_key", as_index=False)[col].mean()
+                        .rename(columns={col: "usage"}))
+    usage = pd.concat(usage, ignore_index=True)
+
+    # Rank on the CURRENT roster, so an offseason move puts a player in his new
+    # team's pecking order rather than his old one.
+    m = cur.merge(usage, on="player_key", how="left")
+    m["usage"] = m.usage.fillna(0.0)
+    m["rank"] = m.groupby(["cur_team", "cur_pos"]).usage.rank(ascending=False, method="first")
+    keep = m[m.apply(lambda r: r["rank"] <= STAR_DEPTH[r.cur_pos], axis=1)]
+    return keep.rename(columns={"cur_team": "team", "cur_pos": "position"})[
+        ["player_key", "full_name", "team", "position", "usage", "rank"]]
 
 
 def snap_share(season, week, lookback=SNAP_LOOKBACK_GAMES):

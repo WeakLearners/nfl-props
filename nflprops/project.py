@@ -213,11 +213,25 @@ def project_week(season, week, verbose=False):
             # raw would double count. Split them: volume takes the sqrt of its
             # own multiplier (most of "carries allowed" is game script, not
             # defensive quality), efficiency takes what's left over.
+            # A missing multiplier means "no information", which is 1.0 -- not
+            # NaN. The defence table is a concat of per-position frames, so a
+            # position that is not measured on a stat still gets that column,
+            # filled with NaN. Reading it blindly wiped every RB receiving
+            # projection (190 rows) silently, because 1.0 + (nan-1.0)*0 is nan.
+            def _mult(d, col):
+                if col not in d:
+                    return 1.0
+                v = d.get(col)
+                try:
+                    v = float(v)
+                except (TypeError, ValueError):
+                    return 1.0
+                return 1.0 if pd.isna(v) or v <= 0 else v
+
             m_vol = m_num = 1.0
             if dvp_ix is not None and (defteam, p.position) in dvp_ix.index:
                 d = dvp_ix.loc[(defteam, p.position)]
-                m_vol = float(d.get(d_vol, 1.0)) if d_vol in d else 1.0
-                m_num = float(d.get(d_num, 1.0)) if d_num in d else 1.0
+                m_vol, m_num = _mult(d, d_vol), _mult(d, d_num)
             dw = DEF_WEIGHT.get(stat, 1.0)
             m_vol = 1.0 + (m_vol - 1.0) * dw
             m_num = 1.0 + (m_num - 1.0) * dw

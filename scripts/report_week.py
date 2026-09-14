@@ -1,3 +1,16 @@
+"""DEPRECATED -- do not use.
+
+This script selected legs using the historical-clear-rate ranking, which was
+shown to come from a validation with a bug in it: the test looked up a player's
+record against the wrong number. Recomputed correctly the effect vanishes
+(61.9% / 61.4% / 61.0% from weakest to strongest record -- no signal).
+
+Superseded by scripts/run_reports.py, which builds the production-ranges report
+and shortlists on confidence rather than on that ranking. Kept for the record.
+"""
+import sys
+sys.exit("deprecated -- see scripts/run_reports.py")
+
 #!/usr/bin/env python
 """Per-matchup recommendations for a week, with actuals if the games are done.
 
