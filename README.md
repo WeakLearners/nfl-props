@@ -1,9 +1,13 @@
 # nfl-props
 
-A reliability ranker for NFL player props, built and validated in a day.
+An NFL player-prop experiment that failed twice, and a record of how each
+failure was found.
 
-It does **not** try to beat the sportsbook. It tried, failed, proved it failed,
-and became something else.
+> **STATUS: the headline result was wrong.** An earlier version of this README
+> claimed a validated edge from ranking props by a player's historical clear
+> rate. That claim came from a test with a bug in it. When the test is fixed
+> the effect disappears entirely. Scheduled reports are disabled. Details in
+> [The second failure](#the-second-failure-and-how-it-was-found) below.
 
 ---
 
@@ -17,23 +21,31 @@ The premise: at a fixed price the market has already equalised its own view, so
 two props at −250 are both ~70% by construction. The question worth answering
 isn't "which is mispriced" — it's "which one actually holds up."
 
-## The result
+## The second failure, and how it was found
 
-At a fixed price, a player's **historical clear rate** separates hits from
-misses by **24.7 points**:
+The idea was simple: if a player has beaten a number in most of his recent
+games, he should be more likely to beat it again. A test across 777 past bets
+seemed to confirm it — strong track records hit about 3 in 4, weak ones about 1
+in 2.
 
-| clear rate | n | actually hit |
+**The test was broken.** When it looked up "how often has this player beaten
+this number," it wasn't using the number from the bet it was scoring. The
+evidence is visible in the stored data: Justin Jefferson's *over 49.5 yards*
+and *over 59.5 yards* were both recorded with the same track record. He clearly
+beats 49.5 more often than 59.5, so the same figure for both is impossible.
+
+87% of the checked rows carried a wrong value.
+
+Recomputed correctly, across the same games:
+
+| track record at that number | bets | actually won |
 |---|---|---|
-| 9–59% | 174 | 48.3% |
-| 59–75% | 161 | 61.5% |
-| 75–100% | 137 | **73.0%** |
+| weakest third | 252 | 61.9% |
+| middle third | 233 | 61.4% |
+| strongest third | 241 | 61.0% |
 
-`n=777` historical FanDuel alternate legs, 2025 W6/W10/W14, priced −180 to
-−320, each joined to the real outcome. Clear rates computed from prior weeks
-only, enforced in SQL.
-
-Historical clear rate ranks outcomes at **AUC 0.628**; the price itself manages
-**0.534**.
+**No difference.** A strong track record at a number says nothing about whether
+the next bet wins. The ranking does not rank.
 
 ## What failed first
 
@@ -74,29 +86,28 @@ Each of these produced an encouraging number that dissolved on inspection:
 The common thread: **every one came from scoring situations the market would
 never price.** Guarding against that is most of what this codebase does.
 
-## Screens, each validated against outcomes
+## Screens — status uncertain
 
-| screen | why |
-|---|---|
-| 55% snap floor | below it, top-tercile legs hit 70.1%; above, ~77% |
-| Questionable excluded | they hit 8 points below their own price |
-| new-team penalty | a clear rate earned elsewhere describes a role he may not have |
-| 6-game history minimum | thin history is not evidence |
-| stars mode (default) | costs ~nothing — high bars hit the same 74.6% as low bars |
+These were added on top of the ranking and each looked justified at the time:
+a 55% snap floor, excluding players listed Questionable, a penalty for players
+on new teams, a minimum amount of history, and a "stars only" mode.
 
-## Known limits
+**The snap-floor and stars findings were measured using the same broken data
+and should be assumed wrong until re-tested.** The Questionable finding came
+from a separate dataset and may survive, but has not been re-checked.
 
-- **The alternate-line band holds ~8 points** (prices imply 70.5%, reality is
-  62.4%) — nearly double the standard prop market. These slider bets are where
-  the book takes its margin.
-- **Early season is the weak spot.** Week 1 clear rates describe *last*
-  season's roles, and roughly a third of rostered players change teams. The
-  validation ran on Weeks 6/10/14, where history is current.
-- **The ranking is validated, profitability is not.** Top-tercile ROI came in
-  at +4.9% with t=1.19 — not significant. Pick better legs with confidence;
-  don't treat it as a money printer.
-- Thresholds were chosen after looking at the validation weeks. Live results
-  are the real out-of-sample test.
+## What still holds
+
+One finding survives, and it is the useful one:
+
+**These slider bets are expensive.** Across 777 of them, the prices implied a
+70.5% chance of winning and they actually won 62.4% of the time. That gap is
+roughly double what the standard prop market charges. This was measured from
+prices and outcomes only — it doesn't depend on the broken track-record
+calculation.
+
+Everything else in the "what works" column is withdrawn pending a rebuild of
+the test harness.
 
 ## Layout
 
