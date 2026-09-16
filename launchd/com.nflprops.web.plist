@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.nflprops.web</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/Sean/Code/nfl-props/.venv/bin/python</string>
+    <string>/Users/Sean/Code/nfl-props/scripts/serve_reports.py</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>/Users/Sean/Code/nfl-props</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>NFLPROPS_WEB_PORT</key>
+    <string>8792</string>
+  </dict>
+  <!-- Always-on: start at load and restart if it ever exits. Same shape as
+       com.gmewheel.web, which serves 8788. -->
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>/dev/null</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/Sean/Code/nfl-props/reports/web.err</string>
+</dict>
+</plist>
