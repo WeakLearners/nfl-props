@@ -184,7 +184,7 @@
   <p class="sub">Projected production for each team's featured players. The curve is the
     full range of plausible outcomes; the shaded band is the middle ~68%, where roughly two
     of every three games land. The solid upright rule marks the number FanDuel is pricing
-    closest to &minus;200.</p>
+    closest to &minus;__TARGET_ABS__.</p>
   <p class="sub"><strong>Ordered by how close that number sits to the curve's peak.</strong>
     Cards at the top are where the book and the model agree on the likely outcome. Further
     down, the gap widens &mdash; a number well left of the peak is one the model thinks clears
@@ -195,7 +195,7 @@
     <span class="key"><span class="swatch" style="background:var(--kc)"></span><span id="teamB"></span></span>
     <span class="key"><span class="swatch band-key"></span>middle ~68% of outcomes</span>
     <span class="key"><span class="swatch" style="background:none;border-top:2px dashed var(--ink-3);height:0"></span>expected</span>
-    <span class="key"><span class="swatch" style="background:none;border-left:2px solid var(--ink);width:0;height:14px"></span>FanDuel's ~&minus;200 number</span>
+    <span class="key"><span class="swatch" style="background:none;border-left:2px solid var(--ink);width:0;height:14px"></span>FanDuel's ~&minus;__TARGET_ABS__ number</span>
   </div>
 
   <section class="picks">
@@ -248,6 +248,7 @@
 <script>
 const DATA = __DATA__;
 const META = __META__;
+const TARGET = __TARGET__;
 const STATS = [
   ["passing_yards","Passing yards","yards"],
   ["completions","Completions","receptions"],
@@ -292,8 +293,8 @@ function lineMark(d,c){
     +'<circle cx="'+x.toFixed(1)+'" cy="6" r="2.5" fill="var(--ink)"></circle>';
 }
 function compare(d){
-  if(d.line==null) return '<div class="cmp none">no number near &minus;200 offered</div>';
-  const off = Math.abs(d.price+200) > 60;
+  if(d.line==null) return '<div class="cmp none">no number near &minus;'+Math.abs(TARGET)+' offered</div>';
+  const off = Math.abs(d.price-TARGET) > 60;
   const side = d.z<0 ? "above" : "below";
   return '<div class="cmp">'
     + '<span class="cmp-line">'+fmt(d.line)+'<span class="px">'
@@ -303,7 +304,7 @@ function compare(d){
       +' · book <b>'+Math.round(d.bp*100)+'%</b></span>'
     + '</div>'
     + '<div class="cmp-z">peak sits '+Math.abs(d.z).toFixed(2)+' sd '+side+' it'
-      + (off?' <span class="muted-note">· nearest rung is '+(d.price>0?"+":"")+d.price+', not −200</span>':'')
+      + (off?' <span class="muted-note">· nearest rung is '+(d.price>0?"+":"")+d.price+', not '+TARGET+'</span>':'')
     + '</div>';
 }
 

@@ -174,7 +174,7 @@ def build(season, week, teams, lines, n_picks=6):
     return rows, pr.loc[short.index]
 
 
-def render(rows, away, home, team_a, week, season, kick=None, same_game=True):
+def render(rows, away, home, team_a, week, season, kick=None, same_game=True, target=DEFAULT_TARGET):
     corr = ("All of these are same-game legs, so they move together &mdash; a shootout "
             "carries them over, a grind carries them under. That makes the true joint "
             "chance <em>higher</em> than the naive figure, and it is also why FanDuel "
@@ -193,4 +193,6 @@ def render(rows, away, home, team_a, week, season, kick=None, same_game=True):
                .replace("__META__", json.dumps(meta))
                .replace("__TITLE__", title)
                .replace("__EYEBROW__", eyebrow)
-               .replace("__HEADLINE__", head))
+               .replace("__HEADLINE__", head)
+               .replace("__TARGET__", json.dumps(target))
+               .replace("__TARGET_ABS__", str(abs(target))))

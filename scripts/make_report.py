@@ -196,7 +196,9 @@ out_html = (tpl.replace("__DATA__", json.dumps(rows))
                .replace("__META__", json.dumps(meta_js))
                .replace("__TITLE__", title)
                .replace("__EYEBROW__", eyebrow)
-               .replace("__HEADLINE__", head))
+               .replace("__HEADLINE__", head)
+               .replace("__TARGET__", json.dumps(TARGET))
+               .replace("__TARGET_ABS__", str(abs(TARGET))))
 out = ROOT / "reports" / f"report_{SEASON}_w{WEEK}_{'-'.join(TEAMS)}.html"
 out.write_text(out_html)
 
