@@ -1,0 +1,413 @@
+<title>Lions–Bills Production Ranges</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#f7f6f3; --surface:#fcfcfb; --line:#e2e0d9; --line-soft:#eceae3;
+    --ink:#14140f; --ink-2:#52514e; --ink-3:#84827a;
+    --den:#eb6834; --kc:#2a78d6;
+    --den-fill:rgba(235,104,52,.16); --kc-fill:rgba(42,120,214,.16);
+    --band:rgba(20,20,15,.055);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --bg:#121211; --surface:#1a1a19; --line:#33322e; --line-soft:#262521;
+      --ink:#f6f5ef; --ink-2:#c3c2b7; --ink-3:#8b897f;
+      --den:#d95926; --kc:#3987e5;
+      --den-fill:rgba(217,89,38,.22); --kc-fill:rgba(57,135,229,.22);
+      --band:rgba(255,255,255,.06);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#121211; --surface:#1a1a19; --line:#33322e; --line-soft:#262521;
+    --ink:#f6f5ef; --ink-2:#c3c2b7; --ink-3:#8b897f;
+    --den:#d95926; --kc:#3987e5;
+    --den-fill:rgba(217,89,38,.22); --kc-fill:rgba(57,135,229,.22);
+    --band:rgba(255,255,255,.06);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Public Sans",ui-sans-serif,system-ui,sans-serif;
+    font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1120px; margin:0 auto; padding:40px 24px 72px}
+  header{border-bottom:2px solid var(--ink); padding-bottom:18px; margin-bottom:8px}
+  .eyebrow{
+    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3); margin:0 0 10px
+  }
+  h1{
+    font-family:"Barlow Condensed",Impact,sans-serif; font-weight:700;
+    font-size:clamp(34px,6vw,56px); line-height:.95; letter-spacing:-.01em;
+    margin:0; text-wrap:balance; text-transform:uppercase;
+  }
+  h1 .at{color:var(--ink-3); font-weight:500}
+  .sub{color:var(--ink-2); margin:14px 0 0; max-width:64ch}
+  .legend{display:flex; flex-wrap:wrap; gap:18px; align-items:center; margin:22px 0 30px}
+  .key{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-2)}
+  .swatch{width:22px; height:10px; border-radius:2px}
+  .key .band-key{background:var(--band); border:1px solid var(--line)}
+  h2{
+    font-family:"Barlow Condensed",Impact,sans-serif; font-weight:600;
+    text-transform:uppercase; letter-spacing:.04em; font-size:22px;
+    margin:38px 0 4px; padding-bottom:6px; border-bottom:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:baseline; gap:12px;
+  }
+  h2 .unit{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.1em;
+    color:var(--ink-3); font-weight:400; text-transform:none}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(258px,1fr)); gap:14px; margin-top:16px}
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:3px;
+    padding:13px 14px 8px; display:flex; flex-direction:column; gap:2px;
+  }
+  .card-top{display:flex; justify-content:space-between; align-items:baseline; gap:8px}
+  .role{
+    font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
+    letter-spacing:.09em; padding:2px 5px; border-radius:2px; color:var(--surface);
+  }
+  .role.a{background:var(--den)} .role.b{background:var(--kc)}
+  .name{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:19px;
+    letter-spacing:.01em; line-height:1.1; flex:1}
+  .fig{
+    font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
+    font-size:21px; font-weight:500; letter-spacing:-.02em;
+  }
+  .rng{
+    font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
+    font-size:11.5px; color:var(--ink-2); margin-top:-1px;
+  }
+  .picks{
+    border:2px solid var(--ink); border-radius:4px; padding:20px 22px 18px; margin:6px 0 10px;
+    background:var(--surface);
+  }
+  .picks-h{margin:0 0 8px; border-bottom:none; padding-bottom:0}
+  .picks-note{color:var(--ink-2); font-size:13.5px; margin:0 0 16px; max-width:72ch}
+  .picks-note em{font-style:normal; font-weight:600; color:var(--ink)}
+  #picklist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0}
+  #picklist li{
+    display:flex; align-items:baseline; gap:12px; padding:9px 0;
+    border-top:1px solid var(--line-soft);
+  }
+  #picklist li:first-child{border-top:none}
+  .pk-n{
+    font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-3);
+    width:14px; flex:none; font-weight:600;
+  }
+  .pk-name{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:20px;
+    line-height:1; flex:none}
+  .pk-bet{color:var(--ink-2); font-size:13.5px; flex:1}
+  .pk-bet b{color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums;
+    font-family:"IBM Plex Mono",monospace; font-size:12.5px}
+  .pk-conf{
+    font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
+    font-size:17px; font-weight:600; flex:none;
+  }
+  .pk-px{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-3);
+    width:46px; text-align:right; flex:none; font-variant-numeric:tabular-nums}
+  .picks-foot{
+    display:grid; grid-template-columns:repeat(2,auto); gap:6px 28px; margin-top:16px;
+    padding-top:14px; border-top:1px solid var(--line); align-items:baseline;
+  }
+  .picks-foot > div{display:flex; gap:8px; align-items:baseline}
+  .pf-k{font-size:12px; color:var(--ink-3)}
+  .pf-v{font-family:"IBM Plex Mono",monospace; font-size:16px; font-weight:600;
+    font-variant-numeric:tabular-nums}
+  .pf-wide{grid-column:1/-1; display:block!important; font-size:12.5px; color:var(--ink-3);
+    max-width:74ch; margin-top:4px; line-height:1.5}
+  .pf-wide em{font-style:normal; color:var(--ink-2); font-weight:600}
+  .card.pick{border:2px solid var(--ink); padding:12px 13px 7px}
+  .pick-badge{
+    font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:600;
+    letter-spacing:.1em; text-transform:uppercase; color:var(--ink);
+    border:1px solid var(--ink); border-radius:2px; padding:1px 4px; margin-left:6px;
+  }
+  .cmp{
+    display:flex; align-items:baseline; gap:8px; margin-top:7px;
+    font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-2);
+    font-variant-numeric:tabular-nums; flex-wrap:wrap;
+  }
+  .cmp.none{color:var(--ink-3); font-style:italic; font-family:"Public Sans",sans-serif}
+  .cmp-line{font-size:14px; font-weight:600; color:var(--ink)}
+  .cmp-line .px{font-size:10.5px; font-weight:400; color:var(--ink-3); margin-left:4px}
+  .cmp-sep{flex:1; border-top:1px dotted var(--line); min-width:8px; transform:translateY(-3px)}
+  .cmp-p b{font-weight:600; color:var(--ink)}
+  .cmp-z{font-size:10.5px; color:var(--ink-3); margin-top:2px;
+    font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+  .matchup{
+    font-size:11px; color:var(--ink-3); margin-top:5px;
+    display:flex; align-items:center; gap:5px; min-height:16px;
+  }
+  .dot{width:5px; height:5px; border-radius:50%; background:var(--ink-3); flex:none}
+  .matchup.tough .dot{box-shadow:inset 0 0 0 5px var(--ink-2)}
+  .matchup em{font-style:normal; color:var(--ink-2); font-weight:500}
+  .muted-note{color:var(--ink-3); opacity:.8}
+  svg{display:block; width:100%; height:78px; overflow:visible; margin-top:4px}
+  .curve{fill:none; stroke-width:2}
+  .meanline{stroke-width:1.5; stroke-dasharray:2 2.5}
+  .axis{stroke:var(--line); stroke-width:1}
+  .tick{font-family:"IBM Plex Mono",monospace; font-size:9px; fill:var(--ink-3)}
+  .hit{fill:transparent; cursor:crosshair}
+  .tip{
+    position:fixed; pointer-events:none; z-index:20; opacity:0; transition:opacity .1s;
+    background:var(--ink); color:var(--bg); padding:6px 9px; border-radius:3px;
+    font-family:"IBM Plex Mono",monospace; font-size:11px; white-space:nowrap;
+    font-variant-numeric:tabular-nums;
+  }
+  .tip.on{opacity:1}
+  details{margin-top:44px; border-top:1px solid var(--line); padding-top:16px}
+  summary{cursor:pointer; font-family:"Barlow Condensed",sans-serif; font-weight:600;
+    text-transform:uppercase; letter-spacing:.04em; font-size:17px}
+  summary:focus-visible{outline:2px solid var(--kc); outline-offset:3px}
+  .tablewrap{overflow-x:auto; margin-top:14px}
+  table{border-collapse:collapse; width:100%; font-size:13px}
+  th,td{text-align:right; padding:6px 10px; border-bottom:1px solid var(--line-soft); white-space:nowrap}
+  th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}
+  th{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--ink-3); font-weight:500}
+  td.num{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+  footer{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
+    color:var(--ink-3); font-size:12.5px; max-width:68ch}
+  footer strong{color:var(--ink-2); font-weight:600}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Thursday Night · Week 2 · 2026</p>
+    <h1>Detroit Lions <span class="at">at</span> Buffalo Bills</h1>
+  </header>
+  <p class="sub">Projected production for each team's featured players. The curve is the
+    full range of plausible outcomes; the shaded band is the middle ~68%, where roughly two
+    of every three games land. The solid upright rule marks the number FanDuel is pricing
+    closest to &minus;200.</p>
+  <p class="sub"><strong>Ordered by how close that number sits to the curve's peak.</strong>
+    Cards at the top are where the book and the model agree on the likely outcome. Further
+    down, the gap widens &mdash; a number well left of the peak is one the model thinks clears
+    more often than the price suggests, and vice versa.</p>
+
+  <div class="legend">
+    <span class="key"><span class="swatch" style="background:var(--den)"></span><span id="teamA"></span></span>
+    <span class="key"><span class="swatch" style="background:var(--kc)"></span><span id="teamB"></span></span>
+    <span class="key"><span class="swatch band-key"></span>middle ~68% of outcomes</span>
+    <span class="key"><span class="swatch" style="background:none;border-top:2px dashed var(--ink-3);height:0"></span>expected</span>
+    <span class="key"><span class="swatch" style="background:none;border-left:2px solid var(--ink);width:0;height:14px"></span>FanDuel's ~&minus;200 number</span>
+  </div>
+
+  <section class="picks">
+    <h2 class="picks-h">The shortlist<span class="unit">most confident first</span></h2>
+    <p class="picks-note">Every signal available agrees on these: a real starter's snap
+      share, a long record, no injury tag, no change of team, and the model and the book
+      within a few points of each other. Confidence here means <em>likely to happen</em> —
+      not good value. Nothing on this page establishes that any of it is mispriced.</p>
+    <ol id="picklist"></ol>
+    <div class="picks-foot">
+      <div><span class="pf-k">Straight <span id="nlegs"></span>-leg payout</span><span class="pf-v" id="pay"></span></div>
+      <div><span class="pf-k">Naive joint chance</span><span class="pf-v" id="joint"></span></div>
+      <div class="pf-wide" id="corrnote"></div>
+    </div>
+  </section>
+
+  <div id="sections"></div>
+
+  <details>
+    <summary>All figures as a table</summary>
+    <div class="tablewrap"><table id="tbl">
+      <thead><tr><th>Player</th><th>Role</th><th>Stat</th><th>Expected</th>
+        <th>−1 sd</th><th>+1 sd</th><th>Spread</th><th>Matchup</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </details>
+
+  <footer>
+    <p><strong>Reading the matchup figure.</strong> 1.15 means this defence gives up 15%
+    more than league average to that position; 0.85 means 15% less. Where it says
+    <em>context only</em>, the projection deliberately ignores it — applying a defensive
+    adjustment to receiving stats made projections measurably worse in testing, because
+    "yards allowed to receivers" mostly records which receivers a defence happened to face.</p>
+    <p><strong>How wide the curves are.</strong> The spread is widened 10% over the raw
+    model estimate. Measured across 2023–2025, real errors ran about 10% larger than the
+    model's own estimate of them — the raw figure counts a player's game-to-game variation
+    but not the error in the projection itself.</p>
+    <p><strong>Model vs book.</strong> "Model" is the chance this curve puts on clearing
+    that number. "Book" is what FanDuel's price implies, vig included &mdash; so the book's
+    figure is inflated a few points by its own margin, and a small edge to the model is not
+    an edge at all. Tested against real lines, this model was the less accurate of the two;
+    treat a large gap as the model being wrong, not the book.</p>
+    <p><strong>What this is not.</strong> These are projections, not edges. Tested against
+    real sportsbook lines, this model's point estimates were <em>less</em> accurate than the
+    market's. Useful for seeing a player's plausible range; not evidence anyone is mispriced.</p>
+  </footer>
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+const DATA = [{"p": "DJ Moore", "role": "WR2", "tm": "BUF", "vs": "DET", "s": "receptions", "mu": 3.3, "sd": 2.2, "lo": 1.1, "hi": 5.4, "def": 1.13, "app": false, "line": 3.5, "price": -245, "z": 0.11, "mp": 0.456, "bp": 0.71, "pick": null}, {"p": "DJ Moore", "role": "WR2", "tm": "BUF", "vs": "DET", "s": "receiving_yards", "mu": 44.1, "sd": 43.7, "lo": 0.4, "hi": 87.8, "def": 1.18, "app": false, "line": 39.5, "price": -300, "z": -0.11, "mp": 0.542, "bp": 0.75, "pick": null}, {"p": "Josh Allen", "role": "QB1", "tm": "BUF", "vs": "DET", "s": "passing_yards", "mu": 245.7, "sd": 84.4, "lo": 161.2, "hi": 330.1, "def": 1.09, "app": true, "line": 224.5, "price": -210, "z": -0.25, "mp": 0.599, "bp": 0.677, "pick": null}, {"p": "Josh Allen", "role": "QB1", "tm": "BUF", "vs": "DET", "s": "completions", "mu": 18.9, "sd": 4.9, "lo": 14.0, "hi": 23.9, "def": 1.02, "app": true, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "James Cook", "role": "RB1", "tm": "BUF", "vs": "DET", "s": "rushing_yards", "mu": 68.3, "sd": 44.9, "lo": 23.4, "hi": 113.1, "def": 0.85, "app": true, "line": 59.5, "price": -300, "z": -0.2, "mp": 0.577, "bp": 0.75, "pick": null}, {"p": "James Cook", "role": "RB1", "tm": "BUF", "vs": "DET", "s": "receptions", "mu": 2.0, "sd": 1.5, "lo": 0.5, "hi": 3.5, "def": 0.88, "app": false, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "James Cook", "role": "RB1", "tm": "BUF", "vs": "DET", "s": "receiving_yards", "mu": 14.9, "sd": 16.4, "lo": 0.0, "hi": 31.3, "def": 0.94, "app": false, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "Khalil Shakir", "role": "WR1", "tm": "BUF", "vs": "DET", "s": "receptions", "mu": 3.9, "sd": 2.2, "lo": 1.7, "hi": 6.0, "def": 1.13, "app": false, "line": 3.5, "price": -225, "z": -0.16, "mp": 0.564, "bp": 0.692, "pick": null}, {"p": "Khalil Shakir", "role": "WR1", "tm": "BUF", "vs": "DET", "s": "receiving_yards", "mu": 45.5, "sd": 29.2, "lo": 16.3, "hi": 74.7, "def": 1.18, "app": false, "line": 29.5, "price": -300, "z": -0.55, "mp": 0.709, "bp": 0.75, "pick": 4}, {"p": "Dalton Kincaid", "role": "TE1", "tm": "BUF", "vs": "DET", "s": "receptions", "mu": 3.1, "sd": 2.0, "lo": 1.1, "hi": 5.1, "def": 0.91, "app": false, "line": 2.5, "price": -420, "z": -0.3, "mp": 0.617, "bp": 0.808, "pick": null}, {"p": "Dalton Kincaid", "role": "TE1", "tm": "BUF", "vs": "DET", "s": "receiving_yards", "mu": 38.4, "sd": 47.4, "lo": 0.0, "hi": 85.8, "def": 0.93, "app": false, "line": 39.5, "price": -220, "z": 0.02, "mp": 0.491, "bp": 0.688, "pick": null}, {"p": "Ray Davis", "role": "RB2", "tm": "BUF", "vs": "DET", "s": "rushing_yards", "mu": 19.8, "sd": 51.0, "lo": 0.0, "hi": 70.8, "def": 0.85, "app": true, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "Ray Davis", "role": "RB2", "tm": "BUF", "vs": "DET", "s": "receptions", "mu": 0.7, "sd": 1.1, "lo": 0.0, "hi": 1.8, "def": 0.88, "app": false, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "Ray Davis", "role": "RB2", "tm": "BUF", "vs": "DET", "s": "receiving_yards", "mu": 5.5, "sd": 11.6, "lo": 0.0, "hi": 17.1, "def": 0.94, "app": false, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "Keon Coleman", "role": "WR3", "tm": "BUF", "vs": "DET", "s": "receptions", "mu": 2.2, "sd": 1.6, "lo": 0.6, "hi": 3.8, "def": 1.13, "app": false, "line": 0.5, "price": -290, "z": -1.09, "mp": 0.863, "bp": 0.744, "pick": null}, {"p": "Keon Coleman", "role": "WR3", "tm": "BUF", "vs": "DET", "s": "receiving_yards", "mu": 27.4, "sd": 28.0, "lo": 0.0, "hi": 55.3, "def": 1.18, "app": false, "line": 4.5, "price": -230, "z": -0.82, "mp": 0.793, "bp": 0.697, "pick": null}, {"p": "Jared Goff", "role": "QB1", "tm": "DET", "vs": "BUF", "s": "passing_yards", "mu": 248.1, "sd": 71.0, "lo": 177.2, "hi": 319.1, "def": 0.92, "app": true, "line": 224.5, "price": -350, "z": -0.33, "mp": 0.63, "bp": 0.778, "pick": null}, {"p": "Jared Goff", "role": "QB1", "tm": "DET", "vs": "BUF", "s": "completions", "mu": 23.8, "sd": 5.4, "lo": 18.4, "hi": 29.2, "def": 0.96, "app": true, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "Amon-Ra St. Brown", "role": "WR1", "tm": "DET", "vs": "BUF", "s": "receptions", "mu": 7.5, "sd": 3.6, "lo": 4.0, "hi": 11.1, "def": 0.97, "app": false, "line": 5.5, "price": -380, "z": -0.57, "mp": 0.716, "bp": 0.792, "pick": null}, {"p": "Amon-Ra St. Brown", "role": "WR1", "tm": "DET", "vs": "BUF", "s": "receiving_yards", "mu": 88.1, "sd": 45.7, "lo": 42.4, "hi": 133.8, "def": 0.93, "app": false, "line": 59.5, "price": -290, "z": -0.63, "mp": 0.734, "bp": 0.744, "pick": 2}, {"p": "Jameson Williams", "role": "WR2", "tm": "DET", "vs": "BUF", "s": "receptions", "mu": 4.4, "sd": 2.3, "lo": 2.2, "hi": 6.7, "def": 0.97, "app": false, "line": 3.5, "price": -194, "z": -0.41, "mp": 0.661, "bp": 0.66, "pick": null}, {"p": "Jameson Williams", "role": "WR2", "tm": "DET", "vs": "BUF", "s": "receiving_yards", "mu": 59.7, "sd": 41.7, "lo": 18.0, "hi": 101.4, "def": 0.93, "app": false, "line": 39.5, "price": -310, "z": -0.49, "mp": 0.686, "bp": 0.756, "pick": 6}, {"p": "Sam LaPorta", "role": "TE1", "tm": "DET", "vs": "BUF", "s": "receptions", "mu": 4.7, "sd": 1.4, "lo": 3.3, "hi": 6.1, "def": 0.85, "app": false, "line": 3.5, "price": -230, "z": -0.83, "mp": 0.797, "bp": 0.697, "pick": null}, {"p": "Sam LaPorta", "role": "TE1", "tm": "DET", "vs": "BUF", "s": "receiving_yards", "mu": 50.2, "sd": 27.2, "lo": 23.1, "hi": 77.4, "def": 0.8, "app": false, "line": 29.5, "price": -330, "z": -0.76, "mp": 0.777, "bp": 0.767, "pick": 1}, {"p": "Jahmyr Gibbs", "role": "RB1", "tm": "DET", "vs": "BUF", "s": "rushing_yards", "mu": 83.6, "sd": 62.5, "lo": 21.1, "hi": 146.2, "def": 1.06, "app": true, "line": 69.5, "price": -275, "z": -0.23, "mp": 0.589, "bp": 0.733, "pick": null}, {"p": "Jahmyr Gibbs", "role": "RB1", "tm": "DET", "vs": "BUF", "s": "receptions", "mu": 4.2, "sd": 2.8, "lo": 1.4, "hi": 7.0, "def": 1.09, "app": false, "line": 3.5, "price": -205, "z": -0.26, "mp": 0.602, "bp": 0.672, "pick": null}, {"p": "Jahmyr Gibbs", "role": "RB1", "tm": "DET", "vs": "BUF", "s": "receiving_yards", "mu": 32.0, "sd": 25.4, "lo": 6.5, "hi": 57.4, "def": 1.07, "app": false, "line": 19.5, "price": -270, "z": -0.49, "mp": 0.688, "bp": 0.73, "pick": 5}, {"p": "Sione Vaki", "role": "RB2", "tm": "DET", "vs": "BUF", "s": "rushing_yards", "mu": 7.4, "sd": 11.4, "lo": 0.0, "hi": 18.8, "def": 1.06, "app": true, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "Sione Vaki", "role": "RB2", "tm": "DET", "vs": "BUF", "s": "receptions", "mu": 0.5, "sd": 0.9, "lo": 0.0, "hi": 1.4, "def": 1.09, "app": false, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "Sione Vaki", "role": "RB2", "tm": "DET", "vs": "BUF", "s": "receiving_yards", "mu": 3.9, "sd": 9.0, "lo": 0.0, "hi": 13.0, "def": 1.07, "app": false, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "Isaac TeSlaa", "role": "WR3", "tm": "DET", "vs": "BUF", "s": "receptions", "mu": 1.6, "sd": 1.8, "lo": 0.0, "hi": 3.4, "def": 0.97, "app": false, "line": 0.5, "price": -420, "z": -0.62, "mp": 0.731, "bp": 0.808, "pick": null}, {"p": "Isaac TeSlaa", "role": "WR3", "tm": "DET", "vs": "BUF", "s": "receiving_yards", "mu": 20.7, "sd": 26.1, "lo": 0.0, "hi": 46.8, "def": 0.93, "app": false, "line": 4.5, "price": -320, "z": -0.62, "mp": 0.733, "bp": 0.762, "pick": 3}];
+const META = {"teamA": "DET", "nameA": "Detroit Lions", "nameB": "Buffalo Bills", "corrnote": "All of these are same-game legs, so they move together &mdash; a shootout carries them over, a grind carries them under. That makes the true joint chance <em>higher</em> than the naive figure, and it is also why FanDuel will pay less than the straight payout for them as one same-game parlay."};
+const STATS = [
+  ["passing_yards","Passing yards","yards"],
+  ["completions","Completions","receptions"],
+  ["rushing_yards","Rushing yards","yards"],
+  ["receiving_yards","Receiving yards","yards"],
+  ["receptions","Receptions","catches"]
+];
+const W=250,H=78,PAD=6;
+const norm=(x,mu,sd)=>Math.exp(-0.5*Math.pow((x-mu)/sd,2));
+const fmt=v=>Math.abs(v)>=20?Math.round(v):(Math.round(v*10)/10);
+
+function curve(d){
+  const lo=Math.max(0,d.mu-3.1*d.sd), hi=d.mu+3.1*d.sd, span=hi-lo||1;
+  const X=v=>PAD+((v-lo)/span)*(W-2*PAD);
+  const N=80, pts=[];
+  let peak=0;
+  for(let i=0;i<=N;i++){const v=lo+span*i/N; const y=norm(v,d.mu,d.sd); peak=Math.max(peak,y); pts.push([v,y]);}
+  const Y=y=>H-10-(y/peak)*(H-24);
+  const path=pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" ");
+  const bandPts=pts.filter(p=>p[0]>=d.lo&&p[0]<=d.hi);
+  let band="";
+  if(bandPts.length){
+    band="M"+X(bandPts[0][0]).toFixed(1)+" "+(H-10)
+       + bandPts.map(p=>"L"+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join("")
+       + "L"+X(bandPts[bandPts.length-1][0]).toFixed(1)+" "+(H-10)+"Z";
+  }
+  return {path,band,X,Y,lo,hi,span,peak};
+}
+
+const tip=document.getElementById("tip");
+function showTip(e,html){tip.innerHTML=html;tip.classList.add("on");
+  const r=tip.getBoundingClientRect();
+  tip.style.left=Math.min(e.clientX+12,innerWidth-r.width-8)+"px";
+  tip.style.top=Math.max(e.clientY-r.height-10,8)+"px";}
+function hideTip(){tip.classList.remove("on")}
+
+function lineMark(d,c){
+  if(d.line==null) return "";
+  const x=Math.max(1,Math.min(W-1,c.X(d.line)));
+  return '<line x1="'+x.toFixed(1)+'" y1="6" x2="'+x.toFixed(1)+'" y2="'+(H-10)
+    +'" stroke="var(--ink)" stroke-width="2"></line>'
+    +'<circle cx="'+x.toFixed(1)+'" cy="6" r="2.5" fill="var(--ink)"></circle>';
+}
+function compare(d){
+  if(d.line==null) return '<div class="cmp none">no number near &minus;200 offered</div>';
+  const off = Math.abs(d.price+200) > 60;
+  const side = d.z<0 ? "above" : "below";
+  return '<div class="cmp">'
+    + '<span class="cmp-line">'+fmt(d.line)+'<span class="px">'
+      +(d.price>0?"+":"")+d.price+'</span></span>'
+    + '<span class="cmp-sep"></span>'
+    + '<span class="cmp-p">model <b>'+Math.round(d.mp*100)+'%</b>'
+      +' · book <b>'+Math.round(d.bp*100)+'%</b></span>'
+    + '</div>'
+    + '<div class="cmp-z">peak sits '+Math.abs(d.z).toFixed(2)+' sd '+side+' it'
+      + (off?' <span class="muted-note">· nearest rung is '+(d.price>0?"+":"")+d.price+', not −200</span>':'')
+    + '</div>';
+}
+
+const sections=document.getElementById("sections");
+STATS.forEach(([key,label,unit])=>{
+  const rows=DATA.filter(d=>d.s===key).sort((a,b)=>{
+    const az=a.z==null?Infinity:Math.abs(a.z), bz=b.z==null?Infinity:Math.abs(b.z);
+    return az-bz || b.mu-a.mu;
+  });
+  if(!rows.length) return;
+  const h=document.createElement("h2");
+  h.innerHTML=label+'<span class="unit">'+unit+'</span>';
+  sections.appendChild(h);
+  const grid=document.createElement("div"); grid.className="grid";
+  rows.forEach(d=>{
+    const c=curve(d);
+    const col=d.tm===META.teamA?"var(--den)":"var(--kc)";
+    const fill=d.tm===META.teamA?"var(--den-fill)":"var(--kc-fill)";
+    const card=document.createElement("div");
+    card.className = d.pick ? "card pick" : "card";
+    let match="";
+    if(d.def!=null){
+      const word=d.def>1.03?"softer than average":d.def<0.97?"tougher than average":"about average";
+      match='<div class="matchup'+(d.def<0.97?' tough':'')+'"><span class="dot"></span>'
+        +'<span>vs '+d.vs+' <em>'+d.def.toFixed(2)+'</em> '+word
+        +(d.app?'':' <span class="muted-note">· context only</span>')+'</span></div>';
+    }
+    card.innerHTML=
+      '<div class="card-top"><span class="name">'+d.p+'</span>'
+      +'<span class="role '+d.tm+'">'+d.role+'</span>'
+      +(d.pick?'<span class="pick-badge">pick '+d.pick+'</span>':'')+'</div>'
+      +'<div class="fig">'+fmt(d.mu)+'</div>'
+      +'<div class="rng">'+fmt(d.lo)+' – '+fmt(d.hi)+'</div>'
+      +'<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+d.p+' '+label
+      +': expected '+fmt(d.mu)+', middle range '+fmt(d.lo)+' to '+fmt(d.hi)+'">'
+      +'<path d="'+c.band+'" fill="'+fill+'"></path>'
+      +'<path class="curve" d="'+c.path+'" stroke="'+col+'"></path>'
+      +'<line class="meanline" x1="'+c.X(d.mu).toFixed(1)+'" y1="'+(H-10)+'" x2="'
+        +c.X(d.mu).toFixed(1)+'" y2="'+c.Y(c.peak).toFixed(1)+'" stroke="'+col+'"></line>'
+      +'<line class="axis" x1="0" y1="'+(H-10)+'" x2="'+W+'" y2="'+(H-10)+'"></line>'
+      +'<text class="tick" x="0" y="'+(H-1)+'">'+fmt(Math.max(0,c.lo))+'</text>'
+      +'<text class="tick" x="'+W+'" y="'+(H-1)+'" text-anchor="end">'+fmt(c.hi)+'</text>'
+      +lineMark(d,c)
+      +'<rect class="hit" x="0" y="0" width="'+W+'" height="'+H+'"></rect>'
+      +'</svg>'
+      +compare(d)
+      +match;
+    const svg=card.querySelector("svg"), hit=card.querySelector(".hit");
+    hit.addEventListener("mousemove",e=>{
+      const bb=svg.getBoundingClientRect();
+      const px=(e.clientX-bb.left)/bb.width*W;
+      const val=c.lo+((px-PAD)/(W-2*PAD))*c.span;
+      if(val<c.lo||val>c.hi+c.span) return;
+      const z=(val-d.mu)/d.sd;
+      const pct=Math.round(100*(1-0.5*(1+erf(z/Math.SQRT2))));
+      showTip(e,"<b>"+fmt(Math.max(0,val))+"</b> "+unit+"<br>"+pct+"% chance of more");
+    });
+    hit.addEventListener("mouseleave",hideTip);
+    grid.appendChild(card);
+  });
+  sections.appendChild(grid);
+});
+
+const pl=document.getElementById("picklist");
+DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick).forEach(d=>{
+  const li=document.createElement("li");
+  const col=d.tm===META.teamA?"var(--den)":"var(--kc)";
+  li.innerHTML='<span class="pk-n">'+d.pick+'</span>'
+    +'<span class="pk-name">'+d.p+'</span>'
+    +'<span class="pk-bet">'+d.s.replace(/_/g," ")+' over <b>'+fmt(d.line)+'</b></span>'
+    +'<span class="pk-px">'+(d.price>0?"+":"")+d.price+'</span>'
+    +'<span class="pk-conf" style="color:'+col+'">'+Math.round(Math.min(d.mp,d.bp)*100)+'%</span>';
+  pl.appendChild(li);
+});
+
+document.getElementById("teamA").textContent = META.nameA;
+document.getElementById("teamB").textContent = META.nameB;
+const picks = DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick);
+document.getElementById("nlegs").textContent = picks.length;
+const payAll = picks.reduce((a,d)=>a*(d.price<0?1+100/(-d.price):1+d.price/100),1);
+const jointAll = picks.reduce((a,d)=>a*Math.min(d.mp,d.bp),1);
+document.getElementById("pay").textContent = payAll.toFixed(2)+"\u00d7";
+document.getElementById("joint").textContent = Math.round(jointAll*100)+"%";
+document.getElementById("corrnote").innerHTML = META.corrnote;
+
+function erf(x){
+  const s=Math.sign(x); x=Math.abs(x);
+  const a=[0.254829592,-0.284496736,1.421413741,-1.453152027,1.061405429],p=0.3275911;
+  const t=1/(1+p*x);
+  return s*(1-((((a[4]*t+a[3])*t+a[2])*t+a[1])*t+a[0])*t*Math.exp(-x*x));
+}
+
+const tb=document.querySelector("#tbl tbody");
+DATA.slice().sort((a,b)=>{
+  const az=a.z==null?Infinity:Math.abs(a.z), bz=b.z==null?Infinity:Math.abs(b.z);
+  return a.s.localeCompare(b.s)||az-bz;
+})
+  .forEach(d=>{
+  const tr=document.createElement("tr");
+  const m=d.def==null?"—":d.def.toFixed(2)+(d.app?"":" (context only)");
+  tr.innerHTML="<td>"+d.p+"</td><td>"+d.tm+" "+d.role+"</td><td>"
+    +d.s.replace(/_/g," ")+"</td><td class='num'>"+fmt(d.mu)+"</td><td class='num'>"
+    +fmt(d.lo)+"</td><td class='num'>"+fmt(d.hi)+"</td><td class='num'>±"
+    +fmt(d.sd)+"</td><td class='num'>"+m+"</td>";
+  tb.appendChild(tr);
+});
+</script>

@@ -5,7 +5,7 @@ This is the canonical report format. Everything renders from templates/report.ht
 so every game gets the same page, and the shortlist is chosen by one rule rather
 than by eye.
 
-Usage: make_report.py SEASON WEEK TEAM_A,TEAM_B [--picks 6] [--target -200]
+Usage: make_report.py SEASON WEEK TEAM_A,TEAM_B [--picks 6] [--target -300]
 """
 import sys, pathlib, io, json, contextlib, urllib.request
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
@@ -21,7 +21,7 @@ SEASON, WEEK = int(sys.argv[1]), int(sys.argv[2])
 TEAMS = sys.argv[3].split(",")
 def arg(f, d):
     return type(d)(sys.argv[sys.argv.index(f) + 1]) if f in sys.argv else d
-N_PICKS, TARGET = arg("--picks", 6), arg("--target", -200)
+N_PICKS, TARGET = arg("--picks", 6), arg("--target", -300)
 
 # Errors ran ~10% larger than the model's own sd across 2023-2025, so the raw
 # spread understates how wrong a projection can be.

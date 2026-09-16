@@ -21,7 +21,7 @@ from .db import connect
 SD_INFLATE = 1.10
 # Situational screens. A leg failing any of these is shown but never shortlisted.
 MIN_SNAP, MIN_GAMES = 0.55, 10
-DEFAULT_TARGET = -200
+DEFAULT_TARGET = -300
 
 ALT = {"player_pass_yds_alternate": "passing_yards",
        "player_rush_yds_alternate": "rushing_yards",
