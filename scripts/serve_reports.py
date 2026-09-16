@@ -8,6 +8,7 @@ nothing about them needs the public internet.
 """
 import os
 import re
+import sys
 from datetime import datetime
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
@@ -60,6 +61,11 @@ def index_html():
 
 
 class Handler(SimpleHTTPRequestHandler):
+    # Tailscale Serve proxies in front of this. An HTTP/1.0 server behind a
+    # 1.1 proxy is a known way to get a request that never returns, so speak
+    # 1.1 -- every response here carries a Content-Length.
+    protocol_version = "HTTP/1.1"
+
     def __init__(self, *a, **kw):
         super().__init__(*a, directory=ROOT, **kw)
 
@@ -76,8 +82,11 @@ class Handler(SimpleHTTPRequestHandler):
             return
         super().do_GET()
 
-    def log_message(self, *a):
-        pass  # launchd captures stderr; access noise is not worth the disk
+    def log_message(self, fmt, *a):
+        # On by default. When a phone "just hangs", the first thing worth
+        # knowing is whether the request arrived here at all.
+        sys.stderr.write("%s %s\n" % (self.address_string(), fmt % a))
+        sys.stderr.flush()
 
 
 if __name__ == "__main__":
