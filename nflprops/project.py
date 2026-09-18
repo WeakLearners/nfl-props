@@ -28,6 +28,58 @@ K_VAR_GAMES = 5.0
 K_SHARE_GAMES = 4.0
 USE_SHARE = True  # three-way receiving decomposition; ablatable
 
+# Vacated usage. When a team-mate at the same position is Out/Doubtful, the
+# work he would have taken has to land somewhere, and until 2026-09-17 this
+# engine gave it to nobody. Measured against the 2023-2025 walk-forward output,
+# the engine's error on RB rushing yards was 9.0% worse in the 611 games where
+# a position-mate was out (21.09 MAE vs 19.34). ALPHA damps the redistribution
+# because not all vacated work stays inside the position group -- some becomes
+# a different play call entirely. Calibrated by scripts/eda/fit_vacated.py.
+# MEASURED AND REJECTED 2026-09-17. Walk-forward on 2024-2025, every stat got
+# WORSE, and worse the harder the redistribution was pushed: at ALPHA 0.30 the
+# error rose 1.8-3.3%, at 0.55 it rose 4.1-12.0%, at 1.00 it rose 7.3-27.1%.
+# The premise still holds -- the engine really is 9.0% further off on RB rushing
+# in the 611 games where a position-mate is out. Handing that player's volume to
+# whoever is left, in proportion to what they already do, is simply the wrong
+# fix. It inflates every backup at the position, including the ones who will
+# never see the field. Left switched off rather than deleted so nobody proposes
+# it again without reading this. Evidence: scripts/eda/sweep.py.
+VACATED_ALPHA = 0.30
+VACATED_CAP = 1.60  # never more than a 60% volume bump from one absence
+USE_VACATED = False
+
+# Red-zone usage as a role signal. Correlates 0.23-0.33 with yardage and only
+# 0.30-0.42 with the target-share cluster, so it carries information the
+# volume features do not: not how much work a player gets, but how much of it
+# comes where the field is short. Enters as a damped multiplier on volume,
+# relative to his own position's average rate.
+# MEASURED AND REJECTED 2026-09-17, same sweep. Red-zone rate correlates
+# 0.23-0.33 with yardage, so it looked like free information. As a multiplier on
+# volume it is not: error rose 0.04-0.14% at weight 0.05 and 0.1-0.8% at 0.15,
+# every stat, in the same direction. The likely reason is double counting --
+# red-zone usage runs 0.30-0.42 correlated with the volume history it is
+# adjusting, so the bump re-applies signal the engine already has.
+RZ_WEIGHT = 0.05
+RZ_CLIP = (0.85, 1.15)
+USE_RZ = False
+
+# Calibration. The engine's raw output is biased in a consistent direction, and
+# correcting it beats every feature added here: WR receiving yards fell 21.54 ->
+# 20.81 MAE on recalibration alone, against 20.73 with every new feature on top.
+# Coefficients are actual ~ a + b*proj, fit per stat on completed seasons by
+# scripts/eda/fit_calibration.py. They are constants rather than a runtime fit
+# because fitting needs past projections, which means re-running the walk-forward.
+# REFIT AFTER EVERY SEASON. Fit window is recorded in CALIB_FIT_ON.
+USE_CALIB = True
+CALIB_FIT_ON = "2023-2025 walk-forward output, fitted 2026-09-17"
+CALIB = {
+    "completions":     (-0.8345, 1.0133),
+    "passing_yards":   (-14.0245, 1.0350),
+    "receiving_yards": (-2.0835, 1.0376),
+    "receptions":      (-0.1638, 1.0391),
+    "rushing_yards":   (-1.6995, 1.0255),
+}
+
 # stat -> (volume column, efficiency numerator, defense-multiplier keys)
 SPECS = {
     "passing_yards":   ("attempts", "passing_yards",   "passing_yards", "attempts"),
@@ -50,7 +102,14 @@ DEF_WEIGHT = {
 }
 
 POS_STATS = {
-    "QB": ["passing_yards", "completions"],
+    # QB rushing yards was unmodelled until 2026-09-17 even though SPECS has
+    # carried a rushing_yards entry all along (shared with RB). The odds feed
+    # has been pulling player_rush_yds_alternate the whole time, so QB rushing
+    # lines were arriving with nothing to compare them against. Routed through
+    # the existing volume x efficiency shape rather than a new regression: a
+    # plain h_carries * h_ypc baseline scored 11.68 MAE against 11.84 for a
+    # linear feature model, because rushing yards is a product, not a sum.
+    "QB": ["passing_yards", "completions", "rushing_yards"],
     "RB": ["rushing_yards", "receptions", "receiving_yards"],
     "WR": ["receptions", "receiving_yards"],
     "TE": ["receptions", "receiving_yards"],
@@ -67,19 +126,28 @@ def _history(season, week):
 
 def _roster(season, week):
     with connect() as con:
+        # Every status, not just ACT. A player ruled out is marked INA or RES
+        # here, so filtering to ACT up front silently discarded exactly the
+        # players whose vacated work we need to account for -- and made the
+        # injury-report check below dead code for years. Split the frame after
+        # the join instead of before it.
         ros = pd.read_sql_query(
-            """SELECT gsis_id AS player_id, team, position, full_name
-               FROM rosters WHERE season=? AND week=? AND status='ACT'""",
+            """SELECT gsis_id AS player_id, team, position, full_name, status
+               FROM rosters WHERE season=? AND week=?""",
             con, params=[season, week])
         inj = pd.read_sql_query(
             "SELECT gsis_id AS player_id, report_status FROM injuries WHERE season=? AND week=?",
             con, params=[season, week])
     ros = ros[ros.position.isin(POS_STATS)].dropna(subset=["player_id"])
-    ros = ros.merge(inj, on="player_id", how="left")
-    # v1 injury handling: drop players who will not play. Redistributing their
-    # vacated usage to teammates is the meaningful next step and is NOT done
-    # here -- so backup-elevation cases will read low until that lands.
-    return ros[~ros.report_status.isin(["Out", "Doubtful"])].drop_duplicates("player_id")
+    ros = ros.merge(inj, on="player_id", how="left").drop_duplicates("player_id")
+    # Out by either route: the official report says so, or the team has already
+    # moved him off the active roster.
+    out = ros.report_status.isin(["Out", "Doubtful"]) | ros.status.isin(["INA", "RES"])
+    active = ros[(ros.status == "ACT") & ~out]
+    # The absent frame is not a leftover. Its baseline volume is the pool that
+    # gets redistributed to whoever is still playing.
+    absent = ros[out & ros.status.isin(["ACT", "INA", "RES"])]
+    return active, absent
 
 
 def _weights(g):
@@ -135,6 +203,31 @@ def _player_baselines(hist):
     return pd.DataFrame(rows)
 
 
+def _rz_baselines(season, week):
+    """Decayed red-zone carries and targets per game, per player.
+
+    Same recency weighting as everything else, so a player who lost the goal-line
+    role in October is not still credited with it in December.
+    """
+    with connect() as con:
+        rz = pd.read_sql_query(
+            """SELECT season, week, player_id, rz_carries, rz_targets
+               FROM rz_usage WHERE season < ? OR (season = ? AND week < ?)""",
+            con, params=[season, season, week])
+    if rz.empty:
+        return pd.DataFrame(columns=["player_id", "rz_carries_pg", "rz_targets_pg"])
+    rz = rz.sort_values(["season", "week"], ascending=False)
+    rows = []
+    for pid, g in rz.groupby("player_id", sort=False):
+        w = _weights(g)
+        rows.append({
+            "player_id": pid,
+            "rz_carries_pg": float(np.average(g.rz_carries.fillna(0), weights=w)),
+            "rz_targets_pg": float(np.average(g.rz_targets.fillna(0), weights=w)),
+        })
+    return pd.DataFrame(rows)
+
+
 def _position_means(hist):
     """League-average efficiency and dispersion per position, used as the
     shrinkage target for players with thin samples."""
@@ -167,7 +260,8 @@ def project_week(season, week, verbose=False):
                      .assign(sh=lambda d: d.targets / d.team_targets.replace(0, np.nan))
                      .groupby("position").sh.mean().to_dict())
     dvp = defense_vs_position(season, week)
-    roster = _roster(season, week)
+    roster, absent = _roster(season, week)
+    rz_base = _rz_baselines(season, week)
 
     with connect() as con:
         sched = pd.read_sql_query(
@@ -185,6 +279,34 @@ def project_week(season, week, verbose=False):
 
     rows = []
     merged = roster.merge(base, on="player_id", how="inner").merge(team_base, on="team", how="left")
+    if not rz_base.empty:
+        merged = merged.merge(rz_base, on="player_id", how="left")
+    for c in ("rz_carries_pg", "rz_targets_pg"):
+        if c not in merged:
+            merged[c] = np.nan
+
+    # League-average red-zone rate per position, the yardstick a player's own
+    # rate is measured against. A rate means nothing without one.
+    pos_rz = merged.groupby("position")[["rz_carries_pg", "rz_targets_pg"]].mean().to_dict("index")
+
+    # Vacated usage pools. For each (team, position, volume column): how much
+    # baseline volume belongs to players who will not play, and how much
+    # belongs to the players who will. The ratio is what gets redistributed.
+    vac = {}
+    if USE_VACATED and not absent.empty:
+        gone = absent.merge(base, on="player_id", how="inner")
+        for (team, pos), g_out in gone.groupby(["team", "position"]):
+            g_in = merged[(merged.team == team) & (merged.position == pos)]
+            if g_in.empty:
+                continue
+            for stat in POS_STATS.get(pos, []):
+                vol_c = SPECS[stat][0]
+                col = f"{stat}__vol"
+                lost = float(g_out[col].fillna(0).sum())
+                held = float(g_in[col].fillna(0).sum())
+                if held > 0 and lost > 0:
+                    vac[(team, pos, vol_c)] = lost / held
+
     for _, p in merged.iterrows():
         if p.team not in opp:
             continue
@@ -207,6 +329,26 @@ def project_week(season, week, verbose=False):
                 vol = p["team_targets_base"] * sh
             else:
                 vol = (n * p[f"{stat}__vol"] + K_VOL_GAMES * pm["vol"]) / (n + K_VOL_GAMES)
+
+            # Red-zone role. A player taking an outsized share of the work near
+            # the goal line is the primary option, and primary options get more
+            # of everything. Damped hard because red-zone rate already overlaps
+            # the volume history it is adjusting.
+            if USE_RZ:
+                rz_col = {"carries": "rz_carries_pg", "targets": "rz_targets_pg"}.get(vol_c)
+                if rz_col:
+                    own = p.get(rz_col)
+                    avg = (pos_rz.get(p.position) or {}).get(rz_col)
+                    if pd.notna(own) and avg and avg > 0:
+                        vol *= float(np.clip(1.0 + RZ_WEIGHT * (own / avg - 1.0), *RZ_CLIP))
+
+            # Vacated usage. A position-mate is out, so his share of the work
+            # is available. Split it across whoever is left in proportion to
+            # what each of them already does.
+            if USE_VACATED:
+                ratio = vac.get((p.team, p.position, vol_c))
+                if ratio:
+                    vol *= min(1.0 + VACATED_ALPHA * ratio, VACATED_CAP)
 
             # Opponent adjustment. The defense's allowed-yardage multiplier
             # already contains its allowed-volume multiplier, so applying both
@@ -239,6 +381,11 @@ def project_week(season, week, verbose=False):
             adj_eff = eff * (m_num / m_vol if m_vol > 0 else 1.0)
 
             mu = adj_vol * adj_eff
+            # Calibration. The engine leans in a consistent direction per stat;
+            # this is the straight-line correction for that lean, fit offline.
+            if USE_CALIB and stat in CALIB:
+                a_cal, b_cal = CALIB[stat]
+                mu = max(0.0, a_cal + b_cal * mu)
             sd = p[f"{stat}__sd"]
             sd = pm["sd"] if pd.isna(sd) else (n * sd + K_VAR_GAMES * pm["sd"]) / (n + K_VAR_GAMES)
 
