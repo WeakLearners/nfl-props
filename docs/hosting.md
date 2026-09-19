@@ -46,7 +46,7 @@ flags. Fifteen minutes, done once.
 1. Zero Trust dashboard (`one.dash.cloudflare.com`) → **Access** → **Applications** → **Add an application** → **Self-hosted**.
 2. Application domain: the `pages.dev` URL from step 1.
 3. Session duration: your choice — 24h is reasonable for something checked a few times a week.
-4. Add a policy: Action = **Allow**, Include = **Emails** = `you@example.com` (Sean's address; add any other address he wants to let in, e.g. his phone's iCloud-relayed one if that ever differs).
+4. Add a policy: Action = **Allow**, Include = **Emails** = your own address (add any other address you want to let in, e.g. a phone's iCloud-relayed one if that differs).
 5. Save. From now on, hitting the `pages.dev` URL prompts for an email + a one-time code before showing anything — including the index.
 
 ### 3. Create a scoped API token for the publish script
