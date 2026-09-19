@@ -9,9 +9,8 @@ data/*.db
 # Backtest outputs — regenerable from code + the cached odds below.
 reports/*.csv
 reports/*.md
-reports/launchd.log
-reports/launchd.err
-reports/web.err
+reports/*.log
+reports/*.err
 
 # Cached odds responses from The Odds API. Kept locally (re-fetching costs real
 # quota) but NOT published: this is licensed third-party market data, and

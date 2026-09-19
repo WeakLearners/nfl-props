@@ -9,10 +9,9 @@ because the phone's request never reliably crossed the tunnel, and because
 has to work regardless of whether any particular Mac is on.
 
 **What we're using instead: Cloudflare Pages + Cloudflare Access.**
-Sean already pays for Cloudflare (it fronts `explainlikeimnotkorean.com` for
-personal-blog) and for Cloudplaces/Cloudways for that same site. Pages and
-Access are a *different, free* product under the same Cloudflare account —
-no new vendor, no new bill.
+If you already have a Cloudflare account for something else, Pages and Access
+are a *different, free* product under that same account — no new vendor, no
+new bill.
 
 - **Pages** is a static file host: you push a folder of HTML, Cloudflare
   serves it from its global edge network. Nothing about it runs on, or
