@@ -1,8 +1,9 @@
 """The Odds API client: FanDuel player props, de-vigged.
 
 Quota note: the events endpoint is free; each event-odds call costs one credit
-per market requested. Pulling 5 markets for a 16-game slate is ~80 credits, so
-a full season of weekly pulls is comfortably inside a 20k allowance. Do not
+per market requested. Pulling 6 markets for a 16-game slate is ~96 credits, so
+a full season of weekly pulls is comfortably inside a 20k allowance. The sixth
+is anytime-TD, added 2026-09-20. Do not
 call this in a loop while iterating -- cache to disk instead.
 """
 import json
@@ -24,6 +25,16 @@ MARKETS = {
     "player_receptions": "receptions",
 }
 
+# Anytime touchdown, kept apart from the five above because it is a
+# different SHAPE, not just a different stat. The others quote a line and
+# price Over and Under around it. This one quotes no line at all and prices
+# Yes and No, so it needs its own de-vig (devig_yesno) and would be silently
+# dropped by the Over/Under pivot. Added 2026-09-20 to give the touchdown
+# model a book number to be checked against, the same way every other leg's
+# confidence is the lower of model and book.
+TD_MARKET = {"player_anytime_td": "anytime_td"}
+ALL_MARKETS = {**MARKETS, **TD_MARKET}
+
 
 def _get(url):
     with urllib.request.urlopen(url, timeout=30) as r:
@@ -40,13 +51,13 @@ def events():
 
 def event_props(event_id, book="fanduel"):
     """Raw over/under rows for one game."""
-    mk = ",".join(MARKETS)
+    mk = ",".join(ALL_MARKETS)
     d, q = _get(f"{BASE}/events/{event_id}/odds?apiKey={require('ODDS_API_KEY')}"
                 f"&bookmakers={book}&markets={mk}&oddsFormat=american")
     rows = []
     for bm in d.get("bookmakers", []):
         for m in bm.get("markets", []):
-            stat = MARKETS.get(m["key"])
+            stat = ALL_MARKETS.get(m["key"])
             if not stat:
                 continue
             for o in m.get("outcomes", []):
@@ -78,6 +89,9 @@ def devig(df):
     evenly), which matters for longshot legs -- worth revisiting if the parlay
     legs skew toward long prices.
     """
+    # Drop the lineless market before pivoting on `line`. Without this the
+    # anytime-TD rows arrive with line=NaN and pivot into a phantom group.
+    df = df[~df.stat.isin(TD_MARKET.values())]
     p = df.pivot_table(index=["event_id", "stat", "player_book", "line"],
                        columns="side", values="price", aggfunc="first").reset_index()
     p = p.dropna(subset=["Over", "Under"])
@@ -86,6 +100,31 @@ def devig(df):
     p["fair_over"] = po / (po + pu)
     p["price_over"], p["price_under"] = p["Over"], p["Under"]
     return p.drop(columns=["Over", "Under"])
+
+
+def devig_yesno(df, stat="anytime_td"):
+    """Collapse Yes/No pairs into one fair probability per player.
+
+    Same proportional de-vig as the Over/Under version above, and the same
+    caveat: it slightly overstates the fair number on heavy favourites.
+    Anytime-TD prices sit well inside the range where that matters least.
+
+    Rows for every other stat are dropped, not merely ignored: mixing a
+    lineless market into the Over/Under pivot is how a market with no `point`
+    quietly becomes a row keyed on NaN.
+    """
+    d = df[df.stat == stat]
+    p = d.pivot_table(index=["event_id", "stat", "player_book"],
+                      columns="side", values="price", aggfunc="first").reset_index()
+    if "Yes" not in p.columns or "No" not in p.columns:
+        return pd.DataFrame(columns=["event_id", "stat", "player_book",
+                                     "hold", "book_p", "price_yes"])
+    p = p.dropna(subset=["Yes", "No"])
+    py, pn = p["Yes"].map(implied), p["No"].map(implied)
+    p["hold"] = py + pn - 1.0
+    p["book_p"] = py / (py + pn)
+    p["price_yes"] = p["Yes"]
+    return p.drop(columns=["Yes", "No"])
 
 
 def model_p_over(proj, sd, line):

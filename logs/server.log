@@ -43,3 +43,5 @@
 127.0.0.1 "GET /report_2026_w2_CLE-TB.html HTTP/1.1" 200 -
 127.0.0.1 "GET / HTTP/1.1" 200 -
 127.0.0.1 "GET /report_2026_w2_CAR-ATL.html HTTP/1.1" 304 -
+127.0.0.1 "GET /report_2026_w2_MIN-CHI.html HTTP/1.1" 200 -
+127.0.0.1 "GET /report_2026_w2_NO-BAL.html HTTP/1.1" 200 -
