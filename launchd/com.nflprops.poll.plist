@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<!-- Pull the live season's box scores every thirty minutes.
+
+     Kickoff times flex in-season and Sunday night games get reassigned, so
+     there is no clock to hang this on. The poll asks "what is final now"
+     rather than "is it 7:30 yet". nflverse publishes a box score within
+     about an hour of the final whistle; this makes that hour the whole
+     delay, instead of waiting for the 06:30 full rebuild the next morning.
+
+     "current" rather than a year: a hardcoded 2026 would quietly stop
+     refreshing the live season the moment the calendar turned over. The
+     write only replaces the current season, so 2019-2025 is untouched.
+
+     This is the data pull only. The graded write-ups stay on
+     com.nflprops.week, Tuesday at 09:00, once snap counts are published. -->
+<dict>
+  <key>Label</key><string>com.nflprops.poll</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/Sean/Code/nfl-props/.venv/bin/python</string>
+    <string>/Users/Sean/Code/nfl-props/scripts/build_db.py</string>
+    <string>current</string>
+  </array>
+  <key>WorkingDirectory</key><string>/Users/Sean/Code/nfl-props</string>
+  <key>StartInterval</key><integer>1800</integer>
+  <key>StandardOutPath</key><string>/Users/Sean/Code/nfl-props/logs/poll.log</string>
+  <key>StandardErrorPath</key><string>/Users/Sean/Code/nfl-props/logs/poll.err</string>
+</dict>
+</plist>
