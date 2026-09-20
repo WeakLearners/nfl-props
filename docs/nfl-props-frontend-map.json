@@ -1,0 +1,554 @@
+{
+  "meta": {
+    "project": "nfl-props",
+    "repo": "~/Code/nfl-props",
+    "description": "UI map of the generated production-ranges report. One template renders every report; most of the page is built by its inline script at runtime, so anchors point at the code that draws an element, not at static markup.",
+    "generated": "Read from templates/report.html on 2026-09-20. Every element carries a data-inspect-id (static markup) or dataset.inspectId (runtime-built), which is both the map anchor and the hook the inspector overlay reads.",
+    "howToUse": "locate.grep is a ready-to-paste grep command; run it from the repo root. locate.path is a secondary file:line reference that drifts as the file changes - the grep command does not.",
+    "renderers": [
+      "nflprops/report.py:187 (live)",
+      "scripts/make_report.py:187 (canonical duplicate)"
+    ],
+    "inspector": "Attached to every report by scripts/serve_reports.py. Press the crosshair button, bottom right, to arm it. The button remembers its state across reloads. The overlay is injected per request and never written into the report files themselves."
+  },
+  "nodes": [
+    {
+      "id": "report-page",
+      "label": "Production ranges report",
+      "category": "generated-page",
+      "file": "templates/report.html",
+      "description": "The single report template. Placeholders (__DATA__, __META__, __TARGET__, __TITLE__, __EYEBROW__, __HEADLINE__, __TARGET_ABS__) are string-replaced at build time; everything else is drawn client-side from DATA. The likeliest touchdown scorer is not baked in: scripts/serve_reports.py injects window.__TD__ at serve time, and the script tints that player's cards.",
+      "uiElements": [
+        {
+          "id": "page-wrap",
+          "label": "Page container",
+          "kind": "layout",
+          "description": "Outer 1120px column that everything on the report sits inside.",
+          "locate": {
+            "path": "templates/report.html:203",
+            "grep": "grep -n -F -- 'data-inspect-id=\"page-wrap\"' templates/report.html"
+          }
+        },
+        {
+          "id": "page-header",
+          "label": "Report header",
+          "kind": "layout",
+          "description": "Top block holding the eyebrow line and the matchup headline.",
+          "locate": {
+            "path": "templates/report.html:204",
+            "grep": "grep -n -F -- 'data-inspect-id=\"page-header\"' templates/report.html"
+          }
+        },
+        {
+          "id": "eyebrow",
+          "label": "Kickoff eyebrow",
+          "kind": "text",
+          "description": "Kickoff time, week and season. Filled at build time from __EYEBROW__ in nflprops/report.py.",
+          "locate": {
+            "path": "templates/report.html:205",
+            "grep": "grep -n -F -- 'data-inspect-id=\"eyebrow\"' templates/report.html"
+          }
+        },
+        {
+          "id": "legend",
+          "label": "Chart legend",
+          "kind": "legend",
+          "description": "Explains the two team colours, the shaded middle-68% band, the dashed expected line, and the solid FanDuel line.",
+          "locate": {
+            "path": "templates/report.html:217",
+            "grep": "grep -n -F -- 'data-inspect-id=\"legend\"' templates/report.html"
+          }
+        },
+        {
+          "id": "picks-section",
+          "label": "Shortlist panel",
+          "kind": "card",
+          "description": "Black-bordered panel holding the ranked shortlist and its payout footer.",
+          "locate": {
+            "path": "templates/report.html:225",
+            "grep": "grep -n -F -- 'data-inspect-id=\"picks-section\"' templates/report.html"
+          }
+        },
+        {
+          "id": "picks-heading",
+          "label": "Shortlist heading",
+          "kind": "heading",
+          "description": "'The shortlist' with the 'most confident first' unit label.",
+          "locate": {
+            "path": "templates/report.html:226",
+            "grep": "grep -n -F -- 'data-inspect-id=\"picks-heading\"' templates/report.html"
+          }
+        },
+        {
+          "id": "picks-note",
+          "label": "Shortlist caveat",
+          "kind": "text",
+          "description": "States that confidence means likely, not mispriced. This is the disclaimer, not decoration.",
+          "locate": {
+            "path": "templates/report.html:227",
+            "grep": "grep -n -F -- 'data-inspect-id=\"picks-note\"' templates/report.html"
+          }
+        },
+        {
+          "id": "picklist",
+          "label": "Shortlist list",
+          "kind": "list",
+          "description": "Empty <ol> in the template. Filled at runtime from every DATA row carrying a pick number.",
+          "locate": {
+            "path": "templates/report.html:231",
+            "grep": "grep -n -F -- 'data-inspect-id=\"picklist\"' templates/report.html"
+          }
+        },
+        {
+          "id": "pick-row",
+          "label": "Shortlist row",
+          "kind": "list-item",
+          "description": "One leg: rank, player, bet and line, price, confidence percent.",
+          "locate": {
+            "path": "templates/report.html:419",
+            "grep": "grep -n -F -- 'dataset.inspectId=\"pick-row\"' templates/report.html"
+          }
+        },
+        {
+          "id": "picks-foot",
+          "label": "Payout footer",
+          "kind": "panel",
+          "description": "Straight payout, naive joint chance, and the correlation note.",
+          "locate": {
+            "path": "templates/report.html:232",
+            "grep": "grep -n -F -- 'data-inspect-id=\"picks-foot\"' templates/report.html"
+          }
+        },
+        {
+          "id": "payout-value",
+          "label": "Straight payout",
+          "kind": "value",
+          "description": "Product of every leg's decimal odds. Computed in the template's own script, not server-side.",
+          "locate": {
+            "path": "templates/report.html:233",
+            "grep": "grep -n -F -- 'data-inspect-id=\"payout-value\"' templates/report.html"
+          }
+        },
+        {
+          "id": "joint-value",
+          "label": "Naive joint chance",
+          "kind": "value",
+          "description": "Product of min(model, book) across legs. 'Naive' because it assumes independence.",
+          "locate": {
+            "path": "templates/report.html:234",
+            "grep": "grep -n -F -- 'data-inspect-id=\"joint-value\"' templates/report.html"
+          }
+        },
+        {
+          "id": "corr-note",
+          "label": "Correlation note",
+          "kind": "text",
+          "description": "Whether the legs share a game. Text chosen in nflprops/report.py and injected via META.corrnote.",
+          "locate": {
+            "path": "templates/report.html:235",
+            "grep": "grep -n -F -- 'data-inspect-id=\"corr-note\"' templates/report.html"
+          }
+        },
+        {
+          "id": "stat-sections",
+          "label": "Stat sections container",
+          "kind": "layout",
+          "description": "Empty div. Runtime appends one heading plus one card grid per stat in STATS.",
+          "locate": {
+            "path": "templates/report.html:239",
+            "grep": "grep -n -F -- 'data-inspect-id=\"stat-sections\"' templates/report.html"
+          }
+        },
+        {
+          "id": "stat-heading",
+          "label": "Stat section heading",
+          "kind": "heading",
+          "description": "Stat name plus its unit, e.g. 'Rushing yards / yards'.",
+          "locate": {
+            "path": "templates/report.html:350",
+            "grep": "grep -n -F -- 'dataset.inspectId=\"stat-heading\"' templates/report.html"
+          }
+        },
+        {
+          "id": "stat-grid",
+          "label": "Player card grid",
+          "kind": "layout",
+          "description": "Responsive grid of player cards for one stat, ordered by how close the book's number sits to the curve's peak.",
+          "locate": {
+            "path": "templates/report.html:353",
+            "grep": "grep -n -F -- 'dataset.inspectId=\"stat-grid\"' templates/report.html"
+          }
+        },
+        {
+          "id": "player-card",
+          "label": "Player card",
+          "kind": "card",
+          "description": "One player-stat projection. Gets a heavier border when it is a shortlist pick.",
+          "locate": {
+            "path": "templates/report.html:360",
+            "grep": "grep -n -F -- 'dataset.inspectId=\"player-card\"' templates/report.html"
+          }
+        },
+        {
+          "id": "card-player-name",
+          "label": "Card player name",
+          "kind": "text",
+          "description": "Player name in the card's top row.",
+          "locate": {
+            "path": "templates/report.html:379",
+            "grep": "grep -n -F -- 'data-inspect-id=\"card-player-name\"' templates/report.html"
+          }
+        },
+        {
+          "id": "card-role-badge",
+          "label": "Card role badge",
+          "kind": "badge",
+          "description": "Team-coloured position badge, e.g. QB1 or WR2.",
+          "locate": {
+            "path": "templates/report.html:380",
+            "grep": "grep -n -F -- 'data-inspect-id=\"card-role-badge\"' templates/report.html"
+          }
+        },
+        {
+          "id": "card-pick-badge",
+          "label": "Card pick badge",
+          "kind": "badge",
+          "description": "Only present when the player is on the shortlist. Shows the pick's rank.",
+          "locate": {
+            "path": "templates/report.html:381",
+            "grep": "grep -n -F -- 'data-inspect-id=\"card-pick-badge\"' templates/report.html"
+          }
+        },
+        {
+          "id": "card-expected",
+          "label": "Card expected value",
+          "kind": "value",
+          "description": "The projection's mu, after calibration.",
+          "locate": {
+            "path": "templates/report.html:384",
+            "grep": "grep -n -F -- 'data-inspect-id=\"card-expected\"' templates/report.html"
+          }
+        },
+        {
+          "id": "card-range",
+          "label": "Card range",
+          "kind": "value",
+          "description": "The middle-68% band, mu plus or minus one sd, with sd already widened 10%.",
+          "locate": {
+            "path": "templates/report.html:385",
+            "grep": "grep -n -F -- 'data-inspect-id=\"card-range\"' templates/report.html"
+          }
+        },
+        {
+          "id": "card-curve",
+          "label": "Card curve chart",
+          "kind": "chart",
+          "description": "Inline SVG Gaussian. Built by curve() from mu and sd alone.",
+          "locate": {
+            "path": "templates/report.html:386",
+            "grep": "grep -n -F -- 'data-inspect-id=\"card-curve\"' templates/report.html"
+          }
+        },
+        {
+          "id": "card-curve-hitbox",
+          "label": "Curve hover target",
+          "kind": "overlay",
+          "description": "Transparent rect that catches mousemove and drives the tooltip. The chart has no other pointer handling.",
+          "locate": {
+            "path": "templates/report.html:396",
+            "grep": "grep -n -F -- 'data-inspect-id=\"card-curve-hitbox\"' templates/report.html"
+          }
+        },
+        {
+          "id": "card-compare",
+          "label": "Model vs book row",
+          "kind": "panel",
+          "description": "FanDuel's line and price against the model's and book's implied probabilities.",
+          "locate": {
+            "path": "templates/report.html:323",
+            "grep": "grep -n -F -- 'data-inspect-id=\"card-compare\"' templates/report.html"
+          }
+        },
+        {
+          "id": "card-compare-none",
+          "label": "Model vs book, no line",
+          "kind": "panel",
+          "description": "Shown instead of the comparison when no price near the target was offered for this player-stat.",
+          "locate": {
+            "path": "templates/report.html:320",
+            "grep": "grep -n -F -- 'data-inspect-id=\"card-compare-none\"' templates/report.html"
+          }
+        },
+        {
+          "id": "card-compare-z",
+          "label": "Peak offset note",
+          "kind": "text",
+          "description": "How many standard deviations separate the book's number from the curve's peak.",
+          "locate": {
+            "path": "templates/report.html:330",
+            "grep": "grep -n -F -- 'data-inspect-id=\"card-compare-z\"' templates/report.html"
+          }
+        },
+        {
+          "id": "card-matchup",
+          "label": "Matchup note",
+          "kind": "text",
+          "description": "Defensive multiplier versus this position. Marked 'context only' for receiving stats, where applying it made projections worse.",
+          "locate": {
+            "path": "templates/report.html:374",
+            "grep": "grep -n -F -- 'data-inspect-id=\"card-matchup\"' templates/report.html"
+          }
+        },
+        {
+          "id": "curve-tooltip",
+          "label": "Curve tooltip",
+          "kind": "overlay",
+          "description": "Fixed-position readout that follows the cursor across a curve, showing a value and the chance of more.",
+          "locate": {
+            "path": "templates/report.html:270",
+            "grep": "grep -n -F -- 'data-inspect-id=\"curve-tooltip\"' templates/report.html"
+          }
+        },
+        {
+          "id": "table-details",
+          "label": "Full table disclosure",
+          "kind": "disclosure",
+          "description": "Collapsed section holding every projected figure, not just the featured cards.",
+          "locate": {
+            "path": "templates/report.html:241",
+            "grep": "grep -n -F -- 'data-inspect-id=\"table-details\"' templates/report.html"
+          }
+        },
+        {
+          "id": "table-summary",
+          "label": "Full table toggle",
+          "kind": "button",
+          "description": "Click target that expands the full figures table.",
+          "locate": {
+            "path": "templates/report.html:242",
+            "grep": "grep -n -F -- 'data-inspect-id=\"table-summary\"' templates/report.html"
+          }
+        },
+        {
+          "id": "full-table",
+          "label": "Full figures table",
+          "kind": "table",
+          "description": "Every DATA row: player, role, stat, expected, minus and plus one sd, spread, matchup.",
+          "locate": {
+            "path": "templates/report.html:243",
+            "grep": "grep -n -F -- 'data-inspect-id=\"full-table\"' templates/report.html"
+          }
+        },
+        {
+          "id": "table-row",
+          "label": "Table row",
+          "kind": "table-row",
+          "description": "One player-stat row in the full table.",
+          "locate": {
+            "path": "templates/report.html:453",
+            "grep": "grep -n -F -- 'dataset.inspectId=\"table-row\"' templates/report.html"
+          }
+        },
+        {
+          "id": "footer-notes",
+          "label": "Footer notes",
+          "kind": "text",
+          "description": "Four explanatory blocks: reading the matchup figure, curve width, model versus book, and the 'these are not edges' disclaimer.",
+          "locate": {
+            "path": "templates/report.html:250",
+            "grep": "grep -n -F -- 'data-inspect-id=\"footer-notes\"' templates/report.html"
+          }
+        },
+        {
+          "id": "td-scorer-card",
+          "label": "Touchdown scorer card",
+          "kind": "card",
+          "description": "The likeliest touchdown scorer's player card, washed in that player's team colour so the eye finds them before reading a name. Every card for that player is tinted, one per stat.",
+          "locate": {
+            "path": "templates/report.html:367",
+            "grep": "grep -n -F -- 'inspectId = \"td-scorer-card' templates/report.html"
+          }
+        },
+        {
+          "id": "card-td-badge",
+          "label": "Card touchdown badge",
+          "kind": "badge",
+          "description": "Confidence chip on a tinted card, e.g. 'td 55%'. The lower of the model's number and the book's, the same rule every leg follows.",
+          "locate": {
+            "path": "templates/report.html:382",
+            "grep": "grep -n -F -- 'data-inspect-id=\"card-td-badge\"' templates/report.html"
+          }
+        }
+      ]
+    },
+    {
+      "id": "report-index",
+      "label": "Report listing",
+      "category": "generated-page",
+      "file": "scripts/serve_reports.py",
+      "description": "The listing at /. Built by index_html() from the PAGE constant in this file -- there is no template. Weeks are tabs, left to right as played, newest selected. Cards are split into one block per kickoff time inside a week. Game cards deliberately mirror the player card in templates/report.html; if that card's anatomy moves, move this with it. The tab script is the separate TABS_JS constant, kept out of PAGE so its braces need no escaping.",
+      "uiElements": [
+        {
+          "id": "index-wrap",
+          "label": "Listing container",
+          "kind": "layout",
+          "description": "Outer 720px column holding the whole listing.",
+          "locate": {
+            "path": "scripts/serve_reports.py:159",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-wrap\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "index-eyebrow",
+          "label": "Listing eyebrow",
+          "kind": "text",
+          "description": "Small monospace line above the title, matching the eyebrow on a report.",
+          "locate": {
+            "path": "scripts/serve_reports.py:161",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-eyebrow\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "index-title",
+          "label": "Listing title",
+          "kind": "heading",
+          "description": "The 'NFL Props' headline, in the same condensed face as a report's matchup headline.",
+          "locate": {
+            "path": "scripts/serve_reports.py:162",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-title\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "index-subtitle",
+          "label": "Listing subtitle",
+          "kind": "text",
+          "description": "Explains the tabs, the ordering, the TD marker, and that no edge is being claimed.",
+          "locate": {
+            "path": "scripts/serve_reports.py:164",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-subtitle\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "index-tablist",
+          "label": "Week tab strip",
+          "kind": "nav",
+          "description": "Row of week tabs, reading left to right in the order the weeks were played. Arrow keys move between them, Home and End jump to the first and last.",
+          "locate": {
+            "path": "scripts/serve_reports.py:386",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-tablist\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "index-week-tab",
+          "label": "Week tab",
+          "kind": "button",
+          "description": "One week's tab, with that week's game count beside the label. The newest week sits on the right and is the one selected on load.",
+          "locate": {
+            "path": "scripts/serve_reports.py:370",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-week-tab\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "index-week-panel",
+          "label": "Week panel",
+          "kind": "layout",
+          "description": "The card grid for one week. Every panel but the selected one carries the hidden attribute.",
+          "locate": {
+            "path": "scripts/serve_reports.py:375",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-week-panel\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "index-row",
+          "label": "Game card",
+          "kind": "card",
+          "description": "One game's card, linking through to its report. Built on the same anatomy as a report's player card: label and badge on top, an oversized figure, a range line, then a dotted comparison row.",
+          "locate": {
+            "path": "scripts/serve_reports.py:301",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-row\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "index-game-label",
+          "label": "Card game label",
+          "kind": "text",
+          "description": "The away-at-home pairing in the card's top row, where a player card puts the player's name.",
+          "locate": {
+            "path": "scripts/serve_reports.py:303",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-game-label\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "index-day-badge",
+          "label": "Card day badge",
+          "kind": "badge",
+          "description": "Accent-coloured weekday, e.g. SUN. Sits where a player card puts the position badge. Absent when no schedule row exists.",
+          "locate": {
+            "path": "scripts/serve_reports.py:294",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-day-badge\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "index-kickoff",
+          "label": "Card kickoff time",
+          "kind": "value",
+          "description": "Kickoff time as the card's headline figure, where a player card puts its projection. Falls back to 'kickoff unknown' rather than the file's timestamp.",
+          "locate": {
+            "path": "scripts/serve_reports.py:305",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-kickoff\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "index-kickoff-date",
+          "label": "Card date line",
+          "kind": "value",
+          "description": "Timezone and date under the figure, where a player card puts its range.",
+          "locate": {
+            "path": "scripts/serve_reports.py:306",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-kickoff-date\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "index-empty",
+          "label": "Empty listing message",
+          "kind": "text",
+          "description": "Replaces the tabs and panels entirely when no reports have been generated yet.",
+          "locate": {
+            "path": "scripts/serve_reports.py:380",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-empty\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "index-footer",
+          "label": "Listing footer",
+          "kind": "text",
+          "description": "The standing disclaimer: projections, not edges, and less accurate than the market in testing.",
+          "locate": {
+            "path": "scripts/serve_reports.py:168",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-footer\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "index-slot",
+          "label": "Kickoff block",
+          "kind": "layout",
+          "description": "All the games that kick off at one time, e.g. every Sunday 1:00 PM game. A Sunday is four separate sittings, and one undivided grid hid that.",
+          "locate": {
+            "path": "scripts/serve_reports.py:349",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-slot\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "index-slot-label",
+          "label": "Kickoff block label",
+          "kind": "heading",
+          "description": "Day and time for one block, with its game count. Quieter than a week tab, louder than a card.",
+          "locate": {
+            "path": "scripts/serve_reports.py:350",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-slot-label\"' scripts/serve_reports.py"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,10 @@
 <meta charset="utf-8">
+<!-- Must be the first thing in the document, and within the first 1024
+     bytes: that is the window a browser scans before it gives up and
+     guesses. Missing here until 2026-09-20, so every report rendered
+     its middle dots and em dashes as mojibake whenever the server did
+     not name the encoding. The bytes were always correct UTF-8; nothing
+     ever told the browser so. Keep this line first. -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Raiders–Chargers Production Ranges</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -123,6 +129,17 @@
     max-width:74ch; margin-top:4px; line-height:1.5}
   .pf-wide em{font-style:normal; color:var(--ink-2); font-weight:600}
   .card.pick{border:2px solid var(--ink); padding:12px 13px 7px}
+  /* The likeliest touchdown scorer. A wash of that player's team colour over
+     the whole card, so the eye finds them before reading a single name. The
+     tint is set per card from the same fill the curve band uses, which is why
+     it arrives as a custom property rather than a fixed colour here. */
+  .card.td{background:var(--td-tint); border-color:var(--td-edge)}
+  .td-badge{
+    font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:600;
+    letter-spacing:.1em; text-transform:uppercase; color:var(--surface);
+    border-radius:2px; padding:1px 4px; margin-left:6px; flex:none;
+    background:var(--td-edge);
+  }
   .pick-badge{
     font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:600;
     letter-spacing:.1em; text-transform:uppercase; color:var(--ink);
@@ -183,9 +200,9 @@
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
-<div class="wrap">
-  <header>
-    <p class="eyebrow">Sunday · Week 2 · 2026</p>
+<div class="wrap" data-inspect-id="page-wrap">
+  <header data-inspect-id="page-header">
+    <p class="eyebrow" data-inspect-id="eyebrow">Sunday · Week 2 · 2026</p>
     <h1>Las Vegas Raiders <span class="at">at</span> Los Angeles Chargers</h1>
   </header>
   <p class="sub">Projected production for each team's featured players. The curve is the
@@ -197,7 +214,7 @@
     down, the gap widens &mdash; a number well left of the peak is one the model thinks clears
     more often than the price suggests, and vice versa.</p>
 
-  <div class="legend">
+  <div class="legend" data-inspect-id="legend">
     <span class="key"><span class="swatch" style="background:var(--den)"></span><span id="teamA"></span></span>
     <span class="key"><span class="swatch" style="background:var(--kc)"></span><span id="teamB"></span></span>
     <span class="key"><span class="swatch band-key"></span>middle ~68% of outcomes</span>
@@ -205,32 +222,32 @@
     <span class="key"><span class="swatch" style="background:none;border-left:2px solid var(--ink);width:0;height:14px"></span>FanDuel's ~&minus;300 number</span>
   </div>
 
-  <section class="picks">
-    <h2 class="picks-h">The shortlist<span class="unit">most confident first</span></h2>
-    <p class="picks-note">Every signal available agrees on these: a real starter's snap
+  <section class="picks" data-inspect-id="picks-section">
+    <h2 class="picks-h" data-inspect-id="picks-heading">The shortlist<span class="unit">most confident first</span></h2>
+    <p class="picks-note" data-inspect-id="picks-note">Every signal available agrees on these: a real starter's snap
       share, a long record, no injury tag, no change of team, and the model and the book
       within a few points of each other. Confidence here means <em>likely to happen</em> —
       not good value. Nothing on this page establishes that any of it is mispriced.</p>
-    <ol id="picklist"></ol>
-    <div class="picks-foot">
-      <div><span class="pf-k">Straight <span id="nlegs"></span>-leg payout</span><span class="pf-v" id="pay"></span></div>
-      <div><span class="pf-k">Naive joint chance</span><span class="pf-v" id="joint"></span></div>
-      <div class="pf-wide" id="corrnote"></div>
+    <ol id="picklist" data-inspect-id="picklist"></ol>
+    <div class="picks-foot" data-inspect-id="picks-foot">
+      <div><span class="pf-k">Straight <span id="nlegs"></span>-leg payout</span><span class="pf-v" id="pay" data-inspect-id="payout-value"></span></div>
+      <div><span class="pf-k">Naive joint chance</span><span class="pf-v" id="joint" data-inspect-id="joint-value"></span></div>
+      <div class="pf-wide" id="corrnote" data-inspect-id="corr-note"></div>
     </div>
   </section>
 
-  <div id="sections"></div>
+  <div id="sections" data-inspect-id="stat-sections"></div>
 
-  <details>
-    <summary>All figures as a table</summary>
-    <div class="tablewrap"><table id="tbl">
+  <details data-inspect-id="table-details">
+    <summary data-inspect-id="table-summary">All figures as a table</summary>
+    <div class="tablewrap"><table id="tbl" data-inspect-id="full-table">
       <thead><tr><th>Player</th><th>Role</th><th>Stat</th><th>Expected</th>
         <th>−1 sd</th><th>+1 sd</th><th>Spread</th><th>Matchup</th></tr></thead>
       <tbody></tbody>
     </table></div>
   </details>
 
-  <footer>
+  <footer data-inspect-id="footer-notes">
     <p><strong>Reading the matchup figure.</strong> 1.15 means this defence gives up 15%
     more than league average to that position; 0.85 means 15% less. Where it says
     <em>context only</em>, the projection deliberately ignores it — applying a defensive
@@ -250,7 +267,7 @@
     market's. Useful for seeing a player's plausible range; not evidence anyone is mispriced.</p>
   </footer>
 </div>
-<div class="tip" id="tip"></div>
+<div class="tip" id="tip" data-inspect-id="curve-tooltip"></div>
 
 <script>
 const DATA = [{"p": "David Njoku", "role": "TE1", "tm": "LAC", "vs": "LV", "s": "receptions", "mu": 2.9, "sd": 2.3, "lo": 0.6, "hi": 5.2, "def": 0.95, "app": false, "line": 1.5, "price": -420, "z": -0.6, "mp": 0.727, "bp": 0.808, "pick": null}, {"p": "David Njoku", "role": "TE1", "tm": "LAC", "vs": "LV", "s": "receiving_yards", "mu": 29.1, "sd": 27.4, "lo": 1.6, "hi": 56.5, "def": 0.97, "app": false, "line": 14.5, "price": -260, "z": -0.53, "mp": 0.702, "bp": 0.722, "pick": null}, {"p": "Justin Herbert", "role": "QB1", "tm": "LAC", "vs": "LV", "s": "passing_yards", "mu": 206.5, "sd": 72.6, "lo": 134.0, "hi": 279.1, "def": 0.98, "app": true, "line": 199.5, "price": -210, "z": -0.1, "mp": 0.539, "bp": 0.677, "pick": null}, {"p": "Justin Herbert", "role": "QB1", "tm": "LAC", "vs": "LV", "s": "completions", "mu": 18.8, "sd": 5.8, "lo": 13.0, "hi": 24.6, "def": 1.01, "app": true, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "Justin Herbert", "role": "QB1", "tm": "LAC", "vs": "LV", "s": "rushing_yards", "mu": 23.9, "sd": 20.6, "lo": 3.3, "hi": 44.4, "def": null, "app": true, "line": 14.5, "price": -205, "z": -0.45, "mp": 0.675, "bp": 0.672, "pick": 5}, {"p": "Quentin Johnston", "role": "WR1", "tm": "LAC", "vs": "LV", "s": "receptions", "mu": 3.5, "sd": 2.3, "lo": 1.2, "hi": 5.8, "def": 1.03, "app": false, "line": 2.5, "price": -360, "z": -0.45, "mp": 0.674, "bp": 0.783, "pick": 4}, {"p": "Quentin Johnston", "role": "WR1", "tm": "LAC", "vs": "LV", "s": "receiving_yards", "mu": 45.9, "sd": 43.6, "lo": 2.3, "hi": 89.5, "def": 1.01, "app": false, "line": 29.5, "price": -320, "z": -0.38, "mp": 0.647, "bp": 0.762, "pick": null}, {"p": "Kimani Vidal", "role": "RB2", "tm": "LAC", "vs": "LV", "s": "rushing_yards", "mu": 41.6, "sd": 44.2, "lo": 0.0, "hi": 85.8, "def": 1.0, "app": true, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "Kimani Vidal", "role": "RB2", "tm": "LAC", "vs": "LV", "s": "receptions", "mu": 1.1, "sd": 1.2, "lo": 0.0, "hi": 2.2, "def": 1.01, "app": false, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "Kimani Vidal", "role": "RB2", "tm": "LAC", "vs": "LV", "s": "receiving_yards", "mu": 7.4, "sd": 19.4, "lo": 0.0, "hi": 26.8, "def": 0.87, "app": false, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "Ladd McConkey", "role": "WR2", "tm": "LAC", "vs": "LV", "s": "receptions", "mu": 3.8, "sd": 2.2, "lo": 1.5, "hi": 6.0, "def": 1.03, "app": false, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "Ladd McConkey", "role": "WR2", "tm": "LAC", "vs": "LV", "s": "receiving_yards", "mu": 49.2, "sd": 34.1, "lo": 15.2, "hi": 83.3, "def": 1.01, "app": false, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "Omarion Hampton", "role": "RB1", "tm": "LAC", "vs": "LV", "s": "rushing_yards", "mu": 50.1, "sd": 31.8, "lo": 18.3, "hi": 81.9, "def": 1.0, "app": true, "line": 49.5, "price": -240, "z": -0.02, "mp": 0.507, "bp": 0.706, "pick": null}, {"p": "Omarion Hampton", "role": "RB1", "tm": "LAC", "vs": "LV", "s": "receptions", "mu": 1.9, "sd": 2.8, "lo": 0.0, "hi": 4.7, "def": 1.01, "app": false, "line": 1.5, "price": -210, "z": -0.13, "mp": 0.552, "bp": 0.677, "pick": null}, {"p": "Omarion Hampton", "role": "RB1", "tm": "LAC", "vs": "LV", "s": "receiving_yards", "mu": 12.4, "sd": 18.3, "lo": 0.0, "hi": 30.7, "def": 0.87, "app": false, "line": 4.5, "price": -300, "z": -0.43, "mp": 0.667, "bp": 0.75, "pick": null}, {"p": "Tre Harris", "role": "WR3", "tm": "LAC", "vs": "LV", "s": "receptions", "mu": 2.5, "sd": 1.5, "lo": 1.0, "hi": 4.0, "def": 1.03, "app": false, "line": 2.5, "price": -172, "z": 0.01, "mp": 0.497, "bp": 0.632, "pick": null}, {"p": "Tre Harris", "role": "WR3", "tm": "LAC", "vs": "LV", "s": "receiving_yards", "mu": 30.2, "sd": 21.5, "lo": 8.7, "hi": 51.7, "def": 1.01, "app": false, "line": 19.5, "price": -260, "z": -0.5, "mp": 0.69, "bp": 0.722, "pick": 2}, {"p": "Jalen Nailor", "role": "WR2", "tm": "LV", "vs": "LAC", "s": "receptions", "mu": 2.1, "sd": 1.7, "lo": 0.3, "hi": 3.8, "def": 0.96, "app": false, "line": 1.5, "price": -450, "z": -0.32, "mp": 0.626, "bp": 0.818, "pick": null}, {"p": "Jalen Nailor", "role": "WR2", "tm": "LV", "vs": "LAC", "s": "receiving_yards", "mu": 26.2, "sd": 29.2, "lo": 0.0, "hi": 55.5, "def": 0.96, "app": false, "line": 19.5, "price": -280, "z": -0.23, "mp": 0.591, "bp": 0.737, "pick": null}, {"p": "Tre Tucker", "role": "WR1", "tm": "LV", "vs": "LAC", "s": "receptions", "mu": 3.0, "sd": 1.7, "lo": 1.3, "hi": 4.7, "def": 0.96, "app": false, "line": 2.5, "price": -220, "z": -0.28, "mp": 0.609, "bp": 0.688, "pick": null}, {"p": "Tre Tucker", "role": "WR1", "tm": "LV", "vs": "LAC", "s": "receiving_yards", "mu": 37.0, "sd": 22.8, "lo": 14.2, "hi": 59.8, "def": 0.96, "app": false, "line": 24.5, "price": -250, "z": -0.55, "mp": 0.708, "bp": 0.714, "pick": 1}, {"p": "Aidan O'Connell", "role": "QB1", "tm": "LV", "vs": "LAC", "s": "passing_yards", "mu": 163.4, "sd": 96.9, "lo": 66.5, "hi": 260.4, "def": 0.93, "app": true, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "Aidan O'Connell", "role": "QB1", "tm": "LV", "vs": "LAC", "s": "completions", "mu": 16.0, "sd": 8.2, "lo": 7.8, "hi": 24.2, "def": 0.96, "app": true, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "Aidan O'Connell", "role": "QB1", "tm": "LV", "vs": "LAC", "s": "rushing_yards", "mu": 8.7, "sd": 8.7, "lo": 0.0, "hi": 17.4, "def": null, "app": true, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "Ashton Jeanty", "role": "RB1", "tm": "LV", "vs": "LAC", "s": "rushing_yards", "mu": 68.2, "sd": 38.5, "lo": 29.8, "hi": 106.7, "def": 0.95, "app": true, "line": 49.5, "price": -240, "z": -0.49, "mp": 0.687, "bp": 0.706, "pick": 3}, {"p": "Ashton Jeanty", "role": "RB1", "tm": "LV", "vs": "LAC", "s": "receptions", "mu": 3.4, "sd": 2.2, "lo": 1.2, "hi": 5.6, "def": 0.98, "app": false, "line": 2.5, "price": -400, "z": -0.4, "mp": 0.656, "bp": 0.8, "pick": null}, {"p": "Ashton Jeanty", "role": "RB1", "tm": "LV", "vs": "LAC", "s": "receiving_yards", "mu": 24.1, "sd": 21.5, "lo": 2.6, "hi": 45.6, "def": 0.82, "app": false, "line": 14.5, "price": -350, "z": -0.45, "mp": 0.673, "bp": 0.778, "pick": null}, {"p": "Jack Bech", "role": "WR3", "tm": "LV", "vs": "LAC", "s": "receptions", "mu": 2.0, "sd": 2.0, "lo": 0.0, "hi": 4.0, "def": 0.96, "app": false, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}, {"p": "Jack Bech", "role": "WR3", "tm": "LV", "vs": "LAC", "s": "receiving_yards", "mu": 24.0, "sd": 22.7, "lo": 1.3, "hi": 46.7, "def": 0.96, "app": false, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null}];
@@ -300,20 +317,27 @@ function lineMark(d,c){
     +'<circle cx="'+x.toFixed(1)+'" cy="6" r="2.5" fill="var(--ink)"></circle>';
 }
 function compare(d){
-  if(d.line==null) return '<div class="cmp none">no number near &minus;'+Math.abs(TARGET)+' offered</div>';
+  if(d.line==null) return '<div class="cmp none" data-inspect-id="card-compare-none">no number near &minus;'+Math.abs(TARGET)+' offered</div>';
   const off = Math.abs(d.price-TARGET) > 60;
   const side = d.z<0 ? "above" : "below";
-  return '<div class="cmp">'
+  return '<div class="cmp" data-inspect-id="card-compare">'
     + '<span class="cmp-line">'+fmt(d.line)+'<span class="px">'
       +(d.price>0?"+":"")+d.price+'</span></span>'
     + '<span class="cmp-sep"></span>'
     + '<span class="cmp-p">model <b>'+Math.round(d.mp*100)+'%</b>'
       +' · book <b>'+Math.round(d.bp*100)+'%</b></span>'
     + '</div>'
-    + '<div class="cmp-z">peak sits '+Math.abs(d.z).toFixed(2)+' sd '+side+' it'
+    + '<div class="cmp-z" data-inspect-id="card-compare-z">peak sits '+Math.abs(d.z).toFixed(2)+' sd '+side+' it'
       + (off?' <span class="muted-note">· nearest rung is '+(d.price>0?"+":"")+d.price+', not '+TARGET+'</span>':'')
     + '</div>';
 }
+
+// The likeliest touchdown scorer, injected by scripts/serve_reports.py at
+// serve time rather than baked in when the report was built. Markers are
+// written by a separate job that may run after a report exists, and a report
+// already on disk should still pick up a marker written later. Absent is the
+// normal case, not an error.
+const TD = (window.__TD__ && window.__TD__.player) ? window.__TD__ : null;
 
 const sections=document.getElementById("sections");
 STATS.forEach(([key,label,unit])=>{
@@ -323,29 +347,43 @@ STATS.forEach(([key,label,unit])=>{
   });
   if(!rows.length) return;
   const h=document.createElement("h2");
+  h.dataset.inspectId="stat-heading";
   h.innerHTML=label+'<span class="unit">'+unit+'</span>';
   sections.appendChild(h);
-  const grid=document.createElement("div"); grid.className="grid";
+  const grid=document.createElement("div"); grid.className="grid"; grid.dataset.inspectId="stat-grid";
   rows.forEach(d=>{
     const c=curve(d);
     const col=d.tm===META.teamA?"var(--den)":"var(--kc)";
     const fill=d.tm===META.teamA?"var(--den-fill)":"var(--kc-fill)";
     const card=document.createElement("div");
     card.className = d.pick ? "card pick" : "card";
+    card.dataset.inspectId="player-card";
+    const isTD = TD && d.p === TD.player;
+    if(isTD){
+      card.className += " td";
+      // Most specific id first: the overlay resolves the first id it knows,
+      // so leading with "player-card" here would make the scorer card
+      // unreachable in the map.
+      card.dataset.inspectId = "td-scorer-card player-card";
+      card.style.setProperty("--td-tint", fill);
+      card.style.setProperty("--td-edge", col);
+    }
     let match="";
     if(d.def!=null){
       const word=d.def>1.03?"softer than average":d.def<0.97?"tougher than average":"about average";
-      match='<div class="matchup'+(d.def<0.97?' tough':'')+'"><span class="dot"></span>'
+      match='<div class="matchup'+(d.def<0.97?' tough':'')+'" data-inspect-id="card-matchup"><span class="dot"></span>'
         +'<span>vs '+d.vs+' <em>'+d.def.toFixed(2)+'</em> '+word
         +(d.app?'':' <span class="muted-note">· context only</span>')+'</span></div>';
     }
     card.innerHTML=
-      '<div class="card-top"><span class="name">'+d.p+'</span>'
-      +'<span class="role '+d.tm+'">'+d.role+'</span>'
-      +(d.pick?'<span class="pick-badge">pick '+d.pick+'</span>':'')+'</div>'
-      +'<div class="fig">'+fmt(d.mu)+'</div>'
-      +'<div class="rng">'+fmt(d.lo)+' – '+fmt(d.hi)+'</div>'
-      +'<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+d.p+' '+label
+      '<div class="card-top"><span class="name" data-inspect-id="card-player-name">'+d.p+'</span>'
+      +'<span class="role '+d.tm+'" data-inspect-id="card-role-badge">'+d.role+'</span>'
+      +(d.pick?'<span class="pick-badge" data-inspect-id="card-pick-badge">pick '+d.pick+'</span>':'')
+      +(isTD?'<span class="td-badge" data-inspect-id="card-td-badge">td '
+        +Math.round(TD.conf*100)+'%</span>':'')+'</div>'
+      +'<div class="fig" data-inspect-id="card-expected">'+fmt(d.mu)+'</div>'
+      +'<div class="rng" data-inspect-id="card-range">'+fmt(d.lo)+' – '+fmt(d.hi)+'</div>'
+      +'<svg data-inspect-id="card-curve" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+d.p+' '+label
       +': expected '+fmt(d.mu)+', middle range '+fmt(d.lo)+' to '+fmt(d.hi)+'">'
       +'<path d="'+c.band+'" fill="'+fill+'"></path>'
       +'<path class="curve" d="'+c.path+'" stroke="'+col+'"></path>'
@@ -355,7 +393,7 @@ STATS.forEach(([key,label,unit])=>{
       +'<text class="tick" x="0" y="'+(H-1)+'">'+fmt(Math.max(0,c.lo))+'</text>'
       +'<text class="tick" x="'+W+'" y="'+(H-1)+'" text-anchor="end">'+fmt(c.hi)+'</text>'
       +lineMark(d,c)
-      +'<rect class="hit" x="0" y="0" width="'+W+'" height="'+H+'"></rect>'
+      +'<rect class="hit" data-inspect-id="card-curve-hitbox" x="0" y="0" width="'+W+'" height="'+H+'"></rect>'
       +'</svg>'
       +compare(d)
       +match;
@@ -378,6 +416,7 @@ STATS.forEach(([key,label,unit])=>{
 const pl=document.getElementById("picklist");
 DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick).forEach(d=>{
   const li=document.createElement("li");
+  li.dataset.inspectId="pick-row";
   const col=d.tm===META.teamA?"var(--den)":"var(--kc)";
   li.innerHTML='<span class="pk-n">'+d.pick+'</span>'
     +'<span class="pk-name">'+d.p+'</span>'
@@ -411,6 +450,7 @@ DATA.slice().sort((a,b)=>{
 })
   .forEach(d=>{
   const tr=document.createElement("tr");
+  tr.dataset.inspectId="table-row";
   const m=d.def==null?"—":d.def.toFixed(2)+(d.app?"":" (context only)");
   tr.innerHTML="<td>"+d.p+"</td><td>"+d.tm+" "+d.role+"</td><td>"
     +d.s.replace(/_/g," ")+"</td><td class='num'>"+fmt(d.mu)+"</td><td class='num'>"
