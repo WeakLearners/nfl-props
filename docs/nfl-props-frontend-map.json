@@ -9,7 +9,7 @@
       "nflprops/report.py:187 (live)",
       "scripts/make_report.py:187 (canonical duplicate)"
     ],
-    "inspector": "Attached to every report by scripts/serve_reports.py. Press the crosshair button, bottom right, to arm it. The button remembers its state across reloads. The overlay is injected per request and never written into the report files themselves."
+    "inspector": "Attached to every report by scripts/serve_reports.py. Press the crosshair button, bottom right, to arm it. The button remembers its state across reloads. The overlay is injected per request and never written into the report files themselves. A theme switch (auto / light / dark) is injected the same way, bottom left; like the crosshair it is page chrome and carries no inspect id."
   },
   "nodes": [
     {

@@ -992,6 +992,101 @@ def slate_html():
                 + "\n".join(tabs) + "\n  </nav>")
     return SLATE_PAGE.format(tabs=tabstrip, windows="\n".join(panels))
 
+# ------------------------------------------------------------- theme toggle
+
+# Three states, cycled in this order, because "auto" is a real answer and not
+# an absence of one: a laptop that goes dark at sunset should take the page
+# with it unless someone has said otherwise.
+#
+# The first script runs before the browser has painted anything. That is the
+# whole reason it is inlined at the top of the document rather than loaded as
+# a file: a stored choice applied after first paint shows the wrong theme for
+# a frame, and on a dark-mode phone that frame is a white flash.
+#
+# Every read and write of localStorage is wrapped. A private window, cleared
+# site data, or a browser set to block storage makes the accessor itself
+# throw, and a theme button is not worth a blank page.
+THEME = """<script>
+(function () {
+  var r = document.documentElement;
+  function stored() {
+    try { return localStorage.getItem("nflprops-theme"); } catch (e) { return null; }
+  }
+  var t = stored();
+  if (t === "light" || t === "dark") r.setAttribute("data-theme", t);
+
+  function label() {
+    return (r.getAttribute("data-theme") || "auto").toUpperCase();
+  }
+  function paint(b) {
+    b.textContent = label();
+    b.setAttribute("aria-label", "Theme: " + label().toLowerCase() +
+                   ". Click to change.");
+  }
+  function build() {
+    var b = document.createElement("button");
+    b.id = "nflt-btn";
+    b.type = "button";
+    paint(b);
+    b.addEventListener("click", function () {
+      // auto -> light -> dark -> auto. Leaving the attribute off is what
+      // hands the page back to the operating system's own setting.
+      var now = r.getAttribute("data-theme");
+      var next = now === "light" ? "dark" : (now === "dark" ? null : "light");
+      if (next) r.setAttribute("data-theme", next);
+      else r.removeAttribute("data-theme");
+      try {
+        if (next) localStorage.setItem("nflprops-theme", next);
+        else localStorage.removeItem("nflprops-theme");
+      } catch (e) { /* the page still works, the choice just will not stick */ }
+      paint(b);
+    });
+    document.body.appendChild(b);
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", build);
+  } else {
+    build();
+  }
+})();
+</script>
+<style>
+  /* Bottom left, because the inspector's crosshair already owns bottom
+     right. Same mono small-caps and sharp 3px corner as everything else, so
+     it reads as part of the page rather than a browser control. */
+  #nflt-btn{
+    position:fixed; left:14px; bottom:14px; z-index:2147483000;
+    appearance:none; cursor:pointer; padding:7px 11px; border-radius:3px;
+    border:1px solid var(--line); background:var(--surface); color:var(--ink-2);
+    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10px;
+    font-weight:600; letter-spacing:.12em;
+  }
+  #nflt-btn:hover{color:var(--ink); border-color:var(--ink-3)}
+  /* A report page names its accent --den, after the away team, so --accent
+     is undefined there. An undefined variable invalidates the whole
+     declaration rather than part of it, which would have left the button
+     with no focus ring at all on every report. The literal is the fallback. */
+  #nflt-btn:focus-visible{
+    outline:2px solid var(--accent, #eb6834); outline-offset:2px;
+  }
+</style>
+"""
+
+CHARSET = '<meta charset="utf-8">'
+
+
+def with_theme(html):
+    """Put the theme switch at the very top of any page this server serves.
+
+    Spliced per request, never written to disk — the same bargain the
+    inspector overlay makes. That is what lets the fifteen reports already
+    generated get a working switch without regenerating any of them, which
+    would cost four Odds API credits a game and change nothing else.
+    """
+    if CHARSET not in html:
+        return THEME + html
+    return html.replace(CHARSET, CHARSET + "\n" + THEME, 1)
+
 
 class Handler(SimpleHTTPRequestHandler):
     # Tailscale Serve proxies in front of this. An HTTP/1.0 server behind a
@@ -1057,7 +1152,8 @@ class Handler(SimpleHTTPRequestHandler):
                                 "<meta charset=\"utf-8\">\n"
                                 f"<script>window.__TD__={blob};</script>", 1)
 
-        body = (html + '\n<script src="/_inspector.js"></script>\n').encode()
+        body = (with_theme(html) +
+                '\n<script src="/_inspector.js"></script>\n').encode()
         self._send(body, "text/html; charset=utf-8")
 
     def do_GET(self):
@@ -1079,7 +1175,7 @@ class Handler(SimpleHTTPRequestHandler):
             # The slate gets the overlay on the same terms as the listing:
             # spliced in per request, never written to disk. Nothing is stored
             # for this page at all — it is read back out of the report files.
-            body = (slate_html() + TABS_JS +
+            body = (with_theme(slate_html() + TABS_JS) +
                     '\n<script src="/_inspector.js"></script>\n').encode()
             self._send(body, "text/html; charset=utf-8")
             return
@@ -1089,7 +1185,7 @@ class Handler(SimpleHTTPRequestHandler):
             # added here, never stored. Its own elements are mapped under the
             # report-index node, and they live in this file rather than in a
             # template -- the listing is built by index_html() above.
-            body = (index_html() +
+            body = (with_theme(index_html()) +
                     '\n<script src="/_inspector.js"></script>\n').encode()
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
