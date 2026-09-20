@@ -351,7 +351,6 @@ def index_html():
     except FileNotFoundError:
         files = []
     kicks = kickoffs()
-    markers = td_markers()
     records = {}
 
     # The week is the schedule's 16 games, not the 14 that happen to have a
