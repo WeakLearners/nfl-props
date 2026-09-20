@@ -130,17 +130,24 @@ PAGE = HEAD + """
   }}
   /* One row, allowed to wrap. The matchup and its tally share the card's
      single line; the "No report" fine print takes a full basis below, so it
-     drops to its own line without the card needing a second layout. */
+     drops to its own line without the card needing a second layout.
+     Centred, not baseline-aligned. Baseline alignment lines up the text
+     INSIDE the pill with the name's baseline, which leaves the pill's
+     padding and background hanging below it. Both items are given a known
+     height below so centring them is exact rather than approximate. */
   .card{{
     background:var(--surface); border:1px solid var(--line); border-radius:3px;
-    padding:11px 12px 10px; display:flex; flex-wrap:wrap; align-items:baseline;
+    padding:11px 12px 10px; display:flex; flex-wrap:wrap; align-items:center;
     gap:6px; text-decoration:none; color:inherit;
   }}
   a.card:hover{{border-color:var(--ink-3)}}
   a.card:focus-visible{{outline:2px solid var(--accent); outline-offset:2px}}
+  /* line-height 1 makes the name's box its own cap height, near enough, so
+     there is no invisible leading above and below to throw the centring off.
+     20px is the row height both items are centred within. */
   .name{{
     font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:21px;
-    letter-spacing:.01em; line-height:1.1; min-width:0;
+    letter-spacing:.01em; line-height:20px; min-width:0;
   }}
   /* A game with no report yet. Dimmed rather than hidden: the week is 16
      games whether or not this machine has got to all of them. No hover, no
@@ -151,7 +158,7 @@ PAGE = HEAD + """
   }}
   .card.none .name{{color:var(--ink-3); font-weight:500}}
   .fine{{
-    flex-basis:100%;
+    flex-basis:100%; line-height:1;
     font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:400;
     letter-spacing:.1em; color:var(--ink-3); text-transform:uppercase;
     opacity:.75; margin-top:-1px;
@@ -163,9 +170,10 @@ PAGE = HEAD + """
      its tallies up whatever the team names are. A filled pill rather than
      coloured text — at this size text alone read as a footnote. */
   .score{{
-    margin-left:auto; padding:2px 5px; border-radius:2px;
+    margin-left:auto; display:inline-flex; align-items:center;
+    height:18px; padding:0 6px; border-radius:2px;
     font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
-    letter-spacing:.04em; white-space:nowrap;
+    letter-spacing:.04em; line-height:1; white-space:nowrap;
     font-variant-numeric:tabular-nums; color:var(--surface);
   }}
   .score.good{{background:var(--good)}}
