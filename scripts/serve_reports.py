@@ -128,16 +128,19 @@ PAGE = HEAD + """
     display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr));
     gap:14px; margin-top:18px;
   }}
+  /* One row, allowed to wrap. The matchup and its tally share the card's
+     single line; the "No report" fine print takes a full basis below, so it
+     drops to its own line without the card needing a second layout. */
   .card{{
     background:var(--surface); border:1px solid var(--line); border-radius:3px;
-    padding:11px 12px 10px; display:flex; flex-direction:column;
-    text-decoration:none; color:inherit;
+    padding:11px 12px 10px; display:flex; flex-wrap:wrap; align-items:baseline;
+    gap:6px; text-decoration:none; color:inherit;
   }}
   a.card:hover{{border-color:var(--ink-3)}}
   a.card:focus-visible{{outline:2px solid var(--accent); outline-offset:2px}}
   .name{{
     font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:21px;
-    letter-spacing:.01em; line-height:1.1;
+    letter-spacing:.01em; line-height:1.1; min-width:0;
   }}
   /* A game with no report yet. Dimmed rather than hidden: the week is 16
      games whether or not this machine has got to all of them. No hover, no
@@ -148,19 +151,21 @@ PAGE = HEAD + """
   }}
   .card.none .name{{color:var(--ink-3); font-weight:500}}
   .fine{{
+    flex-basis:100%;
     font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:400;
-    letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3);
-    opacity:.75; margin-top:2px;
+    letter-spacing:.1em; color:var(--ink-3); text-transform:uppercase;
+    opacity:.75; margin-top:-1px;
   }}
-  /* How the picks for a finished game did. A filled pill, built like the day
-     chip on a sitting heading — coloured ground, light text. Coloured text
-     alone was too quiet to find on a card: at 10px on an off-white ground it
-     read as a footnote rather than a result. align-self keeps the pill the
-     width of its own words instead of stretching across the card. */
+  /* How the picks for a finished game did, in the gap to the right of the
+     matchup. Just the fraction: on a card that says DEN @ KC, "5/6" can only
+     mean one thing, and the word "hit" was the part that stopped it fitting.
+     margin-left:auto pins it to the right edge, so a column of cards lines
+     its tallies up whatever the team names are. A filled pill rather than
+     coloured text — at this size text alone read as a footnote. */
   .score{{
-    align-self:flex-start; margin-top:6px; padding:3px 7px; border-radius:2px;
-    font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:600;
-    letter-spacing:.08em; text-transform:uppercase; white-space:nowrap;
+    margin-left:auto; padding:2px 5px; border-radius:2px;
+    font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
+    letter-spacing:.04em; white-space:nowrap;
     font-variant-numeric:tabular-nums; color:var(--surface);
   }}
   .score.good{{background:var(--good)}}
@@ -396,8 +401,9 @@ def index_html():
                 # counts as green: three of six is the model doing what it
                 # said it would, not a bad afternoon.
                 tone = "good" if hits * 2 >= n else "bad"
-                score = (f'<span class="score {tone}" data-inspect-id="index-hits">'
-                         f'{hits}/{n} hit</span>')
+                score = (f'<span class="score {tone}" data-inspect-id="index-hits"'
+                         f' title="{hits} of {n} shortlisted picks hit">'
+                         f'{hits}/{n}</span>')
             row = (f'<a class="card" data-inspect-id="index-row" href="/{f}">'
                    f'<span class="name" data-inspect-id="index-game-label">{label}</span>'
                    f'{score}</a>')
