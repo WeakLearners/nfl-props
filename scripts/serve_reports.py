@@ -14,6 +14,17 @@ import sys
 from datetime import datetime
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
+# The book writes "Chris Godwin Jr." where nflverse has "Chris Godwin", so
+# joining a pick to what the player actually did needs the project's own
+# name rule. Importing it beats copying it: a second copy of that rule would
+# drift, and a name that fails to join is a pick silently graded as unplayed.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+try:
+    from nflprops.odds import name_key
+except Exception as _e:  # noqa: BLE001 — the pages still work ungraded
+    sys.stderr.write(f"grading unavailable, name_key did not import: {_e}\n")
+    name_key = None
+
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT = os.path.join(BASE, "reports")
 DB = os.path.join(BASE, "data", "nflprops.db")
@@ -39,20 +50,24 @@ HEAD = """<!doctype html><meta charset="utf-8">
     --bg:#f7f6f3; --surface:#fcfcfb; --line:#e2e0d9; --line-soft:#eceae3;
     --ink:#14140f; --ink-2:#52514e; --ink-3:#84827a;
     --accent:#eb6834;
+    /* Hits get their own colour rather than the accent. The accent is orange
+       and already means "this is the interesting one"; a result needs to read
+       as good or not-good, which is a different question. */
+    --good:#1c7a4d;
   }}
   @media (prefers-color-scheme: dark){{
     :root:not([data-theme="light"]){{
       color-scheme: dark;
       --bg:#121211; --surface:#1a1a19; --line:#33322e; --line-soft:#262521;
       --ink:#f6f5ef; --ink-2:#c3c2b7; --ink-3:#8b897f;
-      --accent:#d95926;
+      --accent:#d95926; --good:#4fbd85;
     }}
   }}
   :root[data-theme="dark"]{{
     color-scheme: dark;
     --bg:#121211; --surface:#1a1a19; --line:#33322e; --line-soft:#262521;
     --ink:#f6f5ef; --ink-2:#c3c2b7; --ink-3:#8b897f;
-    --accent:#d95926;
+    --accent:#d95926; --good:#4fbd85;
   }}
   *{{box-sizing:border-box}}
   body{{
@@ -135,6 +150,16 @@ PAGE = HEAD + """
     letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3);
     opacity:.75; margin-top:2px;
   }}
+  /* How the picks for a finished game did. One figure, always in the same
+     corner of the card, so a week reads as a row of results at a glance
+     rather than something to go looking for. */
+  .score{{
+    font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
+    letter-spacing:.08em; text-transform:uppercase; margin-top:3px;
+    font-variant-numeric:tabular-nums;
+  }}
+  .score.good{{color:var(--good)}}
+  .score.flat{{color:var(--ink-3)}}
   /* Each kickoff gets its own labelled block, and the label says the whole
      when: day chip, clock time, date. Quieter than a week tab, louder than a
      card — a thin rule, condensed caps, the same monospace the tabs use. */
@@ -300,6 +325,7 @@ def index_html():
         files = []
     kicks = kickoffs()
     markers = td_markers()
+    records = {}
 
     # The week is the schedule's 16 games, not the 14 that happen to have a
     # report. A missing game used to be invisible, so a half-built week looked
@@ -352,9 +378,24 @@ def index_html():
         # no focus stop, and nothing for the keyboard to land on. The fine
         # print under the matchup says why it is grey.
         if f:
+            # How the picks for this game actually did, once it has finished.
+            # A week is graded on first use and then remembered, so a listing
+            # of fifteen games does the join twice rather than fifteen times.
+            if (season, week) not in records:
+                records[(season, week)] = game_record(season, week)
+            got = records[(season, week)].get(label)
+            score = ""
+            if got:
+                hits, n = got
+                # Green when most of them landed, grey when most did not. No
+                # red: the accent here is already orange and the two would be
+                # read as the same signal at this size.
+                tone = "good" if hits * 2 >= n else "flat"
+                score = (f'<span class="score {tone}" data-inspect-id="index-hits">'
+                         f'{hits}/{n} hit</span>')
             row = (f'<a class="card" data-inspect-id="index-row" href="/{f}">'
                    f'<span class="name" data-inspect-id="index-game-label">{label}</span>'
-                   f'</a>')
+                   f'{score}</a>')
         else:
             row = (f'<div class="card none" data-inspect-id="index-row-pending"'
                    f' aria-disabled="true">'
@@ -531,6 +572,90 @@ def shortlist(season, week):
     return legs
 
 
+# Only these four stats are ever shortlisted, and each is a column in
+# player_games under the same name. Listing them keeps the query to the
+# columns that exist rather than SELECT *.
+GRADED_STATS = ("passing_yards", "rushing_yards", "receiving_yards", "receptions")
+
+_RESULT_CACHE = {}
+
+
+def outcomes(season, week):
+    """What each player actually did, for games that have finished.
+
+    The gate is the final score, not the presence of a stat line. A game in
+    progress already has rows in player_games, and a receiver with 12 yards at
+    half time has not missed an over-29.5 — he is still playing. Grading him
+    would print a loss that isn't real and then quietly correct itself later,
+    which is worse than showing nothing.
+
+    Returns ({name_key: {stat: value}}, {"AWAY@HOME"}) — the actuals, and the
+    set of games that are genuinely over.
+    """
+    if name_key is None:
+        return {}, set()
+    try:
+        db = sqlite3.connect(f"file:{DB}?mode=ro", uri=True)
+        done = {f"{a}@{h}" for a, h in db.execute(
+            "SELECT away_team, home_team FROM schedules "
+            "WHERE season=? AND week=? AND away_score IS NOT NULL", (season, week))}
+        acts = {}
+        if done:
+            cols = ", ".join(GRADED_STATS)
+            for row in db.execute(
+                    f"SELECT player_display_name, {cols} FROM player_games "
+                    "WHERE season=? AND week=? AND season_type='REG'", (season, week)):
+                k = name_key(row[0])
+                if k:
+                    acts[k] = dict(zip(GRADED_STATS, row[1:]))
+        db.close()
+        return acts, done
+    except Exception as e:  # noqa: BLE001 — an ungraded page beats a 500
+        sys.stderr.write(f"outcomes unavailable: {e}\n")
+        return {}, set()
+
+
+def grade_legs(season, week, legs):
+    """Mark each leg hit or missed, in place, for games that have finished.
+
+    A leg hits when the real number beats the line — the same rule
+    scripts/grade_game.py writes into the vault, so the page and the graded
+    write-up can never disagree. Legs from a game still being played, or from
+    a player with no stat line, are left ungraded rather than guessed at.
+    """
+    acts, done = outcomes(season, week)
+    for r in legs:
+        r["hit"] = None
+        if r["game"].replace(" @ ", "@") not in done:
+            continue
+        a = acts.get(name_key(r["p"]), {}).get(r["s"]) if name_key else None
+        if a is not None and r.get("line") is not None:
+            r["hit"] = bool(a > r["line"])
+            r["actual"] = a
+    return legs
+
+
+def game_record(season, week):
+    """Hits and graded legs per game, e.g. {"DEN @ KC": (1, 6)}.
+
+    Cached alongside the parsed legs: the join is cheap, but doing it on every
+    card of every page load is still work nobody asked for.
+    """
+    key = (season, week, len(shortlist(season, week)),
+           tuple(sorted(outcomes(season, week)[1])))
+    if key in _RESULT_CACHE:
+        return _RESULT_CACHE[key]
+    rec = {}
+    for r in grade_legs(season, week, shortlist(season, week)):
+        if r["hit"] is None:
+            continue
+        h, n = rec.get(r["game"], (0, 0))
+        rec[r["game"]] = (h + (1 if r["hit"] else 0), n + 1)
+    _RESULT_CACHE.clear()
+    _RESULT_CACHE[key] = rec
+    return rec
+
+
 STAT_SHORT = {"receiving_yards": "rec yds", "rushing_yards": "rush yds",
               "passing_yards": "pass yds", "receptions": "rec"}
 
@@ -551,9 +676,16 @@ def leg_rows(legs):
         stat = STAT_SHORT.get(r["s"], r["s"].replace("_", " "))
         gap = (r["mp"] - r["bp"]) * 100
         gap_cls = "gap up" if gap > 0 else "gap down"
+        # Did this one land? Ungraded while the game is still being played,
+        # so the column is simply empty rather than guessing at a result.
+        hit = r.get("hit")
+        mark = ("" if hit is None else
+                f'<span class="mark {"hit" if hit else "miss"}"'
+                f' data-inspect-id="slate-leg-result">'
+                f'{"HIT" if hit else "MISS"}</span>')
         out.append(
             f'<tr data-inspect-id="slate-leg">'
-            f'<td class="rank">{i}</td>'
+            f'<td class="rank">{i}{mark}</td>'
             f'<td class="who"><a href="/{r["file"]}">{r["p"]}</a>'
             f'<span class="meta">{r["tm"]} {r["role"]} &middot; {r["game"]}</span></td>'
             f'<td class="stat">o{r["line"]:g} {stat}</td>'
@@ -580,6 +712,30 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
   /* The slate is the listing's other half: same tokens, same three typefaces,
      but rows of legs instead of a grid of games. The window heading reuses the
      listing's .slot-h anatomy so the two pages divide the day the same way. */
+  /* The week strip is the listing's, rule for rule — same condensed caps,
+     same quiet monospace count, same 2px ink underline on the open week. The
+     two pages divide the season identically, so they look identical doing it.
+     Keep these in step with .tabs in PAGE above. */
+  .tabs{{
+    display:flex; flex-wrap:wrap; gap:2px; margin:26px 0 0;
+    border-bottom:1px solid var(--line);
+  }}
+  .tab{{
+    appearance:none; background:none; border:0; cursor:pointer;
+    border-bottom:2px solid transparent; padding:9px 14px 7px; margin-bottom:-1px;
+    color:var(--ink-3); font-family:"Barlow Condensed",Impact,sans-serif;
+    font-weight:600; font-size:20px; text-transform:uppercase; letter-spacing:.04em;
+    line-height:1; display:flex; align-items:baseline; gap:7px;
+  }}
+  .tab:hover{{color:var(--ink-2)}}
+  .tab[aria-selected="true"]{{color:var(--ink); border-bottom-color:var(--ink)}}
+  .tab:focus-visible{{outline:2px solid var(--accent); outline-offset:-2px}}
+  .tab .n{{
+    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10.5px;
+    font-weight:400; letter-spacing:.1em; color:var(--ink-3);
+    font-variant-numeric:tabular-nums;
+  }}
+  .panel[hidden]{{display:none}}
   a.back{{
     display:inline-block; margin:22px 0 0; text-decoration:none;
     font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px;
@@ -654,6 +810,24 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
   }}
   .gap.up{{color:var(--accent)}}
   .gap.down{{color:var(--ink-3)}}
+  /* Whether a leg landed, under its rank number. Green for a hit, struck
+     through and grey for a miss — two signals, so it survives being printed,
+     photographed, or read by someone who cannot separate the colours. */
+  .mark{{
+    display:block; font-family:"IBM Plex Mono",monospace; font-size:8.5px;
+    font-weight:600; letter-spacing:.08em; margin-top:2px;
+  }}
+  .mark.hit{{color:var(--good)}}
+  .mark.miss{{color:var(--ink-3); text-decoration:line-through}}
+  /* The sitting's own tally, on its heading. Same figure and same two tones
+     as the game cards on the listing. */
+  .score{{
+    font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600;
+    letter-spacing:.08em; text-transform:uppercase;
+    font-variant-numeric:tabular-nums;
+  }}
+  .score.good{{color:var(--good)}}
+  .score.flat{{color:var(--ink-3)}}
   .empty{{color:var(--ink-3); font-style:italic; margin-top:20px}}
   footer{{margin-top:44px; padding-top:16px; border-top:1px solid var(--line);
     color:var(--ink-3); font-size:12.5px; max-width:68ch}}
@@ -664,7 +838,7 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
 </style>
 <div class="wrap" data-inspect-id="slate-wrap">
   <header>
-    <p class="eyebrow" data-inspect-id="slate-eyebrow">{week_label} &middot; consolidated</p>
+    <p class="eyebrow" data-inspect-id="slate-eyebrow">Consolidated picks</p>
     <h1 data-inspect-id="slate-title">The Slate</h1>
   </header>
   <p class="sub" data-inspect-id="slate-subtitle">Every shortlisted leg in the week,
@@ -672,6 +846,7 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
     leg lands. Book is what FanDuel's price implies. The small figure under Book is
     the difference, and it is the only column that says anything the book doesn't.</p>
   <a class="back" href="/" data-inspect-id="slate-back">&larr; All reports</a>
+{tabs}
 {windows}
   <footer data-inspect-id="slate-footer">Projections, not edges. Prices are whatever
     the report held when it was generated and move afterwards — check the live board.
@@ -679,29 +854,9 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
 </div>"""
 
 
-def slate_html():
-    """The week's shortlisted legs, pooled by sitting and ranked three ways.
-
-    A report answers one game. Nobody watches one game. This answers the
-    question a report cannot: out of everything on the board at four o'clock,
-    which five are the likeliest, which five pay least, and which five pay most.
-    """
-    kicks = kickoffs()
-    weeks = set()
-    try:
-        for f in os.listdir(ROOT):
-            m = NAME.search(f)
-            if m:
-                weeks.add((int(m.group(1)), int(m.group(2))))
-    except FileNotFoundError:
-        pass
-    if not weeks:
-        return SLATE_PAGE.format(week_label="No reports",
-                                 windows='  <p class="empty" data-inspect-id="slate-empty">'
-                                         'No reports generated yet.</p>')
-
-    season, week = max(weeks)
-    legs = [r for r in shortlist(season, week) if r["kick"]]
+def slate_windows(season, week):
+    """One section per sitting for one week, or None if that week has none."""
+    legs = grade_legs(season, week, [r for r in shortlist(season, week) if r["kick"]])
 
     # Pool by sitting: one section per day and part of day, in the order they
     # are played. Legs whose game has no schedule row have no sitting to join
@@ -726,6 +881,18 @@ def slate_html():
         else:
             times_s = ", ".join(f"{t:%-I:%M %p}" for t in clock) + " ET"
         games = len({r["game"] for r in rs})
+
+        # How the sitting as a whole did, once its games have finished. A
+        # single figure on the heading answers "was that a good afternoon"
+        # without reading fifteen rows to work it out.
+        graded = [r for r in rs if r["hit"] is not None]
+        tally = ""
+        if graded:
+            hits = sum(1 for r in graded if r["hit"])
+            tone = "good" if hits * 2 >= len(graded) else "flat"
+            tally = (f'<span class="score {tone}" data-inspect-id="slate-window-hits">'
+                     f'{hits}/{len(graded)} hit</span>')
+
         tables = (
             slate_table(sorted(rs, key=lambda r: -r["mp"])[:5],
                         "Most likely to happen",
@@ -742,14 +909,65 @@ def slate_html():
             f'<span class="day" data-inspect-id="slate-day-badge">{when:%a}</span>'
             f'{part}'
             f'<span class="win-times" data-inspect-id="slate-window-times">{times_s}</span>'
+            f'{tally}'
             f'<span class="n">{games} game{"" if games == 1 else "s"}, '
             f'{len(rs)} legs</span></h3>{tables}</section>')
+    return out
 
-    if not out:
-        out = ['  <p class="empty" data-inspect-id="slate-empty-unscheduled">'
-               'No shortlisted legs with a scheduled kickoff.</p>']
 
-    return SLATE_PAGE.format(week_label=f"{season} Week {week}", windows="\n".join(out))
+def slate_html():
+    """Every week's shortlisted legs, pooled by sitting and ranked three ways.
+
+    A report answers one game. Nobody watches one game. This answers the
+    question a report cannot: out of everything on the board at four o'clock,
+    which five are the likeliest, which five pay least, and which five pay most.
+
+    One tab per week, newest selected, exactly as the listing does it — the
+    two pages divide the season the same way and share the same tab script.
+    """
+    weeks = set()
+    try:
+        for f in os.listdir(ROOT):
+            m = NAME.search(f)
+            if m:
+                weeks.add((int(m.group(1)), int(m.group(2))))
+    except FileNotFoundError:
+        pass
+    if not weeks:
+        return SLATE_PAGE.format(tabs="", windows='  <p class="empty" '
+                                 'data-inspect-id="slate-empty">'
+                                 'No reports generated yet.</p>')
+
+    # Oldest first, so the strip reads left to right in the order the weeks
+    # were played and the newest week is the last tab — the one that opens.
+    ordered = sorted(weeks)
+    multi_season = len({s for s, _ in ordered}) > 1
+
+    tabs, panels = [], []
+    for n, (season, week) in enumerate(ordered):
+        wins = slate_windows(season, week)
+        if not wins:
+            wins = ['  <p class="empty" data-inspect-id="slate-empty-unscheduled">'
+                    'No shortlisted legs with a scheduled kickoff.</p>']
+        legs = len([x for x in shortlist(season, week) if x["kick"]])
+        label = f"{season} W{week}" if multi_season else f"Week {week}"
+        slug = f"{season}-{week}"
+        on = n == len(ordered) - 1
+        tabs.append(
+            f'    <button class="tab" role="tab" id="tab-{slug}" type="button"'
+            f' aria-controls="panel-{slug}" aria-selected="{"true" if on else "false"}"'
+            f' tabindex="{"0" if on else "-1"}" data-inspect-id="slate-week-tab">'
+            f'{label}<span class="n">{legs}</span></button>')
+        panels.append(
+            f'  <section class="panel" role="tabpanel" id="panel-{slug}"'
+            f' aria-labelledby="tab-{slug}"{"" if on else " hidden"}'
+            f' data-inspect-id="slate-week-panel">'
+            f'{"".join(wins)}</section>')
+
+    tabstrip = ('  <nav class="tabs" role="tablist" aria-label="Weeks"'
+                ' data-inspect-id="slate-tablist">\n'
+                + "\n".join(tabs) + "\n  </nav>")
+    return SLATE_PAGE.format(tabs=tabstrip, windows="\n".join(panels))
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -838,7 +1056,7 @@ class Handler(SimpleHTTPRequestHandler):
             # The slate gets the overlay on the same terms as the listing:
             # spliced in per request, never written to disk. Nothing is stored
             # for this page at all — it is read back out of the report files.
-            body = (slate_html() +
+            body = (slate_html() + TABS_JS +
                     '\n<script src="/_inspector.js"></script>\n').encode()
             self._send(body, "text/html; charset=utf-8")
             return
