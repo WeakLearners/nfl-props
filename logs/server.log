@@ -71,3 +71,6 @@
 127.0.0.1 "GET /report_2026_w2_SEA-ARI.html HTTP/1.1" 304 -
 127.0.0.1 "GET /report_2026_w2_SEA-ARI.html HTTP/1.1" 304 -
 127.0.0.1 "GET / HTTP/1.1" 200 -
+127.0.0.1 "GET / HTTP/1.1" 200 -
+127.0.0.1 "GET / HTTP/1.1" 200 -
+127.0.0.1 "GET /report_2026_w2_CAR-ATL.html HTTP/1.1" 304 -
