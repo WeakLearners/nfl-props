@@ -157,11 +157,13 @@ PAGE = HEAD + """
     cursor:default;
   }}
   .card.none .name{{color:var(--ink-3); font-weight:500}}
-  .fine{{
-    flex-basis:100%; line-height:1;
-    font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:400;
-    letter-spacing:.1em; color:var(--ink-3); text-transform:uppercase;
-    opacity:.75; margin-top:-1px;
+  /* "N/A" sits in the slot a tally will occupy once the game is reported and
+     played. Same box, same place, so a week of cards keeps one column down
+     its right edge whatever state each game is in. Hollow rather than filled:
+     a coloured pill would read as a result, and this is the absence of one. */
+  .score.na{{
+    background:none; color:var(--ink-3);
+    border:1px dashed var(--line); font-weight:400;
   }}
   /* How the picks for a finished game did, in the gap to the right of the
      matchup. Just the fraction: on a card that says DEN @ KC, "5/6" can only
@@ -419,7 +421,8 @@ def index_html():
             row = (f'<div class="card none" data-inspect-id="index-row-pending"'
                    f' aria-disabled="true">'
                    f'<span class="name" data-inspect-id="index-game-label-pending">{label}</span>'
-                   f'<span class="fine" data-inspect-id="index-no-report">No report</span>'
+                   f'<span class="score na" data-inspect-id="index-no-report"'
+                   f' title="No report generated for this game yet">N/A</span>'
                    f'</div>')
 
         # The heading for the run of games that kick off together, in three
