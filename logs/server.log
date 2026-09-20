@@ -342,3 +342,12 @@
 127.0.0.1 "GET /report_2026_w2_CAR-ATL.html HTTP/1.1" 200 -
 127.0.0.1 "GET / HTTP/1.1" 200 -
 127.0.0.1 "GET / HTTP/1.1" 200 -
+127.0.0.1 "GET /slate HTTP/1.1" 200 -
+127.0.0.1 "GET /_inspector.js HTTP/1.1" 200 -
+127.0.0.1 "GET /_frontend-map.json HTTP/1.1" 200 -
+127.0.0.1 "GET /_data-version HTTP/1.1" 200 -
+127.0.0.1 "GET / HTTP/1.1" 200 -
+127.0.0.1 "GET /slate HTTP/1.1" 200 -
+127.0.0.1 "GET /report_2026_w2_CAR-ATL.html HTTP/1.1" 200 -
+127.0.0.1 "GET /_data-version HTTP/1.1" 200 -
+127.0.0.1 "GET / HTTP/1.1" 200 -

@@ -1106,6 +1106,65 @@ THEME = """<script>
 </style>
 """
 
+def data_version():
+    """A short string that changes when there is something new to see.
+
+    Deliberately NOT the database file's timestamp. The refresh job rewrites
+    this season's tables every thirty minutes whether or not a game finished,
+    so a timestamp would send every open page reloading all day for nothing.
+    These three counts only move when a game goes final, when new stat lines
+    land, or when a report is written.
+    """
+    done = lines = -1
+    try:
+        db = sqlite3.connect(f"file:{DB}?mode=ro", uri=True)
+        done = db.execute("SELECT COUNT(*) FROM schedules "
+                          "WHERE away_score IS NOT NULL").fetchone()[0]
+        lines = db.execute("SELECT COUNT(*) FROM player_games").fetchone()[0]
+        db.close()
+    except Exception as e:  # noqa: BLE001 — a page that cannot poll still renders
+        sys.stderr.write(f"data-version unavailable: {e}\n")
+    try:
+        reports = sum(1 for f in os.listdir(ROOT) if NAME.search(f))
+    except OSError:
+        reports = -1
+    return f"{done}.{lines}.{reports}"
+
+
+LIVE = """<script>
+(function () {
+  // Watch for new results and reload when they land.
+  //
+  // The page reads finished games straight out of the database on every
+  // request, so a reload is all it takes to show a score that arrived a
+  // minute ago. What the browser lacks is any way to know. So it asks.
+  //
+  // Nothing reloads unless the answer actually changed. A tab left open on
+  // Sunday afternoon is quiet until a game ends, then catches up by itself.
+  var seen = null, waiting = false;
+  function look() {
+    fetch("/_data-version", { cache: "no-store" })
+      .then(function (r) { return r.text(); })
+      .then(function (v) {
+        v = v.trim();
+        if (seen === null) { seen = v; return; }
+        if (v === seen) return;
+        // Never yank the page out from under someone reading it. A hidden tab
+        // is told to catch up the moment it comes back to the front.
+        if (document.hidden) { waiting = true; return; }
+        location.reload();
+      })
+      .catch(function () { /* server restarting; ask again next time */ });
+  }
+  document.addEventListener("visibilitychange", function () {
+    if (waiting && !document.hidden) location.reload();
+  });
+  look();
+  setInterval(look, 45000);
+})();
+</script>
+"""
+
 CHARSET = '<meta charset="utf-8">'
 
 
@@ -1117,9 +1176,10 @@ def with_theme(html):
     generated get a working switch without regenerating any of them, which
     would cost four Odds API credits a game and change nothing else.
     """
+    head = THEME + LIVE
     if CHARSET not in html:
-        return THEME + html
-    return html.replace(CHARSET, CHARSET + "\n" + THEME, 1)
+        return head + html
+    return html.replace(CHARSET, CHARSET + "\n" + head, 1)
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -1197,6 +1257,12 @@ class Handler(SimpleHTTPRequestHandler):
         if path == "/_inspector.js":
             self._send(open(INSPECTOR, "rb").read(),
                        "application/javascript; charset=utf-8")
+            return
+        if path == "/_data-version":
+            # Polled by every open page. Cheap on purpose: two COUNTs and a
+            # directory listing, and never cached anywhere.
+            # _send already sets Cache-Control: no-store on everything.
+            self._send(data_version().encode(), "text/plain; charset=utf-8")
             return
         if path == "/_frontend-map.json":
             self._send(open(MAP, "rb").read(), "application/json; charset=utf-8")
