@@ -1,10 +1,20 @@
+<!doctype html>
 <meta charset="utf-8">
-<!-- Must be the first thing in the document, and within the first 1024
-     bytes: that is the window a browser scans before it gives up and
-     guesses. Missing here until 2026-09-20, so every report rendered
-     its middle dots and em dashes as mojibake whenever the server did
-     not name the encoding. The bytes were always correct UTF-8; nothing
-     ever told the browser so. Keep this line first. -->
+<!-- Two lines, in this order, and nothing before them.
+     
+     The doctype tells the browser to follow the modern rules. Without it a
+     browser falls back to imitating a browser from 1999, and reports had no
+     doctype until 2026-09-20 -- so every one of them rendered under different
+     rules than the listing and slate pages, which always had one. The styles
+     here set box-sizing explicitly, which is why nothing visibly moved when
+     this was added; that was luck, not design.
+     
+     The charset has to land within the first 1024 bytes, because that is the
+     window a browser scans before it gives up and guesses. The doctype costs
+     15 of those bytes. Missing until 2026-09-20 as well, so reports rendered
+     their middle dots and em dashes as mojibake whenever the server did not
+     name the encoding. The bytes were always correct UTF-8; nothing ever told
+     the browser so. -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>__TITLE__</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">

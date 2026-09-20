@@ -1166,20 +1166,37 @@ LIVE = """<script>
 """
 
 CHARSET = '<meta charset="utf-8">'
+DOCTYPE = "<!doctype html>"
 
 
 def with_theme(html):
-    """Put the theme switch at the very top of any page this server serves.
+    """Put the doctype and theme switch at the top of any page this server serves.
 
     Spliced per request, never written to disk — the same bargain the
     inspector overlay makes. That is what lets the fifteen reports already
     generated get a working switch without regenerating any of them, which
     would cost four Odds API credits a game and change nothing else.
+
+    The doctype is here for the same reason. A page without one is rendered
+    by rules a browser kept for the sake of websites written in 1999. The
+    listing and slate pages always declared one; reports never did, so the
+    site was serving two page types under two sets of rules. The template
+    now emits it, but the fifteen reports on disk predate that, and this
+    splice covers them at no cost.
+
+    Order is fixed: doctype, then charset, then everything else. The charset
+    must still land inside the first 1024 bytes, which is the window a
+    browser scans before it gives up and guesses the encoding. The doctype
+    spends 15 of them.
     """
     head = THEME + LIVE
     if CHARSET not in html:
-        return head + html
-    return html.replace(CHARSET, CHARSET + "\n" + head, 1)
+        html = head + html
+    else:
+        html = html.replace(CHARSET, CHARSET + "\n" + head, 1)
+    if not html.lstrip().lower().startswith("<!doctype"):
+        html = DOCTYPE + "\n" + html
+    return html
 
 
 class Handler(SimpleHTTPRequestHandler):
