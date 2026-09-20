@@ -92,6 +92,26 @@ run only mentions the newest one. It reads Cloudflare credentials from
 launchd, stderr already lands in `logs/launchd.log` per the existing
 job configuration — a broken publish will show up there, not vanish.
 
+## STATUS 2026-09-20: none of the Cloudflare setup below was ever done
+
+Checked on 2026-09-20. `.env` has no `CLOUDFLARE_API_TOKEN`, no
+`CLOUDFLARE_ACCOUNT_ID` and no `CF_PAGES_PROJECT`. `wrangler` is not
+installed. No launchd job calls `publish_report.py`. Nothing has ever been
+published to Pages.
+
+So everything above is a plan, not a description. The Tailscale server is not
+superseded — it is the only way a report reaches a phone.
+
+Do not delete `scripts/serve_reports.py` or `com.nflprops.web`. The section
+below says they are safe to remove once Pages has been live for a while. Pages
+has never been live.
+
+That section also says the launchd job was unloaded. `launchctl unload` stops a
+job now; `RunAtLoad` starts it again at the next login. The job came back,
+found port 8792 already taken by a second job running the same script, and
+crash-looped into a 2.2 MB log inside the served directory. Fixed 2026-09-20 in
+commit `1d8f664`.
+
 ## What happened to the old Tailscale server
 
 `scripts/serve_reports.py` and the `com.nflprops.web` launchd job (Tailscale
