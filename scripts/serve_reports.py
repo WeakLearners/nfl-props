@@ -775,24 +775,33 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
   }}
   a.back:hover{{color:var(--accent)}}
   .win{{margin-top:34px}}
+  /* Five items of five different sizes on one line, two of them padded
+     pills. Centred, not baseline-aligned — a baseline is a property of text,
+     and a pill is a box. Lining a box up by the text inside it puts the box
+     wherever the font's metrics happen to land, which is what left the day
+     chip and the tally sitting low against the heading.
+     One row height, set here as a length so no invisible leading creeps in,
+     and every pill below carries a height of its own. */
   .win-h{{
-    display:flex; align-items:baseline; gap:9px; flex-wrap:wrap;
+    display:flex; align-items:center; gap:9px; flex-wrap:wrap;
     margin:0; padding-bottom:5px; border-bottom:2px solid var(--ink);
     font-family:"Barlow Condensed",Impact,sans-serif; font-weight:600;
-    font-size:22px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink);
+    font-size:22px; line-height:22px; text-transform:uppercase;
+    letter-spacing:.04em; color:var(--ink);
   }}
   .day{{
+    display:inline-flex; align-items:center; height:18px; padding:0 6px;
+    border-radius:2px; flex:none; line-height:1;
     font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
-    letter-spacing:.09em; padding:2px 5px; border-radius:2px;
-    color:var(--surface); background:var(--accent); flex:none;
+    letter-spacing:.09em; color:var(--surface); background:var(--accent);
   }}
   .win-times{{
     font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
-    font-size:14px; font-weight:500; letter-spacing:-.01em;
+    font-size:14px; font-weight:500; letter-spacing:-.01em; line-height:22px;
     text-transform:none; color:var(--ink-2);
   }}
   .win-h .n{{
-    margin-left:auto;
+    margin-left:auto; line-height:22px;
     font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10px;
     font-weight:400; letter-spacing:.1em; color:var(--ink-3);
     font-variant-numeric:tabular-nums; text-transform:none;
@@ -859,11 +868,13 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
   .mark.hit{{background:var(--good)}}
   .mark.miss{{background:var(--bad)}}
   /* The sitting's own tally, on its heading. The same pill as a game card on
-     the listing, one size up because the heading around it is bigger. */
+     the listing, one size up because the heading around it is bigger, and
+     with a height of its own so the row can centre it exactly. */
   .score{{
-    padding:3px 8px; border-radius:2px;
+    display:inline-flex; align-items:center; height:20px; padding:0 8px;
+    border-radius:2px; line-height:1; white-space:nowrap;
     font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600;
-    letter-spacing:.08em; text-transform:uppercase; white-space:nowrap;
+    letter-spacing:.08em; text-transform:uppercase;
     font-variant-numeric:tabular-nums; color:var(--surface);
   }}
   .score.good{{background:var(--good)}}
