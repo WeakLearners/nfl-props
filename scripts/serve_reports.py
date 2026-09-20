@@ -95,53 +95,56 @@ PAGE = """<!doctype html><meta charset="utf-8">
     font-variant-numeric:tabular-nums;
   }}
   .panel[hidden]{{display:none}}
-  /* A game card is the report's player card with different nouns in it. Same
-     grid, same border, same card-top of label-plus-badge, same oversized
-     monospace figure, same dotted comparison row underneath. Kickoff plays the
-     part of the projection; the touchdown marker plays the part of model vs
-     book. Keep these rules in step with .card in templates/report.html. */
+  /* A game card holds one thing: who is playing. The when lives in the
+     heading above it, once for the whole block. Keep the frame in step with
+     .card in templates/report.html — same border, same radius, same padding. */
+  /* Four to a row. The content column is 672px wide, so a 148px minimum
+     leaves room for four cards and their three gaps and not a fifth. The
+     minimum is what does the work, not a fixed count: the same rule falls to
+     two cards on a phone without a second rule to keep in step. */
   .rows{{
-    display:grid; grid-template-columns:repeat(auto-fill,minmax(258px,1fr));
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr));
     gap:14px; margin-top:18px;
   }}
   a.card{{
     background:var(--surface); border:1px solid var(--line); border-radius:3px;
-    padding:13px 14px 11px; display:flex; flex-direction:column; gap:2px;
-    text-decoration:none; color:inherit;
+    padding:11px 12px 10px; display:flex; text-decoration:none; color:inherit;
   }}
   a.card:hover{{border-color:var(--ink-3)}}
   a.card:focus-visible{{outline:2px solid var(--accent); outline-offset:2px}}
-  .card-top{{display:flex; justify-content:space-between; align-items:baseline; gap:8px}}
   .name{{
-    font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:19px;
+    font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:21px;
     letter-spacing:.01em; line-height:1.1; flex:1;
+  }}
+  /* Each kickoff gets its own labelled block, and the label says the whole
+     when: day chip, clock time, date. Quieter than a week tab, louder than a
+     card — a thin rule, condensed caps, the same monospace the tabs use. */
+  .slot{{margin-top:26px}}
+  .slot:first-child{{margin-top:18px}}
+  .slot-h{{
+    display:flex; align-items:baseline; gap:9px;
+    margin:0; padding-bottom:5px; border-bottom:1px solid var(--line-soft);
+    font-family:"Barlow Condensed",Impact,sans-serif; font-weight:600;
+    font-size:16px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-2);
   }}
   .day{{
     font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
     letter-spacing:.09em; padding:2px 5px; border-radius:2px;
     color:var(--surface); background:var(--accent); flex:none;
   }}
-  .fig{{
+  .slot-time{{
     font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
-    font-size:21px; font-weight:500; letter-spacing:-.02em; white-space:nowrap;
+    font-size:15px; font-weight:500; letter-spacing:-.01em; white-space:nowrap;
+    text-transform:none; color:var(--ink);
   }}
-  .fig.unknown{{font-size:15px; color:var(--ink-3); font-weight:400}}
-  .rng{{
+  .slot-time.unknown{{font-size:13px; color:var(--ink-3); font-weight:400}}
+  .slot-date{{
     font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
-    font-size:11.5px; color:var(--ink-2); margin-top:-1px;
-  }}
-  /* Each kickoff time gets its own labelled block. The label is quieter than
-     a week tab and louder than a card: a thin rule, condensed caps, and the
-     same monospace count the tabs use. */
-  .slot{{margin-top:26px}}
-  .slot:first-child{{margin-top:18px}}
-  .slot-h{{
-    display:flex; justify-content:space-between; align-items:baseline; gap:12px;
-    margin:0; padding-bottom:5px; border-bottom:1px solid var(--line-soft);
-    font-family:"Barlow Condensed",Impact,sans-serif; font-weight:600;
-    font-size:16px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-2);
+    font-size:11.5px; font-weight:400; letter-spacing:0; text-transform:none;
+    color:var(--ink-2);
   }}
   .slot-h .n{{
+    margin-left:auto;
     font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10px;
     font-weight:400; letter-spacing:.1em; color:var(--ink-3);
     font-variant-numeric:tabular-nums; text-transform:none;
@@ -286,30 +289,30 @@ def index_html():
     groups = []          # [((season, week), [row html, ...]), ...]
     for f, m, season, week, kick in entries:
         label = f"{m.group(3)} @ {m.group(4)}" if m else f[:-5]
+
+        # The card carries the matchup and nothing else.
+        #
+        # Every card in a block starts at the same moment, so a day, a time
+        # and a date printed on each one repeats the same fact eight times
+        # over. All of it moves up to the block's own heading, where it is
+        # said once. What is left on the card is the only thing that differs
+        # from its neighbours: who is playing.
+        row = (f'<a class="card" data-inspect-id="index-row" href="/{f}">'
+               f'<span class="name" data-inspect-id="index-game-label">{label}</span>'
+               f'</a>')
+
+        # The heading for the run of games that kick off together, in three
+        # pieces: a day chip, the clock time, and the calendar date. Entries
+        # already arrive in kickoff order inside a week, so games that share a
+        # kickoff are already adjacent and a run-length pass is enough.
         if kick:
             when = datetime.strptime(kick, "%Y-%m-%d %H:%M")
-            day = f"{when:%a}".upper()
-            time_s = f"{when:%-I:%M %p}"
-            date_s = f"ET \u00b7 {when:%b %-d}"
-            fig_cls, badge = "fig", f'<span class="day" data-inspect-id="index-day-badge">{day}</span>'
+            slot = (f"{when:%a}".upper(), f"{when:%-I:%M %p}",
+                    f"ET \u00b7 {when:%b %-d}")
         else:
             # No schedule row. Say so rather than showing the file's mtime,
             # which is when the report was written and not when anyone plays.
-            day, time_s, date_s = "", "kickoff unknown", "no schedule row"
-            fig_cls, badge = "fig unknown", ""
-
-        row = (f'<a class="card" data-inspect-id="index-row" href="/{f}">'
-               f'<div class="card-top">'
-               f'<span class="name" data-inspect-id="index-game-label">{label}</span>'
-               f'{badge}</div>'
-               f'<div class="{fig_cls}" data-inspect-id="index-kickoff">{time_s}</div>'
-               f'<div class="rng" data-inspect-id="index-kickoff-date">{date_s}</div>'
-               f'</a>')
-
-        # Slot label for the run of games that kick off together: "Sun 1:00 PM".
-        # Entries already arrive in kickoff order inside a week, so games that
-        # share a kickoff are already adjacent and a run-length pass is enough.
-        slot = f"{when:%a} {when:%-I:%M %p}" if kick else "Kickoff unknown"
+            slot = ("", "Kickoff unknown", "no schedule row")
 
         key = (season, week)
         if groups and groups[-1][0] == key:
@@ -341,13 +344,19 @@ def index_html():
 
         A Sunday runs 1:00, 4:05, 4:25 and 8:20. Those are four separate
         sittings, and a single undivided grid of fourteen cards hides that.
-        The label is the slot; the cards under it all start together.
+        The heading carries the whole when — day, time and date — because
+        every card beneath it shares that answer exactly.
         """
         out = []
-        for slot, rws in slots:
+        for (day, time_s, date_s), rws in slots:
             n = len(rws)
+            badge = (f'<span class="day" data-inspect-id="index-day-badge">{day}</span>'
+                     if day else "")
+            unknown = "" if day else " unknown"
             out.append(f'<div class="slot" data-inspect-id="index-slot">'
-                       f'<h3 class="slot-h" data-inspect-id="index-slot-label">{slot}'
+                       f'<h3 class="slot-h" data-inspect-id="index-slot-label">{badge}'
+                       f'<span class="slot-time{unknown}" data-inspect-id="index-kickoff">{time_s}</span>'
+                       f'<span class="slot-date" data-inspect-id="index-kickoff-date">{date_s}</span>'
                        f'<span class="n">{n} game{"" if n == 1 else "s"}</span></h3>'
                        f'<div class="rows">{"".join(rws)}</div></div>')
         return "".join(out)

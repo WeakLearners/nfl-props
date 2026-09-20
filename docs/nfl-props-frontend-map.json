@@ -394,7 +394,7 @@
           "kind": "layout",
           "description": "Outer 720px column holding the whole listing.",
           "locate": {
-            "path": "scripts/serve_reports.py:159",
+            "path": "scripts/serve_reports.py:158",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-wrap\"' scripts/serve_reports.py"
           }
         },
@@ -404,7 +404,7 @@
           "kind": "text",
           "description": "Small monospace line above the title, matching the eyebrow on a report.",
           "locate": {
-            "path": "scripts/serve_reports.py:161",
+            "path": "scripts/serve_reports.py:160",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-eyebrow\"' scripts/serve_reports.py"
           }
         },
@@ -414,7 +414,7 @@
           "kind": "heading",
           "description": "The 'NFL Props' headline, in the same condensed face as a report's matchup headline.",
           "locate": {
-            "path": "scripts/serve_reports.py:162",
+            "path": "scripts/serve_reports.py:161",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-title\"' scripts/serve_reports.py"
           }
         },
@@ -424,7 +424,7 @@
           "kind": "text",
           "description": "Explains the tabs, the ordering, the TD marker, and that no edge is being claimed.",
           "locate": {
-            "path": "scripts/serve_reports.py:164",
+            "path": "scripts/serve_reports.py:163",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-subtitle\"' scripts/serve_reports.py"
           }
         },
@@ -434,7 +434,7 @@
           "kind": "nav",
           "description": "Row of week tabs, reading left to right in the order the weeks were played. Arrow keys move between them, Home and End jump to the first and last.",
           "locate": {
-            "path": "scripts/serve_reports.py:386",
+            "path": "scripts/serve_reports.py:391",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-tablist\"' scripts/serve_reports.py"
           }
         },
@@ -444,7 +444,7 @@
           "kind": "button",
           "description": "One week's tab, with that week's game count beside the label. The newest week sits on the right and is the one selected on load.",
           "locate": {
-            "path": "scripts/serve_reports.py:370",
+            "path": "scripts/serve_reports.py:375",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-week-tab\"' scripts/serve_reports.py"
           }
         },
@@ -454,7 +454,7 @@
           "kind": "layout",
           "description": "The card grid for one week. Every panel but the selected one carries the hidden attribute.",
           "locate": {
-            "path": "scripts/serve_reports.py:375",
+            "path": "scripts/serve_reports.py:380",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-week-panel\"' scripts/serve_reports.py"
           }
         },
@@ -464,7 +464,7 @@
           "kind": "card",
           "description": "One game's card, linking through to its report. Built on the same anatomy as a report's player card: label and badge on top, an oversized figure, a range line, then a dotted comparison row.",
           "locate": {
-            "path": "scripts/serve_reports.py:301",
+            "path": "scripts/serve_reports.py:296",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-row\"' scripts/serve_reports.py"
           }
         },
@@ -474,7 +474,7 @@
           "kind": "text",
           "description": "The away-at-home pairing in the card's top row, where a player card puts the player's name.",
           "locate": {
-            "path": "scripts/serve_reports.py:303",
+            "path": "scripts/serve_reports.py:297",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-game-label\"' scripts/serve_reports.py"
           }
         },
@@ -484,7 +484,7 @@
           "kind": "badge",
           "description": "Accent-coloured weekday, e.g. SUN. Sits where a player card puts the position badge. Absent when no schedule row exists.",
           "locate": {
-            "path": "scripts/serve_reports.py:294",
+            "path": "scripts/serve_reports.py:349",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-day-badge\"' scripts/serve_reports.py"
           }
         },
@@ -494,7 +494,7 @@
           "kind": "value",
           "description": "Kickoff time as the card's headline figure, where a player card puts its projection. Falls back to 'kickoff unknown' rather than the file's timestamp.",
           "locate": {
-            "path": "scripts/serve_reports.py:305",
+            "path": "scripts/serve_reports.py:354",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-kickoff\"' scripts/serve_reports.py"
           }
         },
@@ -504,7 +504,7 @@
           "kind": "value",
           "description": "Timezone and date under the figure, where a player card puts its range.",
           "locate": {
-            "path": "scripts/serve_reports.py:306",
+            "path": "scripts/serve_reports.py:355",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-kickoff-date\"' scripts/serve_reports.py"
           }
         },
@@ -514,7 +514,7 @@
           "kind": "text",
           "description": "Replaces the tabs and panels entirely when no reports have been generated yet.",
           "locate": {
-            "path": "scripts/serve_reports.py:380",
+            "path": "scripts/serve_reports.py:385",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-empty\"' scripts/serve_reports.py"
           }
         },
@@ -524,7 +524,7 @@
           "kind": "text",
           "description": "The standing disclaimer: projections, not edges, and less accurate than the market in testing.",
           "locate": {
-            "path": "scripts/serve_reports.py:168",
+            "path": "scripts/serve_reports.py:167",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-footer\"' scripts/serve_reports.py"
           }
         },
@@ -534,7 +534,7 @@
           "kind": "layout",
           "description": "All the games that kick off at one time, e.g. every Sunday 1:00 PM game. A Sunday is four separate sittings, and one undivided grid hid that.",
           "locate": {
-            "path": "scripts/serve_reports.py:349",
+            "path": "scripts/serve_reports.py:352",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-slot\"' scripts/serve_reports.py"
           }
         },
@@ -544,7 +544,7 @@
           "kind": "heading",
           "description": "Day and time for one block, with its game count. Quieter than a week tab, louder than a card.",
           "locate": {
-            "path": "scripts/serve_reports.py:350",
+            "path": "scripts/serve_reports.py:353",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-slot-label\"' scripts/serve_reports.py"
           }
         }
