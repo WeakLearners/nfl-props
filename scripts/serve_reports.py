@@ -50,24 +50,26 @@ HEAD = """<!doctype html><meta charset="utf-8">
     --bg:#f7f6f3; --surface:#fcfcfb; --line:#e2e0d9; --line-soft:#eceae3;
     --ink:#14140f; --ink-2:#52514e; --ink-3:#84827a;
     --accent:#eb6834;
-    /* Hits get their own colour rather than the accent. The accent is orange
-       and already means "this is the interesting one"; a result needs to read
-       as good or not-good, which is a different question. */
-    --good:#1c7a4d;
+    /* Results get their own two colours rather than the accent. The accent is
+       orange and already means "this is the interesting one"; a result needs
+       to read as landed or not, which is a different question. The red is a
+       deep crimson rather than a red-orange, so it cannot be mistaken for the
+       accent sitting a few pixels away. */
+    --good:#1c7a4d; --bad:#b3261e;
   }}
   @media (prefers-color-scheme: dark){{
     :root:not([data-theme="light"]){{
       color-scheme: dark;
       --bg:#121211; --surface:#1a1a19; --line:#33322e; --line-soft:#262521;
       --ink:#f6f5ef; --ink-2:#c3c2b7; --ink-3:#8b897f;
-      --accent:#d95926; --good:#4fbd85;
+      --accent:#d95926; --good:#4fbd85; --bad:#f2685c;
     }}
   }}
   :root[data-theme="dark"]{{
     color-scheme: dark;
     --bg:#121211; --surface:#1a1a19; --line:#33322e; --line-soft:#262521;
     --ink:#f6f5ef; --ink-2:#c3c2b7; --ink-3:#8b897f;
-    --accent:#d95926; --good:#4fbd85;
+    --accent:#d95926; --good:#4fbd85; --bad:#f2685c;
   }}
   *{{box-sizing:border-box}}
   body{{
@@ -150,16 +152,19 @@ PAGE = HEAD + """
     letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3);
     opacity:.75; margin-top:2px;
   }}
-  /* How the picks for a finished game did. One figure, always in the same
-     corner of the card, so a week reads as a row of results at a glance
-     rather than something to go looking for. */
+  /* How the picks for a finished game did. A filled pill, built like the day
+     chip on a sitting heading — coloured ground, light text. Coloured text
+     alone was too quiet to find on a card: at 10px on an off-white ground it
+     read as a footnote rather than a result. align-self keeps the pill the
+     width of its own words instead of stretching across the card. */
   .score{{
-    font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
-    letter-spacing:.08em; text-transform:uppercase; margin-top:3px;
-    font-variant-numeric:tabular-nums;
+    align-self:flex-start; margin-top:6px; padding:3px 7px; border-radius:2px;
+    font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:600;
+    letter-spacing:.08em; text-transform:uppercase; white-space:nowrap;
+    font-variant-numeric:tabular-nums; color:var(--surface);
   }}
-  .score.good{{color:var(--good)}}
-  .score.flat{{color:var(--ink-3)}}
+  .score.good{{background:var(--good)}}
+  .score.bad{{background:var(--bad)}}
   /* Each kickoff gets its own labelled block, and the label says the whole
      when: day chip, clock time, date. Quieter than a week tab, louder than a
      card — a thin rule, condensed caps, the same monospace the tabs use. */
@@ -387,10 +392,10 @@ def index_html():
             score = ""
             if got:
                 hits, n = got
-                # Green when most of them landed, grey when most did not. No
-                # red: the accent here is already orange and the two would be
-                # read as the same signal at this size.
-                tone = "good" if hits * 2 >= n else "flat"
+                # Green when at least half landed, red when fewer did. Half
+                # counts as green: three of six is the model doing what it
+                # said it would, not a bad afternoon.
+                tone = "good" if hits * 2 >= n else "bad"
                 score = (f'<span class="score {tone}" data-inspect-id="index-hits">'
                          f'{hits}/{n} hit</span>')
             row = (f'<a class="card" data-inspect-id="index-row" href="/{f}">'
@@ -810,24 +815,28 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
   }}
   .gap.up{{color:var(--accent)}}
   .gap.down{{color:var(--ink-3)}}
-  /* Whether a leg landed, under its rank number. Green for a hit, struck
-     through and grey for a miss — two signals, so it survives being printed,
-     photographed, or read by someone who cannot separate the colours. */
+  /* Whether a leg landed, under its rank number. A filled pill in the same
+     two grounds the listing uses, so one glance down the rank column reads as
+     a column of results. HIT and MISS are spelled out rather than shown as a
+     colour, so the meaning survives a print-out or a reader who cannot
+     separate green from grey. */
   .mark{{
-    display:block; font-family:"IBM Plex Mono",monospace; font-size:8.5px;
-    font-weight:600; letter-spacing:.08em; margin-top:2px;
+    display:inline-block; margin-top:3px; padding:2px 4px; border-radius:2px;
+    font-family:"IBM Plex Mono",monospace; font-size:8.5px; font-weight:600;
+    letter-spacing:.06em; color:var(--surface);
   }}
-  .mark.hit{{color:var(--good)}}
-  .mark.miss{{color:var(--ink-3); text-decoration:line-through}}
-  /* The sitting's own tally, on its heading. Same figure and same two tones
-     as the game cards on the listing. */
+  .mark.hit{{background:var(--good)}}
+  .mark.miss{{background:var(--bad)}}
+  /* The sitting's own tally, on its heading. The same pill as a game card on
+     the listing, one size up because the heading around it is bigger. */
   .score{{
+    padding:3px 8px; border-radius:2px;
     font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600;
-    letter-spacing:.08em; text-transform:uppercase;
-    font-variant-numeric:tabular-nums;
+    letter-spacing:.08em; text-transform:uppercase; white-space:nowrap;
+    font-variant-numeric:tabular-nums; color:var(--surface);
   }}
-  .score.good{{color:var(--good)}}
-  .score.flat{{color:var(--ink-3)}}
+  .score.good{{background:var(--good)}}
+  .score.bad{{background:var(--bad)}}
   .empty{{color:var(--ink-3); font-style:italic; margin-top:20px}}
   footer{{margin-top:44px; padding-top:16px; border-top:1px solid var(--line);
     color:var(--ink-3); font-size:12.5px; max-width:68ch}}
@@ -889,7 +898,7 @@ def slate_windows(season, week):
         tally = ""
         if graded:
             hits = sum(1 for r in graded if r["hit"])
-            tone = "good" if hits * 2 >= len(graded) else "flat"
+            tone = "good" if hits * 2 >= len(graded) else "bad"
             tally = (f'<span class="score {tone}" data-inspect-id="slate-window-hits">'
                      f'{hits}/{len(graded)} hit</span>')
 
