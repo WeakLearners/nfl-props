@@ -69,6 +69,19 @@ class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *a, **kw):
         super().__init__(*a, directory=ROOT, **kw)
 
+    def guess_type(self, path):
+        """Name the encoding on every text response, not just the index.
+
+        The index below sets it by hand. Report files go through the base
+        handler, whose mimetypes lookup returns a bare "text/html" — so the
+        browser guesses, guesses latin-1, and renders every em dash and
+        middle dot as mojibake. The files themselves were always valid UTF-8.
+        """
+        t = super().guess_type(path)
+        if t.startswith("text/") and "charset=" not in t:
+            return t + "; charset=utf-8"
+        return t
+
     def do_GET(self):
         if self.path in ("/", "/index.html"):
             body = index_html().encode()
