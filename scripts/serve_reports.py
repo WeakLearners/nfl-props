@@ -185,30 +185,37 @@ PAGE = HEAD + """
      card — a thin rule, condensed caps, the same monospace the tabs use. */
   .slot{{margin-top:26px}}
   .slot:first-child{{margin-top:18px}}
+  /* Centred, not baseline-aligned, matching .win-h on the slate. The day
+     chip is a box; the words beside it are text. Lining the box up by the
+     text inside it leaves the chip sitting low, and the taller the heading
+     the further it drifts. One row height here as a length, a height on the
+     chip, and the row centres them exactly. */
   .slot-h{{
-    display:flex; align-items:baseline; gap:9px;
+    display:flex; align-items:center; gap:9px;
     margin:0; padding-bottom:5px; border-bottom:1px solid var(--line-soft);
     font-family:"Barlow Condensed",Impact,sans-serif; font-weight:600;
-    font-size:16px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-2);
+    font-size:16px; line-height:18px; text-transform:uppercase;
+    letter-spacing:.06em; color:var(--ink-2);
   }}
   .day{{
+    display:inline-flex; align-items:center; height:16px; padding:0 5px;
+    border-radius:2px; flex:none; line-height:1;
     font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
-    letter-spacing:.09em; padding:2px 5px; border-radius:2px;
-    color:var(--surface); background:var(--accent); flex:none;
+    letter-spacing:.09em; color:var(--surface); background:var(--accent);
   }}
   .slot-time{{
     font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
     font-size:15px; font-weight:500; letter-spacing:-.01em; white-space:nowrap;
-    text-transform:none; color:var(--ink);
+    line-height:18px; text-transform:none; color:var(--ink);
   }}
   .slot-time.unknown{{font-size:13px; color:var(--ink-3); font-weight:400}}
   .slot-date{{
     font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
-    font-size:11.5px; font-weight:400; letter-spacing:0; text-transform:none;
-    color:var(--ink-2);
+    font-size:11.5px; font-weight:400; letter-spacing:0; line-height:18px;
+    text-transform:none; color:var(--ink-2);
   }}
   .slot-h .n{{
-    margin-left:auto;
+    margin-left:auto; line-height:18px;
     font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10px;
     font-weight:400; letter-spacing:.1em; color:var(--ink-3);
     font-variant-numeric:tabular-nums; text-transform:none;
