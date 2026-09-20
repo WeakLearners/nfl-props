@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.nflprops.week</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/sh</string><string>-c</string>
+    <string>/Users/Sean/Code/nfl-props/.venv/bin/python /Users/Sean/Code/nfl-props/scripts/grade_game.py --no-refresh; /Users/Sean/Code/nfl-props/.venv/bin/python /Users/Sean/Code/nfl-props/scripts/grade_week.py</string>
+  </array>
+  <key>WorkingDirectory</key><string>/Users/Sean/Code/nfl-props</string>
+  <!-- Tuesday 09:00. Monday night finishes near midnight and Pro Football
+       Reference publishes snap counts a day behind the box score, so Tuesday
+       morning is the first moment the week is genuinely whole. The per-game
+       pass runs first: it upgrades every provisional write-up to final, and
+       the rollup then pools them. -->
+  <key>StartCalendarInterval</key>
+  <dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>0</integer></dict>
+  <key>StandardOutPath</key><string>/Users/Sean/Code/nfl-props/logs/grade.log</string>
+  <key>StandardErrorPath</key><string>/Users/Sean/Code/nfl-props/logs/grade.err</string>
+</dict>
+</plist>

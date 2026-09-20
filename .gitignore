@@ -17,3 +17,4 @@ reports/*.err
 # redistributing it in a public repo is not ours to do.
 data/hist/
 data/*.parquet
+logs/

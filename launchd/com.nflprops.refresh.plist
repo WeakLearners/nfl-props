@@ -11,7 +11,7 @@
   <key>WorkingDirectory</key><string>/Users/Sean/Code/nfl-props</string>
   <key>StartCalendarInterval</key>
   <dict><key>Hour</key><integer>6</integer><key>Minute</key><integer>30</integer></dict>
-  <key>StandardOutPath</key><string>/Users/Sean/Code/nfl-props/reports/launchd.log</string>
-  <key>StandardErrorPath</key><string>/Users/Sean/Code/nfl-props/reports/launchd.err</string>
+  <key>StandardOutPath</key><string>/Users/Sean/Code/nfl-props/logs/launchd.log</string>
+  <key>StandardErrorPath</key><string>/Users/Sean/Code/nfl-props/logs/launchd.err</string>
 </dict>
 </plist>

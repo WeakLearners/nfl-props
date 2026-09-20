@@ -29,7 +29,7 @@ Usage:
 Reads CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, and (optionally)
 CF_PAGES_PROJECT from .env. Never prompts -- built to run unattended from
 launchd. Any failure prints to stderr and exits non-zero; the scheduled
-jobs route stderr to reports/launchd.log, so a broken publish shows up
+jobs route stderr to logs/launchd.log, so a broken publish shows up
 there instead of vanishing silently.
 """
 import os

@@ -89,7 +89,7 @@ Both forms regenerate `index.html` from *everything* currently in
 run only mentions the newest one. It reads Cloudflare credentials from
 `.env`, never prompts, and on any failure (bad token, network blip,
 `wrangler` erroring) prints to stderr and exits non-zero. Run from
-launchd, stderr already lands in `reports/launchd.log` per the existing
+launchd, stderr already lands in `logs/launchd.log` per the existing
 job configuration — a broken publish will show up there, not vanish.
 
 ## What happened to the old Tailscale server

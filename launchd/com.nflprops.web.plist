@@ -23,9 +23,11 @@
   <true/>
   <key>KeepAlive</key>
   <true/>
+  <!-- Logs go in logs/, never reports/. Everything inside reports/ is served
+       by name over the tailnet, so a crash log there is a public crash log. -->
   <key>StandardOutPath</key>
   <string>/dev/null</string>
   <key>StandardErrorPath</key>
-  <string>/Users/Sean/Code/nfl-props/reports/web.err</string>
+  <string>/Users/Sean/Code/nfl-props/logs/web.err</string>
 </dict>
 </plist>
