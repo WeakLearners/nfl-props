@@ -613,7 +613,7 @@
           "kind": "layout",
           "description": "Outer 720px column holding the whole slate page.",
           "locate": {
-            "path": "scripts/serve_reports.py:848",
+            "path": "scripts/serve_reports.py:862",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-wrap\"' scripts/serve_reports.py"
           }
         },
@@ -623,7 +623,7 @@
           "kind": "text",
           "description": "Season and week above the title.",
           "locate": {
-            "path": "scripts/serve_reports.py:850",
+            "path": "scripts/serve_reports.py:864",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-eyebrow\"' scripts/serve_reports.py"
           }
         },
@@ -633,7 +633,7 @@
           "kind": "text",
           "description": "The page's H1: \"The Slate\".",
           "locate": {
-            "path": "scripts/serve_reports.py:851",
+            "path": "scripts/serve_reports.py:865",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-title\"' scripts/serve_reports.py"
           }
         },
@@ -643,7 +643,7 @@
           "kind": "text",
           "description": "Explains what Model, Book and the gap figure mean.",
           "locate": {
-            "path": "scripts/serve_reports.py:853",
+            "path": "scripts/serve_reports.py:867",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-subtitle\"' scripts/serve_reports.py"
           }
         },
@@ -653,7 +653,7 @@
           "kind": "link",
           "description": "Returns to the report listing at /.",
           "locate": {
-            "path": "scripts/serve_reports.py:857",
+            "path": "scripts/serve_reports.py:871",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-back\"' scripts/serve_reports.py"
           }
         },
@@ -663,7 +663,7 @@
           "kind": "layout",
           "description": "One section per day-part: every leg from the games kicking off in that sitting.",
           "locate": {
-            "path": "scripts/serve_reports.py:916",
+            "path": "scripts/serve_reports.py:930",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-window\"' scripts/serve_reports.py"
           }
         },
@@ -673,7 +673,7 @@
           "kind": "text",
           "description": "Day chip, part of day, kickoff times, and the game/leg counts.",
           "locate": {
-            "path": "scripts/serve_reports.py:917",
+            "path": "scripts/serve_reports.py:931",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-window-label\"' scripts/serve_reports.py"
           }
         },
@@ -683,7 +683,7 @@
           "kind": "badge",
           "description": "Accent-filled weekday chip on a sitting heading.",
           "locate": {
-            "path": "scripts/serve_reports.py:918",
+            "path": "scripts/serve_reports.py:932",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-day-badge\"' scripts/serve_reports.py"
           }
         },
@@ -693,7 +693,7 @@
           "kind": "text",
           "description": "The kickoff times pooled into this sitting, e.g. \"4:05, 4:25 PM ET\".",
           "locate": {
-            "path": "scripts/serve_reports.py:920",
+            "path": "scripts/serve_reports.py:934",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-window-times\"' scripts/serve_reports.py"
           }
         },
@@ -703,7 +703,7 @@
           "kind": "layout",
           "description": "One of the three rankings inside a sitting: heading, note, table.",
           "locate": {
-            "path": "scripts/serve_reports.py:706",
+            "path": "scripts/serve_reports.py:719",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-table\"' scripts/serve_reports.py"
           }
         },
@@ -713,7 +713,7 @@
           "kind": "text",
           "description": "\"Most likely to happen\", \"Shortest odds\", or \"Longest odds\".",
           "locate": {
-            "path": "scripts/serve_reports.py:707",
+            "path": "scripts/serve_reports.py:720",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-table-title\"' scripts/serve_reports.py"
           }
         },
@@ -723,7 +723,7 @@
           "kind": "text",
           "description": "One line saying what the ranking is sorted by.",
           "locate": {
-            "path": "scripts/serve_reports.py:708",
+            "path": "scripts/serve_reports.py:721",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-table-note\"' scripts/serve_reports.py"
           }
         },
@@ -743,7 +743,7 @@
           "kind": "text",
           "description": "Shown when no reports have been generated at all.",
           "locate": {
-            "path": "scripts/serve_reports.py:947",
+            "path": "scripts/serve_reports.py:961",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-empty\"' scripts/serve_reports.py"
           }
         },
@@ -753,7 +753,7 @@
           "kind": "text",
           "description": "Shown when reports exist but none of their games has a schedule row to pool by.",
           "locate": {
-            "path": "scripts/serve_reports.py:959",
+            "path": "scripts/serve_reports.py:973",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-empty-unscheduled\"' scripts/serve_reports.py"
           }
         },
@@ -763,7 +763,7 @@
           "kind": "text",
           "description": "Standing disclaimer: projections not edges, prices move.",
           "locate": {
-            "path": "scripts/serve_reports.py:860",
+            "path": "scripts/serve_reports.py:874",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-footer\"' scripts/serve_reports.py"
           }
         },
@@ -773,7 +773,7 @@
           "kind": "nav",
           "description": "Tab strip, one week per tab, newest selected on load.",
           "locate": {
-            "path": "scripts/serve_reports.py:977",
+            "path": "scripts/serve_reports.py:991",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-tablist\"' scripts/serve_reports.py"
           }
         },
@@ -783,7 +783,7 @@
           "kind": "tab",
           "description": "Opens one week's sittings. The count is that week's shortlisted legs.",
           "locate": {
-            "path": "scripts/serve_reports.py:968",
+            "path": "scripts/serve_reports.py:982",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-week-tab\"' scripts/serve_reports.py"
           }
         },
@@ -793,7 +793,7 @@
           "kind": "layout",
           "description": "All sittings for one week. Every week but the newest ships hidden.",
           "locate": {
-            "path": "scripts/serve_reports.py:973",
+            "path": "scripts/serve_reports.py:987",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-week-panel\"' scripts/serve_reports.py"
           }
         },
@@ -803,7 +803,7 @@
           "kind": "badge",
           "description": "How the whole sitting's picks did, e.g. \"5/6 hit\". Same two tones as the listing badge.",
           "locate": {
-            "path": "scripts/serve_reports.py:902",
+            "path": "scripts/serve_reports.py:916",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-window-hits\"' scripts/serve_reports.py"
           }
         },
@@ -811,7 +811,7 @@
           "id": "slate-leg-result",
           "label": "Leg result mark",
           "kind": "badge",
-          "description": "HIT or MISS under a leg's rank number. A miss is struck through as well as grey, so the result survives without colour.",
+          "description": "HIT or MISS pill in its own Result column, between the leg and its price. The column is rendered only when at least one leg in that table has been graded.",
           "locate": {
             "path": "scripts/serve_reports.py:689",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-leg-result\"' scripts/serve_reports.py"

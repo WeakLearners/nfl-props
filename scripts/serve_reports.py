@@ -675,7 +675,7 @@ def payout(price):
     return 100 * 100 // -price if price < 0 else price
 
 
-def leg_rows(legs):
+def leg_rows(legs, graded):
     out = []
     for i, r in enumerate(legs, 1):
         stat = STAT_SHORT.get(r["s"], r["s"].replace("_", " "))
@@ -690,27 +690,37 @@ def leg_rows(legs):
                 f'{"HIT" if hit else "MISS"}</span>')
         out.append(
             f'<tr data-inspect-id="slate-leg">'
-            f'<td class="rank">{i}{mark}</td>'
+            f'<td class="rank">{i}</td>'
             f'<td class="who"><a href="/{r["file"]}">{r["p"]}</a>'
             f'<span class="meta">{r["tm"]} {r["role"]} &middot; {r["game"]}</span></td>'
             f'<td class="stat">o{r["line"]:g} {stat}</td>'
+            + (f'<td class="res">{mark}</td>' if graded else "")
+            + (
             f'<td class="num price">{r["price"]}<span class="meta">${payout(r["price"])}</span></td>'
             f'<td class="num">{r["mp"] * 100:.1f}%</td>'
             f'<td class="num book">{r["bp"] * 100:.1f}%'
             f'<span class="{gap_cls}">{gap:+.1f}</span></td>'
-            f'</tr>')
+            f'</tr>'))
     return "".join(out)
 
 
 def slate_table(legs, title, note):
+    """One ranking. The Result column appears only once there is a result.
+
+    A sitting that has not been played would otherwise carry a Result heading
+    over five empty cells, which reads as something broken rather than as
+    something that has not happened yet.
+    """
+    graded = any(r.get("hit") is not None for r in legs)
+    head = ('<th></th><th>Player</th><th>Leg</th>'
+            + ('<th class="res">Result</th>' if graded else "")
+            + '<th class="num">Price</th><th class="num">Model</th>'
+              '<th class="num">Book</th>')
     return (f'<div class="tbl" data-inspect-id="slate-table">'
             f'<h4 data-inspect-id="slate-table-title">{title}</h4>'
             f'<p class="note" data-inspect-id="slate-table-note">{note}</p>'
-            f'<div class="scroll"><table><thead><tr>'
-            f'<th></th><th>Player</th><th>Leg</th>'
-            f'<th class="num">Price</th><th class="num">Model</th>'
-            f'<th class="num">Book</th>'
-            f'</tr></thead><tbody>{leg_rows(legs)}</tbody></table></div></div>')
+            f'<div class="scroll"><table><thead><tr>{head}</tr></thead>'
+            f'<tbody>{leg_rows(legs, graded)}</tbody></table></div></div>')
 
 
 SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
@@ -820,10 +830,14 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
      a column of results. HIT and MISS are spelled out rather than shown as a
      colour, so the meaning survives a print-out or a reader who cannot
      separate green from grey. */
+  /* The result sits in its own column between the leg and its price: what
+     was picked, then whether it landed, then what it paid. Under the rank
+     number it was easy to miss — a column is a place the eye already goes. */
+  .res{{width:1px; white-space:nowrap; padding-right:14px}}
   .mark{{
-    display:inline-block; margin-top:3px; padding:2px 4px; border-radius:2px;
-    font-family:"IBM Plex Mono",monospace; font-size:8.5px; font-weight:600;
-    letter-spacing:.06em; color:var(--surface);
+    display:inline-block; padding:3px 6px; border-radius:2px;
+    font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:600;
+    letter-spacing:.07em; color:var(--surface);
   }}
   .mark.hit{{background:var(--good)}}
   .mark.miss{{background:var(--bad)}}
