@@ -113,17 +113,41 @@ def devig_yesno(df, stat="anytime_td"):
     lineless market into the Over/Under pivot is how a market with no `point`
     quietly becomes a row keyed on NaN.
     """
+    # An event with no prices at all comes back as a bare DataFrame with no
+    # columns, so guard before touching .stat. Hit live on 2026-09-20.
+    if df.empty or "stat" not in df.columns:
+        return pd.DataFrame(columns=["event_id", "stat", "player_book",
+                                     "hold", "book_p", "price_yes"])
     d = df[df.stat == stat]
     p = d.pivot_table(index=["event_id", "stat", "player_book"],
                       columns="side", values="price", aggfunc="first").reset_index()
-    if "Yes" not in p.columns or "No" not in p.columns:
+    if "Yes" not in p.columns:
         return pd.DataFrame(columns=["event_id", "stat", "player_book",
-                                     "hold", "book_p", "price_yes"])
+                                     "hold", "book_p", "price_yes", "devigged"])
+
+    # FanDuel quotes anytime-TD one-sided: every outcome came back as "Yes"
+    # on 2026-09-20, with no "No" to pair against. Without the other side
+    # there is nothing to divide the vig between, so the honest move is to
+    # return the raw implied probability and SAY it still carries the vig.
+    #
+    # That number is an overestimate. For the confidence rule it errs in the
+    # safe direction -- confidence is the lower of model and book, so an
+    # inflated book number simply hands the decision to the model. Calling
+    # it fair when it is not would be the actual error.
+    if "No" not in p.columns:
+        q = p.dropna(subset=["Yes"]).copy()
+        q["book_p"] = q["Yes"].map(implied)
+        q["hold"] = float("nan")
+        q["price_yes"] = q["Yes"]
+        q["devigged"] = False
+        return q.drop(columns=["Yes"])
+
     p = p.dropna(subset=["Yes", "No"])
     py, pn = p["Yes"].map(implied), p["No"].map(implied)
     p["hold"] = py + pn - 1.0
     p["book_p"] = py / (py + pn)
     p["price_yes"] = p["Yes"]
+    p["devigged"] = True
     return p.drop(columns=["Yes", "No"])
 
 

@@ -1,0 +1,146 @@
+{
+ "CAR-ATL": {
+  "basis": "model+book_vig",
+  "book_p": 0.643,
+  "conf": 0.553,
+  "model_p": 0.553,
+  "player": "Bijan Robinson",
+  "position": "RB",
+  "team": "ATL"
+ },
+ "CIN-HOU": {
+  "basis": "model+book_vig",
+  "book_p": 0.592,
+  "conf": 0.473,
+  "model_p": 0.473,
+  "player": "David Montgomery",
+  "position": "RB",
+  "team": "HOU"
+ },
+ "CLE-TB": {
+  "basis": "model+book_vig",
+  "book_p": 0.512,
+  "conf": 0.447,
+  "model_p": 0.447,
+  "player": "Bucky Irving",
+  "position": "RB",
+  "team": "TB"
+ },
+ "DET-BUF": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.549,
+  "model_p": 0.549,
+  "player": "Jahmyr Gibbs",
+  "position": "RB",
+  "team": "DET"
+ },
+ "GB-NYJ": {
+  "basis": "model+book_vig",
+  "book_p": 0.488,
+  "conf": 0.42,
+  "model_p": 0.42,
+  "player": "Breece Hall",
+  "position": "RB",
+  "team": "NYJ"
+ },
+ "IND-KC": {
+  "basis": "model+book_vig",
+  "book_p": 0.677,
+  "conf": 0.536,
+  "model_p": 0.536,
+  "player": "Kenneth Walker III",
+  "position": "RB",
+  "team": "KC"
+ },
+ "JAX-DEN": {
+  "basis": "model+book_vig",
+  "book_p": 0.476,
+  "conf": 0.359,
+  "model_p": 0.359,
+  "player": "J.K. Dobbins",
+  "position": "RB",
+  "team": "DEN"
+ },
+ "LV-LAC": {
+  "basis": "model+book_vig",
+  "book_p": 0.608,
+  "conf": 0.543,
+  "model_p": 0.543,
+  "player": "Omarion Hampton",
+  "position": "RB",
+  "team": "LAC"
+ },
+ "MIA-SF": {
+  "basis": "model+book_vig",
+  "book_p": 0.714,
+  "conf": 0.585,
+  "model_p": 0.585,
+  "player": "Christian McCaffrey",
+  "position": "RB",
+  "team": "SF"
+ },
+ "MIN-CHI": {
+  "basis": "model+book_vig",
+  "book_p": 0.565,
+  "conf": 0.565,
+  "model_p": 0.596,
+  "player": "D'Andre Swift",
+  "position": "RB",
+  "team": "CHI"
+ },
+ "NO-BAL": {
+  "basis": "model+book_vig",
+  "book_p": 0.714,
+  "conf": 0.512,
+  "model_p": 0.512,
+  "player": "Derrick Henry",
+  "position": "RB",
+  "team": "BAL"
+ },
+ "NYG-LA": {
+  "basis": "model+book_vig",
+  "book_p": 0.655,
+  "conf": 0.498,
+  "model_p": 0.498,
+  "player": "Kyren Williams",
+  "position": "RB",
+  "team": "LA"
+ },
+ "PHI-TEN": {
+  "basis": "model+book_vig",
+  "book_p": 0.535,
+  "conf": 0.499,
+  "model_p": 0.499,
+  "player": "Saquon Barkley",
+  "position": "RB",
+  "team": "PHI"
+ },
+ "PIT-NE": {
+  "basis": "model+book_vig",
+  "book_p": 0.488,
+  "conf": 0.387,
+  "model_p": 0.387,
+  "player": "Rhamondre Stevenson",
+  "position": "RB",
+  "team": "NE"
+ },
+ "SEA-ARI": {
+  "basis": "model+book_vig",
+  "book_p": 0.417,
+  "conf": 0.332,
+  "model_p": 0.332,
+  "player": "Jaxon Smith-Njigba",
+  "position": "WR",
+  "team": "SEA"
+ },
+ "WAS-DAL": {
+  "basis": "model+book_vig",
+  "book_p": 0.643,
+  "conf": 0.482,
+  "model_p": 0.482,
+  "player": "Javonte Williams",
+  "position": "RB",
+  "team": "DAL"
+ }
+}

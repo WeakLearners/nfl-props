@@ -6,6 +6,7 @@ listening socket itself never faces the network. Tailnet-only, not Funnel:
 these pages name real players and real prices under Sean's own account, and
 nothing about them needs the public internet.
 """
+import json
 import os
 import re
 import sqlite3
@@ -33,16 +34,19 @@ PAGE = """<!doctype html><meta charset="utf-8">
  .wrap{{max-width:640px;margin:0 auto;padding:32px 16px 56px}}
  h1{{font-size:20px;margin:0 0 4px}}
  p.sub{{color:var(--mut);font-size:14px;margin:0 0 24px}}
- a.row{{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+ a.row{{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
    padding:14px 16px;margin-bottom:8px;background:var(--card);border:1px solid var(--line);
    border-radius:10px;text-decoration:none;color:inherit}}
  .g{{font-weight:600}} .m{{color:var(--mut);font-size:13px;white-space:nowrap;text-align:right}}
  .k{{display:block;font-weight:600;color:var(--fg)}}
  .w{{display:block;font-size:12px}}
+ .td{{display:block;font-size:12px;color:var(--mut);margin-top:3px}}
+ .td b{{color:var(--fg);font-weight:600}}
+ .pc{{font-variant-numeric:tabular-nums}}
  .empty{{color:var(--mut)}}
 </style>
 <div class="wrap"><h1>NFL Props</h1>
-<p class="sub">Production ranges, in kickoff order. No edge claim.</p>
+<p class="sub">Production ranges, in kickoff order. TD = likeliest scorer. No edge claim.</p>
 {rows}</div>"""
 
 
@@ -72,12 +76,31 @@ def kickoffs():
     return out
 
 
+def td_markers():
+    """Likeliest touchdown scorer per game, keyed AWAY-HOME.
+
+    Written by scripts/td/write_markers.py, read here rather than recomputed:
+    the listing must render in milliseconds and the model takes seconds to
+    fit. A missing file is normal, not an error -- it just means no markers
+    have been written for that week yet.
+    """
+    out = {}
+    try:
+        for f in os.listdir(ROOT):
+            if f.startswith("td_markers_") and f.endswith(".json"):
+                out.update(json.loads(open(os.path.join(ROOT, f)).read()))
+    except Exception as e:  # noqa: BLE001
+        sys.stderr.write(f"td markers unavailable: {e}\n")
+    return out
+
+
 def index_html():
     try:
         files = [f for f in os.listdir(ROOT) if f.endswith(".html")]
     except FileNotFoundError:
         files = []
     kicks = kickoffs()
+    markers = td_markers()
 
     entries = []
     for f in files:
@@ -105,7 +128,19 @@ def index_html():
             # No schedule row. Say so rather than showing the file's mtime,
             # which is when the report was written and not when anyone plays.
             top = "kickoff unknown"
-        rows.append(f'<a class="row" href="/{f}"><span class="g">{label}</span>'
+        # The marker's confidence is the LOWER of the model's number and
+        # FanDuel's, the same rule every leg inside a report follows. Where
+        # FanDuel quotes anytime-TD one-sided there is no way to strip the
+        # vig, so that book number is an overestimate and the label says so.
+        td = markers.get(f"{m.group(3)}-{m.group(4)}") if m else None
+        td_html = ""
+        if td:
+            note = {"model+book": "model &amp; book",
+                    "model+book_vig": "model &amp; book (vig in)",
+                    "model_only": "model only"}.get(td["basis"], td["basis"])
+            td_html = (f'<span class="td">TD <b>{td["player"]}</b> '
+                       f'<span class="pc">{td["conf"]*100:.0f}%</span> · {note}</span>')
+        rows.append(f'<a class="row" href="/{f}"><span class="g">{label}{td_html}</span>'
                     f'<span class="m"><span class="k">{top}</span>'
                     f'<span class="w">{wk}</span></span></a>')
     if not rows:
