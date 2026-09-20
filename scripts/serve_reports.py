@@ -727,22 +727,33 @@ def leg_rows(legs, graded):
     return "".join(out)
 
 
-def slate_table(legs, title, note):
-    """One ranking. The Result column appears only once there is a result.
+# Every table on the slate is cut to the same ruler. Three rankings stacked
+# down a sitting are read as one list, and a browser left to its own devices
+# sizes each table to its own longest name — so the HIT pills stepped left and
+# right from table to table. These widths are the same for all of them, which
+# is what makes the columns line up. Player takes whatever is left over.
+SLATE_COLS = ('<col class="c-rank"><col><col class="c-stat">'
+              '{res}<col class="c-price"><col class="c-pct"><col class="c-book">')
 
-    A sitting that has not been played would otherwise carry a Result heading
-    over five empty cells, which reads as something broken rather than as
+
+def slate_table(legs, title, note, graded):
+    """One ranking, cut to the shared column ruler.
+
+    Whether the Result column exists is decided for the whole week, not for
+    this table, so the three rankings under a sitting always have the same
+    columns in the same places. A week nobody has played yet carries no Result
+    heading at all — five empty cells read as something broken rather than as
     something that has not happened yet.
     """
-    graded = any(r.get("hit") is not None for r in legs)
     head = ('<th></th><th>Player</th><th>Leg</th>'
             + ('<th class="res">Result</th>' if graded else "")
             + '<th class="num">Price</th><th class="num">Model</th>'
               '<th class="num">Book</th>')
+    cols = SLATE_COLS.format(res='<col class="c-res">' if graded else "")
     return (f'<div class="tbl" data-inspect-id="slate-table">'
             f'<h4 data-inspect-id="slate-table-title">{title}</h4>'
             f'<p class="note" data-inspect-id="slate-table-note">{note}</p>'
-            f'<div class="scroll"><table><thead><tr>{head}</tr></thead>'
+            f'<div class="scroll"><table>{cols}<thead><tr>{head}</tr></thead>'
             f'<tbody>{leg_rows(legs, graded)}</tbody></table></div></div>')
 
 
@@ -819,7 +830,20 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
   }}
   .note{{margin:2px 0 8px; font-size:12.5px; color:var(--ink-3); max-width:64ch}}
   .scroll{{overflow-x:auto}}
-  table{{border-collapse:collapse; width:100%; font-size:14px}}
+  /* Fixed layout means the widths below are obeyed instead of being treated
+     as a suggestion the longest cell can overrule. Below 600px the sitting
+     scrolls sideways as one piece rather than each table shrinking its own
+     way. */
+  table{{
+    border-collapse:collapse; width:100%; min-width:600px;
+    table-layout:fixed; font-size:14px;
+  }}
+  .c-rank{{width:30px}}
+  .c-stat{{width:132px}}
+  .c-res{{width:62px}}
+  .c-price{{width:80px}}
+  .c-pct{{width:64px}}
+  .c-book{{width:76px}}
   th{{
     text-align:left; padding:0 8px 5px 0; border-bottom:1px solid var(--line);
     font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10px;
@@ -832,13 +856,16 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
     font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-3);
     width:1.6em; font-variant-numeric:tabular-nums;
   }}
+  .who{{overflow:hidden}}
   .who a{{
+    display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
     font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:18px;
     line-height:1.1; color:inherit; text-decoration:none; letter-spacing:.01em;
   }}
   .who a:hover{{color:var(--accent)}}
   .meta{{
-    display:block; font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+    display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    font-family:"IBM Plex Mono",monospace; font-size:10.5px;
     color:var(--ink-3); letter-spacing:.02em; margin-top:1px; font-weight:400;
   }}
   .stat{{
@@ -865,7 +892,7 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
   /* The result sits in its own column between the leg and its price: what
      was picked, then whether it landed, then what it paid. Under the rank
      number it was easy to miss — a column is a place the eye already goes. */
-  .res{{width:1px; white-space:nowrap; padding-right:14px}}
+  .res{{white-space:nowrap; padding-right:14px}}
   .mark{{
     display:inline-block; padding:3px 6px; border-radius:2px;
     font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:600;
@@ -924,6 +951,11 @@ def slate_windows(season, week):
         rank, part = daypart(time_s)
         wins.setdefault((date_s, rank, part), []).append(r)
 
+    # One decision for the week, not one per table. Sunday afternoon being
+    # graded while Monday night has not kicked off yet still leaves both
+    # sittings with the same columns in the same places down the page.
+    graded_week = any(r["hit"] is not None for r in legs)
+
     out = []
     for (date_s, _rank, part), rs in sorted(wins.items()):
         when = datetime.strptime(date_s, "%Y-%m-%d")
@@ -953,13 +985,15 @@ def slate_windows(season, week):
         tables = (
             slate_table(sorted(rs, key=lambda r: -r["mp"])[:5],
                         "Most likely to happen",
-                        "Ranked by the model's own chance the leg lands.")
+                        "Ranked by the model's own chance the leg lands.", graded_week)
             + slate_table(sorted(rs, key=lambda r: r["price"])[:5],
                           "Shortest odds",
-                          "The heaviest favourites, and so the smallest payouts.")
+                          "The heaviest favourites, and so the smallest payouts.",
+                          graded_week)
             + slate_table(sorted(rs, key=lambda r: -r["price"])[:5],
                           "Longest odds",
-                          "The best payouts on the shortlist. Still favourites, all of them."))
+                          "The best payouts on the shortlist. Still favourites, all of them.",
+                          graded_week))
         out.append(
             f'  <section class="win" data-inspect-id="slate-window">'
             f'<h3 class="win-h" data-inspect-id="slate-window-label">'
