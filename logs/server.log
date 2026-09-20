@@ -24,3 +24,10 @@
 127.0.0.1 "HEAD /report_2026_w2_SEA-ARI.html HTTP/1.1" 200 -
 127.0.0.1 "HEAD /report_2026_w2_SEA-ARI.html HTTP/1.1" 200 -
 127.0.0.1 "GET /report_2026_w2_SEA-ARI.html HTTP/1.1" 200 -
+127.0.0.1 "GET /report_2026_w2_SEA-ARI.html HTTP/1.1" 200 -
+127.0.0.1 "GET / HTTP/1.1" 200 -
+127.0.0.1 code 404, message File not found
+127.0.0.1 "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 "GET /report_2026_w2_WAS-DAL.html HTTP/1.1" 200 -
+127.0.0.1 "GET / HTTP/1.1" 200 -
+127.0.0.1 "GET / HTTP/1.1" 200 -

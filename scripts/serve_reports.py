@@ -8,11 +8,14 @@ nothing about them needs the public internet.
 """
 import os
 import re
+import sqlite3
 import sys
 from datetime import datetime
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
-ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "reports")
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.join(BASE, "reports")
+DB = os.path.join(BASE, "data", "nflprops.db")
 PORT = int(os.environ.get("NFLPROPS_WEB_PORT", "8792"))
 
 # report_2026_w2_DET-BUF.html -> ("2026", "2", "DET @ BUF")
@@ -33,12 +36,40 @@ PAGE = """<!doctype html><meta charset="utf-8">
  a.row{{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
    padding:14px 16px;margin-bottom:8px;background:var(--card);border:1px solid var(--line);
    border-radius:10px;text-decoration:none;color:inherit}}
- .g{{font-weight:600}} .m{{color:var(--mut);font-size:13px;white-space:nowrap}}
+ .g{{font-weight:600}} .m{{color:var(--mut);font-size:13px;white-space:nowrap;text-align:right}}
+ .k{{display:block;font-weight:600;color:var(--fg)}}
+ .w{{display:block;font-size:12px}}
  .empty{{color:var(--mut)}}
 </style>
 <div class="wrap"><h1>NFL Props</h1>
-<p class="sub">Production ranges. Newest first. No edge claim.</p>
+<p class="sub">Production ranges, in kickoff order. No edge claim.</p>
 {rows}</div>"""
+
+
+def kickoffs():
+    """Kickoff time for every scheduled game, keyed season/week/away/home.
+
+    Read from the local schedules table rather than from the report files.
+    That costs no API credits, needs no change to a report's markup, and
+    works for the reports already on disk — which matters, because the whole
+    point is putting today's slate in order right now.
+
+    Returns ET wall-clock strings exactly as nflverse stores them. Never
+    raises: a listing that loses its ordering is a nuisance, a listing that
+    500s is a broken page.
+    """
+    out = {}
+    try:
+        db = sqlite3.connect(f"file:{DB}?mode=ro", uri=True)
+        for season, week, away, home, day, t in db.execute(
+                "SELECT season, week, away_team, home_team, gameday, gametime FROM schedules"):
+            if not day or not t:
+                continue
+            out[(int(season), int(week), away, home)] = f"{day} {t}"
+        db.close()
+    except Exception as e:  # noqa: BLE001 — see docstring
+        sys.stderr.write(f"kickoff lookup unavailable: {e}\n")
+    return out
 
 
 def index_html():
@@ -46,15 +77,37 @@ def index_html():
         files = [f for f in os.listdir(ROOT) if f.endswith(".html")]
     except FileNotFoundError:
         files = []
-    files.sort(key=lambda f: os.path.getmtime(os.path.join(ROOT, f)), reverse=True)
-    rows = []
+    kicks = kickoffs()
+
+    entries = []
     for f in files:
         m = NAME.search(f)
+        season = int(m.group(1)) if m else 0
+        week = int(m.group(2)) if m else 0
+        kick = kicks.get((season, week, m.group(3), m.group(4))) if m else None
+        entries.append((f, m, season, week, kick))
+
+    # Newest week first, and inside a week the games in the order they kick
+    # off — the order you actually watch them in. Sorting the whole list by
+    # kickoff alone would float last week's early games above this week's.
+    # A report with no schedule row sorts last within its week rather than
+    # vanishing or jumping to the top.
+    entries.sort(key=lambda e: (-e[2], -e[3], e[4] or "9999"))
+
+    rows = []
+    for f, m, season, week, kick in entries:
         label = f"{m.group(3)} @ {m.group(4)}" if m else f[:-5]
-        wk = f"{m.group(1)} W{m.group(2)}" if m else ""
-        when = datetime.fromtimestamp(os.path.getmtime(os.path.join(ROOT, f)))
+        wk = f"{season} W{week}" if m else ""
+        if kick:
+            when = datetime.strptime(kick, "%Y-%m-%d %H:%M")
+            top = f"{when:%a %-I:%M %p} ET"
+        else:
+            # No schedule row. Say so rather than showing the file's mtime,
+            # which is when the report was written and not when anyone plays.
+            top = "kickoff unknown"
         rows.append(f'<a class="row" href="/{f}"><span class="g">{label}</span>'
-                    f'<span class="m">{wk} · {when:%b %-d, %-I:%M%p}</span></a>')
+                    f'<span class="m"><span class="k">{top}</span>'
+                    f'<span class="w">{wk}</span></span></a>')
     if not rows:
         rows = ['<p class="empty">No reports generated yet.</p>']
     return PAGE.format(rows="\n".join(rows))

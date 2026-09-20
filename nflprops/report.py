@@ -186,7 +186,11 @@ def render(rows, away, home, team_a, week, season, kick=None, same_game=True, ta
     meta = {"teamA": team_a, "nameA": away, "nameB": home, "corrnote": corr}
     tpl = (ROOT / "templates" / "report.html").read_text()
     head = f'<h1>{away} <span class="at">at</span> {home}</h1>'
-    eyebrow = (f"{kick:%A} · Week {week} · {season}" if kick is not None
+    # Kickoff time, not just the weekday. A Sunday slate has games at 1:00,
+    # 4:05, 4:25 and 8:20, and "Sunday" cannot tell you which one you have
+    # open. The listing sorts by this same time, read from the schedules
+    # table (see scripts/serve_reports.py).
+    eyebrow = (f"{kick:%A %-I:%M %p} ET · Week {week} · {season}" if kick is not None
                else f"Week {week} · {season}")
     title = f"{away.split()[-1]}–{home.split()[-1]} Production Ranges"
     return (tpl.replace("__DATA__", json.dumps(rows))
