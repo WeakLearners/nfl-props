@@ -24,7 +24,7 @@ PORT = int(os.environ.get("NFLPROPS_WEB_PORT", "8792"))
 # report_2026_w2_DET-BUF.html -> ("2026", "2", "DET @ BUF")
 NAME = re.compile(r"report_(\d{4})_w(\d+)_([A-Z]+)-([A-Z]+)\.html$")
 
-PAGE = """<!doctype html><meta charset="utf-8">
+HEAD = """<!doctype html><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NFL Props \u2014 reports</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,6 +72,11 @@ PAGE = """<!doctype html><meta charset="utf-8">
     margin:0; text-transform:uppercase;
   }}
   .sub{{color:var(--ink-2); margin:14px 0 0; max-width:64ch; font-size:14.5px}}
+"""
+
+# The listing's own furniture: week tabs, kickoff blocks, game cards. The
+# slate page shares HEAD above and brings its own rules instead of these.
+PAGE = HEAD + """
   /* The tab strip borrows the report's h2 voice -- condensed uppercase label,
      quiet monospace count -- and the header's 2px ink rule for the active one,
      so it reads as the same furniture rather than a widget bolted on. */
@@ -106,15 +111,29 @@ PAGE = """<!doctype html><meta charset="utf-8">
     display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr));
     gap:14px; margin-top:18px;
   }}
-  a.card{{
+  .card{{
     background:var(--surface); border:1px solid var(--line); border-radius:3px;
-    padding:11px 12px 10px; display:flex; text-decoration:none; color:inherit;
+    padding:11px 12px 10px; display:flex; flex-direction:column;
+    text-decoration:none; color:inherit;
   }}
   a.card:hover{{border-color:var(--ink-3)}}
   a.card:focus-visible{{outline:2px solid var(--accent); outline-offset:2px}}
   .name{{
     font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:21px;
-    letter-spacing:.01em; line-height:1.1; flex:1;
+    letter-spacing:.01em; line-height:1.1;
+  }}
+  /* A game with no report yet. Dimmed rather than hidden: the week is 16
+     games whether or not this machine has got to all of them. No hover, no
+     pointer, no focus ring — nothing about it should suggest a click. */
+  .card.none{{
+    background:none; border-style:dashed; border-color:var(--line-soft);
+    cursor:default;
+  }}
+  .card.none .name{{color:var(--ink-3); font-weight:500}}
+  .fine{{
+    font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:400;
+    letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3);
+    opacity:.75; margin-top:2px;
   }}
   /* Each kickoff gets its own labelled block, and the label says the whole
      when: day chip, clock time, date. Quieter than a week tab, louder than a
@@ -150,6 +169,16 @@ PAGE = """<!doctype html><meta charset="utf-8">
     font-variant-numeric:tabular-nums; text-transform:none;
   }}
   .rows{{margin-top:12px}}
+  /* One way through to the slate, sitting under the subtitle where a reader
+     has just been told what the page is. Quiet on purpose: the listing's job
+     is still the games. */
+  a.slate-link{{
+    display:inline-block; margin:16px 0 0; text-decoration:none;
+    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px;
+    letter-spacing:.12em; text-transform:uppercase; color:var(--accent);
+    border-bottom:1px solid transparent;
+  }}
+  a.slate-link:hover{{border-bottom-color:var(--accent)}}
   .empty{{color:var(--ink-3); font-style:italic; margin-top:20px}}
   footer{{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
     color:var(--ink-3); font-size:12.5px; max-width:68ch}}
@@ -166,6 +195,7 @@ PAGE = """<!doctype html><meta charset="utf-8">
   </header>
   <p class="sub" data-inspect-id="index-subtitle">Pick a week. Games sit in kickoff order
     inside it. TD marks the likeliest scorer. Nothing here claims an edge.</p>
+  <a class="slate-link" href="/slate" data-inspect-id="index-slate-link">Top picks by sitting &rarr;</a>
 {tabs}
 {rows}
   <footer data-inspect-id="index-footer">Projections, not edges. Tested against real
@@ -271,25 +301,44 @@ def index_html():
     kicks = kickoffs()
     markers = td_markers()
 
-    entries = []
+    # The week is the schedule's 16 games, not the 14 that happen to have a
+    # report. A missing game used to be invisible, so a half-built week looked
+    # like a finished one. Now every game gets a card and the ones with no
+    # report yet say so, which turns "is that all of them?" into a question the
+    # page answers by itself.
+    reports, loose = {}, []
     for f in files:
         m = NAME.search(f)
-        season = int(m.group(1)) if m else 0
-        week = int(m.group(2)) if m else 0
-        kick = kicks.get((season, week, m.group(3), m.group(4))) if m else None
-        entries.append((f, m, season, week, kick))
+        if m:
+            reports[(int(m.group(1)), int(m.group(2)), m.group(3), m.group(4))] = f
+        else:
+            loose.append(f)
+
+    # Only weeks that have at least one report. Without that, every future week
+    # in the schedules table would show up as a wall of empty cards.
+    live = {k[:2] for k in reports}
+
+    entries = []          # (filename or None, label, season, week, kick)
+    for (season, week, away, home), kick in kicks.items():
+        if (season, week) in live:
+            entries.append((reports.get((season, week, away, home)),
+                            f"{away} @ {home}", season, week, kick))
+    for (season, week, away, home), f in reports.items():
+        if (season, week, away, home) not in kicks:
+            entries.append((f, f"{away} @ {home}", season, week, None))
+    for f in loose:
+        entries.append((f, f[:-5], 0, 0, None))
 
     # Newest week first, and inside a week the games in the order they kick
     # off — the order you actually watch them in. Sorting the whole list by
     # kickoff alone would float last week's early games above this week's.
-    # A report with no schedule row sorts last within its week rather than
-    # vanishing or jumping to the top.
-    entries.sort(key=lambda e: (-e[2], -e[3], e[4] or "9999"))
+    # A game with no schedule row sorts last within its week rather than
+    # vanishing or jumping to the top. The matchup breaks ties so a shared
+    # kickoff lands in a stable order rather than whatever the table returned.
+    entries.sort(key=lambda e: (-e[2], -e[3], e[4] or "9999", e[1]))
 
     groups = []          # [((season, week), [row html, ...]), ...]
-    for f, m, season, week, kick in entries:
-        label = f"{m.group(3)} @ {m.group(4)}" if m else f[:-5]
-
+    for f, label, season, week, kick in entries:
         # The card carries the matchup and nothing else.
         #
         # Every card in a block starts at the same moment, so a day, a time
@@ -297,9 +346,21 @@ def index_html():
         # over. All of it moves up to the block's own heading, where it is
         # said once. What is left on the card is the only thing that differs
         # from its neighbours: who is playing.
-        row = (f'<a class="card" data-inspect-id="index-row" href="/{f}">'
-               f'<span class="name" data-inspect-id="index-game-label">{label}</span>'
-               f'</a>')
+        #
+        # A game with no report is a card, not a link. Nothing to open, so it
+        # is a <div> rather than a disabled <a> — there is no href to follow,
+        # no focus stop, and nothing for the keyboard to land on. The fine
+        # print under the matchup says why it is grey.
+        if f:
+            row = (f'<a class="card" data-inspect-id="index-row" href="/{f}">'
+                   f'<span class="name" data-inspect-id="index-game-label">{label}</span>'
+                   f'</a>')
+        else:
+            row = (f'<div class="card none" data-inspect-id="index-row-pending"'
+                   f' aria-disabled="true">'
+                   f'<span class="name" data-inspect-id="index-game-label-pending">{label}</span>'
+                   f'<span class="fine" data-inspect-id="index-no-report">No report</span>'
+                   f'</div>')
 
         # The heading for the run of games that kick off together, in three
         # pieces: a day chip, the clock time, and the calendar date. Entries
@@ -398,6 +459,299 @@ def index_html():
     return PAGE.format(tabs=tabstrip, rows="\n".join(panels)) + TABS_JS
 
 
+
+# ---------------------------------------------------------------- slate page
+
+# The legs a report actually shortlisted ride inside the report file, as the
+# same JSON its own script draws from. Reading them back costs nothing: no
+# Odds API credit, no re-projection, and no second copy of the picks that
+# could drift away from the page it came from.
+DATA_BLOB = re.compile(r"const DATA *= *(.*?);\n", re.S)
+
+# Sunday is two sittings, not five kickoffs. 1:00 is the early slate; 4:05 and
+# 4:25 are twenty minutes apart and nobody thinks of them as separate
+# afternoons. Grouping by part of day says what a viewer means by "the late
+# games" and folds Thursday and Monday night into their own sections without a
+# special case.
+def daypart(hhmm):
+    h = int(hhmm[:2])
+    if h < 15:
+        return 0, "Early"
+    if h < 19:
+        return 1, "Afternoon"
+    return 2, "Night"
+
+
+_LEG_CACHE = {}
+
+
+def shortlist(season, week):
+    """Every shortlisted leg for one week, with its game and kickoff attached.
+
+    Cached on the set of report files and their modification times, so a
+    regenerated report is picked up on the next request and an unchanged week
+    is parsed once. Fifteen reports is half a megabyte of HTML; parsing it on
+    every page load would be wasteful rather than slow.
+    """
+    kicks = kickoffs()
+    try:
+        files = sorted(f for f in os.listdir(ROOT) if f.endswith(".html"))
+    except FileNotFoundError:
+        return []
+    stamp = tuple((f, os.path.getmtime(os.path.join(ROOT, f))) for f in files)
+    key = (season, week, stamp)
+    if key in _LEG_CACHE:
+        return _LEG_CACHE[key]
+
+    legs = []
+    for f in files:
+        m = NAME.search(f)
+        if not m or int(m.group(1)) != season or int(m.group(2)) != week:
+            continue
+        try:
+            html = open(os.path.join(ROOT, f), encoding="utf-8").read()
+            rows = json.loads(DATA_BLOB.search(html).group(1))
+        except Exception as e:  # noqa: BLE001 — one unreadable report, not a 500
+            sys.stderr.write(f"slate: cannot read {f}: {e}\n")
+            continue
+        away, home = m.group(3), m.group(4)
+        kick = kicks.get((season, week, away, home))
+        for r in rows:
+            # A leg with no price was projected but never shortlisted. It has
+            # no line to rank and no odds to compare, so it is not a pick.
+            if not r.get("pick") or r.get("price") is None:
+                continue
+            r["game"] = f"{away} @ {home}"
+            r["file"] = f
+            r["kick"] = kick
+            legs.append(r)
+
+    _LEG_CACHE.clear()
+    _LEG_CACHE[key] = legs
+    return legs
+
+
+STAT_SHORT = {"receiving_yards": "rec yds", "rushing_yards": "rush yds",
+              "passing_yards": "pass yds", "receptions": "rec"}
+
+
+def payout(price):
+    """What $100 wins at this American price, to the dollar.
+
+    A price of -290 is not a quantity anyone has a feel for. "$34" is. The
+    tables lead with the price because that is what the book shows, and carry
+    the payout because that is what the price means.
+    """
+    return 100 * 100 // -price if price < 0 else price
+
+
+def leg_rows(legs):
+    out = []
+    for i, r in enumerate(legs, 1):
+        stat = STAT_SHORT.get(r["s"], r["s"].replace("_", " "))
+        gap = (r["mp"] - r["bp"]) * 100
+        gap_cls = "gap up" if gap > 0 else "gap down"
+        out.append(
+            f'<tr data-inspect-id="slate-leg">'
+            f'<td class="rank">{i}</td>'
+            f'<td class="who"><a href="/{r["file"]}">{r["p"]}</a>'
+            f'<span class="meta">{r["tm"]} {r["role"]} &middot; {r["game"]}</span></td>'
+            f'<td class="stat">o{r["line"]:g} {stat}</td>'
+            f'<td class="num price">{r["price"]}<span class="meta">${payout(r["price"])}</span></td>'
+            f'<td class="num">{r["mp"] * 100:.1f}%</td>'
+            f'<td class="num book">{r["bp"] * 100:.1f}%'
+            f'<span class="{gap_cls}">{gap:+.1f}</span></td>'
+            f'</tr>')
+    return "".join(out)
+
+
+def slate_table(legs, title, note):
+    return (f'<div class="tbl" data-inspect-id="slate-table">'
+            f'<h4 data-inspect-id="slate-table-title">{title}</h4>'
+            f'<p class="note" data-inspect-id="slate-table-note">{note}</p>'
+            f'<div class="scroll"><table><thead><tr>'
+            f'<th></th><th>Player</th><th>Leg</th>'
+            f'<th class="num">Price</th><th class="num">Model</th>'
+            f'<th class="num">Book</th>'
+            f'</tr></thead><tbody>{leg_rows(legs)}</tbody></table></div></div>')
+
+
+SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
+  /* The slate is the listing's other half: same tokens, same three typefaces,
+     but rows of legs instead of a grid of games. The window heading reuses the
+     listing's .slot-h anatomy so the two pages divide the day the same way. */
+  a.back{{
+    display:inline-block; margin:22px 0 0; text-decoration:none;
+    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px;
+    letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3);
+  }}
+  a.back:hover{{color:var(--accent)}}
+  .win{{margin-top:34px}}
+  .win-h{{
+    display:flex; align-items:baseline; gap:9px; flex-wrap:wrap;
+    margin:0; padding-bottom:5px; border-bottom:2px solid var(--ink);
+    font-family:"Barlow Condensed",Impact,sans-serif; font-weight:600;
+    font-size:22px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink);
+  }}
+  .day{{
+    font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
+    letter-spacing:.09em; padding:2px 5px; border-radius:2px;
+    color:var(--surface); background:var(--accent); flex:none;
+  }}
+  .win-times{{
+    font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
+    font-size:14px; font-weight:500; letter-spacing:-.01em;
+    text-transform:none; color:var(--ink-2);
+  }}
+  .win-h .n{{
+    margin-left:auto;
+    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10px;
+    font-weight:400; letter-spacing:.1em; color:var(--ink-3);
+    font-variant-numeric:tabular-nums; text-transform:none;
+  }}
+  .tbl{{margin-top:24px}}
+  .tbl h4{{
+    margin:0; font-family:"Barlow Condensed",Impact,sans-serif; font-weight:600;
+    font-size:16px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-2);
+  }}
+  .note{{margin:2px 0 8px; font-size:12.5px; color:var(--ink-3); max-width:64ch}}
+  .scroll{{overflow-x:auto}}
+  table{{border-collapse:collapse; width:100%; font-size:14px}}
+  th{{
+    text-align:left; padding:0 8px 5px 0; border-bottom:1px solid var(--line);
+    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10px;
+    font-weight:400; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3);
+    white-space:nowrap;
+  }}
+  td{{padding:8px 8px 8px 0; border-bottom:1px solid var(--line-soft); vertical-align:top}}
+  tr:last-child td{{border-bottom:0}}
+  .rank{{
+    font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-3);
+    width:1.6em; font-variant-numeric:tabular-nums;
+  }}
+  .who a{{
+    font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:18px;
+    line-height:1.1; color:inherit; text-decoration:none; letter-spacing:.01em;
+  }}
+  .who a:hover{{color:var(--accent)}}
+  .meta{{
+    display:block; font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+    color:var(--ink-3); letter-spacing:.02em; margin-top:1px; font-weight:400;
+  }}
+  .stat{{
+    font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--ink-2);
+    white-space:nowrap;
+  }}
+  .num{{
+    text-align:right; font-family:"IBM Plex Mono",monospace;
+    font-variant-numeric:tabular-nums; white-space:nowrap;
+  }}
+  td.num{{font-size:14.5px; font-weight:500}}
+  td.num .meta{{text-align:right}}
+  .gap{{
+    display:block; font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+    font-weight:400; margin-top:1px;
+  }}
+  .gap.up{{color:var(--accent)}}
+  .gap.down{{color:var(--ink-3)}}
+  .empty{{color:var(--ink-3); font-style:italic; margin-top:20px}}
+  footer{{margin-top:44px; padding-top:16px; border-top:1px solid var(--line);
+    color:var(--ink-3); font-size:12.5px; max-width:68ch}}
+  @media (max-width:560px){{
+    .wrap{{padding:24px 14px 48px}}
+    .win-h{{font-size:19px}}
+  }}
+</style>
+<div class="wrap" data-inspect-id="slate-wrap">
+  <header>
+    <p class="eyebrow" data-inspect-id="slate-eyebrow">{week_label} &middot; consolidated</p>
+    <h1 data-inspect-id="slate-title">The Slate</h1>
+  </header>
+  <p class="sub" data-inspect-id="slate-subtitle">Every shortlisted leg in the week,
+    pooled by sitting and ranked three ways. Model is this project's own chance the
+    leg lands. Book is what FanDuel's price implies. The small figure under Book is
+    the difference, and it is the only column that says anything the book doesn't.</p>
+  <a class="back" href="/" data-inspect-id="slate-back">&larr; All reports</a>
+{windows}
+  <footer data-inspect-id="slate-footer">Projections, not edges. Prices are whatever
+    the report held when it was generated and move afterwards — check the live board.
+    Tested against real sportsbook lines this model was the less accurate of the two.</footer>
+</div>"""
+
+
+def slate_html():
+    """The week's shortlisted legs, pooled by sitting and ranked three ways.
+
+    A report answers one game. Nobody watches one game. This answers the
+    question a report cannot: out of everything on the board at four o'clock,
+    which five are the likeliest, which five pay least, and which five pay most.
+    """
+    kicks = kickoffs()
+    weeks = set()
+    try:
+        for f in os.listdir(ROOT):
+            m = NAME.search(f)
+            if m:
+                weeks.add((int(m.group(1)), int(m.group(2))))
+    except FileNotFoundError:
+        pass
+    if not weeks:
+        return SLATE_PAGE.format(week_label="No reports",
+                                 windows='  <p class="empty" data-inspect-id="slate-empty">'
+                                         'No reports generated yet.</p>')
+
+    season, week = max(weeks)
+    legs = [r for r in shortlist(season, week) if r["kick"]]
+
+    # Pool by sitting: one section per day and part of day, in the order they
+    # are played. Legs whose game has no schedule row have no sitting to join
+    # and are left out rather than grouped under a heading that would be a lie.
+    wins = {}
+    for r in legs:
+        date_s, time_s = r["kick"].split(" ")
+        rank, part = daypart(time_s)
+        wins.setdefault((date_s, rank, part), []).append(r)
+
+    out = []
+    for (date_s, _rank, part), rs in sorted(wins.items()):
+        when = datetime.strptime(date_s, "%Y-%m-%d")
+        # "1:00, 4:25 PM ET" rather than "1:00 PM, 4:25 PM ET" — the meridiem
+        # is said once when every kickoff shares it. A London morning game in
+        # the same sitting as an afternoon one would not, so that case keeps
+        # AM and PM on each time instead of stamping the last one's onto all.
+        times = sorted({r["kick"].split(" ")[1] for r in rs})
+        clock = [datetime.strptime(t, "%H:%M") for t in times]
+        if len({f"{t:%p}" for t in clock}) == 1:
+            times_s = ", ".join(f"{t:%-I:%M}" for t in clock) + f" {clock[0]:%p} ET"
+        else:
+            times_s = ", ".join(f"{t:%-I:%M %p}" for t in clock) + " ET"
+        games = len({r["game"] for r in rs})
+        tables = (
+            slate_table(sorted(rs, key=lambda r: -r["mp"])[:5],
+                        "Most likely to happen",
+                        "Ranked by the model's own chance the leg lands.")
+            + slate_table(sorted(rs, key=lambda r: r["price"])[:5],
+                          "Shortest odds",
+                          "The heaviest favourites, and so the smallest payouts.")
+            + slate_table(sorted(rs, key=lambda r: -r["price"])[:5],
+                          "Longest odds",
+                          "The best payouts on the shortlist. Still favourites, all of them."))
+        out.append(
+            f'  <section class="win" data-inspect-id="slate-window">'
+            f'<h3 class="win-h" data-inspect-id="slate-window-label">'
+            f'<span class="day" data-inspect-id="slate-day-badge">{when:%a}</span>'
+            f'{part}'
+            f'<span class="win-times" data-inspect-id="slate-window-times">{times_s}</span>'
+            f'<span class="n">{games} game{"" if games == 1 else "s"}, '
+            f'{len(rs)} legs</span></h3>{tables}</section>')
+
+    if not out:
+        out = ['  <p class="empty" data-inspect-id="slate-empty-unscheduled">'
+               'No shortlisted legs with a scheduled kickoff.</p>']
+
+    return SLATE_PAGE.format(week_label=f"{season} Week {week}", windows="\n".join(out))
+
+
 class Handler(SimpleHTTPRequestHandler):
     # Tailscale Serve proxies in front of this. An HTTP/1.0 server behind a
     # 1.1 proxy is a known way to get a request that never returns, so speak
@@ -478,6 +832,15 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if path.endswith(".html") and path != "/index.html":
             self._inspect_report(os.path.basename(path))
+            return
+
+        if path in ("/slate", "/slate/", "/slate.html"):
+            # The slate gets the overlay on the same terms as the listing:
+            # spliced in per request, never written to disk. Nothing is stored
+            # for this page at all — it is read back out of the report files.
+            body = (slate_html() +
+                    '\n<script src="/_inspector.js"></script>\n').encode()
+            self._send(body, "text/html; charset=utf-8")
             return
 
         if path in ("/", "/index.html"):
