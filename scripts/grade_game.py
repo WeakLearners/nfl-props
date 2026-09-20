@@ -23,6 +23,14 @@ from nflprops.odds import name_key
 
 VAULT = pathlib.Path("/Users/Sean/second-brain/projects/nfl-props/grades")
 BLOWOUT = 17          # margin at which game script, not the model, owns the result
+
+# A write-up is finished only once snap counts exist for its game. Until then it
+# is a scoreboard, not an explanation: a miss could be a benched player. The
+# runner keys off these exact strings, so a provisional file is redone and a
+# final one is left alone.
+STATUS_FINAL = "final."
+STATUS_PROVISIONAL = ("provisional — graded before snap counts were published. "
+                      "Will be re-graded automatically.")
 STAT_LABEL = {"passing_yards": "passing yards", "rushing_yards": "rushing yards",
               "receiving_yards": "receiving yards", "receptions": "receptions",
               "completions": "completions"}
@@ -58,18 +66,33 @@ def actuals(season, week):
     return a
 
 
-def snaps(season, week):
+def snaps(season, week, teams=()):
+    """Snap share per player, plus whether the data exists yet.
+
+    Snap counts come from Pro Football Reference, not the live feed, so they
+    land a day or more after the box score. An empty result and a genuine 0%
+    look identical once they are a dict, and the difference decides whether
+    this write-up can claim it checked availability. So the caller is told.
+    """
     with connect() as con:
         s = pd.read_sql_query(
-            "SELECT player, offense_pct FROM snap_counts WHERE season=? AND week=?",
+            "SELECT player, team, offense_pct FROM snap_counts WHERE season=? AND week=?",
             con, params=[season, week])
+    if teams:
+        s = s[s.team.isin(list(teams))]
     s["key"] = s.player.map(name_key)
-    return s.set_index("key").offense_pct.to_dict()
+    return s.set_index("key").offense_pct.to_dict(), not s.empty
+
+
+def teams_of(report_path):
+    """('CAR', 'ATL') from report_2026_w2_CAR-ATL.html."""
+    return tuple(report_path.stem.split("_")[-1].split("-"))
 
 
 def grade(season, week, report_path, write=True):
     data = load_report(report_path)
-    act, snap = actuals(season, week), snaps(season, week)
+    act = actuals(season, week)
+    snap, have_snaps = snaps(season, week, teams_of(report_path))
     if act.empty:
         return None
     sched = played_games(season, week)
@@ -114,19 +137,28 @@ def grade(season, week, report_path, write=True):
             allrows.append({"stat": d["s"], "err": abs(d["mu"] - float(a))})
     acc = pd.DataFrame(allrows).groupby("stat").err.agg(["mean", "count"]) if allrows else pd.DataFrame()
 
-    g = sched[sched.game_id.str.contains(report_path.stem.split("_")[-1].replace("-", "_"))]
+    away, home = teams_of(report_path)
+    g = sched[(sched.away_team == away) & (sched.home_team == home)]
     if g.empty:
-        g = sched
-    out = render(season, week, report_path, rows, acc, g, flags)
+        # No fallback. The old code fell back to the whole week's schedule, so a
+        # write-up for one game printed all sixteen final scores under its own
+        # title. An unfinished game is not gradable; say so and write nothing.
+        print(f"{season} W{week} {away} @ {home}: not final yet, skipping")
+        return None
+    out = render(season, week, report_path, rows, acc, g, flags, have_snaps)
     if write:
         VAULT.mkdir(parents=True, exist_ok=True)
         p = VAULT / f"{season}-w{week}-{report_path.stem.split('_')[-1]}.md"
-        p.write_text(out)
-        print(f"wrote {p}")
+        # Don't rewrite an identical file. This runs every half hour during the
+        # season, and the vault auto-commits when it goes idle -- a no-op write
+        # would spend the day producing commits that change nothing.
+        if not p.exists() or p.read_text() != out:
+            p.write_text(out)
+            print(f"wrote {p}")
     return out
 
 
-def render(season, week, report_path, rows, acc, sched, flags):
+def render(season, week, report_path, rows, acc, sched, flags, have_snaps=True):
     L = []
     title = report_path.stem.split("_")[-1].replace("-", " @ ")
     L.append(f"# Week {week} grade — {title} ({dt.date.today()})\n")
@@ -136,6 +168,7 @@ def render(season, week, report_path, rows, acc, sched, flags):
                  f"{'  — a blowout, margin ' + str(int(margin)) if margin >= BLOWOUT else ''}\n")
     L.append(f"**Source:** `{report_path.name}`, published before kickoff. "
              "Outcomes from `player_games`.\n")
+    L.append(f"**Status:** {STATUS_FINAL if have_snaps else STATUS_PROVISIONAL}\n")
     L.append("This is a measurement. No model, weight, or screen was changed to produce it.\n")
 
     L.append("## The legs\n")
@@ -172,7 +205,12 @@ def render(season, week, report_path, rows, acc, sched, flags):
                      "alone and has no way to see it coming.")
     for f in flags:
         L.append(f"- Snap-share flag: {f}")
-    if not flags:
+    if not have_snaps:
+        L.append("- **Snap share was not checked.** Pro Football Reference had not "
+                 "published snap counts for this game when this ran. A missed leg "
+                 "here could still be a benched player rather than a bad "
+                 "projection. Re-graded automatically once the counts land.")
+    elif not flags:
         L.append("- No shortlisted player fell below 30% of snaps.")
     L.append("")
 
@@ -195,6 +233,8 @@ if __name__ == "__main__":
     ap.add_argument("--season", type=int)
     ap.add_argument("--week", type=int)
     ap.add_argument("--no-refresh", action="store_true")
+    ap.add_argument("--force", action="store_true",
+                    help="re-grade even write-ups already marked final")
     ap.add_argument("--no-write", action="store_true")
     a = ap.parse_args()
 
@@ -226,10 +266,19 @@ if __name__ == "__main__":
         if actuals(season, week).empty:
             print(f"{season} W{week}: box scores not in the database yet")
             continue
+        final = {(r.away_team, r.home_team) for r in played_games(season, week).itertuples()}
         for rp in sorted((ROOT / "reports").glob(f"report_{season}_w{week}_*.html")):
+            if teams_of(rp) not in final:
+                continue          # still to be played, or still being played
             dest = VAULT / f"{season}-w{week}-{rp.stem.split('_')[-1]}.md"
-            if dest.exists() and not a.week and not a.no_write:
-                continue          # already graded; nothing to redo
+            # Skip only what is FINISHED, not merely what exists. The old rule
+            # was "the file is there, move on", which meant a Sunday-afternoon
+            # pass locked in a write-up that had no snap data and no other game
+            # in it, and the later pass skipped right over it. Re-running is
+            # cheap; a permanently half-graded week is not.
+            if dest.exists() and not a.force and not a.no_write:
+                if f"**Status:** {STATUS_FINAL}" in dest.read_text():
+                    continue
             out = grade(season, week, rp, write=not a.no_write)
             if out:
                 any_done = True
