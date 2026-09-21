@@ -15,9 +15,8 @@ market overall and still profit on a subset, but if it loses BOTH it is done.
 import sys, pathlib, io, contextlib
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 import pandas as pd, numpy as np
-import nflreadpy as nfl
 from nflprops import histodds as H, odds as O, project as P
-from nflprops.db import connect
+from nflprops.db import connect, team_abbr_map
 from scripts_util import MIN_VOL
 
 # Sunday snapshots at 16:45Z = 12:45pm ET, just before the 1pm kickoffs.
@@ -35,7 +34,7 @@ def actuals(season, week):
                       for s in O.MARKETS.values()], ignore_index=True)
 
 
-tm = dict(zip(*[nfl.load_teams().to_pandas()[c] for c in ("team_name", "team_abbr")]))
+tm = team_abbr_map()
 all_rows, spent = [], 0
 for snap, season, week in SNAPSHOTS:
     ev, hit = H.events(snap)

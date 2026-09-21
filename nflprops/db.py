@@ -57,3 +57,34 @@ def write_table(df, name, con, seasons=None):
     for ix_name, cols in INDEXES.get(name, []):
         con.execute(f"CREATE INDEX IF NOT EXISTS {ix_name} ON {name} ({cols})")
     return len(df)
+
+
+def team_abbr_map():
+    """Full team name -> the abbreviation this database actually uses.
+
+    nflverse's teams table carries one row per franchise *era*, so a club that
+    moved appears more than once. The Rams appear twice under the identical
+    current name, "Los Angeles Rams": once as LA and once as LAR. Building the
+    lookup with a plain dict(zip(...)) lets the later row win, which silently
+    hands back LAR -- a code that appears zero times in player_games, rosters
+    or schedules. Every Rams player then fails the team filter and the game's
+    report comes out half empty, with a filename the listing page cannot match
+    to its schedule row. That happened to 2026 W2 NYG @ LA on 2026-09-21.
+
+    So the schedules table decides, not the teams table. Any abbreviation the
+    schedule has never used is dropped before the dict is built. That kills
+    LAR, STL, SD and OAK on its own and needs no hand-kept alias list.
+    """
+    import nflreadpy as nfl
+    with connect() as con:
+        live = {r[0] for r in con.execute(
+            "SELECT away_team FROM schedules UNION SELECT home_team FROM schedules")}
+    t = nfl.load_teams().to_pandas()
+    t = t[t.team_abbr.isin(live)]
+    dupes = t.team_name.value_counts()
+    dupes = sorted(dupes[dupes > 1].index)
+    if dupes:
+        # Loud on purpose. A silent last-row-wins is exactly what caused the
+        # bug this function exists to prevent, and it cost a whole report.
+        raise ValueError(f"team name maps to more than one live abbr: {dupes}")
+    return dict(zip(t.team_name, t.team_abbr))

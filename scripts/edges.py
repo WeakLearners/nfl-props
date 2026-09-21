@@ -7,8 +7,8 @@ measured against a real market price, not a stand-in.
 import sys, pathlib, io, contextlib, time
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 import pandas as pd
-import nflreadpy as nfl
 from nflprops import odds as O
+from nflprops.db import team_abbr_map
 from nflprops import project as P
 from scripts_util import BETTABLE, MIN_VOL  # noqa
 
@@ -18,8 +18,7 @@ CACHE = pathlib.Path(__file__).parent.parent / "data" / f"odds_{SEASON}_w{WEEK}.
 
 
 def team_map():
-    t = nfl.load_teams().to_pandas()
-    return dict(zip(t.team_name, t.team_abbr))
+    return team_abbr_map()
 
 
 def fetch(evs):

@@ -22,6 +22,7 @@ import pandas as pd
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
+from nflprops.db import team_abbr_map  # noqa: E402
 from nflprops.odds import devig_yesno, event_props, name_key  # noqa: E402
 from nflprops.report import upcoming_events  # noqa: E402
 from nflprops.tdmodel import design_matrix, features  # noqa: E402
@@ -44,10 +45,8 @@ def main():
 
     book = pd.DataFrame(columns=["player_key", "book_p", "devigged"])
     if not args.no_book:
-        import nflreadpy as nfl
         ev = upcoming_events()
-        teams = nfl.load_teams().to_pandas()
-        abbr = dict(zip(teams.team_name, teams.team_abbr))
+        abbr = team_abbr_map()
         frames = []
         for e in ev.itertuples():
             a, h = abbr.get(e.away_team), abbr.get(e.home_team)

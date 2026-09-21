@@ -13,10 +13,9 @@ publishing it as an artifact is a manual step.
 import sys, pathlib, json
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 import pandas as pd
-import nflreadpy as nfl
 from nflprops import report as RP
 from nflprops.config import ROOT
-from nflprops.db import connect
+from nflprops.db import connect, team_abbr_map
 from nflprops.slack import post, section, header, divider
 
 SLATE = (sys.argv[1] if len(sys.argv) > 1 else "sunday").lower()
@@ -58,8 +57,7 @@ games = pick_games(ev)
 if games.empty:
     sys.exit(f"no {SLATE.upper()} game found")
 
-teams = nfl.load_teams().to_pandas()
-abbr = dict(zip(teams.team_name, teams.team_abbr))
+abbr = team_abbr_map()
 
 print(f"{SLATE.upper()}: {len(games)} game(s), {season} W{week}")
 blocks = [header(f"Production ranges — {season} W{week} · {SLATE.upper()}")]
