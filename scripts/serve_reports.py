@@ -1263,6 +1263,98 @@ def report_actuals(fname, html):
     return out
 
 
+_HIST_CACHE = {}
+
+
+def season_history(season, before_week):
+    """Every verdict we have already published on each player and stat.
+
+    Keyed "player|stat", newest week first, at most five. A verdict only
+    exists where we published a projection and the game later finished, so
+    this is our own record -- not the player's game log. A week we never
+    wrote a report on leaves no dot, and neither does a game still in play.
+
+    "hit" and "miss" need a line to have been offered. Where none was, the
+    projection still happened and the real number still exists, so the week
+    counts as history with no verdict attached -- the same grey the result
+    pill already uses for that case.
+    """
+    if name_key is None:
+        return {}
+    try:
+        files = sorted(f for f in os.listdir(ROOT) if f.endswith(".html"))
+    except FileNotFoundError:
+        return {}
+    stamp = tuple((f, os.path.getmtime(os.path.join(ROOT, f))) for f in files)
+    key = (season, before_week, stamp)
+    if key in _HIST_CACHE:
+        return _HIST_CACHE[key]
+
+    weeks = {}
+    for f in files:
+        m = NAME.search(f)
+        if not m or int(m.group(1)) != season:
+            continue
+        week, away, home = int(m.group(2)), m.group(3), m.group(4)
+        if week >= before_week:
+            continue
+        acts, done = outcomes(season, week)
+        if f"{away}@{home}" not in done:
+            continue
+        try:
+            rows = json.loads(DATA_BLOB.search(
+                open(os.path.join(ROOT, f), encoding="utf-8").read()).group(1))
+        except Exception as e:  # noqa: BLE001 -- one unreadable report, not a 500
+            sys.stderr.write(f"history: cannot read {f}: {e}\n")
+            continue
+        for r in rows:
+            a = acts.get(name_key(r["p"]), {}).get(r["s"])
+            if a is None:
+                continue
+            line = r.get("line")
+            weeks.setdefault(week, {})[f'{r["p"]}|{r["s"]}'] = {
+                "w": week, "a": a, "line": line,
+                "v": "none" if line is None else ("hit" if a > line else "miss"),
+            }
+
+    out = {}
+    for week in sorted(weeks, reverse=True):
+        for k, rec in weeks[week].items():
+            got = out.setdefault(k, [])
+            if len(got) < 5:
+                got.append(rec)
+    _HIST_CACHE.clear()
+    _HIST_CACHE[key] = out
+    return out
+
+
+def report_history(fname, html):
+    """The published record for just the players on this one page.
+
+    season_history holds the whole season. Shipping all of it to every report
+    would send fifteen games of other people's dots to a page that draws one
+    game, so it is cut down to the rows this page actually has cards for.
+    """
+    m = NAME.search(fname)
+    if not m:
+        return {}
+    season, week = int(m.group(1)), int(m.group(2))
+    hist = season_history(season, week)
+    if not hist:
+        return {}
+    try:
+        rows = json.loads(DATA_BLOB.search(html).group(1))
+    except Exception as e:  # noqa: BLE001 -- one unreadable report, not a 500
+        sys.stderr.write(f"history: cannot read {fname}: {e}\n")
+        return {}
+    out = {}
+    for r in rows:
+        k = f'{r["p"]}|{r["s"]}'
+        if k in hist:
+            out[k] = hist[k]
+    return out
+
+
 def with_theme(html):
     """Put the doctype and theme switch at the top of any page this server serves.
 
@@ -1378,6 +1470,17 @@ class Handler(SimpleHTTPRequestHandler):
             html = html.replace("<meta charset=\"utf-8\">",
                                 "<meta charset=\"utf-8\">\n"
                                 f"<script>window.__ACTUALS__={json.dumps(acts)};"
+                                "</script>", 1)
+
+        # The dot row, same bargain: a report is written before kickoff, and
+        # the weeks behind it keep being graded after that. Splicing it per
+        # request is what lets an old report show a record it could not have
+        # known about when it was generated.
+        hist = report_history(name, html) if "function history(" in html else {}
+        if hist:
+            html = html.replace("<meta charset=\"utf-8\">",
+                                "<meta charset=\"utf-8\">\n"
+                                f"<script>window.__HISTORY__={json.dumps(hist)};"
                                 "</script>", 1)
 
         body = (with_theme(html) +

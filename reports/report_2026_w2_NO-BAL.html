@@ -122,7 +122,20 @@
     background:var(--surface); border:1px solid var(--line); border-radius:3px;
     padding:13px 14px 8px; display:flex; flex-direction:column; gap:2px;
   }
-  .card-top{display:flex; justify-content:space-between; align-items:baseline; gap:8px}
+  .card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px}
+  .card-id{display:flex; align-items:baseline; gap:8px; flex:1; min-width:0}
+  /* The top-right stack. Dots first, then whatever badges this player earned,
+     so the badges hang below a row that is always the same height. */
+  .card-flags{display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex:none}
+  /* Five slots, always. An unplayed week is an outline rather than a gap, so
+     every card's dot row is the same width and the eye can compare them down
+     a column without counting. */
+  .hist{display:flex; flex-direction:row; gap:3px}
+  .hdot{width:7px; height:7px; border-radius:50%; background:transparent;
+    box-shadow:inset 0 0 0 1px var(--line)}
+  .hdot.hit{background:var(--good); box-shadow:none}
+  .hdot.miss{background:var(--bad); box-shadow:none}
+  .hdot.none{background:var(--ink-3); box-shadow:none}
   .role{
     font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
     letter-spacing:.09em; padding:2px 5px; border-radius:2px; color:var(--surface);
@@ -192,13 +205,13 @@
   .td-badge{
     font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:600;
     letter-spacing:.1em; text-transform:uppercase; color:var(--surface);
-    border-radius:2px; padding:1px 4px; margin-left:6px; flex:none;
+    border-radius:2px; padding:1px 4px; flex:none;
     background:var(--td-edge);
   }
   .pick-badge{
     font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:600;
     letter-spacing:.1em; text-transform:uppercase; color:var(--ink);
-    border:1px solid var(--ink); border-radius:2px; padding:1px 4px; margin-left:6px;
+    border:1px solid var(--ink); border-radius:2px; padding:1px 4px; flex:none;
   }
   .cmp{
     display:flex; align-items:baseline; gap:8px; margin-top:7px;
@@ -388,6 +401,27 @@ function result(d, id){
     + ' title="actual '+said+'" aria-label="actual '+said+'">'+fmt(a)+'</span>';
 }
 
+// How this same call has gone before. Five slots, most recent on the left,
+// filled from the weeks we actually published a report on and that have
+// since finished. A hollow slot is not a loss -- it is a week we never made
+// the call, which is why it reads as an outline rather than a colour.
+function history(d){
+  const h = (window.__HISTORY__ || {})[d.p + "|" + d.s] || [];
+  const said = {hit:"cleared the number", miss:"fell short", none:"no number was offered"};
+  let dots = "";
+  for(let i = 0; i < 5; i++){
+    const r = h[i];
+    const t = r ? "week " + r.w + ": " + fmt(r.a) + ", " + said[r.v]
+      : "no call on record";
+    dots += '<span class="hdot ' + (r ? r.v : "") + '" data-inspect-id="card-history-dot"'
+      + ' title="' + t + '"></span>';
+  }
+  const n = h.length;
+  return '<div class="hist" data-inspect-id="card-history" role="img"'
+    + ' aria-label="last ' + n + ' call' + (n === 1 ? "" : "s")
+    + ' on this player and stat, most recent first">' + dots + '</div>';
+}
+
 // The real number, drawn where it fell on the player's own curve. The pill
 // says he caught 51 yards; this says whether 51 was the middle of what the
 // model expected or out in the tail. A projection that was badly wrong looks
@@ -467,11 +501,14 @@ STATS.forEach(([key,label,unit])=>{
         +(d.app?'':' <span class="muted-note">· context only</span>')+'</span></div>';
     }
     card.innerHTML=
-      '<div class="card-top"><span class="name" data-inspect-id="card-player-name">'+d.p+'</span>'
-      +'<span class="role '+d.tm+'" data-inspect-id="card-role-badge">'+d.role+'</span>'
-      +(d.pick?'<span class="pick-badge" data-inspect-id="card-pick-badge">pick '+d.pick+'</span>':'')
-      +(isTD?'<span class="td-badge" data-inspect-id="card-td-badge">td '
-        +Math.round(TD.conf*100)+'%</span>':'')+'</div>'
+      '<div class="card-top">'
+      +'<div class="card-id" data-inspect-id="card-identity">'
+        +'<span class="name" data-inspect-id="card-player-name">'+d.p+'</span>'
+        +'<span class="role '+d.tm+'" data-inspect-id="card-role-badge">'+d.role+'</span></div>'
+      +'<div class="card-flags" data-inspect-id="card-flags">'+history(d)
+        +(d.pick?'<span class="pick-badge" data-inspect-id="card-pick-badge">pick '+d.pick+'</span>':'')
+        +(isTD?'<span class="td-badge" data-inspect-id="card-td-badge">td '
+          +Math.round(TD.conf*100)+'%</span>':'')+'</div></div>'
       +'<div class="fig-row"><span class="fig" data-inspect-id="card-expected">'
         +fmt(d.mu)+'</span>'+result(d)+'</div>'
       +'<div class="rng" data-inspect-id="card-range">'+fmt(d.lo)+' – '+fmt(d.hi)+'</div>'
