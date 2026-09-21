@@ -123,7 +123,12 @@
     padding:13px 14px 8px; display:flex; flex-direction:column; gap:2px;
   }
   .card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px}
-  .card-id{display:flex; align-items:baseline; gap:8px; flex:1; min-width:0}
+  /* Everything about the player himself, in one column: his name, then the
+     number we expect, then the range around it. The flag stack sits beside
+     the whole column rather than beside the name alone -- otherwise the head
+     row is as tall as the stack and the name floats above a gap. */
+  .card-main{display:flex; flex-direction:column; gap:2px; flex:1; min-width:0}
+  .card-id{display:flex; align-items:baseline; gap:8px; min-width:0}
   /* The top-right stack. Dots first, then whatever badges this player earned,
      so the badges hang below a row that is always the same height. */
   .card-flags{display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex:none}
@@ -142,7 +147,8 @@
   }
   .role.a{background:var(--den)} .role.b{background:var(--kc)}
   .name{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:19px;
-    letter-spacing:.01em; line-height:1.1; flex:1}
+    letter-spacing:.01em; line-height:1.1; min-width:0; overflow:hidden;
+    text-overflow:ellipsis; white-space:nowrap}
   .fig{
     font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
     font-size:21px; font-weight:500; letter-spacing:-.02em;
@@ -502,16 +508,17 @@ STATS.forEach(([key,label,unit])=>{
     }
     card.innerHTML=
       '<div class="card-top">'
-      +'<div class="card-id" data-inspect-id="card-identity">'
-        +'<span class="name" data-inspect-id="card-player-name">'+d.p+'</span>'
-        +'<span class="role '+d.tm+'" data-inspect-id="card-role-badge">'+d.role+'</span></div>'
+      +'<div class="card-main" data-inspect-id="card-main">'
+        +'<div class="card-id" data-inspect-id="card-identity">'
+          +'<span class="name" data-inspect-id="card-player-name">'+d.p+'</span>'
+          +'<span class="role '+d.tm+'" data-inspect-id="card-role-badge">'+d.role+'</span></div>'
+        +'<div class="fig-row"><span class="fig" data-inspect-id="card-expected">'
+          +fmt(d.mu)+'</span>'+result(d)+'</div>'
+        +'<div class="rng" data-inspect-id="card-range">'+fmt(d.lo)+' – '+fmt(d.hi)+'</div></div>'
       +'<div class="card-flags" data-inspect-id="card-flags">'+history(d)
         +(d.pick?'<span class="pick-badge" data-inspect-id="card-pick-badge">pick '+d.pick+'</span>':'')
         +(isTD?'<span class="td-badge" data-inspect-id="card-td-badge">td '
           +Math.round(TD.conf*100)+'%</span>':'')+'</div></div>'
-      +'<div class="fig-row"><span class="fig" data-inspect-id="card-expected">'
-        +fmt(d.mu)+'</span>'+result(d)+'</div>'
-      +'<div class="rng" data-inspect-id="card-range">'+fmt(d.lo)+' – '+fmt(d.hi)+'</div>'
       +'<svg data-inspect-id="card-curve" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+d.p+' '+label
       +': expected '+fmt(d.mu)+', middle range '+fmt(d.lo)+' to '+fmt(d.hi)+'">'
       +'<path d="'+c.band+'" fill="'+fill+'"></path>'
