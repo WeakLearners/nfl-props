@@ -603,7 +603,11 @@ def shortlist(season, week):
 # Only these four stats are ever shortlisted, and each is a column in
 # player_games under the same name. Listing them keeps the query to the
 # columns that exist rather than SELECT *.
-GRADED_STATS = ("passing_yards", "rushing_yards", "receiving_yards", "receptions")
+# Every stat a report can carry a line on. scripts/grade_game.py grades the
+# same five, and the two must agree -- a leg the write-up scores and the page
+# leaves blank is the page quietly disagreeing with the record.
+GRADED_STATS = ("passing_yards", "rushing_yards", "receiving_yards", "receptions",
+                "completions")
 
 _RESULT_CACHE = {}
 
@@ -685,7 +689,8 @@ def game_record(season, week):
 
 
 STAT_SHORT = {"receiving_yards": "rec yds", "rushing_yards": "rush yds",
-              "passing_yards": "pass yds", "receptions": "rec"}
+              "passing_yards": "pass yds", "receptions": "rec",
+              "completions": "comp"}
 
 
 def payout(price):
@@ -710,7 +715,7 @@ def leg_rows(legs, graded):
         mark = ("" if hit is None else
                 f'<span class="mark {"hit" if hit else "miss"}"'
                 f' data-inspect-id="slate-leg-result">'
-                f'{"HIT" if hit else "MISS"}</span>')
+                f'{r["actual"]:g}</span>')
         out.append(
             f'<tr data-inspect-id="slate-leg">'
             f'<td class="rank">{i}</td>'
@@ -739,14 +744,14 @@ SLATE_COLS = ('<col class="c-rank"><col><col class="c-stat">'
 def slate_table(legs, title, note, graded):
     """One ranking, cut to the shared column ruler.
 
-    Whether the Result column exists is decided for the whole week, not for
+    Whether the Actual column exists is decided for the whole week, not for
     this table, so the three rankings under a sitting always have the same
-    columns in the same places. A week nobody has played yet carries no Result
+    columns in the same places. A week nobody has played yet carries no Actual
     heading at all — five empty cells read as something broken rather than as
     something that has not happened yet.
     """
     head = ('<th></th><th>Player</th><th>Leg</th>'
-            + ('<th class="res">Result</th>' if graded else "")
+            + ('<th class="res">Actual</th>' if graded else "")
             + '<th class="num">Price</th><th class="num">Model</th>'
               '<th class="num">Book</th>')
     cols = SLATE_COLS.format(res='<col class="c-res">' if graded else "")
@@ -894,9 +899,9 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
      number it was easy to miss — a column is a place the eye already goes. */
   .res{{white-space:nowrap; padding-right:14px}}
   .mark{{
-    display:inline-block; padding:3px 6px; border-radius:2px;
-    font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:600;
-    letter-spacing:.07em; color:var(--surface);
+    display:inline-block; width:38px; padding:3px 0; border-radius:2px;
+    text-align:center; font-family:"IBM Plex Mono",monospace; font-size:11px;
+    font-weight:600; font-variant-numeric:tabular-nums; color:var(--surface);
   }}
   .mark.hit{{background:var(--good)}}
   .mark.miss{{background:var(--bad)}}
@@ -1221,13 +1226,18 @@ CHARSET = '<meta charset="utf-8">'
 DOCTYPE = "<!doctype html>"
 
 
-def report_actuals(fname):
-    """What each shortlisted player actually did in this one game.
+def report_actuals(fname, html):
+    """What every player on this page actually did in this one game.
 
-    Keyed "player|stat" so a card can look itself up. Empty until the game is
-    final: a receiver with 12 yards at half time has not missed an over-29.5,
-    and printing a MISS that quietly corrects itself an hour later is worse
-    than printing nothing. Same gate the slate uses, for the same reason.
+    Keyed "player|stat" so a card can look itself up. Read from the page's own
+    row list, not from the shortlist, so a player we projected but never picked
+    still gets graded — the projection was a claim either way, and hiding the
+    ones we did not bet on would only ever flatter the model.
+
+    Empty until the game is final: a receiver with 12 yards at half time has
+    not missed an over-29.5, and printing a MISS that quietly corrects itself
+    an hour later is worse than printing nothing. Same gate the slate uses,
+    for the same reason.
     """
     m = NAME.search(fname)
     if not m or name_key is None:
@@ -1236,10 +1246,17 @@ def report_actuals(fname):
     acts, done = outcomes(season, week)
     if f"{away}@{home}" not in done:
         return {}
-    game, out = f"{away} @ {home}", {}
-    for r in shortlist(season, week):
-        if r["game"] != game or r.get("line") is None:
-            continue
+    try:
+        rows = json.loads(DATA_BLOB.search(html).group(1))
+    except Exception as e:  # noqa: BLE001 — one unreadable report, not a 500
+        sys.stderr.write(f"actuals: cannot read {fname}: {e}\n")
+        return {}
+    # No line filter here. A stat nobody offered a number on -- completions,
+    # every week so far -- still has a projection, and that projection was
+    # either close or it wasn't. The page shows the real figure on the curve
+    # either way; only the hit/miss verdict needs a line to exist.
+    out = {}
+    for r in rows:
         a = acts.get(name_key(r["p"]), {}).get(r["s"])
         if a is not None:
             out[f'{r["p"]}|{r["s"]}'] = a
@@ -1356,7 +1373,7 @@ class Handler(SimpleHTTPRequestHandler):
         # Only for a page that can draw them. Week 1's report cannot be
         # rebuilt against the current template, so its script has no result()
         # and the data would sit in the page unread.
-        acts = report_actuals(name) if "function result(" in html else {}
+        acts = report_actuals(name, html) if "function result(" in html else {}
         if acts:
             html = html.replace("<meta charset=\"utf-8\">",
                                 "<meta charset=\"utf-8\">\n"

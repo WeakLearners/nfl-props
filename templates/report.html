@@ -70,20 +70,29 @@
      as a colour alone, so the meaning survives a print-out or a reader who
      cannot separate green from red. The real number sits beside it: knowing
      a leg missed is worth less than knowing it missed by two yards. */
-  .res-row{
-    display:flex; align-items:center; gap:7px; margin-top:8px;
-    padding-top:7px; border-top:1px dotted var(--line);
-    font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-3);
-    font-variant-numeric:tabular-nums; flex-wrap:wrap;
-  }
+  /* The verdict rides on the card's headline row, beside the number the model
+     expected. Predicted 33.8, actually did 51 — that is the whole comparison,
+     and putting the two side by side says it without a word. It also lands in
+     the same place on every card: the row is the second one down, above
+     everything that varies in height. */
+  .fig-row{display:flex; align-items:center; justify-content:flex-start; gap:10px}
+  /* One size whatever the number. Actuals run from 1 to 3 digits, and a box
+     that grew with them would scatter the colour blocks across the grid. */
   .res-mark{
-    display:inline-flex; align-items:center; height:16px; padding:0 6px;
-    border-radius:2px; line-height:1; font-size:9.5px; font-weight:600;
-    letter-spacing:.07em; color:var(--surface);
+    display:inline-flex; align-items:center; justify-content:center; flex:none;
+    width:46px; height:20px; border-radius:2px;
+    font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600;
+    font-variant-numeric:tabular-nums; color:var(--surface);
   }
   .res-mark.hit{background:var(--good)}
   .res-mark.miss{background:var(--bad)}
-  .res-actual b{font-weight:600; color:var(--ink)}
+  .res-mark.none{background:var(--ink-3)}
+  .lg-good{font-style:normal; font-weight:600; color:var(--good)}
+  .lg-bad{font-style:normal; font-weight:600; color:var(--bad)}
+  /* The same verdict on the shortlist row. A fixed-width slot, held even when
+     the game has not finished, so the ten rows stay a column rather than
+     ragging in and out as results land one game at a time. */
+  .pk-res{display:flex; align-items:center; flex:none; width:46px}
   header{border-bottom:2px solid var(--ink); padding-bottom:18px; margin-bottom:8px}
   .eyebrow{
     font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px;
@@ -124,6 +133,7 @@
   .fig{
     font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
     font-size:21px; font-weight:500; letter-spacing:-.02em;
+    min-width:56px; flex:none;
   }
   .rng{
     font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
@@ -147,8 +157,13 @@
     width:14px; flex:none; font-weight:600;
   }
   .pk-name{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:20px;
-    line-height:1; flex:none}
-  .pk-bet{color:var(--ink-2); font-size:13.5px; flex:1}
+    line-height:1; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis;
+    white-space:nowrap}
+  /* Fixed slot, text pushed to its right edge. The longest leg on the slate is
+     "receiving yards over 59.5" at 25 characters; every shorter one ends flush
+     with it, so the line and the pill always touch. */
+  .pk-bet{color:var(--ink-2); font-size:13.5px; flex:none; width:158px;
+    text-align:right; white-space:nowrap}
   .pk-bet b{color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums;
     font-family:"IBM Plex Mono",monospace; font-size:12.5px}
   .pk-conf{
@@ -261,6 +276,7 @@
     <span class="key"><span class="swatch band-key"></span>middle ~68% of outcomes</span>
     <span class="key"><span class="swatch" style="background:none;border-top:2px dashed var(--ink-3);height:0"></span>expected</span>
     <span class="key"><span class="swatch" style="background:none;border-left:2px solid var(--ink);width:0;height:14px"></span>FanDuel's ~&minus;__TARGET_ABS__ number</span>
+    <span class="key" data-inspect-id="legend-actual"><span class="swatch" style="background:none;border-left:2px solid var(--good);width:0;height:14px"></span>what he actually did &mdash; <em class="lg-good">green</em> cleared the number, <em class="lg-bad">red</em> did not, grey means none was offered</span>
   </div>
 
   <section class="picks" data-inspect-id="picks-section">
@@ -357,18 +373,40 @@ function lineMark(d,c){
     +'" stroke="var(--ink)" stroke-width="2"></line>'
     +'<circle cx="'+x.toFixed(1)+'" cy="6" r="2.5" fill="var(--ink)"></circle>';
 }
-function result(d){
-  const acts = window.__ACTUALS__ || {};
-  const a = acts[d.p + "|" + d.s];
-  if(a == null || d.line == null) return "";
-  const hit = a > d.line;
-  return '<div class="res-row" data-inspect-id="card-result">'
-    + '<span class="res-mark '+(hit?"hit":"miss")+'" data-inspect-id="card-result-mark">'
-      +(hit?"HIT":"MISS")+'</span>'
-    + '<span class="res-actual" data-inspect-id="card-result-actual">actual <b>'
-      +fmt(a)+'</b> vs '+d.line+'</span>'
-    + '</div>';
+function result(d, id){
+  const a = (window.__ACTUALS__ || {})[d.p + "|" + d.s];
+  if(a == null) return "";
+  // Green and red are a verdict, and a verdict needs something to have been
+  // bet. With no number offered the figure is still worth showing -- it just
+  // gets the neutral pill, because nothing was won or lost on it.
+  const cls = d.line == null ? "none" : (a > d.line ? "hit" : "miss");
+  // Colour on its own is not readable to everyone, so the words go in the
+  // hover text and in what a screen reader announces.
+  const said = fmt(a) + (d.line == null ? ", no number was offered"
+    : (a > d.line ? ", beat the line of " : ", under the line of ") + d.line);
+  return '<span class="res-mark '+cls+'" data-inspect-id="'+(id||"card-result")+'"'
+    + ' title="actual '+said+'" aria-label="actual '+said+'">'+fmt(a)+'</span>';
 }
+
+// The real number, drawn where it fell on the player's own curve. The pill
+// says he caught 51 yards; this says whether 51 was the middle of what the
+// model expected or out in the tail. A projection that was badly wrong looks
+// wrong here even when the leg happened to win.
+function actualMark(d,c){
+  const a = (window.__ACTUALS__ || {})[d.p + "|" + d.s];
+  if(a == null) return "";
+  const stroke = d.line == null ? "var(--ink-3)"
+    : (a > d.line ? "var(--good)" : "var(--bad)");
+  const raw = c.X(a), x = Math.max(1, Math.min(W-1, raw));
+  // A number past the end of the drawn range is pinned to the edge. The dash
+  // says so, rather than pretending the curve reached that far.
+  const off = raw < 1 || raw > W-1;
+  return '<line data-inspect-id="card-actual-mark" x1="'+x.toFixed(1)+'" y1="6" x2="'
+    +x.toFixed(1)+'" y2="'+(H-10)+'" stroke="'+stroke+'" stroke-width="2"'
+    +(off?' stroke-dasharray="3 2"':'')+'></line>'
+    +'<circle cx="'+x.toFixed(1)+'" cy="'+(H-10)+'" r="2.5" fill="'+stroke+'"></circle>';
+}
+
 function compare(d){
   if(d.line==null) return '<div class="cmp none" data-inspect-id="card-compare-none">no number near &minus;'+Math.abs(TARGET)+' offered</div>';
   const off = Math.abs(d.price-TARGET) > 60;
@@ -434,7 +472,8 @@ STATS.forEach(([key,label,unit])=>{
       +(d.pick?'<span class="pick-badge" data-inspect-id="card-pick-badge">pick '+d.pick+'</span>':'')
       +(isTD?'<span class="td-badge" data-inspect-id="card-td-badge">td '
         +Math.round(TD.conf*100)+'%</span>':'')+'</div>'
-      +'<div class="fig" data-inspect-id="card-expected">'+fmt(d.mu)+'</div>'
+      +'<div class="fig-row"><span class="fig" data-inspect-id="card-expected">'
+        +fmt(d.mu)+'</span>'+result(d)+'</div>'
       +'<div class="rng" data-inspect-id="card-range">'+fmt(d.lo)+' – '+fmt(d.hi)+'</div>'
       +'<svg data-inspect-id="card-curve" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+d.p+' '+label
       +': expected '+fmt(d.mu)+', middle range '+fmt(d.lo)+' to '+fmt(d.hi)+'">'
@@ -446,11 +485,11 @@ STATS.forEach(([key,label,unit])=>{
       +'<text class="tick" x="0" y="'+(H-1)+'">'+fmt(Math.max(0,c.lo))+'</text>'
       +'<text class="tick" x="'+W+'" y="'+(H-1)+'" text-anchor="end">'+fmt(c.hi)+'</text>'
       +lineMark(d,c)
+      +actualMark(d,c)
       +'<rect class="hit" data-inspect-id="card-curve-hitbox" x="0" y="0" width="'+W+'" height="'+H+'"></rect>'
       +'</svg>'
       +compare(d)
-      +match
-      +result(d);
+      +match;
     const svg=card.querySelector("svg"), hit=card.querySelector(".hit");
     hit.addEventListener("mousemove",e=>{
       const bb=svg.getBoundingClientRect();
@@ -467,6 +506,11 @@ STATS.forEach(([key,label,unit])=>{
   sections.appendChild(grid);
 });
 
+function pickResult(d){
+  return '<span class="pk-res" data-inspect-id="pick-result">'
+    + result(d, "pick-result-mark") + '</span>';
+}
+
 const pl=document.getElementById("picklist");
 DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick).forEach(d=>{
   const li=document.createElement("li");
@@ -474,7 +518,8 @@ DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick).forEach(d=>{
   const col=d.tm===META.teamA?"var(--den)":"var(--kc)";
   li.innerHTML='<span class="pk-n">'+d.pick+'</span>'
     +'<span class="pk-name">'+d.p+'</span>'
-    +'<span class="pk-bet">'+d.s.replace(/_/g," ")+' over <b>'+fmt(d.line)+'</b></span>'
+    +'<span class="pk-bet">'+d.s.replace(/_/g," ")+' over <b>'+d.line+'</b></span>'
+    +pickResult(d)
     +'<span class="pk-px">'+(d.price>0?"+":"")+d.price+'</span>'
     +'<span class="pk-conf" style="color:'+col+'">'+Math.round(Math.min(d.mp,d.bp)*100)+'%</span>';
   pl.appendChild(li);
