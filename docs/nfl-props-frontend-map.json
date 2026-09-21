@@ -5,6 +5,12 @@
     "description": "UI map of the generated production-ranges report. One template renders every report; most of the page is built by its inline script at runtime, so anchors point at the code that draws an element, not at static markup.",
     "generated": "Read from templates/report.html on 2026-09-20. Every element carries a data-inspect-id (static markup) or dataset.inspectId (runtime-built), which is both the map anchor and the hook the inspector overlay reads.",
     "howToUse": "locate.grep is a ready-to-paste grep command; run it from the repo root. locate.path is a secondary file:line reference that drifts as the file changes - the grep command does not.",
+    "rules": [
+      "An inspect id is unique across the whole app, not just within its own component or page. The overlay resolves the first element carrying an id and stops, so two elements sharing one id leaves the second unreachable. Worse, the inspector then reports an element the reader is not looking at, with a description that does not match what is on their screen. On 2026-09-20 in nfl-props the shortlist pill reused the card pill's id. A request to move one moved the other, and two rounds were spent describing different parts of the page to each other before the cause surfaced.",
+      "A function that emits an element and is called from more than one place must take its id as a parameter. Reusing markup is good; reusing the id that identifies it is not. This is the shape the 2026-09-20 duplicate took, and it is the one a uniqueness grep cannot catch, because the id appears exactly once in the source.",
+      "When one id is a prefix of others (prematch-rank-drum against prematch-rank-drum-up), anchor the grep on the full attribute so it cannot match a child.",
+      "Every entry here is added, renamed or removed in the same change as the element it describes. A map that lags the code is worse than no map: it answers confidently and wrongly."
+    ],
     "renderers": [
       "nflprops/report.py:187 (live)",
       "scripts/make_report.py:187 (canonical duplicate)"
