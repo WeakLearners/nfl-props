@@ -1,10 +1,20 @@
+<!doctype html>
 <meta charset="utf-8">
-<!-- Must be the first thing in the document, and within the first 1024
-     bytes: that is the window a browser scans before it gives up and
-     guesses. Missing here until 2026-09-20, so every report rendered
-     its middle dots and em dashes as mojibake whenever the server did
-     not name the encoding. The bytes were always correct UTF-8; nothing
-     ever told the browser so. Keep this line first. -->
+<!-- Two lines, in this order, and nothing before them.
+     
+     The doctype tells the browser to follow the modern rules. Without it a
+     browser falls back to imitating a browser from 1999, and reports had no
+     doctype until 2026-09-20 -- so every one of them rendered under different
+     rules than the listing and slate pages, which always had one. The styles
+     here set box-sizing explicitly, which is why nothing visibly moved when
+     this was added; that was luck, not design.
+     
+     The charset has to land within the first 1024 bytes, because that is the
+     window a browser scans before it gives up and guesses. The doctype costs
+     15 of those bytes. Missing until 2026-09-20 as well, so reports rendered
+     their middle dots and em dashes as mojibake whenever the server did not
+     name the encoding. The bytes were always correct UTF-8; nothing ever told
+     the browser so. -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Saints–Ravens Production Ranges</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,6 +28,7 @@
     --den:#eb6834; --kc:#2a78d6;
     --den-fill:rgba(235,104,52,.16); --kc-fill:rgba(42,120,214,.16);
     --band:rgba(20,20,15,.055);
+    --good:#1c7a4d; --bad:#b3261e;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
@@ -27,6 +38,7 @@
       --den:#d95926; --kc:#3987e5;
       --den-fill:rgba(217,89,38,.22); --kc-fill:rgba(57,135,229,.22);
       --band:rgba(255,255,255,.06);
+      --good:#4fbd85; --bad:#f2685c;
     }
   }
   :root[data-theme="dark"]{
@@ -36,6 +48,7 @@
     --den:#d95926; --kc:#3987e5;
     --den-fill:rgba(217,89,38,.22); --kc-fill:rgba(57,135,229,.22);
     --band:rgba(255,255,255,.06);
+    --good:#4fbd85; --bad:#f2685c;
   }
   *{box-sizing:border-box}
   body{
@@ -44,6 +57,33 @@
     font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
   }
   .wrap{max-width:1120px; margin:0 auto; padding:40px 24px 72px}
+  a.back{
+    display:inline-block; margin:0 0 18px; text-decoration:none;
+    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px;
+    letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3);
+  }
+  a.back:hover{color:var(--den)}
+  a.back:focus-visible{outline:2px solid var(--den); outline-offset:3px}
+  /* What the player actually did, once the game is final. A filled pill in
+     the same two grounds the listing and the slate use, so a result reads the
+     same wherever it appears. HIT and MISS are spelled out rather than shown
+     as a colour alone, so the meaning survives a print-out or a reader who
+     cannot separate green from red. The real number sits beside it: knowing
+     a leg missed is worth less than knowing it missed by two yards. */
+  .res-row{
+    display:flex; align-items:center; gap:7px; margin-top:8px;
+    padding-top:7px; border-top:1px dotted var(--line);
+    font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-3);
+    font-variant-numeric:tabular-nums; flex-wrap:wrap;
+  }
+  .res-mark{
+    display:inline-flex; align-items:center; height:16px; padding:0 6px;
+    border-radius:2px; line-height:1; font-size:9.5px; font-weight:600;
+    letter-spacing:.07em; color:var(--surface);
+  }
+  .res-mark.hit{background:var(--good)}
+  .res-mark.miss{background:var(--bad)}
+  .res-actual b{font-weight:600; color:var(--ink)}
   header{border-bottom:2px solid var(--ink); padding-bottom:18px; margin-bottom:8px}
   .eyebrow{
     font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px;
@@ -201,6 +241,7 @@
 </style>
 
 <div class="wrap" data-inspect-id="page-wrap">
+  <a class="back" href="/" data-inspect-id="report-back">&larr; All reports</a>
   <header data-inspect-id="page-header">
     <p class="eyebrow" data-inspect-id="eyebrow">Sunday · Week 2 · 2026</p>
     <h1>New Orleans Saints <span class="at">at</span> Baltimore Ravens</h1>
@@ -316,6 +357,18 @@ function lineMark(d,c){
     +'" stroke="var(--ink)" stroke-width="2"></line>'
     +'<circle cx="'+x.toFixed(1)+'" cy="6" r="2.5" fill="var(--ink)"></circle>';
 }
+function result(d){
+  const acts = window.__ACTUALS__ || {};
+  const a = acts[d.p + "|" + d.s];
+  if(a == null || d.line == null) return "";
+  const hit = a > d.line;
+  return '<div class="res-row" data-inspect-id="card-result">'
+    + '<span class="res-mark '+(hit?"hit":"miss")+'" data-inspect-id="card-result-mark">'
+      +(hit?"HIT":"MISS")+'</span>'
+    + '<span class="res-actual" data-inspect-id="card-result-actual">actual <b>'
+      +fmt(a)+'</b> vs '+d.line+'</span>'
+    + '</div>';
+}
 function compare(d){
   if(d.line==null) return '<div class="cmp none" data-inspect-id="card-compare-none">no number near &minus;'+Math.abs(TARGET)+' offered</div>';
   const off = Math.abs(d.price-TARGET) > 60;
@@ -396,7 +449,8 @@ STATS.forEach(([key,label,unit])=>{
       +'<rect class="hit" data-inspect-id="card-curve-hitbox" x="0" y="0" width="'+W+'" height="'+H+'"></rect>'
       +'</svg>'
       +compare(d)
-      +match;
+      +match
+      +result(d);
     const svg=card.querySelector("svg"), hit=card.querySelector(".hit");
     hit.addEventListener("mousemove",e=>{
       const bb=svg.getBoundingClientRect();

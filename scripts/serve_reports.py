@@ -1158,11 +1158,19 @@ def data_version():
         db.close()
     except Exception as e:  # noqa: BLE001 — a page that cannot poll still renders
         sys.stderr.write(f"data-version unavailable: {e}\n")
+    # Counting the files is not enough. run_reports.py rewrites a report under
+    # the same name when prices move, so the count stays put while the page a
+    # reader is looking at goes out of date. The newest write time moves on
+    # every rewrite, which is the event an open tab needs to hear about.
+    reports, newest = -1, 0
     try:
-        reports = sum(1 for f in os.listdir(ROOT) if NAME.search(f))
+        names = [f for f in os.listdir(ROOT) if NAME.search(f)]
+        reports = len(names)
+        newest = int(max((os.path.getmtime(os.path.join(ROOT, f))
+                          for f in names), default=0))
     except OSError:
-        reports = -1
-    return f"{done}.{lines}.{reports}"
+        pass
+    return f"{done}.{lines}.{reports}.{newest}"
 
 
 LIVE = """<script>
@@ -1199,8 +1207,43 @@ LIVE = """<script>
 </script>
 """
 
+# For a report old enough that the template cannot rebuild it. Carries its own
+# rule, because that page's stylesheet was written before a.back existed.
+BACK_LINK = ('<style>a.back{display:inline-block; margin:0 0 18px;'
+             'text-decoration:none; font-family:"IBM Plex Mono",ui-monospace,'
+             'monospace; font-size:11px; letter-spacing:.12em;'
+             'text-transform:uppercase; color:var(--ink-3)}'
+             'a.back:hover{color:var(--den)}</style>'
+             '<a class="back" href="/" data-inspect-id="report-back">'
+             '&larr; All reports</a>')
+
 CHARSET = '<meta charset="utf-8">'
 DOCTYPE = "<!doctype html>"
+
+
+def report_actuals(fname):
+    """What each shortlisted player actually did in this one game.
+
+    Keyed "player|stat" so a card can look itself up. Empty until the game is
+    final: a receiver with 12 yards at half time has not missed an over-29.5,
+    and printing a MISS that quietly corrects itself an hour later is worse
+    than printing nothing. Same gate the slate uses, for the same reason.
+    """
+    m = NAME.search(fname)
+    if not m or name_key is None:
+        return {}
+    season, week, away, home = int(m.group(1)), int(m.group(2)), m.group(3), m.group(4)
+    acts, done = outcomes(season, week)
+    if f"{away}@{home}" not in done:
+        return {}
+    game, out = f"{away} @ {home}", {}
+    for r in shortlist(season, week):
+        if r["game"] != game or r.get("line") is None:
+            continue
+        a = acts.get(name_key(r["p"]), {}).get(r["s"])
+        if a is not None:
+            out[f'{r["p"]}|{r["s"]}'] = a
+    return out
 
 
 def with_theme(html):
@@ -1296,6 +1339,29 @@ class Handler(SimpleHTTPRequestHandler):
             html = html.replace("<meta charset=\"utf-8\">",
                                 "<meta charset=\"utf-8\">\n"
                                 f"<script>window.__TD__={blob};</script>", 1)
+
+        # Results, spliced per request for the same reason the theme switch is:
+        # a report is written before kickoff and never touched again, so the
+        # only place the outcome can come from is the database, now.
+        # Week 1's report predates the TARGET constant, so
+        # rerender_reports.py cannot rebuild it against the current template
+        # and it never picked up the back link. Splice one in rather than
+        # leave one page on the site with no way out but the browser's own
+        # button, which a phone in full screen does not show.
+        if 'class="back"' not in html:
+            html = html.replace(
+                '<div class="wrap" data-inspect-id="page-wrap">',
+                '<div class="wrap" data-inspect-id="page-wrap">\n' + BACK_LINK, 1)
+
+        # Only for a page that can draw them. Week 1's report cannot be
+        # rebuilt against the current template, so its script has no result()
+        # and the data would sit in the page unread.
+        acts = report_actuals(name) if "function result(" in html else {}
+        if acts:
+            html = html.replace("<meta charset=\"utf-8\">",
+                                "<meta charset=\"utf-8\">\n"
+                                f"<script>window.__ACTUALS__={json.dumps(acts)};"
+                                "</script>", 1)
 
         body = (with_theme(html) +
                 '\n<script src="/_inspector.js"></script>\n').encode()

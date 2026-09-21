@@ -17,7 +17,7 @@
       "label": "Production ranges report",
       "category": "generated-page",
       "file": "templates/report.html",
-      "description": "The single report template. Placeholders (__DATA__, __META__, __TARGET__, __TITLE__, __EYEBROW__, __HEADLINE__, __TARGET_ABS__) are string-replaced at build time; everything else is drawn client-side from DATA. The likeliest touchdown scorer is not baked in: scripts/serve_reports.py injects window.__TD__ at serve time, and the script tints that player's cards.",
+      "description": "The single report template. Placeholders (__DATA__, __META__, __TARGET__, __TITLE__, __EYEBROW__, __HEADLINE__, __TARGET_ABS__) are string-replaced at build time; everything else is drawn client-side from DATA. The likeliest touchdown scorer is not baked in: scripts/serve_reports.py injects window.__TD__ at serve time, and the script tints that player's cards. Results arrive the same way, as window.__ACTUALS__, and only once the game is final.",
       "uiElements": [
         {
           "id": "page-wrap",
@@ -25,7 +25,7 @@
           "kind": "layout",
           "description": "Outer 1120px column that everything on the report sits inside.",
           "locate": {
-            "path": "templates/report.html:213",
+            "path": "templates/report.html:243",
             "grep": "grep -n -F -- 'data-inspect-id=\"page-wrap\"' templates/report.html"
           }
         },
@@ -35,7 +35,7 @@
           "kind": "layout",
           "description": "Top block holding the eyebrow line and the matchup headline.",
           "locate": {
-            "path": "templates/report.html:214",
+            "path": "templates/report.html:245",
             "grep": "grep -n -F -- 'data-inspect-id=\"page-header\"' templates/report.html"
           }
         },
@@ -45,7 +45,7 @@
           "kind": "text",
           "description": "Kickoff time, week and season. Filled at build time from __EYEBROW__ in nflprops/report.py.",
           "locate": {
-            "path": "templates/report.html:215",
+            "path": "templates/report.html:246",
             "grep": "grep -n -F -- 'data-inspect-id=\"eyebrow\"' templates/report.html"
           }
         },
@@ -55,7 +55,7 @@
           "kind": "legend",
           "description": "Explains the two team colours, the shaded middle-68% band, the dashed expected line, and the solid FanDuel line.",
           "locate": {
-            "path": "templates/report.html:227",
+            "path": "templates/report.html:258",
             "grep": "grep -n -F -- 'data-inspect-id=\"legend\"' templates/report.html"
           }
         },
@@ -65,7 +65,7 @@
           "kind": "card",
           "description": "Black-bordered panel holding the ranked shortlist and its payout footer.",
           "locate": {
-            "path": "templates/report.html:235",
+            "path": "templates/report.html:266",
             "grep": "grep -n -F -- 'data-inspect-id=\"picks-section\"' templates/report.html"
           }
         },
@@ -75,7 +75,7 @@
           "kind": "heading",
           "description": "'The shortlist' with the 'most confident first' unit label.",
           "locate": {
-            "path": "templates/report.html:236",
+            "path": "templates/report.html:267",
             "grep": "grep -n -F -- 'data-inspect-id=\"picks-heading\"' templates/report.html"
           }
         },
@@ -85,7 +85,7 @@
           "kind": "text",
           "description": "States that confidence means likely, not mispriced. This is the disclaimer, not decoration.",
           "locate": {
-            "path": "templates/report.html:237",
+            "path": "templates/report.html:268",
             "grep": "grep -n -F -- 'data-inspect-id=\"picks-note\"' templates/report.html"
           }
         },
@@ -95,7 +95,7 @@
           "kind": "list",
           "description": "Empty <ol> in the template. Filled at runtime from every DATA row carrying a pick number.",
           "locate": {
-            "path": "templates/report.html:241",
+            "path": "templates/report.html:272",
             "grep": "grep -n -F -- 'data-inspect-id=\"picklist\"' templates/report.html"
           }
         },
@@ -105,7 +105,7 @@
           "kind": "list-item",
           "description": "One leg: rank, player, bet and line, price, confidence percent.",
           "locate": {
-            "path": "templates/report.html:429",
+            "path": "templates/report.html:473",
             "grep": "grep -n -F -- 'dataset.inspectId=\"pick-row\"' templates/report.html"
           }
         },
@@ -115,7 +115,7 @@
           "kind": "panel",
           "description": "Straight payout, naive joint chance, and the correlation note.",
           "locate": {
-            "path": "templates/report.html:242",
+            "path": "templates/report.html:273",
             "grep": "grep -n -F -- 'data-inspect-id=\"picks-foot\"' templates/report.html"
           }
         },
@@ -125,7 +125,7 @@
           "kind": "value",
           "description": "Product of every leg's decimal odds. Computed in the template's own script, not server-side.",
           "locate": {
-            "path": "templates/report.html:243",
+            "path": "templates/report.html:274",
             "grep": "grep -n -F -- 'data-inspect-id=\"payout-value\"' templates/report.html"
           }
         },
@@ -135,7 +135,7 @@
           "kind": "value",
           "description": "Product of min(model, book) across legs. 'Naive' because it assumes independence.",
           "locate": {
-            "path": "templates/report.html:244",
+            "path": "templates/report.html:275",
             "grep": "grep -n -F -- 'data-inspect-id=\"joint-value\"' templates/report.html"
           }
         },
@@ -145,7 +145,7 @@
           "kind": "text",
           "description": "Whether the legs share a game. Text chosen in nflprops/report.py and injected via META.corrnote.",
           "locate": {
-            "path": "templates/report.html:245",
+            "path": "templates/report.html:276",
             "grep": "grep -n -F -- 'data-inspect-id=\"corr-note\"' templates/report.html"
           }
         },
@@ -155,7 +155,7 @@
           "kind": "layout",
           "description": "Empty div. Runtime appends one heading plus one card grid per stat in STATS.",
           "locate": {
-            "path": "templates/report.html:249",
+            "path": "templates/report.html:280",
             "grep": "grep -n -F -- 'data-inspect-id=\"stat-sections\"' templates/report.html"
           }
         },
@@ -165,7 +165,7 @@
           "kind": "heading",
           "description": "Stat name plus its unit, e.g. 'Rushing yards / yards'.",
           "locate": {
-            "path": "templates/report.html:360",
+            "path": "templates/report.html:403",
             "grep": "grep -n -F -- 'dataset.inspectId=\"stat-heading\"' templates/report.html"
           }
         },
@@ -175,7 +175,7 @@
           "kind": "layout",
           "description": "Responsive grid of player cards for one stat, ordered by how close the book's number sits to the curve's peak.",
           "locate": {
-            "path": "templates/report.html:363",
+            "path": "templates/report.html:406",
             "grep": "grep -n -F -- 'dataset.inspectId=\"stat-grid\"' templates/report.html"
           }
         },
@@ -185,7 +185,7 @@
           "kind": "card",
           "description": "One player-stat projection. Gets a heavier border when it is a shortlist pick.",
           "locate": {
-            "path": "templates/report.html:370",
+            "path": "templates/report.html:413",
             "grep": "grep -n -F -- 'dataset.inspectId=\"player-card\"' templates/report.html"
           }
         },
@@ -195,7 +195,7 @@
           "kind": "text",
           "description": "Player name in the card's top row.",
           "locate": {
-            "path": "templates/report.html:389",
+            "path": "templates/report.html:432",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-player-name\"' templates/report.html"
           }
         },
@@ -205,7 +205,7 @@
           "kind": "badge",
           "description": "Team-coloured position badge, e.g. QB1 or WR2.",
           "locate": {
-            "path": "templates/report.html:390",
+            "path": "templates/report.html:433",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-role-badge\"' templates/report.html"
           }
         },
@@ -215,7 +215,7 @@
           "kind": "badge",
           "description": "Only present when the player is on the shortlist. Shows the pick's rank.",
           "locate": {
-            "path": "templates/report.html:391",
+            "path": "templates/report.html:434",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-pick-badge\"' templates/report.html"
           }
         },
@@ -225,7 +225,7 @@
           "kind": "value",
           "description": "The projection's mu, after calibration.",
           "locate": {
-            "path": "templates/report.html:394",
+            "path": "templates/report.html:437",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-expected\"' templates/report.html"
           }
         },
@@ -235,7 +235,7 @@
           "kind": "value",
           "description": "The middle-68% band, mu plus or minus one sd, with sd already widened 10%.",
           "locate": {
-            "path": "templates/report.html:395",
+            "path": "templates/report.html:438",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-range\"' templates/report.html"
           }
         },
@@ -245,7 +245,7 @@
           "kind": "chart",
           "description": "Inline SVG Gaussian. Built by curve() from mu and sd alone.",
           "locate": {
-            "path": "templates/report.html:396",
+            "path": "templates/report.html:439",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-curve\"' templates/report.html"
           }
         },
@@ -255,7 +255,7 @@
           "kind": "overlay",
           "description": "Transparent rect that catches mousemove and drives the tooltip. The chart has no other pointer handling.",
           "locate": {
-            "path": "templates/report.html:406",
+            "path": "templates/report.html:449",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-curve-hitbox\"' templates/report.html"
           }
         },
@@ -265,7 +265,7 @@
           "kind": "panel",
           "description": "FanDuel's line and price against the model's and book's implied probabilities.",
           "locate": {
-            "path": "templates/report.html:333",
+            "path": "templates/report.html:376",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-compare\"' templates/report.html"
           }
         },
@@ -275,7 +275,7 @@
           "kind": "panel",
           "description": "Shown instead of the comparison when no price near the target was offered for this player-stat.",
           "locate": {
-            "path": "templates/report.html:330",
+            "path": "templates/report.html:373",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-compare-none\"' templates/report.html"
           }
         },
@@ -285,7 +285,7 @@
           "kind": "text",
           "description": "How many standard deviations separate the book's number from the curve's peak.",
           "locate": {
-            "path": "templates/report.html:340",
+            "path": "templates/report.html:383",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-compare-z\"' templates/report.html"
           }
         },
@@ -295,7 +295,7 @@
           "kind": "text",
           "description": "Defensive multiplier versus this position. Marked 'context only' for receiving stats, where applying it made projections worse.",
           "locate": {
-            "path": "templates/report.html:384",
+            "path": "templates/report.html:427",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-matchup\"' templates/report.html"
           }
         },
@@ -305,7 +305,7 @@
           "kind": "overlay",
           "description": "Fixed-position readout that follows the cursor across a curve, showing a value and the chance of more.",
           "locate": {
-            "path": "templates/report.html:280",
+            "path": "templates/report.html:311",
             "grep": "grep -n -F -- 'data-inspect-id=\"curve-tooltip\"' templates/report.html"
           }
         },
@@ -315,7 +315,7 @@
           "kind": "disclosure",
           "description": "Collapsed section holding every projected figure, not just the featured cards.",
           "locate": {
-            "path": "templates/report.html:251",
+            "path": "templates/report.html:282",
             "grep": "grep -n -F -- 'data-inspect-id=\"table-details\"' templates/report.html"
           }
         },
@@ -325,7 +325,7 @@
           "kind": "button",
           "description": "Click target that expands the full figures table.",
           "locate": {
-            "path": "templates/report.html:252",
+            "path": "templates/report.html:283",
             "grep": "grep -n -F -- 'data-inspect-id=\"table-summary\"' templates/report.html"
           }
         },
@@ -335,7 +335,7 @@
           "kind": "table",
           "description": "Every DATA row: player, role, stat, expected, minus and plus one sd, spread, matchup.",
           "locate": {
-            "path": "templates/report.html:253",
+            "path": "templates/report.html:284",
             "grep": "grep -n -F -- 'data-inspect-id=\"full-table\"' templates/report.html"
           }
         },
@@ -345,7 +345,7 @@
           "kind": "table-row",
           "description": "One player-stat row in the full table.",
           "locate": {
-            "path": "templates/report.html:463",
+            "path": "templates/report.html:507",
             "grep": "grep -n -F -- 'dataset.inspectId=\"table-row\"' templates/report.html"
           }
         },
@@ -355,7 +355,7 @@
           "kind": "text",
           "description": "Four explanatory blocks: reading the matchup figure, curve width, model versus book, and the 'these are not edges' disclaimer.",
           "locate": {
-            "path": "templates/report.html:260",
+            "path": "templates/report.html:291",
             "grep": "grep -n -F -- 'data-inspect-id=\"footer-notes\"' templates/report.html"
           }
         },
@@ -365,7 +365,7 @@
           "kind": "card",
           "description": "The likeliest touchdown scorer's player card, washed in that player's team colour so the eye finds them before reading a name. Every card for that player is tinted, one per stat.",
           "locate": {
-            "path": "templates/report.html:377",
+            "path": "templates/report.html:420",
             "grep": "grep -n -F -- 'inspectId = \"td-scorer-card' templates/report.html"
           }
         },
@@ -375,8 +375,48 @@
           "kind": "badge",
           "description": "Confidence chip on a tinted card, e.g. 'td 55%'. The lower of the model's number and the book's, the same rule every leg follows.",
           "locate": {
-            "path": "templates/report.html:392",
+            "path": "templates/report.html:435",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-td-badge\"' templates/report.html"
+          }
+        },
+        {
+          "id": "report-back",
+          "label": "Back to all reports",
+          "kind": "nav",
+          "description": "Link at the very top of the report, above the header, back to the listing at /. A report is often opened cold from a Slack link, where the browser's own back button leads nowhere.",
+          "locate": {
+            "path": "templates/report.html:244",
+            "grep": "grep -n -F -- 'data-inspect-id=\"report-back\"' templates/report.html"
+          }
+        },
+        {
+          "id": "card-result",
+          "label": "Result row",
+          "kind": "status",
+          "description": "Shown on a shortlisted player's card once the game is final: whether the leg landed, the real number, and the line it was measured against. The values arrive as window.__ACTUALS__, spliced in by scripts/serve_reports.py at serve time -- a report is written before kickoff and never rewritten, so the outcome cannot be baked in.",
+          "locate": {
+            "path": "templates/report.html:365",
+            "grep": "grep -n -F -- 'data-inspect-id=\"card-result\"' templates/report.html"
+          }
+        },
+        {
+          "id": "card-result-mark",
+          "label": "Hit/miss pill",
+          "kind": "status",
+          "description": "Filled pill reading HIT or MISS, in the same green and red the listing and slate use. Spelled out rather than shown as a colour alone.",
+          "locate": {
+            "path": "templates/report.html:366",
+            "grep": "grep -n -F -- 'data-inspect-id=\"card-result-mark\"' templates/report.html"
+          }
+        },
+        {
+          "id": "card-result-actual",
+          "label": "Actual vs line",
+          "kind": "status",
+          "description": "The number the player actually put up, beside the line it had to beat. The line is printed exactly, never rounded -- there is no push at 39.5 and there is at 40.",
+          "locate": {
+            "path": "templates/report.html:368",
+            "grep": "grep -n -F -- 'data-inspect-id=\"card-result-actual\"' templates/report.html"
           }
         }
       ]
