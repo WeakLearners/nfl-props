@@ -816,7 +816,8 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
     display:inline-flex; align-items:center; height:18px; padding:0 6px;
     border-radius:2px; flex:none; line-height:1;
     font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
-    letter-spacing:.09em; color:var(--surface); background:var(--accent);
+    letter-spacing:.09em; color:var(--accent); background:none;
+    border:1px solid color-mix(in srgb, var(--accent) 35%, transparent);
   }}
   .win-times{{
     font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
