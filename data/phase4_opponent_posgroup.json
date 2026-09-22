@@ -1,0 +1,220 @@
+{
+  "rows": [
+    {
+      "season": 2024,
+      "stat": "carries",
+      "pos": "QB",
+      "nodef_mae": 2.1303,
+      "arm_a_mae": 2.1323,
+      "lift_pct": -0.09,
+      "n": 356
+    },
+    {
+      "season": 2024,
+      "stat": "carries",
+      "pos": "RB",
+      "nodef_mae": 3.7973,
+      "arm_a_mae": 3.8009,
+      "lift_pct": -0.09,
+      "n": 1174
+    },
+    {
+      "season": 2024,
+      "stat": "carries",
+      "pos": "TE",
+      "nodef_mae": 0.8229,
+      "arm_a_mae": 0.996,
+      "lift_pct": -21.04,
+      "n": 7
+    },
+    {
+      "season": 2024,
+      "stat": "rushing_yards",
+      "pos": "QB",
+      "nodef_mae": 15.1682,
+      "arm_a_mae": 15.0164,
+      "lift_pct": 1.0,
+      "n": 356
+    },
+    {
+      "season": 2024,
+      "stat": "rushing_yards",
+      "pos": "RB",
+      "nodef_mae": 22.4178,
+      "arm_a_mae": 22.4425,
+      "lift_pct": -0.11,
+      "n": 1174
+    },
+    {
+      "season": 2024,
+      "stat": "rushing_yards",
+      "pos": "TE",
+      "nodef_mae": 20.1965,
+      "arm_a_mae": 21.466,
+      "lift_pct": -6.29,
+      "n": 7
+    },
+    {
+      "season": 2024,
+      "stat": "targets",
+      "pos": "RB",
+      "nodef_mae": 1.6681,
+      "arm_a_mae": 1.6508,
+      "lift_pct": 1.04,
+      "n": 371
+    },
+    {
+      "season": 2024,
+      "stat": "targets",
+      "pos": "TE",
+      "nodef_mae": 2.1709,
+      "arm_a_mae": 2.184,
+      "lift_pct": -0.6,
+      "n": 507
+    },
+    {
+      "season": 2024,
+      "stat": "targets",
+      "pos": "WR",
+      "nodef_mae": 2.1696,
+      "arm_a_mae": 2.1703,
+      "lift_pct": -0.03,
+      "n": 1517
+    },
+    {
+      "season": 2024,
+      "stat": "receiving_yards",
+      "pos": "RB",
+      "nodef_mae": 14.6926,
+      "arm_a_mae": 14.643,
+      "lift_pct": 0.34,
+      "n": 371
+    },
+    {
+      "season": 2024,
+      "stat": "receiving_yards",
+      "pos": "TE",
+      "nodef_mae": 21.7233,
+      "arm_a_mae": 21.8229,
+      "lift_pct": -0.46,
+      "n": 507
+    },
+    {
+      "season": 2024,
+      "stat": "receiving_yards",
+      "pos": "WR",
+      "nodef_mae": 24.4998,
+      "arm_a_mae": 24.5194,
+      "lift_pct": -0.08,
+      "n": 1517
+    },
+    {
+      "season": 2025,
+      "stat": "carries",
+      "pos": "QB",
+      "nodef_mae": 2.0394,
+      "arm_a_mae": 2.0273,
+      "lift_pct": 0.59,
+      "n": 357
+    },
+    {
+      "season": 2025,
+      "stat": "carries",
+      "pos": "RB",
+      "nodef_mae": 3.6426,
+      "arm_a_mae": 3.6567,
+      "lift_pct": -0.39,
+      "n": 1160
+    },
+    {
+      "season": 2025,
+      "stat": "carries",
+      "pos": "TE",
+      "nodef_mae": 2.8165,
+      "arm_a_mae": 2.7573,
+      "lift_pct": 2.1,
+      "n": 13
+    },
+    {
+      "season": 2025,
+      "stat": "rushing_yards",
+      "pos": "QB",
+      "nodef_mae": 14.313,
+      "arm_a_mae": 14.1643,
+      "lift_pct": 1.04,
+      "n": 357
+    },
+    {
+      "season": 2025,
+      "stat": "rushing_yards",
+      "pos": "RB",
+      "nodef_mae": 21.9729,
+      "arm_a_mae": 22.0111,
+      "lift_pct": -0.17,
+      "n": 1160
+    },
+    {
+      "season": 2025,
+      "stat": "rushing_yards",
+      "pos": "TE",
+      "nodef_mae": 11.6746,
+      "arm_a_mae": 10.1036,
+      "lift_pct": 13.46,
+      "n": 13
+    },
+    {
+      "season": 2025,
+      "stat": "targets",
+      "pos": "RB",
+      "nodef_mae": 1.7443,
+      "arm_a_mae": 1.7344,
+      "lift_pct": 0.57,
+      "n": 365
+    },
+    {
+      "season": 2025,
+      "stat": "targets",
+      "pos": "TE",
+      "nodef_mae": 1.8839,
+      "arm_a_mae": 1.8767,
+      "lift_pct": 0.38,
+      "n": 579
+    },
+    {
+      "season": 2025,
+      "stat": "targets",
+      "pos": "WR",
+      "nodef_mae": 2.0904,
+      "arm_a_mae": 2.1099,
+      "lift_pct": -0.93,
+      "n": 1462
+    },
+    {
+      "season": 2025,
+      "stat": "receiving_yards",
+      "pos": "RB",
+      "nodef_mae": 15.46,
+      "arm_a_mae": 15.3971,
+      "lift_pct": 0.41,
+      "n": 365
+    },
+    {
+      "season": 2025,
+      "stat": "receiving_yards",
+      "pos": "TE",
+      "nodef_mae": 19.7365,
+      "arm_a_mae": 19.6128,
+      "lift_pct": 0.63,
+      "n": 579
+    },
+    {
+      "season": 2025,
+      "stat": "receiving_yards",
+      "pos": "WR",
+      "nodef_mae": 24.1217,
+      "arm_a_mae": 24.0515,
+      "lift_pct": 0.29,
+      "n": 1462
+    }
+  ]
+}

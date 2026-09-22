@@ -1,0 +1,358 @@
+{
+  "k_table": {
+    "carry_QB": {
+      "k": 1.51,
+      "sigma0_sq": 10.79,
+      "sigma_between_sq": 7.168385,
+      "n_cells": 2556,
+      "league_avg": 4.322
+    },
+    "carry_RB": {
+      "k": 2.37,
+      "sigma0_sq": 3.9029,
+      "sigma_between_sq": 1.65014,
+      "n_cells": 2780,
+      "league_avg": 4.2809
+    },
+    "carry_TE": {
+      "k": 1.69,
+      "sigma0_sq": 18.8717,
+      "sigma_between_sq": 11.197482,
+      "n_cells": 210,
+      "league_avg": 4.9091
+    },
+    "carry_WR": {
+      "k": 4.16,
+      "sigma0_sq": 52.5486,
+      "sigma_between_sq": 12.645336,
+      "n_cells": 1348,
+      "league_avg": 6.0675
+    },
+    "target_QB": {
+      "k": 1000000.0,
+      "sigma0_sq": 48.1822,
+      "sigma_between_sq": 1e-06,
+      "n_cells": 51,
+      "league_avg": 2.1176
+    },
+    "target_RB": {
+      "k": 3.12,
+      "sigma0_sq": 18.7633,
+      "sigma_between_sq": 6.02023,
+      "n_cells": 2762,
+      "league_avg": 5.7417
+    },
+    "target_TE": {
+      "k": 2.57,
+      "sigma0_sq": 20.5652,
+      "sigma_between_sq": 8.00413,
+      "n_cells": 2765,
+      "league_avg": 7.3064
+    },
+    "target_WR": {
+      "k": 4.77,
+      "sigma0_sq": 24.7193,
+      "sigma_between_sq": 5.183662,
+      "n_cells": 2780,
+      "league_avg": 8.028
+    }
+  },
+  "arms": {
+    "no_defense": {
+      "mae": {
+        "2024_targets": {
+          "mae": 2.0935,
+          "rmse": 2.7132,
+          "n": 2395
+        },
+        "2024_carries": {
+          "mae": 3.3976,
+          "rmse": 4.5271,
+          "n": 1537
+        },
+        "2024_receiving_yards": {
+          "mae": 22.3928,
+          "rmse": 30.6202,
+          "n": 2395
+        },
+        "2024_rushing_yards": {
+          "mae": 20.7285,
+          "rmse": 28.8912,
+          "n": 1537
+        },
+        "2025_targets": {
+          "mae": 1.9853,
+          "rmse": 2.5615,
+          "n": 2406
+        },
+        "2025_carries": {
+          "mae": 3.2615,
+          "rmse": 4.4429,
+          "n": 1530
+        },
+        "2025_receiving_yards": {
+          "mae": 21.7524,
+          "rmse": 29.9327,
+          "n": 2406
+        },
+        "2025_rushing_yards": {
+          "mae": 20.0981,
+          "rmse": 28.9697,
+          "n": 1530
+        }
+      },
+      "td": {
+        "2024_receiving_tds": {
+          "n": 2395,
+          "actual_rate": 0.2209,
+          "brier": 0.16316,
+          "league_brier": 0.17217,
+          "auc": 0.6704
+        },
+        "2024_rushing_tds": {
+          "n": 1537,
+          "actual_rate": 0.2401,
+          "brier": 0.16667,
+          "league_brier": 0.18245,
+          "auc": 0.7045
+        },
+        "2025_receiving_tds": {
+          "n": 2406,
+          "actual_rate": 0.2224,
+          "brier": 0.16785,
+          "league_brier": 0.17301,
+          "auc": 0.6429
+        },
+        "2025_rushing_tds": {
+          "n": 1530,
+          "actual_rate": 0.2288,
+          "brier": 0.17117,
+          "league_brier": 0.17653,
+          "auc": 0.6644
+        }
+      }
+    },
+    "arm_a_shrinkage": {
+      "mae": {
+        "2024_targets": {
+          "mae": 2.1051,
+          "rmse": 2.7229,
+          "n": 2395
+        },
+        "2024_carries": {
+          "mae": 3.4016,
+          "rmse": 4.5192,
+          "n": 1537
+        },
+        "2024_receiving_yards": {
+          "mae": 22.4187,
+          "rmse": 30.6796,
+          "n": 2395
+        },
+        "2024_rushing_yards": {
+          "mae": 20.718,
+          "rmse": 28.9092,
+          "n": 1537
+        },
+        "2025_targets": {
+          "mae": 1.9889,
+          "rmse": 2.5649,
+          "n": 2406
+        },
+        "2025_carries": {
+          "mae": 3.2689,
+          "rmse": 4.4472,
+          "n": 1530
+        },
+        "2025_receiving_yards": {
+          "mae": 21.6704,
+          "rmse": 29.782,
+          "n": 2406
+        },
+        "2025_rushing_yards": {
+          "mae": 20.079,
+          "rmse": 29.0312,
+          "n": 1530
+        }
+      },
+      "td": {
+        "2024_receiving_tds": {
+          "n": 2395,
+          "actual_rate": 0.2209,
+          "brier": 0.16349,
+          "league_brier": 0.17217,
+          "auc": 0.6667
+        },
+        "2024_rushing_tds": {
+          "n": 1537,
+          "actual_rate": 0.2401,
+          "brier": 0.16753,
+          "league_brier": 0.18245,
+          "auc": 0.7007
+        },
+        "2025_receiving_tds": {
+          "n": 2406,
+          "actual_rate": 0.2224,
+          "brier": 0.16744,
+          "league_brier": 0.17301,
+          "auc": 0.6494
+        },
+        "2025_rushing_tds": {
+          "n": 1530,
+          "actual_rate": 0.2288,
+          "brier": 0.17371,
+          "league_brier": 0.17653,
+          "auc": 0.6556
+        }
+      }
+    },
+    "arm_b_epa": {
+      "mae": {
+        "2024_targets": {
+          "mae": 2.0954,
+          "rmse": 2.7156,
+          "n": 2395
+        },
+        "2024_carries": {
+          "mae": 3.3934,
+          "rmse": 4.5116,
+          "n": 1537
+        },
+        "2024_receiving_yards": {
+          "mae": 22.519,
+          "rmse": 30.7027,
+          "n": 2395
+        },
+        "2024_rushing_yards": {
+          "mae": 20.5099,
+          "rmse": 28.5765,
+          "n": 1537
+        },
+        "2025_targets": {
+          "mae": 1.9909,
+          "rmse": 2.5683,
+          "n": 2406
+        },
+        "2025_carries": {
+          "mae": 3.2717,
+          "rmse": 4.4472,
+          "n": 1530
+        },
+        "2025_receiving_yards": {
+          "mae": 21.7176,
+          "rmse": 29.8201,
+          "n": 2406
+        },
+        "2025_rushing_yards": {
+          "mae": 20.1627,
+          "rmse": 29.0597,
+          "n": 1530
+        }
+      },
+      "td": {
+        "2024_receiving_tds": {
+          "n": 2395,
+          "actual_rate": 0.2209,
+          "brier": 0.16313,
+          "league_brier": 0.17217,
+          "auc": 0.6672
+        },
+        "2024_rushing_tds": {
+          "n": 1537,
+          "actual_rate": 0.2401,
+          "brier": 0.16836,
+          "league_brier": 0.18245,
+          "auc": 0.6991
+        },
+        "2025_receiving_tds": {
+          "n": 2406,
+          "actual_rate": 0.2224,
+          "brier": 0.16679,
+          "league_brier": 0.17301,
+          "auc": 0.6498
+        },
+        "2025_rushing_tds": {
+          "n": 1530,
+          "actual_rate": 0.2288,
+          "brier": 0.17217,
+          "league_brier": 0.17653,
+          "auc": 0.6588
+        }
+      }
+    },
+    "arm_c_both": {
+      "mae": {
+        "2024_targets": {
+          "mae": 2.0996,
+          "rmse": 2.7181,
+          "n": 2395
+        },
+        "2024_carries": {
+          "mae": 3.3783,
+          "rmse": 4.5,
+          "n": 1537
+        },
+        "2024_receiving_yards": {
+          "mae": 22.4385,
+          "rmse": 30.6656,
+          "n": 2395
+        },
+        "2024_rushing_yards": {
+          "mae": 20.6169,
+          "rmse": 28.7098,
+          "n": 1537
+        },
+        "2025_targets": {
+          "mae": 1.9867,
+          "rmse": 2.5632,
+          "n": 2406
+        },
+        "2025_carries": {
+          "mae": 3.2754,
+          "rmse": 4.4462,
+          "n": 1530
+        },
+        "2025_receiving_yards": {
+          "mae": 21.6602,
+          "rmse": 29.7979,
+          "n": 2406
+        },
+        "2025_rushing_yards": {
+          "mae": 20.2258,
+          "rmse": 29.2112,
+          "n": 1530
+        }
+      },
+      "td": {
+        "2024_receiving_tds": {
+          "n": 2395,
+          "actual_rate": 0.2209,
+          "brier": 0.16408,
+          "league_brier": 0.17217,
+          "auc": 0.6677
+        },
+        "2024_rushing_tds": {
+          "n": 1537,
+          "actual_rate": 0.2401,
+          "brier": 0.1665,
+          "league_brier": 0.18245,
+          "auc": 0.704
+        },
+        "2025_receiving_tds": {
+          "n": 2406,
+          "actual_rate": 0.2224,
+          "brier": 0.16883,
+          "league_brier": 0.17301,
+          "auc": 0.6346
+        },
+        "2025_rushing_tds": {
+          "n": 1530,
+          "actual_rate": 0.2288,
+          "brier": 0.17507,
+          "league_brier": 0.17653,
+          "auc": 0.6513
+        }
+      }
+    }
+  }
+}
