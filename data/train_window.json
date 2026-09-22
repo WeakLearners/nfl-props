@@ -1,0 +1,85 @@
+{
+  "question": "does training one season later fix the 2025 calibration drift",
+  "test_season": 2025,
+  "windows": {
+    "A_through_2023": [
+      2019,
+      2023
+    ],
+    "B_through_2024": [
+      2019,
+      2024
+    ]
+  },
+  "note": "2024 enters training for window B only; the shipping split is unchanged",
+  "results": {
+    "A_through_2023": {
+      "receiving_tds": {
+        "brier": 0.16636,
+        "max_gap": 0.074,
+        "auc": 0.6502,
+        "best_baseline": "pos",
+        "lift_pct": 3.13,
+        "n": 2406
+      },
+      "rushing_tds": {
+        "brier": 0.17307,
+        "max_gap": 0.1367,
+        "auc": 0.6549,
+        "best_baseline": "pos",
+        "lift_pct": 1.63,
+        "n": 1530
+      },
+      "targets": {
+        "mae": 1.9949,
+        "n": 2406
+      },
+      "carries": {
+        "mae": 3.2895,
+        "n": 1530
+      },
+      "receiving_yards": {
+        "mae": 21.6979,
+        "n": 2406
+      },
+      "rushing_yards": {
+        "mae": 20.0972,
+        "n": 1530
+      }
+    },
+    "B_through_2024": {
+      "receiving_tds": {
+        "brier": 0.1662,
+        "max_gap": 0.0471,
+        "auc": 0.6546,
+        "best_baseline": "pos",
+        "lift_pct": 3.25,
+        "n": 2406
+      },
+      "rushing_tds": {
+        "brier": 0.1723,
+        "max_gap": 0.143,
+        "auc": 0.6649,
+        "best_baseline": "pos",
+        "lift_pct": 2.08,
+        "n": 1530
+      },
+      "targets": {
+        "mae": 1.9842,
+        "n": 2406
+      },
+      "carries": {
+        "mae": 3.2704,
+        "n": 1530
+      },
+      "receiving_yards": {
+        "mae": 21.7657,
+        "n": 2406
+      },
+      "rushing_yards": {
+        "mae": 20.0843,
+        "n": 1530
+      }
+    }
+  }
+}
