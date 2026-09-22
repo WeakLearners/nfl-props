@@ -1,0 +1,155 @@
+{
+  "question": "do the stated touchdown chances mean what they say",
+  "corrections": [
+    "platt (sigmoid, 2 params)",
+    "isotonic (any non-decreasing shape)"
+  ],
+  "fitted_on": "held-out folds inside the training rows only -- no validation row seen",
+  "bar": "a correction that worsens Brier is rejected; lift re-scored per decision #25 (1% Brier)",
+  "results": {
+    "2024": {
+      "receiving_tds": {
+        "n": 2395,
+        "actual_rate": 0.2209,
+        "raw": {
+          "brier": 0.16443,
+          "auc": 0.6618,
+          "max_gap": 0.0473,
+          "lift_pct": 2.49
+        },
+        "platt": {
+          "brier": 0.16358,
+          "auc": 0.6678,
+          "max_gap": 0.0621,
+          "lift_pct": 2.99
+        },
+        "iso": {
+          "brier": 0.16322,
+          "auc": 0.667,
+          "max_gap": 0.0672,
+          "lift_pct": 3.21
+        },
+        "league": {
+          "brier": 0.17217,
+          "auc": 0.5019
+        },
+        "pos": {
+          "brier": 0.16863,
+          "auc": 0.5732
+        },
+        "career": {
+          "brier": 0.1694,
+          "auc": 0.6321
+        },
+        "best_baseline": "pos"
+      },
+      "rushing_tds": {
+        "n": 1537,
+        "actual_rate": 0.2401,
+        "raw": {
+          "brier": 0.16768,
+          "auc": 0.7024,
+          "max_gap": 0.0714,
+          "lift_pct": 1.91
+        },
+        "platt": {
+          "brier": 0.16629,
+          "auc": 0.7118,
+          "max_gap": 0.1174,
+          "lift_pct": 2.73
+        },
+        "iso": {
+          "brier": 0.16564,
+          "auc": 0.7132,
+          "max_gap": 0.0998,
+          "lift_pct": 3.11
+        },
+        "league": {
+          "brier": 0.18245,
+          "auc": 0.4664
+        },
+        "pos": {
+          "brier": 0.18209,
+          "auc": 0.4954
+        },
+        "career": {
+          "brier": 0.17095,
+          "auc": 0.679
+        },
+        "best_baseline": "career"
+      }
+    },
+    "2025": {
+      "receiving_tds": {
+        "n": 2406,
+        "actual_rate": 0.2224,
+        "raw": {
+          "brier": 0.16636,
+          "auc": 0.6502,
+          "max_gap": 0.074,
+          "lift_pct": 3.13
+        },
+        "platt": {
+          "brier": 0.16623,
+          "auc": 0.6416,
+          "max_gap": 0.054,
+          "lift_pct": 3.2
+        },
+        "iso": {
+          "brier": 0.16623,
+          "auc": 0.6391,
+          "max_gap": 0.0438,
+          "lift_pct": 3.2
+        },
+        "league": {
+          "brier": 0.17301,
+          "auc": 0.4751
+        },
+        "pos": {
+          "brier": 0.17173,
+          "auc": 0.5246
+        },
+        "career": {
+          "brier": 0.17449,
+          "auc": 0.59
+        },
+        "best_baseline": "pos"
+      },
+      "rushing_tds": {
+        "n": 1530,
+        "actual_rate": 0.2288,
+        "raw": {
+          "brier": 0.17307,
+          "auc": 0.6549,
+          "max_gap": 0.1367,
+          "lift_pct": 1.63
+        },
+        "platt": {
+          "brier": 0.16738,
+          "auc": 0.6587,
+          "max_gap": 0.0482,
+          "lift_pct": 4.87
+        },
+        "iso": {
+          "brier": 0.16697,
+          "auc": 0.659,
+          "max_gap": 0.0263,
+          "lift_pct": 5.1
+        },
+        "league": {
+          "brier": 0.17653,
+          "auc": 0.4816
+        },
+        "pos": {
+          "brier": 0.17594,
+          "auc": 0.516
+        },
+        "career": {
+          "brier": 0.17679,
+          "auc": 0.6292
+        },
+        "best_baseline": "pos"
+      }
+    }
+  }
+}
