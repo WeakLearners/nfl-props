@@ -1,0 +1,100 @@
+{
+  "target": "P(player scores >= 1 TD)",
+  "decider": "Brier score",
+  "reported": "AUC",
+  "bar": "beat the best of three baselines by >= 3% Brier, both seasons (decision #19)",
+  "results": {
+    "2024": {
+      "receiving_tds": {
+        "n": 2395,
+        "actual_rate": 0.2209,
+        "model": {
+          "brier": 0.16443,
+          "auc": 0.6618
+        },
+        "league": {
+          "brier": 0.17217,
+          "auc": 0.5019
+        },
+        "pos": {
+          "brier": 0.16863,
+          "auc": 0.5732
+        },
+        "career": {
+          "brier": 0.1694,
+          "auc": 0.6321
+        },
+        "best_baseline": "pos",
+        "lift_pct": 2.49
+      },
+      "rushing_tds": {
+        "n": 1537,
+        "actual_rate": 0.2401,
+        "model": {
+          "brier": 0.16768,
+          "auc": 0.7024
+        },
+        "league": {
+          "brier": 0.18245,
+          "auc": 0.4664
+        },
+        "pos": {
+          "brier": 0.18209,
+          "auc": 0.4954
+        },
+        "career": {
+          "brier": 0.17095,
+          "auc": 0.679
+        },
+        "best_baseline": "career",
+        "lift_pct": 1.91
+      }
+    },
+    "2025": {
+      "receiving_tds": {
+        "n": 2406,
+        "actual_rate": 0.2224,
+        "model": {
+          "brier": 0.16636,
+          "auc": 0.6502
+        },
+        "league": {
+          "brier": 0.17301,
+          "auc": 0.4751
+        },
+        "pos": {
+          "brier": 0.17173,
+          "auc": 0.5246
+        },
+        "career": {
+          "brier": 0.17449,
+          "auc": 0.59
+        },
+        "best_baseline": "pos",
+        "lift_pct": 3.13
+      },
+      "rushing_tds": {
+        "n": 1530,
+        "actual_rate": 0.2288,
+        "model": {
+          "brier": 0.17307,
+          "auc": 0.6549
+        },
+        "league": {
+          "brier": 0.17653,
+          "auc": 0.4816
+        },
+        "pos": {
+          "brier": 0.17594,
+          "auc": 0.516
+        },
+        "career": {
+          "brier": 0.17679,
+          "auc": 0.6292
+        },
+        "best_baseline": "pos",
+        "lift_pct": 1.63
+      }
+    }
+  }
+}
