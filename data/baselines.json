@@ -1,0 +1,80 @@
+{
+  "usage": {
+    "targets": {
+      "career": {
+        "mae": 3.1409,
+        "rmse": 3.9363
+      },
+      "last4": {
+        "mae": 3.3331,
+        "rmse": 4.2095
+      },
+      "winner": "career",
+      "n": 3731
+    },
+    "carries": {
+      "career": {
+        "mae": 4.2888,
+        "rmse": 6.5866
+      },
+      "last4": {
+        "mae": 4.5957,
+        "rmse": 7.1532
+      },
+      "winner": "career",
+      "n": 3731
+    }
+  },
+  "final": {
+    "receiving_yards": {
+      "career": {
+        "mae": 26.6698,
+        "rmse": 35.0601
+      },
+      "last4": {
+        "mae": 28.7678,
+        "rmse": 38.0056
+      },
+      "winner": "career",
+      "n": 3731
+    },
+    "rushing_yards": {
+      "career": {
+        "mae": 20.0775,
+        "rmse": 32.1102
+      },
+      "last4": {
+        "mae": 21.3216,
+        "rmse": 34.7436
+      },
+      "winner": "career",
+      "n": 3731
+    }
+  },
+  "conversion": {
+    "yards_per_target": {
+      "career": {
+        "mae": 4.5261,
+        "rmse": 6.3719
+      },
+      "last4": {
+        "mae": 4.9333,
+        "rmse": 7.0389
+      },
+      "winner": "career",
+      "n": 2548
+    },
+    "yards_per_carry": {
+      "career": {
+        "mae": 2.505,
+        "rmse": 3.8337
+      },
+      "last4": {
+        "mae": 2.766,
+        "rmse": 4.3339
+      },
+      "winner": "career",
+      "n": 1293
+    }
+  }
+}
