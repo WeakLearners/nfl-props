@@ -1,80 +1,132 @@
 {
-  "usage": {
-    "targets": {
-      "career": {
-        "mae": 3.1409,
-        "rmse": 3.9363
+  "decision": "#14 \u2014 per-stat screens; see decisions.md",
+  "note": "Fixed before any model exists. MAE decides; RMSE reported beside it.",
+  "baselines": {
+    "usage": {
+      "targets": {
+        "career": {
+          "mae": 2.3511,
+          "rmse": 2.9223
+        },
+        "last4": {
+          "mae": 2.1831,
+          "rmse": 2.7845
+        },
+        "winner": "last4",
+        "n": 2543,
+        "screen": "prior-game avg >= 3.0 targets",
+        "decider": "MAE",
+        "validation_season": 2025
       },
-      "last4": {
-        "mae": 3.3331,
-        "rmse": 4.2095
-      },
-      "winner": "career",
-      "n": 3731
+      "carries": {
+        "career": {
+          "mae": 3.9269,
+          "rmse": 5.1095
+        },
+        "last4": {
+          "mae": 3.5523,
+          "rmse": 4.7784
+        },
+        "winner": "last4",
+        "n": 1613,
+        "screen": "prior-game avg >= 3.0 carries",
+        "decider": "MAE",
+        "validation_season": 2025
+      }
     },
-    "carries": {
-      "career": {
-        "mae": 4.2888,
-        "rmse": 6.5866
+    "final": {
+      "receiving_yards": {
+        "career": {
+          "mae": 24.7383,
+          "rmse": 31.6475
+        },
+        "last4": {
+          "mae": 24.0667,
+          "rmse": 31.582
+        },
+        "winner": "last4",
+        "n": 2543,
+        "screen": "prior-game avg >= 3.0 targets",
+        "decider": "MAE",
+        "validation_season": 2025
       },
-      "last4": {
-        "mae": 4.5957,
-        "rmse": 7.1532
+      "rushing_yards": {
+        "career": {
+          "mae": 22.7441,
+          "rmse": 30.7378
+        },
+        "last4": {
+          "mae": 21.9533,
+          "rmse": 30.5966
+        },
+        "winner": "last4",
+        "n": 1613,
+        "screen": "prior-game avg >= 3.0 carries",
+        "decider": "MAE",
+        "validation_season": 2025
       },
-      "winner": "career",
-      "n": 3731
-    }
-  },
-  "final": {
-    "receiving_yards": {
-      "career": {
-        "mae": 26.6698,
-        "rmse": 35.0601
+      "receiving_tds": {
+        "career": {
+          "mae": 0.3851,
+          "rmse": 0.5107
+        },
+        "last4": {
+          "mae": 0.3641,
+          "rmse": 0.5448
+        },
+        "winner": "last4",
+        "n": 2543,
+        "screen": "prior-game avg >= 3.0 targets",
+        "decider": "MAE",
+        "validation_season": 2025
       },
-      "last4": {
-        "mae": 28.7678,
-        "rmse": 38.0056
-      },
-      "winner": "career",
-      "n": 3731
+      "rushing_tds": {
+        "career": {
+          "mae": 0.4167,
+          "rmse": 0.5771
+        },
+        "last4": {
+          "mae": 0.4175,
+          "rmse": 0.6255
+        },
+        "winner": "career",
+        "n": 1613,
+        "screen": "prior-game avg >= 3.0 carries",
+        "decider": "MAE",
+        "validation_season": 2025
+      }
     },
-    "rushing_yards": {
-      "career": {
-        "mae": 20.0775,
-        "rmse": 32.1102
+    "conversion": {
+      "yards_per_target": {
+        "career": {
+          "mae": 4.1112,
+          "rmse": 5.7245
+        },
+        "last4": {
+          "mae": 4.4421,
+          "rmse": 6.147
+        },
+        "winner": "career",
+        "n": 2488,
+        "screen": "prior-game avg >= 3.0 targets",
+        "decider": "MAE",
+        "validation_season": 2025
       },
-      "last4": {
-        "mae": 21.3216,
-        "rmse": 34.7436
-      },
-      "winner": "career",
-      "n": 3731
-    }
-  },
-  "conversion": {
-    "yards_per_target": {
-      "career": {
-        "mae": 4.5261,
-        "rmse": 6.3719
-      },
-      "last4": {
-        "mae": 4.9333,
-        "rmse": 7.0389
-      },
-      "winner": "career",
-      "n": 2548
-    },
-    "yards_per_carry": {
-      "career": {
-        "mae": 2.505,
-        "rmse": 3.8337
-      },
-      "last4": {
-        "mae": 2.766,
-        "rmse": 4.3339
-      },
-      "winner": "career",
-      "n": 1293
+      "yards_per_carry": {
+        "career": {
+          "mae": 2.0859,
+          "rmse": 3.0661
+        },
+        "last4": {
+          "mae": 2.2726,
+          "rmse": 3.3863
+        },
+        "winner": "career",
+        "n": 1498,
+        "screen": "prior-game avg >= 3.0 carries",
+        "decider": "MAE",
+        "validation_season": 2025
+      }
     }
   }
 }
