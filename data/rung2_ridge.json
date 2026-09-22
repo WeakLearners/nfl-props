@@ -1,0 +1,260 @@
+{
+  "rung": 2,
+  "model": "ridge",
+  "protocol": "train 2019-2023 fixed + walk-forward within validation season",
+  "bar": "beat baseline by >= 2% MAE on a majority of the six stats, both seasons",
+  "results": {
+    "2024": {
+      "carries": {
+        "log1p": {
+          "mae": 3.4937,
+          "rmse": 4.7648,
+          "n": 1537,
+          "baseline_mae": 3.6103,
+          "baseline": "last4",
+          "lift_pct": 3.23,
+          "alpha": 562.341325190349
+        },
+        "raw": {
+          "mae": 3.4897,
+          "rmse": 4.5474,
+          "n": 1537,
+          "baseline_mae": 3.6103,
+          "baseline": "last4",
+          "lift_pct": 3.34,
+          "alpha": 562.341325190349
+        }
+      },
+      "receiving_tds": {
+        "raw": {
+          "mae": 0.3695,
+          "rmse": 0.494,
+          "n": 2395,
+          "baseline_mae": 0.3576,
+          "baseline": "last4",
+          "lift_pct": -3.31,
+          "alpha": 3162.2776601683795
+        }
+      },
+      "receiving_yards": {
+        "composed": {
+          "mae": 23.0386,
+          "rmse": 30.4264,
+          "n": 2314,
+          "baseline_mae": 24.537,
+          "baseline": "last4",
+          "lift_pct": 6.11,
+          "alpha": null
+        },
+        "raw": {
+          "mae": 22.9097,
+          "rmse": 30.1603,
+          "n": 2395,
+          "baseline_mae": 24.537,
+          "baseline": "last4",
+          "lift_pct": 6.63,
+          "alpha": 1000.0
+        }
+      },
+      "rushing_tds": {
+        "raw": {
+          "mae": 0.4067,
+          "rmse": 0.5494,
+          "n": 1537,
+          "baseline_mae": 0.3795,
+          "baseline": "last4",
+          "lift_pct": -7.17,
+          "alpha": 1778.2794100389228
+        }
+      },
+      "rushing_yards": {
+        "composed": {
+          "mae": 21.4185,
+          "rmse": 29.0399,
+          "n": 1445,
+          "baseline_mae": 22.2188,
+          "baseline": "last4",
+          "lift_pct": 3.6,
+          "alpha": null
+        },
+        "raw": {
+          "mae": 21.4949,
+          "rmse": 28.7032,
+          "n": 1537,
+          "baseline_mae": 22.2188,
+          "baseline": "last4",
+          "lift_pct": 3.26,
+          "alpha": 562.341325190349
+        }
+      },
+      "targets": {
+        "log1p": {
+          "mae": 2.0954,
+          "rmse": 2.8025,
+          "n": 2395,
+          "baseline_mae": 2.2485,
+          "baseline": "last4",
+          "lift_pct": 6.81,
+          "alpha": 562.341325190349
+        },
+        "raw": {
+          "mae": 2.108,
+          "rmse": 2.7243,
+          "n": 2395,
+          "baseline_mae": 2.2485,
+          "baseline": "last4",
+          "lift_pct": 6.25,
+          "alpha": 562.341325190349
+        }
+      },
+      "yards_per_carry": {
+        "raw": {
+          "mae": 1.977,
+          "rmse": 2.7887,
+          "n": 1445,
+          "baseline_mae": 2.0369,
+          "baseline": "career",
+          "lift_pct": 2.94,
+          "alpha": 3162.2776601683795
+        }
+      },
+      "yards_per_target": {
+        "raw": {
+          "mae": 3.9985,
+          "rmse": 5.8502,
+          "n": 2314,
+          "baseline_mae": 4.0649,
+          "baseline": "career",
+          "lift_pct": 1.63,
+          "alpha": 5623.413251903491
+        }
+      }
+    },
+    "2025": {
+      "carries": {
+        "log1p": {
+          "mae": 3.3894,
+          "rmse": 4.6743,
+          "n": 1530,
+          "baseline_mae": 3.5523,
+          "baseline": "last4",
+          "lift_pct": 4.58,
+          "alpha": 562.341325190349
+        },
+        "raw": {
+          "mae": 3.3205,
+          "rmse": 4.3804,
+          "n": 1530,
+          "baseline_mae": 3.5523,
+          "baseline": "last4",
+          "lift_pct": 6.53,
+          "alpha": 562.341325190349
+        }
+      },
+      "receiving_tds": {
+        "raw": {
+          "mae": 0.3703,
+          "rmse": 0.4958,
+          "n": 2406,
+          "baseline_mae": 0.3641,
+          "baseline": "last4",
+          "lift_pct": -1.71,
+          "alpha": 3162.2776601683795
+        }
+      },
+      "receiving_yards": {
+        "composed": {
+          "mae": 22.3759,
+          "rmse": 29.6573,
+          "n": 2353,
+          "baseline_mae": 24.0667,
+          "baseline": "last4",
+          "lift_pct": 7.03,
+          "alpha": null
+        },
+        "raw": {
+          "mae": 22.243,
+          "rmse": 29.4403,
+          "n": 2406,
+          "baseline_mae": 24.0667,
+          "baseline": "last4",
+          "lift_pct": 7.58,
+          "alpha": 1000.0
+        }
+      },
+      "rushing_tds": {
+        "raw": {
+          "mae": 0.4194,
+          "rmse": 0.5659,
+          "n": 1530,
+          "baseline_mae": 0.4167,
+          "baseline": "career",
+          "lift_pct": -0.65,
+          "alpha": 1778.2794100389228
+        }
+      },
+      "rushing_yards": {
+        "composed": {
+          "mae": 20.973,
+          "rmse": 29.2126,
+          "n": 1422,
+          "baseline_mae": 21.9533,
+          "baseline": "last4",
+          "lift_pct": 4.47,
+          "alpha": null
+        },
+        "raw": {
+          "mae": 20.6802,
+          "rmse": 28.5186,
+          "n": 1530,
+          "baseline_mae": 21.9533,
+          "baseline": "last4",
+          "lift_pct": 5.8,
+          "alpha": 562.341325190349
+        }
+      },
+      "targets": {
+        "log1p": {
+          "mae": 1.9913,
+          "rmse": 2.6458,
+          "n": 2406,
+          "baseline_mae": 2.1831,
+          "baseline": "last4",
+          "lift_pct": 8.79,
+          "alpha": 562.341325190349
+        },
+        "raw": {
+          "mae": 2.004,
+          "rmse": 2.5811,
+          "n": 2406,
+          "baseline_mae": 2.1831,
+          "baseline": "last4",
+          "lift_pct": 8.2,
+          "alpha": 562.341325190349
+        }
+      },
+      "yards_per_carry": {
+        "raw": {
+          "mae": 1.9842,
+          "rmse": 2.9943,
+          "n": 1422,
+          "baseline_mae": 2.0859,
+          "baseline": "career",
+          "lift_pct": 4.88,
+          "alpha": 3162.2776601683795
+        }
+      },
+      "yards_per_target": {
+        "raw": {
+          "mae": 4.0318,
+          "rmse": 5.6605,
+          "n": 2353,
+          "baseline_mae": 4.1112,
+          "baseline": "career",
+          "lift_pct": 1.93,
+          "alpha": 5623.413251903491
+        }
+      }
+    }
+  }
+}
