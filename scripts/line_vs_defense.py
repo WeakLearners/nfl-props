@@ -58,6 +58,18 @@ OUT = ROOT / "data/line_vs_defense.json"
 LINE_COLS = ["total_line", "spread_line_team"]
 
 
+def jsonable(o):
+    """score_mae_stats/score_td_stats key their results by tuple. JSON cannot
+    hold a tuple key, and finding that out AFTER the fits is an expensive way to
+    learn it."""
+    if isinstance(o, dict):
+        return {("_".join(map(str, k)) if isinstance(k, tuple) else str(k)): jsonable(v)
+                for k, v in o.items()}
+    if isinstance(o, (list, tuple)):
+        return [jsonable(v) for v in o]
+    return o
+
+
 def strip_lines(df):
     """Remove the betting-line columns. Any __isna companion goes too -- leaving
     a flag that says 'the line was missing' would smuggle the line's presence
@@ -86,11 +98,6 @@ def main():
         results[label] = {"mae": score_mae_stats(df, label),
                           "td": score_td_stats(df, label)}
 
-    OUT.write_text(json.dumps(dict(
-        question="does the defense feature earn its keep once the betting line is removed",
-        defense_feature="arm C -- shrunk rates plus EPA, the best instrument Phase 4 built",
-        line_cols=LINE_COLS, cells=results), indent=2))
-
     c1, c2 = results["1_line_nodef"], results["2_line_def"]
     c3, c4 = results["3_noline_nodef"], results["4_noline_def"]
 
@@ -115,6 +122,10 @@ def main():
         d = (c3["td"][k]["brier"] - c1["td"][k]["brier"]) / c3["td"][k]["brier"] * 100
         print(f"{k:<22}{d:>+10.2f}")
 
+    OUT.write_text(json.dumps(dict(
+        question="does the defense feature earn its keep once the betting line is removed",
+        defense_feature="arm C -- shrunk rates plus EPA, the best instrument Phase 4 built",
+        line_cols=LINE_COLS, cells=jsonable(results)), indent=2))
     print(f"\nwritten -> {OUT}")
 
 
