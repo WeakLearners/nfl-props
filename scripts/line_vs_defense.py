@@ -98,35 +98,43 @@ def main():
         results[label] = {"mae": score_mae_stats(df, label),
                           "td": score_td_stats(df, label)}
 
-    c1, c2 = results["1_line_nodef"], results["2_line_def"]
-    c3, c4 = results["3_noline_nodef"], results["4_noline_def"]
-
-    print(f"\n{'stat':<22}{'w/ line':>10}{'w/o line':>10}{'diff':>10}")
-    print("(positive = the defense feature helped)")
-    for k in c1["mae"]:
-        a = (c1["mae"][k]["mae"] - c2["mae"][k]["mae"]) / c1["mae"][k]["mae"] * 100
-        b = (c3["mae"][k]["mae"] - c4["mae"][k]["mae"]) / c3["mae"][k]["mae"] * 100
-        print(f"{k:<22}{a:>+10.2f}{b:>+10.2f}{b - a:>+10.2f}")
-    for k in c1["td"]:
-        a = (c1["td"][k]["brier"] - c2["td"][k]["brier"]) / c1["td"][k]["brier"] * 100
-        b = (c3["td"][k]["brier"] - c4["td"][k]["brier"]) / c3["td"][k]["brier"] * 100
-        print(f"{k:<22}{a:>+10.2f}{b:>+10.2f}{b - a:>+10.2f}")
-
-    # How much does the line itself buy? If this is near zero the whole
-    # experiment is void -- there would be nothing for the line to be carrying.
-    print(f"\n--- what the line itself is worth (nodef, line vs no line) ---")
-    for k in c1["mae"]:
-        d = (c3["mae"][k]["mae"] - c1["mae"][k]["mae"]) / c3["mae"][k]["mae"] * 100
-        print(f"{k:<22}{d:>+10.2f}")
-    for k in c1["td"]:
-        d = (c3["td"][k]["brier"] - c1["td"][k]["brier"]) / c3["td"][k]["brier"] * 100
-        print(f"{k:<22}{d:>+10.2f}")
-
+    # PERSIST FIRST. Twice today a run of this size finished its fits and then
+    # threw while formatting the table, taking every number with it. Nothing
+    # that can fail is allowed to run before the results are on disk.
     OUT.write_text(json.dumps(dict(
         question="does the defense feature earn its keep once the betting line is removed",
         defense_feature="arm C -- shrunk rates plus EPA, the best instrument Phase 4 built",
         line_cols=LINE_COLS, cells=jsonable(results)), indent=2))
-    print(f"\nwritten -> {OUT}")
+    print(f"\nresults saved -> {OUT}", flush=True)
+
+    c1, c2 = results["1_line_nodef"], results["2_line_def"]
+    c3, c4 = results["3_noline_nodef"], results["4_noline_def"]
+
+    def name(k):
+        return "_".join(map(str, k)) if isinstance(k, tuple) else str(k)
+
+    def pct(a, b):
+        return (a - b) / a * 100
+
+    print(f"\n{'stat':<24}{'w/ line':>10}{'w/o line':>10}{'diff':>10}")
+    print("(positive = the defense feature helped)")
+    for k in c1["mae"]:
+        a = pct(c1["mae"][k]["mae"], c2["mae"][k]["mae"])
+        b = pct(c3["mae"][k]["mae"], c4["mae"][k]["mae"])
+        print(f"{name(k):<24}{a:>+10.2f}{b:>+10.2f}{b - a:>+10.2f}")
+    for k in c1["td"]:
+        a = pct(c1["td"][k]["brier"], c2["td"][k]["brier"])
+        b = pct(c3["td"][k]["brier"], c4["td"][k]["brier"])
+        print(f"{name(k):<24}{a:>+10.2f}{b:>+10.2f}{b - a:>+10.2f}")
+
+    # What is the line itself worth? Near zero here voids the whole experiment --
+    # there would be nothing for the line to be carrying.
+    print(f"\n--- what the line itself is worth (no defense, line vs no line) ---")
+    for k in c1["mae"]:
+        print(f"{name(k):<24}{pct(c3['mae'][k]['mae'], c1['mae'][k]['mae']):>+10.2f}")
+    for k in c1["td"]:
+        print(f"{name(k):<24}{pct(c3['td'][k]['brier'], c1['td'][k]['brier']):>+10.2f}")
+
 
 
 if __name__ == "__main__":
