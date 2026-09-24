@@ -150,8 +150,7 @@
   }
   .role.a{background:var(--den)} .role.b{background:var(--kc)}
   .name{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:19px;
-    letter-spacing:.01em; line-height:1.1; min-width:0; overflow:hidden;
-    text-overflow:ellipsis; white-space:nowrap}
+    letter-spacing:.01em; line-height:1.1; min-width:0; overflow-wrap:break-word}
   .fig{
     font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
     font-size:21px; font-weight:500; letter-spacing:-.02em;
@@ -236,7 +235,7 @@
      worth a second look at the card itself, not just the number. */
   .p3-vol{
     font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:500;
-    letter-spacing:.02em; color:var(--ink-3); flex:none; text-align:center;
+    letter-spacing:.02em; color:var(--ink-3); align-self:flex-start; margin-top:3px;
   }
   .p3-vol.big{
     color:var(--ink); font-weight:600; background:var(--band);
@@ -370,21 +369,36 @@
     <p><strong>What this is not.</strong> These are projections, not edges. Tested against
     real sportsbook lines, this model's point estimates were <em>less</em> accurate than the
     market's. Useful for seeing a player's plausible range; not evidence anyone is mispriced.</p>
-    <p><strong>Two models, shown side by side.</strong> <em>Project</em> is this report's
-    main engine. It reads a player's own recent games, decayed toward the season, splits
-    volume (targets, carries) from efficiency (yards per touch) and projects each
-    separately, then adjusts for the opponent. <em>Phase3</em> is a second model, trained
-    independently: a ridge regression over a wider feature table, fit on 2019&ndash;2025 and
-    never shown project's own number while it works. Neither model sees the other's output.
-    The gap between them is shown, never a blend of the two &mdash; a card with a wide gap
-    (shaded, decision #37) is one the two engines disagree on, not a better estimate.</p>
-    <p><strong>The honest record.</strong> Scored on five seasons of real games
-    (2021&ndash;2025, <code>data/vol_head_to_head.csv</code>): on receiving yards, project
-    beat phase3, 22.82 yards of error against 22.84 (n=12,040). On rushing yards, project
-    beat phase3 again, 21.30 against 21.44 (n=7,332). Phase3 only wins on two numbers this
-    page never shows &mdash; targets and carries, the raw volume counts underneath a
-    yardage figure. On every stat shown here, phase3 has not been the more accurate model.
-    It ships anyway, as a second read, never as a claim of being better.</p>
+    <p><strong>Two engines, old and new.</strong> Every yardage card carries two forecasts
+    for the same player and stat. They come from two different models, built at different times.</p>
+    <p><em>Old engine</em> (built 2026-09-13, <code>nflprops/project.py</code>). It makes the big
+    number on every card and the range under it. It starts from the player's own recent games,
+    weighting the latest most. It splits his workload (targets, carries) from what he does with each
+    touch (yards per catch or carry). It forecasts each part on its own, multiplies them back
+    together, then adjusts for how tough the opponent's defense is.</p>
+    <p><em>New model</em> (added 2026-09-24, decision #31, also called Phase 3). It makes the small
+    line under the range, e.g. <code>old engine 60 &middot; new model 52 (&minus;8)</code>. It is a
+    ridge regression: a straight-line fit that is penalized for leaning hard on any one input, so it
+    can't memorize noise. It was trained on 2019&ndash;2025 over a wider table of inputs. Neither
+    engine ever sees the other's number.</p>
+    <p><strong>Reading the gap.</strong> The number in brackets is new minus old. A minus sign means
+    the new model expects less. The two are never averaged into one figure. The line is shaded when
+    the gap is more than half the card's spread. The spread is the distance from the big number to
+    either end of its range. Say a card reads 60, range 40&ndash;80: the spread is 20, so a gap of
+    10 or more gets shaded. A gap that size is bigger than the old engine's own uncertainty, so the
+    card deserves a second look.</p>
+    <p><strong>Which one to trust.</strong> Neither, clearly. Scored on five seasons of real games
+    (2021&ndash;2025, <code>data/vol_head_to_head.csv</code>), they are close to a tie. On receiving
+    yards the old engine misses by 22.82 yards on average, the new model by 22.84 (12,040 games). On
+    rushing yards it is 21.30 against 21.44 (7,332 games). Season by season, the new model won
+    receiving in 3 of 5 years and rushing in 2 of 5. The new model is better at the raw counts
+    underneath: how many targets and carries a player gets. This page doesn't show those counts.
+    The old engine keeps the headline because it hasn't been beaten, not because it clearly won.</p>
+    <p><strong>Touchdowns work the same way.</strong> The <em>td %</em> badge is the old engine's
+    anytime-touchdown number. The smaller <em>new td %</em> under it is the new model's (decision
+    #30). In each game, both models name the player most likely to score. Over 2021&ndash;2025 the
+    old engine's choice scored 45% of the time, the new model's 41%. So the old number stays
+    primary.</p>
   </footer>
 </div>
 <div class="tip" id="tip" data-inspect-id="curve-tooltip"></div>
@@ -491,17 +505,17 @@ function actualMark(d,c){
     +'<circle cx="'+x.toFixed(1)+'" cy="'+(H-10)+'" r="2.5" fill="'+stroke+'"></circle>';
 }
 
-// Decision #37: both models, labelled, with the gap between them. "project"
-// is this report's own engine (nflprops/project.py); "phase3" is the
-// separately trained ridge model (decision #31). Emphasized when the two
+// Decision #37: both models, labelled, with the gap between them. "old
+// engine" is nflprops/project.py (the first model, 2026-09-13); "new model"
+// is the Phase 3 ridge model added 2026-09-24 (decision #31). Emphasized when the two
 // disagree by more than half this card's own spread (d.sd).
 function p3Cmp(d){
   if(d.p3==null) return "";
   const gap = d.p3 - d.mu;
   const gapTxt = (gap>=0?"+":"") + fmt(gap);
   const big = Math.abs(gap) >= 0.5*d.sd;
-  return '<span class="p3-vol'+(big?" big":"")+'" data-inspect-id="card-p3-vol">project '
-    + fmt(d.mu) + ' &middot; phase3 ' + fmt(d.p3) + ' (' + gapTxt + ')</span>';
+  return '<span class="p3-vol'+(big?" big":"")+'" data-inspect-id="card-p3-vol">old engine '
+    + fmt(d.mu) + ' &middot; new model ' + fmt(d.p3) + ' (' + gapTxt + ')</span>';
 }
 
 function compare(d){
@@ -571,14 +585,14 @@ STATS.forEach(([key,label,unit])=>{
           +'<span class="role '+d.tm+'" data-inspect-id="card-role-badge">'+d.role+'</span></div>'
         +'<div class="fig-row"><span class="fig" data-inspect-id="card-expected">'
           +fmt(d.mu)+'</span>'+result(d)+'</div>'
-        +'<div class="rng" data-inspect-id="card-range">'+fmt(d.lo)+' – '+fmt(d.hi)+'</div></div>'
+        +'<div class="rng" data-inspect-id="card-range">'+fmt(d.lo)+' – '+fmt(d.hi)+'</div>'+p3Cmp(d)+'</div>'
       +'<div class="card-flags" data-inspect-id="card-flags">'+history(d)
         +(d.pick?'<span class="pick-badge" data-inspect-id="card-pick-badge">pick '+d.pick+'</span>':'')
         +(isTD?'<span class="td-badge" data-inspect-id="card-td-badge">td '
           +Math.round(TD.conf*100)+'%</span>':'')
-        +(isTD && TD.phase3?'<span class="td-phase3" data-inspect-id="card-td-phase3">phase3 '
+        +(isTD && TD.phase3?'<span class="td-phase3" data-inspect-id="card-td-phase3">new td '
           +Math.round(TD.phase3.p_combined*100)+'%</span>':'')
-        +p3Cmp(d)+'</div></div>'
+        +'</div></div>'
       +'<svg data-inspect-id="card-curve" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+d.p+' '+label
       +': expected '+fmt(d.mu)+', middle range '+fmt(d.lo)+' to '+fmt(d.hi)+'">'
       +'<path d="'+c.band+'" fill="'+fill+'"></path>'
