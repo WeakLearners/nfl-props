@@ -1,0 +1,174 @@
+{
+  "_purpose": "Names, for every number the live report shows, which engine is official for the 2026 holdout (decision #33). Phase 3 numbers ship additively and are informational-only unless stated otherwise -- see prediction-engine/decisions.md #30/#31.",
+  "generated_at": "2026-09-24",
+  "generated_by": "Finance Desk / CFO, decision #33",
+  "base_commit": "ef4ca70",
+  "engines": {
+    "passing_yards": {
+      "official_engine": "nflprops/project.py (project_week -> SPECS['passing_yards'])",
+      "code_sha256": {
+        "nflprops/project.py": "f999cf836bebcee3a090c91342b3059c66ab07b8ca59c5d99fd555598de13f32",
+        "nflprops/report.py": "ffb23ef144ddd72fa8dbe09f5bbe601ac3e8cde111aa9e22678c96304af7361f",
+        "scripts/make_report.py": "22f13cf5b77784eb7f583969c8d2ee89d0aa7d6738409e9bbb974c3b144ea756"
+      },
+      "config": {
+        "DECAY": 0.85, "PRIOR_SEASON_W": 0.55, "MIN_GAMES": 3,
+        "K_EFF_ATT": 60.0, "K_VOL_GAMES": 3.0, "K_VAR_GAMES": 5.0,
+        "USE_CALIB": true,
+        "CALIB": [-14.0245, 1.0350],
+        "CALIB_FIT_ON": "2023-2025 walk-forward output, fitted 2026-09-17",
+        "DEF_WEIGHT": 1.0,
+        "SD_INFLATE": 1.10,
+        "screens_live_report": {"MIN_SNAP": 0.55, "MIN_GAMES": 10, "note": "shortlist-only screens in scripts/make_report.py; unproven per scope.md, do not treat as validated"}
+      },
+      "train_seasons": "rolling -- every REG-season game strictly before the predicted week, no fixed cutoff (nflprops/project.py:_history)",
+      "model_artifact": null,
+      "artifact_sha256": null,
+      "informational_only": {
+        "phase3_engine": "ridge, scripts/retrain_vol_models.py -> data/shipping/targets.pkl + receiving_yards.pkl (composed via volume x efficiency is NOT how phase3 ships this stat -- phase3 ships receiving_yards directly, see #31)",
+        "head_to_head_result": "project.py wins, ridge -0.09% MAE (decision #31, scripts/vol_head_to_head.py, 2021-2025 walk-forward)"
+      }
+    },
+    "completions": {
+      "official_engine": "nflprops/project.py (project_week -> SPECS['completions'])",
+      "code_sha256": {
+        "nflprops/project.py": "f999cf836bebcee3a090c91342b3059c66ab07b8ca59c5d99fd555598de13f32"
+      },
+      "config": {
+        "DECAY": 0.85, "PRIOR_SEASON_W": 0.55, "MIN_GAMES": 3,
+        "K_EFF_ATT": 60.0, "K_VOL_GAMES": 3.0, "K_VAR_GAMES": 5.0,
+        "USE_CALIB": true,
+        "CALIB": [-0.8345, 1.0133],
+        "CALIB_FIT_ON": "2023-2025 walk-forward output, fitted 2026-09-17",
+        "DEF_WEIGHT": 1.0,
+        "SD_INFLATE": 1.10,
+        "screens_live_report": {"MIN_SNAP": 0.55, "MIN_GAMES": 10}
+      },
+      "train_seasons": "rolling -- every REG-season game strictly before the predicted week, no fixed cutoff",
+      "model_artifact": null,
+      "artifact_sha256": null,
+      "informational_only": {
+        "note": "No Phase 3 model exists for completions. project.py is the only engine for this stat."
+      }
+    },
+    "rushing_yards": {
+      "official_engine": "nflprops/project.py (project_week -> SPECS['rushing_yards'])",
+      "code_sha256": {
+        "nflprops/project.py": "f999cf836bebcee3a090c91342b3059c66ab07b8ca59c5d99fd555598de13f32"
+      },
+      "config": {
+        "DECAY": 0.85, "PRIOR_SEASON_W": 0.55, "MIN_GAMES": 3,
+        "K_EFF_ATT": 60.0, "K_VOL_GAMES": 3.0, "K_VAR_GAMES": 5.0,
+        "USE_CALIB": true,
+        "CALIB": [-1.6995, 1.0255],
+        "CALIB_FIT_ON": "2023-2025 walk-forward output, fitted 2026-09-17",
+        "DEF_WEIGHT": 0.5,
+        "SD_INFLATE": 1.10,
+        "USE_VACATED": false,
+        "USE_RZ": false,
+        "screens_live_report": {"MIN_SNAP": 0.55, "MIN_GAMES": 10}
+      },
+      "train_seasons": "rolling -- every REG-season game strictly before the predicted week, no fixed cutoff",
+      "model_artifact": null,
+      "artifact_sha256": null,
+      "informational_only": {
+        "phase3_engine": "ridge, scripts/retrain_vol_models.py -> data/shipping/rushing_yards.pkl",
+        "phase3_artifact_sha256": "c87c4bdbf8d5a4ee3c7e73264d7c40c5c839b0367663ee8f5a9cbdce8df82f98",
+        "phase3_train_seasons": [2019, 2020, 2021, 2022, 2023, 2024, 2025],
+        "head_to_head_result": "project.py wins, ridge -0.62% MAE (decision #31)"
+      }
+    },
+    "receptions": {
+      "official_engine": "nflprops/project.py (project_week -> SPECS['receptions'])",
+      "code_sha256": {
+        "nflprops/project.py": "f999cf836bebcee3a090c91342b3059c66ab07b8ca59c5d99fd555598de13f32"
+      },
+      "config": {
+        "DECAY": 0.85, "PRIOR_SEASON_W": 0.55, "MIN_GAMES": 3,
+        "K_EFF_ATT": 60.0, "K_VOL_GAMES": 3.0, "K_VAR_GAMES": 5.0,
+        "K_SHARE_GAMES": 4.0, "USE_SHARE": true,
+        "USE_CALIB": true,
+        "CALIB": [-0.1638, 1.0391],
+        "CALIB_FIT_ON": "2023-2025 walk-forward output, fitted 2026-09-17",
+        "DEF_WEIGHT": 0.0,
+        "SD_INFLATE": 1.10,
+        "screens_live_report": {"MIN_SNAP": 0.55, "MIN_GAMES": 10}
+      },
+      "train_seasons": "rolling -- every REG-season game strictly before the predicted week, no fixed cutoff",
+      "model_artifact": null,
+      "artifact_sha256": null,
+      "informational_only": {
+        "note": "No Phase 3 model exists for receptions. project.py is the only engine for this stat."
+      }
+    },
+    "receiving_yards": {
+      "official_engine": "nflprops/project.py (project_week -> SPECS['receiving_yards'])",
+      "code_sha256": {
+        "nflprops/project.py": "f999cf836bebcee3a090c91342b3059c66ab07b8ca59c5d99fd555598de13f32"
+      },
+      "config": {
+        "DECAY": 0.85, "PRIOR_SEASON_W": 0.55, "MIN_GAMES": 3,
+        "K_EFF_ATT": 60.0, "K_VOL_GAMES": 3.0, "K_VAR_GAMES": 5.0,
+        "K_SHARE_GAMES": 4.0, "USE_SHARE": true,
+        "USE_CALIB": true,
+        "CALIB": [-2.0835, 1.0376],
+        "CALIB_FIT_ON": "2023-2025 walk-forward output, fitted 2026-09-17",
+        "DEF_WEIGHT": 0.0,
+        "SD_INFLATE": 1.10,
+        "USE_VACATED": false,
+        "USE_RZ": false,
+        "screens_live_report": {"MIN_SNAP": 0.55, "MIN_GAMES": 10}
+      },
+      "train_seasons": "rolling -- every REG-season game strictly before the predicted week, no fixed cutoff",
+      "model_artifact": null,
+      "artifact_sha256": null,
+      "informational_only": {
+        "phase3_engine": "ridge, scripts/retrain_vol_models.py -> data/shipping/receiving_yards.pkl",
+        "phase3_artifact_sha256": "1e99a9543dcb54e892b82b9ccf746b1a5b86696c7636c6e1b736acfaafced257",
+        "phase3_train_seasons": [2019, 2020, 2021, 2022, 2023, 2024, 2025],
+        "head_to_head_result": "project.py wins, ridge -0.09% MAE (decision #31)"
+      }
+    },
+    "anytime_td": {
+      "official_engine": "nflprops/tdmodel.py (features/design_matrix) + scripts/td/predict.py (train_through) via scripts/td/write_markers.py",
+      "code_sha256": {
+        "nflprops/tdmodel.py": "6d3334d4c8b43249c075bd80eb10254fb4a78122201d72baa9137a0172fd0fff",
+        "scripts/td/predict.py": "cbfc393a7e7c606f9ab5a4664f58baf14a8ef14be7e2e7dac63ad29972e7a98e",
+        "scripts/td/write_markers.py": "ee44f71518385f4340c469d52893b3b93dd02dcbd8df10c7b01a1013e13d8c26"
+      },
+      "config": {
+        "model": "sklearn.ensemble.HistGradientBoostingClassifier",
+        "hyperparams": {"max_iter": 300, "learning_rate": 0.06, "max_leaf_nodes": 31, "l2_regularization": 1.0, "random_state": 0},
+        "features": ["f_carries_pg", "f_targets_pg", "f_attempts_pg", "f_tgt_share", "f_rz_carries_pg", "f_rz_targets_pg", "f_implied_total", "f_spread", "f_total", "f_is_home", "f_n_games", "f_teammates_out_pos"],
+        "label": "rush-OR-receiving TD in the game (tdmodel.labels()), NOT the same target as Phase 3's rush/rec-split classifiers",
+        "confidence_rule": "min(model_p, FanDuel devigged p); model_only if unpriced"
+      },
+      "train_seasons": "rolling -- retrained live on every call to train_through(season, week) from every complete week strictly before the target week; no fixed train/holdout split, no saved artifact by design (see predict.py module docstring)",
+      "training_data": "data/td_train.parquet",
+      "training_data_sha256": "5b61d3cf547676b4295974c527914d537745973fd0e315826ede252341aa5ce2",
+      "model_artifact": null,
+      "artifact_sha256": null,
+      "informational_only": {
+        "phase3_engine": "lightgbm (raw for receiving_tds, +isotonic for rushing_tds), scripts/retrain_td_models.py -> data/shipping/{receiving_tds,rushing_tds}.pkl, combined via 1-(1-p_rush)(1-p_rec)",
+        "phase3_artifact_sha256": {
+          "receiving_tds.pkl": "b3604fcc5416307c4f0d8fed39418c8c4113f1a6544109ed6d72350f25c73de3",
+          "rushing_tds.pkl": "c640a7eb02694e20dbb06a820e177f6ebef57146641115bc404876baa1e17e74"
+        },
+        "phase3_train_seasons": [2019, 2020, 2021, 2022, 2023, 2024, 2025],
+        "phase3_trained_at": "2026-09-24T02:39:09Z (metadata.json, commit a0d8756)",
+        "head_to_head_result": "tdmodel.py (established) wins on brier/AUC/top1 -- old: brier 0.1354, AUC 0.7171, top1 0.4525; new (Phase 3 combined): brier 0.1366, AUC 0.7117, top1 0.4106 (decision #30, scripts/td_head_to_head.py, 2019-2025 walk-forward, n=40,637)"
+      }
+    }
+  },
+  "phase3_shipped_artifacts_reference": {
+    "vol_metadata": "data/shipping/vol_metadata.json (git_commit a0d8756, informational -- superseded pointer, current shipped .pkl files are unchanged since decision #32 confirmed byte-identical training data)",
+    "td_metadata": "data/shipping/metadata.json (git_commit a0d8756)",
+    "note": "Phase 3 metadata.json/vol_metadata.json files record their own commit/config already; this manifest's phase3_* fields are a pointer into those, not a duplicate source of truth."
+  },
+  "known_open_bug_before_holdout": {
+    "id": "decision #31 Tua/ATL",
+    "description": "nflprops.project._roster() rostered Tua Tagovailoa to ATL for 2026 W3 instead of MIA -- a pre-existing roster-pipeline data issue, unrelated to any Phase 3 change, affects BOTH the official engines above (they call the same _roster()) and Phase 3.",
+    "status": "flagged, not fixed",
+    "must_fix_before": "2026 holdout opens (see holdout-protocol.md)"
+  }
+}
