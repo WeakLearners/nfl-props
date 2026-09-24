@@ -84,6 +84,41 @@ with contextlib.redirect_stdout(io.StringIO()):
 inj, _ = R.risk_flags(SEASON, WEEK)
 
 pr["player_key"] = pr["player"].map(name_key)
+
+# Fetched here, before the pool filter below, so the QB1 rule can use it too --
+# one fetch serves both this override and the shortlist merge further down.
+# Zero extra Odds API calls.
+lines, meta = fetch_lines(TEAMS)
+
+# Decision #36: when FanDuel prices passing yards for exactly one QB on a
+# team, that QB is the featured QB1 -- replacing star_pool's usage-ranked
+# pick if it disagrees. Teams don't have to publish a real lineup, depth
+# charts lag injuries, and the book has more reason than either to know who
+# actually starts (Sean, 2026-09-24). Zero or two-plus priced QBs on a team:
+# leave star_pool's pick alone -- this only ever narrows to a single answer,
+# never guesses among several. RB/WR/TE picks are untouched; books post
+# alternate lines for backups too, so "has a line" doesn't mean "starts" at
+# those positions the way it does for the one QB under center.
+qb_priced = set(lines.loc[lines.stat == "passing_yards", "player_key"])
+qb_universe = pr[(pr.position == "QB") & pr.team.isin(TEAMS)][
+    ["player_key", "team", "player"]].drop_duplicates("player_key")
+qb_notes = []
+for _team in TEAMS:
+    priced = qb_universe[(qb_universe.team == _team) & qb_universe.player_key.isin(qb_priced)]
+    if len(priced) != 1:
+        continue
+    new_key, new_name = priced.iloc[0].player_key, priced.iloc[0].player
+    cur = pool[(pool.team == _team) & (pool.position == "QB")]
+    if not cur.empty and cur.iloc[0].player_key == new_key:
+        continue  # book agrees with the usage rank already
+    old_name = cur.iloc[0].full_name if not cur.empty else None
+    pool = pool[~((pool.team == _team) & (pool.position == "QB"))]
+    pool = pd.concat([pool, pd.DataFrame([{
+        "player_key": new_key, "full_name": new_name, "team": _team,
+        "position": "QB", "usage": np.nan, "rank": 1.0}])], ignore_index=True)
+    qb_notes.append(f"QB set by sportsbook line: {new_name} ({_team})"
+                     + (f", not {old_name}" if old_name else ""))
+
 pr = pr[pr.team.isin(TEAMS) & pr.player_key.isin(set(pool.player_key))].copy()
 rank = {r.player_key: int(r["rank"]) for _, r in pool.iterrows()}
 
@@ -128,7 +163,6 @@ pr["sd_adj"] = pr.sd * SD_INFLATE
 pr["lo"] = (pr.proj - pr.sd_adj).clip(lower=0)
 pr["hi"] = pr.proj + pr.sd_adj
 
-lines, meta = fetch_lines(TEAMS)
 pr = pr.merge(lines[["player_key", "stat", "line", "price"]], on=["player_key", "stat"], how="left")
 
 
@@ -205,6 +239,8 @@ corr = ("All of these are same-game legs, so they move together &mdash; a shooto
         "These legs sit in different games, so they are close to independent &mdash; the "
         "naive joint chance is about right, and the straight payout is what you would be "
         "offered.")
+if qb_notes:
+    corr = ("<strong>" + "</strong><br><strong>".join(qb_notes) + "</strong><br>" + corr)
 
 meta_js = {"teamA": teamA, "nameA": meta["away"] if meta else TEAMS[0],
            "nameB": meta["home"] if meta else TEAMS[1], "corrnote": corr}
