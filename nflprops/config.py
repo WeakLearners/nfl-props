@@ -55,3 +55,26 @@ def require(name: str) -> str:
 
 def get(name: str, default=None):
     return os.getenv(name, "").strip() or default
+
+
+# --- raw board capture ---------------------------------------------------
+# decision #37 (2026-09-24): every run that fetches the sportsbook's board
+# saves what it got, unmodified, before any filtering -- so a past report's
+# selection logic (e.g. decision #36's QB1 rule) can be replayed later
+# against what was actually on the board, not reconstructed from the
+# already-filtered rows a report kept. Zero extra API calls: this only
+# writes down a response that was already fetched.
+def save_board(season, week, teams, payload) -> None:
+    """Write raw Odds API response(s) to data/boards/, timestamped so a call
+    never overwrites an earlier one. Never raises -- a failed save prints a
+    warning and lets the caller's report still render."""
+    import json as _json
+    from datetime import datetime, timezone
+    try:
+        boards_dir = DATA_DIR / "boards"
+        boards_dir.mkdir(parents=True, exist_ok=True)
+        ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+        name = f"{season}_w{week}_{'-'.join(teams)}_{ts}.json"
+        (boards_dir / name).write_text(_json.dumps(payload))
+    except Exception as e:
+        print(f"  ! could not save raw board ({season} W{week} {'-'.join(teams)}): {e}")

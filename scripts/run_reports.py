@@ -66,15 +66,15 @@ for e in games.itertuples():
     a, h = abbr.get(e.away_team), abbr.get(e.home_team)
     if not a or not h:
         print(f"  ! unknown team abbr for {e.away_team} @ {e.home_team}"); continue
-    lines, rem = RP.event_lines(e.id)
+    lines, rem = RP.event_lines(e.id, season=season, week=week, teams=[a, h])
     if lines.empty:
         print(f"  ! no alternate lines yet: {a}@{h}"); continue
-    rows, short = RP.build(season, week, [a, h], lines, n_picks=N_PICKS)
+    rows, short, qb_notes = RP.build(season, week, [a, h], lines, n_picks=N_PICKS)
     if not rows or short.empty:
         print(f"  ! nothing cleared the screens: {a}@{h}"); continue
 
     html = RP.render(rows, e.away_team, e.home_team, a, week, season,
-                     kick=e.et, same_game=True)
+                     kick=e.et, same_game=True, qb_notes=qb_notes)
     out = ROOT / "reports" / f"report_{season}_w{week}_{a}-{h}.html"
     out.write_text(html)
     made.append(out.name)

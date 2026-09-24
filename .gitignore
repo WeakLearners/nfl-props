@@ -19,6 +19,11 @@ data/hist/
 data/*.parquet
 logs/
 
+# Raw sportsbook boards saved by decision #37, one file per fetch -- same
+# convention and same reason as data/hist/ above: licensed market data, kept
+# locally so a past report's selection logic can be replayed, never published.
+data/boards/
+
 # Regenerable model artifacts (scripts/retrain_td_models.py). Metadata is
 # tracked; the binary weights are not -- same convention as data/*.parquet.
 data/shipping/*.pkl

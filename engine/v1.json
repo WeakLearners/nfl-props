@@ -8,8 +8,8 @@
       "official_engine": "nflprops/project.py (project_week -> SPECS['passing_yards'])",
       "code_sha256": {
         "nflprops/project.py": "f999cf836bebcee3a090c91342b3059c66ab07b8ca59c5d99fd555598de13f32",
-        "nflprops/report.py": "ffb23ef144ddd72fa8dbe09f5bbe601ac3e8cde111aa9e22678c96304af7361f",
-        "scripts/make_report.py": "d6b005b41a2224c91c46ae8d184ea241f757a34269bdf0bc44fe14c49b9ea454"
+        "nflprops/report.py": "35e5d88d30f8d5fd12db89ef6fa0cb1b562dfe448e6b51c4381ff06515cfa6d9",
+        "scripts/make_report.py": "241f66ca9b0af32166c1fc5f09fdf1e99e4a57a986e18b45f8e40425c46957a9"
       },
       "config": {
         "DECAY": 0.85, "PRIOR_SEASON_W": 0.55, "MIN_GAMES": 3,
@@ -20,7 +20,8 @@
         "DEF_WEIGHT": 1.0,
         "SD_INFLATE": 1.10,
         "screens_live_report": {"MIN_SNAP": 0.55, "MIN_GAMES": 10, "note": "shortlist-only screens in scripts/make_report.py; unproven per scope.md, do not treat as validated"},
-        "qb1_selection": "decision #36 (2026-09-24): scripts/make_report.py overrides star_pool's usage-ranked QB1 with the sportsbook's own pick when FanDuel prices passing_yards for exactly one QB on a team. Applies only to QB; RB/WR/TE picks are untouched. Does not change project.py's projection math or the passing_yards calibration/config above -- only which player's row gets shown as QB1."
+        "qb1_selection": "decision #36 (2026-09-24): scripts/make_report.py overrides star_pool's usage-ranked QB1 with the sportsbook's own pick when FanDuel prices passing_yards for exactly one QB on a team. Applies only to QB; RB/WR/TE picks are untouched. Does not change project.py's projection math or the passing_yards calibration/config above -- only which player's row gets shown as QB1.",
+        "decision_37": "2026-09-24: (1) fetch_lines()/event_lines() now save the raw Odds API response to data/boards/ before any filtering, zero extra API calls. (2) nflprops/report.py's build()/render() -- the code path the scheduled launchd jobs actually run via scripts/run_reports.py -- brought to parity with scripts/make_report.py: it previously had NEITHER decision #31's phase3 merge NOR decision #36's QB1 override, so neither had ever reached a scheduled report before this fix. (3) templates/report.html shows project.py and Phase 3 side by side with the gap, emphasized when it exceeds half the card's own spread; presentation only, no prediction math changed."
       },
       "train_seasons": "rolling -- every REG-season game strictly before the predicted week, no fixed cutoff (nflprops/project.py:_history)",
       "model_artifact": null,

@@ -13,7 +13,7 @@ import pandas as pd, numpy as np
 from statistics import NormalDist
 from nflprops import project as P, reliability as R
 from nflprops.project import defense_vs_position, SPECS, DEF_WEIGHT
-from nflprops.config import require, ROOT
+from nflprops.config import require, ROOT, save_board
 from nflprops.odds import name_key
 from nflprops.db import connect
 from vol_predict import phase3_vol
@@ -44,7 +44,7 @@ def fetch_lines(teams):
         ev = pd.DataFrame(json.load(r))
     ev["ct"] = pd.to_datetime(ev.commence_time, utc=True)
     ev = ev[ev.ct > pd.Timestamp.now(tz="UTC")]
-    rows, meta = [], None
+    rows, meta, raw_responses = [], None, []
     for e in ev.itertuples():
         u = (f"{BASE}/events/{e.id}/odds?apiKey={k}&bookmakers=fanduel"
              f"&markets={','.join(ALT)}&oddsFormat=american")
@@ -54,6 +54,7 @@ def fetch_lines(teams):
                 rem = r.headers.get("x-requests-remaining")
         except Exception:
             continue
+        raw_responses.append(d)
         got = False
         for bm in d.get("bookmakers", []):
             for m in bm.get("markets", []):
@@ -68,6 +69,8 @@ def fetch_lines(teams):
         if got and meta is None:
             meta = {"away": e.away_team, "home": e.home_team,
                     "kick": e.ct.tz_convert("America/New_York"), "rem": rem}
+    if raw_responses:
+        save_board(SEASON, WEEK, teams, raw_responses)
     if not rows:
         sys.exit("no alternate lines on the board for that game yet")
     df = pd.DataFrame(rows)
