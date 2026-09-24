@@ -198,9 +198,11 @@
      number) and new (purple, the Phase 3 model). Same colours as the lines
      on the curves. */
   .pk-models{font-family:"IBM Plex Mono",monospace; font-size:12px; flex:none;
-    width:118px; text-align:right; white-space:nowrap; color:var(--ink-3);
+    display:flex; gap:10px; white-space:nowrap; color:var(--ink-3);
     font-variant-numeric:tabular-nums}
-  .pk-models b{font-weight:600}
+  /* Each number in a fixed box, right-aligned, so decimals and the labels
+     line up down the column whatever the number's length. */
+  .pk-models b{font-weight:600; display:inline-block; width:5ch; text-align:right; margin-left:4px}
   .pk-px{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-3);
     width:46px; text-align:right; flex:none; font-variant-numeric:tabular-nums}
   .picks-foot{
@@ -666,8 +668,8 @@ DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick).forEach(d=>{
   li.innerHTML='<span class="pk-n">'+d.pick+'</span>'
     +'<span class="pk-name">'+d.p+'</span>'
     +'<span class="pk-bet">'+d.s.replace(/_/g," ")+' over <b>'+d.line+'</b></span>'
-    +'<span class="pk-models" data-inspect-id="pick-models">old <b style="color:'+col+'">'+fmt(d.mu)+'</b>'
-      +' &middot; new <b style="color:var(--p3)">'+(d.p3==null?'&mdash;':fmt(d.p3))+'</b></span>'
+    +'<span class="pk-models" data-inspect-id="pick-models"><span>old<b style="color:'+col+'">'+fmt(d.mu)+'</b></span>'
+      +'<span>new<b style="color:var(--p3)">'+(d.p3==null?'&mdash;':fmt(d.p3))+'</b></span></span>'
     +pickResult(d)
     +'<span class="pk-px">'+(d.price>0?"+":"")+d.price+'</span>'
     +'<span class="pk-conf" style="color:'+col+'">'+Math.round(Math.min(d.mp,d.bp)*100)+'%</span>';
