@@ -74,7 +74,7 @@ def load():
     )
     stadiums = read_sql("SELECT stadium_key, roof_type, surface FROM stadiums", feat)
     weather = read_sql(
-        "SELECT game_id, value_kind, fetched_at, temperature_f, wind_speed_mph, "
+        "SELECT game_id, value_kind, fetched_at, valid_time, temperature_f, wind_speed_mph, "
         "wind_gust_mph, precip_probability_pct, precip_amount_in, humidity_pct FROM weather",
         feat,
     )
@@ -342,10 +342,36 @@ def build_context(schedules, stadiums, spine):
     return sched
 
 
-def build_weather(weather):
-    fc = weather[weather["value_kind"] == "forecast"].copy()
-    fc = fc.sort_values("fetched_at").groupby("game_id", as_index=False).tail(1)
-    fc = fc.rename(columns={
+def build_weather(weather, spine):
+    """Decision #13 (2026-09-22): train on the MEASURED reading nearest
+    kickoff, serve on the latest FORECAST reading -- both in this one
+    function, so a fresh rebuild reproduces the training side without a
+    hand-run follow-up (apply_weather_measured.py used to be that follow-up;
+    this replaces it).
+
+    The bug this fixes: a forecast row gets reclassified to 'measured' once
+    the game has been played (the fetcher checks the actual reading against
+    the forecast and relabels it), so a game that was played weeks ago has
+    ZERO 'forecast' rows left by the time you rebuild -- only 'measured'
+    ones. A forecast-only filter therefore found weather for exactly the
+    one game still in the future and NaN for every played game. Preferring
+    'measured' when it exists, and falling back to 'forecast' only when it
+    doesn't (this week's unplayed games), closes that gap.
+    """
+    w = weather.merge(spine[["game_id", "kickoff_utc"]], on="game_id", how="left")
+    kickoff = pd.to_datetime(w["kickoff_utc"], utc=True, errors="coerce")
+    valid = pd.to_datetime(w["valid_time"], utc=True, errors="coerce")
+    w["_dist"] = (valid - kickoff).abs()
+
+    measured = w[w["value_kind"] == "measured"].copy()
+    measured = measured.sort_values("_dist").groupby("game_id", as_index=False).first()
+
+    forecast = w[w["value_kind"] == "forecast"].copy()
+    forecast = forecast.sort_values("fetched_at").groupby("game_id", as_index=False).tail(1)
+    forecast = forecast[~forecast["game_id"].isin(measured["game_id"])]
+
+    picked = pd.concat([measured, forecast], ignore_index=True)
+    picked = picked.rename(columns={
         "temperature_f": "weather_temp_f",
         "wind_speed_mph": "weather_wind_mph",
         "wind_gust_mph": "weather_wind_gust_mph",
@@ -353,8 +379,8 @@ def build_weather(weather):
         "precip_amount_in": "weather_precip_amt_in",
         "humidity_pct": "weather_humidity_pct",
     })
-    return fc[["game_id", "weather_temp_f", "weather_wind_mph", "weather_wind_gust_mph",
-               "weather_precip_prob_pct", "weather_precip_amt_in", "weather_humidity_pct"]]
+    return picked[["game_id", "weather_temp_f", "weather_wind_mph", "weather_wind_gust_mph",
+                   "weather_precip_prob_pct", "weather_precip_amt_in", "weather_humidity_pct"]]
 
 
 ROLLING_HISTORY_COLS = (
@@ -478,7 +504,7 @@ def assemble_features(pg, snaps, injuries, schedules, xwalk, depth, stadiums, we
     depth_rank = build_depth_rank(pg, depth, spine)
     injury_status = build_injury_status(pg, injuries, spine)
     context = build_context(schedules, stadiums, spine)
-    weather_fc = build_weather(weather)
+    weather_fc = build_weather(weather, spine)
 
     df = base.merge(player_roll, on=["player_id", "game_id"], how="left")
     df = df.merge(
@@ -512,9 +538,17 @@ def assemble_features(pg, snaps, injuries, schedules, xwalk, depth, stadiums, we
     df = df.drop(columns=["home_team", "away_team", "home_rest", "away_rest", "spread_line"])
 
     df = df.merge(weather_fc, on="game_id", how="left")
-    df["weather_temp_f"] = df["weather_temp_f"].where(~df["weather_no_weather_flag"])
-    df["weather_wind_mph"] = df["weather_wind_mph"].where(~df["weather_no_weather_flag"])
-    df["weather_wind_gust_mph"] = df["weather_wind_gust_mph"].where(~df["weather_no_weather_flag"])
+    # Dome/closed-roof games keep weather NULL, full stop -- that is a state,
+    # not missing data (apply_weather_measured.py's docstring). Before this
+    # rebuild fix only temp/wind/wind_gust were masked here; humidity and
+    # precip_amt weren't, and the gap stayed invisible only because the old
+    # forecast-only build_weather() happened to leave those two NaN for
+    # every played dome game anyway. build_weather() now finds a real
+    # measured reading for domes too, so the masking has to be explicit and
+    # cover every weather column, not just three of them.
+    for c in ["weather_temp_f", "weather_wind_mph", "weather_wind_gust_mph",
+              "weather_precip_prob_pct", "weather_precip_amt_in", "weather_humidity_pct"]:
+        df[c] = df[c].where(~df["weather_no_weather_flag"])
 
     # snap_share_rank_in_group: rank of each player's shift(1) snap share
     # among teammates in the same position_group, same season/week
