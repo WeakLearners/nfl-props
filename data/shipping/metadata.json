@@ -1,0 +1,30 @@
+{
+  "trained_at": "2026-09-24T02:39:09.763974+00:00",
+  "git_commit": "a0d8756",
+  "train_seasons": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "holdout": "2026 -- not fit, not scored, not read by this script (decision #24)",
+  "stats": {
+    "receiving_tds": {
+      "kind": "lightgbm (raw, no calibration -- decision #27)",
+      "n_train_rows": 17746,
+      "train_brier_insample": 0.10006,
+      "train_auc_insample": 0.9587,
+      "artifact": "/Users/Sean/Code/nfl-props/data/shipping/receiving_tds.pkl"
+    },
+    "rushing_tds": {
+      "kind": "lightgbm+isotonic",
+      "n_train_rows": 10603,
+      "train_brier_insample": 0.13339,
+      "train_auc_insample": 0.9762,
+      "artifact": "/Users/Sean/Code/nfl-props/data/shipping/rushing_tds.pkl"
+    }
+  }
+}

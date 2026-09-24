@@ -18,3 +18,7 @@ reports/*.err
 data/hist/
 data/*.parquet
 logs/
+
+# Regenerable model artifacts (scripts/retrain_td_models.py). Metadata is
+# tracked; the binary weights are not -- same convention as data/*.parquet.
+data/shipping/*.pkl
