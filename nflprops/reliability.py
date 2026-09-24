@@ -127,8 +127,17 @@ def star_pool(season, week, lookback=DEFAULT_LOOKBACK):
             """SELECT DISTINCT gsis_id, full_name, team AS cur_team, position AS cur_pos
                FROM rosters WHERE season=? AND week=? AND status='ACT'""",
             con, params=[season, week])
+        # Whether this player has actually taken the field this season yet
+        # (any team). Used below to stop a big career usage number, banked
+        # entirely on an old team, from outranking someone who is actually
+        # playing right now on the current one.
+        played_now = pd.read_sql_query(
+            """SELECT DISTINCT player_display_name FROM player_games
+               WHERE season = ? AND season_type='REG' AND week < ?""",
+            con, params=[season, week])
     pg["player_key"] = pg.player_display_name.map(name_key)
     pg = pg.sort_values(["season", "week"], ascending=False).groupby("player_key").head(lookback)
+    played_now_keys = set(played_now.player_display_name.map(name_key))
 
     cur = cur.dropna(subset=["cur_team"])
     cur["player_key"] = cur.full_name.map(name_key)
@@ -148,6 +157,23 @@ def star_pool(season, week, lookback=DEFAULT_LOOKBACK):
     # Rank on the CURRENT roster, so an offseason move puts a player in his new
     # team's pecking order rather than his old one.
     m = cur.merge(usage, on="player_key", how="left")
+    # role_continuity() already flags "changed team" the same way `clean`
+    # does downstream in make_report.py -- reuse that exact definition rather
+    # than a second one, so this guard and the shortlist screen never
+    # disagree about who counts as having changed teams.
+    changed = role_continuity(season, week)[["player_key", "changed_team"]].drop_duplicates("player_key")
+    m = m.merge(changed, on="player_key", how="left")
+    m["changed_team"] = m.changed_team.fillna(False)
+    # A player who changed teams AND has zero games this season anywhere is
+    # an unconfirmed role -- his usage number describes a job he may not
+    # have any more. Zero him out so a teammate who is actually on the field
+    # this season ranks into the slot instead, rather than a career-usage
+    # number from a different team parking him at "star" with nothing to
+    # back it up. Narrow on purpose: a player who changed teams but has
+    # already played this season keeps his usage number unchanged, since
+    # he's demonstrably playing the role now.
+    stale = m.changed_team & ~m.player_key.isin(played_now_keys)
+    m.loc[stale, "usage"] = 0.0
     m["usage"] = m.usage.fillna(0.0)
     m["rank"] = m.groupby(["cur_team", "cur_pos"]).usage.rank(ascending=False, method="first")
     keep = m[m.apply(lambda r: r["rank"] <= STAR_DEPTH[r.cur_pos], axis=1)]

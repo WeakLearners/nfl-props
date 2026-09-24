@@ -166,9 +166,9 @@
     "note": "Phase 3 metadata.json/vol_metadata.json files record their own commit/config already; this manifest's phase3_* fields are a pointer into those, not a duplicate source of truth."
   },
   "known_open_bug_before_holdout": {
-    "id": "decision #31 Tua/ATL",
-    "description": "nflprops.project._roster() rostered Tua Tagovailoa to ATL for 2026 W3 instead of MIA -- a pre-existing roster-pipeline data issue, unrelated to any Phase 3 change, affects BOTH the official engines above (they call the same _roster()) and Phase 3.",
-    "status": "fixed, decision #34 (2026-09-24) -- root cause was a bad value in the upstream nflreadpy roster feed itself, reproduced live; _roster() and ingest.py are both unmodified. Fixed as a 3-row data correction in the rosters table (ATL->MIA, gsis_id 00-0036212, season 2026 weeks 1-3), backed up and sha256-verified before/after. No file in code_sha256 above was touched, so this manifest's hashes are unchanged and engine/check_drift.py still passes.",
-    "must_fix_before": "2026 holdout opens (see holdout-protocol.md) -- RESOLVED, no longer a blocker"
+    "id": "decision #31 Tua/ATL -- CLOSED, false positive",
+    "description": "nflprops.project._roster() showed Tua Tagovailoa on ATL for 2026 W3. Decision #31 flagged this as a suspected data bug (assumed MIA); decision #34 'fixed' it as a data correction to MIA. Decision #35 (2026-09-24) reverted #34: Sean confirmed Tua genuinely moved to Atlanta in 2026. The upstream nflreadpy roster value was correct all along -- there was never a roster-pipeline bug. _roster(), ingest.py's team-mapping, and the rosters table all reflect ATL, which is right.",
+    "status": "closed, decision #35 (2026-09-24) -- false positive, no bug existed. The real risk this surfaced was in nflprops/reliability.py's star_pool(): a player who switches teams and hasn't played yet can still outrank the actual current starter, because usage was ranked on career history regardless of how stale it is. Fixed generally in decision #35 -- star_pool() now zeroes usage for any player flagged changed_team by role_continuity() who also has zero games this season, so an unconfirmed role can't outrank someone actually on the field. reliability.py is not in this manifest's code_sha256 (it sits outside the locked engine, same as ingest.py), so the engine lock and this file's hashes are unaffected; engine/check_drift.py still passes.",
+    "must_fix_before": "N/A -- there was nothing to fix before the holdout opens; this entry stays for the record"
   }
 }

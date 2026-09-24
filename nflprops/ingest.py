@@ -18,17 +18,25 @@ def seasons(first=FIRST_SEASON, last=CURRENT_SEASON):
 
 # Known-bad values in the upstream nflreadpy feed itself, applied after every
 # load so a fresh `build()` re-pulling from nflreadpy can't silently
-# reintroduce a bug that was already found and fixed. Confirmed live on
-# 2026-09-24 (decision #34): nflreadpy.load_rosters_weekly(seasons=[2026])
-# itself returns team="ATL" for Tua Tagovailoa's 2026 weeks 1-3, not
-# something ingest.py or _roster() introduced -- so the correction belongs
-# here, not as a special case in the projection code, and it stays in force
-# for every future rebuild until nflreadpy fixes its own data upstream.
-# Each entry: (gsis_id, season) -> corrected team. Add new rows here, with a
-# decision reference, rather than patching the live db by hand again.
-ROSTER_TEAM_CORRECTIONS = {
-    ("00-0036212", 2026): "MIA",  # Tua Tagovailoa; decision #34, 2026-09-24
-}
+# reintroduce a bug that was already found and fixed.
+#
+# Bar for adding an entry here: an upstream roster value is overridden only
+# when 2026 game data (player_games/snap_counts -- an actual snap taken)
+# contradicts it, never on an assumption about who "should" be on a team.
+# Decision #34 (2026-09-24) originally added a Tua Tagovailoa ATL->MIA
+# correction here on the reasoning that a 79-game veteran starter landing on
+# a new team with zero 2026 snaps looked wrong. Decision #35 (2026-09-24)
+# reverted it: Sean confirmed Tua is genuinely on Atlanta in 2026, and the
+# "zero 2026 snaps" signal was never actually distinguishing -- Malik Willis
+# started both of Miami's 2026 games and Tua's last game anywhere is 2025
+# W15, which is exactly the shape of the 20 legitimate veteran-backup moves
+# already found and accepted in the same investigation (Andy Dalton, Tyrod
+# Taylor, Odell Beckham Jr., etc. -- signed to a new team, no snaps yet).
+# There was no contradicting game evidence, only an assumption. Left empty
+# on purpose rather than deleted: this is the right general mechanism for
+# the next case where nflreadpy is provably wrong, not for cases where a
+# player merely looks surprising.
+ROSTER_TEAM_CORRECTIONS = {}
 
 
 def _apply_roster_corrections(df: pl.DataFrame) -> pl.DataFrame:
