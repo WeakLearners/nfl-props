@@ -225,6 +225,15 @@
     font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:500;
     letter-spacing:.02em; color:var(--ink-2); flex:none; text-align:center;
   }
+  /* Phase 3's ridge yardage number, shown the same way as the TD phase3
+     read above -- plain text next to the flags row, never inside the
+     figure itself. Decision #31: on receiving/rushing yards this engine's
+     own number won the head-to-head, so this is a second, informational
+     read, not a competing claim. */
+  .p3-vol{
+    font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:500;
+    letter-spacing:.02em; color:var(--ink-3); flex:none; text-align:center;
+  }
   .pick-badge{
     font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:600;
     letter-spacing:.1em; text-transform:uppercase; color:var(--ink);
@@ -353,6 +362,11 @@
     <p><strong>What this is not.</strong> These are projections, not edges. Tested against
     real sportsbook lines, this model's point estimates were <em>less</em> accurate than the
     market's. Useful for seeing a player's plausible range; not evidence anyone is mispriced.</p>
+    <p><strong>The small "phase3" figure.</strong> A second, independently trained model
+    (ridge regression on a different feature set) reads the same receiving or rushing yards.
+    Head-to-head on five seasons of real games (2021&ndash;2025), this report's own number
+    was the more accurate of the two on both stats &mdash; the phase3 figure is shown for
+    context, not because it won anything.</p>
   </footer>
 </div>
 <div class="tip" id="tip" data-inspect-id="curve-tooltip"></div>
@@ -532,7 +546,9 @@ STATS.forEach(([key,label,unit])=>{
         +(isTD?'<span class="td-badge" data-inspect-id="card-td-badge">td '
           +Math.round(TD.conf*100)+'%</span>':'')
         +(isTD && TD.phase3?'<span class="td-phase3" data-inspect-id="card-td-phase3">phase3 '
-          +Math.round(TD.phase3.p_combined*100)+'%</span>':'')+'</div></div>'
+          +Math.round(TD.phase3.p_combined*100)+'%</span>':'')
+        +(d.p3!=null?'<span class="p3-vol" data-inspect-id="card-p3-vol">phase3 '
+          +fmt(d.p3)+'</span>':'')+'</div></div>'
       +'<svg data-inspect-id="card-curve" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+d.p+' '+label
       +': expected '+fmt(d.mu)+', middle range '+fmt(d.lo)+' to '+fmt(d.hi)+'">'
       +'<path d="'+c.band+'" fill="'+fill+'"></path>'

@@ -1,0 +1,41 @@
+{
+  "trained_at": "2026-09-24T13:58:22.147857+00:00",
+  "git_commit": "3805f76",
+  "train_seasons": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "model": "ridge (decision #20 -- LightGBM/rung3 failed to beat this by its 3% bar)",
+  "holdout": "2026 -- not fit, not scored, not read by this script (decision #24)",
+  "stats": {
+    "targets": {
+      "n_train_rows": 17746,
+      "alpha": 562.341325190349,
+      "train_mae_insample": 2.1195,
+      "artifact": "/Users/Sean/Code/nfl-props/data/shipping/targets.pkl"
+    },
+    "carries": {
+      "n_train_rows": 10603,
+      "alpha": 316.22776601683796,
+      "train_mae_insample": 3.5063,
+      "artifact": "/Users/Sean/Code/nfl-props/data/shipping/carries.pkl"
+    },
+    "receiving_yards": {
+      "n_train_rows": 17746,
+      "alpha": 1000.0,
+      "train_mae_insample": 22.916,
+      "artifact": "/Users/Sean/Code/nfl-props/data/shipping/receiving_yards.pkl"
+    },
+    "rushing_yards": {
+      "n_train_rows": 10603,
+      "alpha": 562.341325190349,
+      "train_mae_insample": 21.1808,
+      "artifact": "/Users/Sean/Code/nfl-props/data/shipping/rushing_yards.pkl"
+    }
+  }
+}

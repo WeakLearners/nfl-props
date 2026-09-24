@@ -16,6 +16,7 @@ from nflprops.project import defense_vs_position, SPECS, DEF_WEIGHT
 from nflprops.config import require, ROOT
 from nflprops.odds import name_key
 from nflprops.db import connect
+from vol_predict import phase3_vol
 
 SEASON, WEEK = int(sys.argv[1]), int(sys.argv[2])
 TEAMS = sys.argv[3].split(",")
@@ -85,6 +86,24 @@ inj, _ = R.risk_flags(SEASON, WEEK)
 pr["player_key"] = pr["player"].map(name_key)
 pr = pr[pr.team.isin(TEAMS) & pr.player_key.isin(set(pool.player_key))].copy()
 rank = {r.player_key: int(r["rank"]) for _, r in pool.iterrows()}
+
+# Decision #31: Phase 3's ridge volume/yardage models, shown additively next
+# to this engine's own number for the two stats this report actually
+# displays. Head-to-head (2021-2025, data/vol_head_to_head.csv) has THIS
+# engine (project.py) still winning on both receiving_yards and rushing_yards
+# -- Phase 3 only wins on the internal targets/carries volume components,
+# which never reach the page. The number ships anyway, informational only,
+# same posture decision #30 set for the touchdown marker: never merged into
+# one figure, never claimed as better.
+try:
+    p3 = phase3_vol(SEASON, WEEK)
+except Exception as e:
+    print(f"  ! phase3_vol failed, skipping: {e}")
+    p3 = pd.DataFrame(columns=["player_id"])
+pr = pr.merge(p3, on="player_id", how="left") if "player_id" in pr.columns else pr
+for _c in ("p3_receiving_yards", "p3_rushing_yards"):
+    if _c not in pr.columns:
+        pr[_c] = np.nan
 
 dvp = defense_vs_position(SEASON, WEEK)
 dvp_ix = dvp.set_index(["defteam", "position"]) if not dvp.empty else None
@@ -170,6 +189,11 @@ for r in pr.itertuples():
         "mp": None if pd.isna(r.mp) else round(float(r.mp), 3),
         "bp": None if pd.isna(r.bp) else round(float(r.bp), 3),
         "pick": None if r.pick is None else int(r.pick),
+        "p3": (round(float(r.p3_receiving_yards), 1) if r.stat == "receiving_yards"
+                                                       and pd.notna(r.p3_receiving_yards)
+               else round(float(r.p3_rushing_yards), 1) if r.stat == "rushing_yards"
+                                                          and pd.notna(r.p3_rushing_yards)
+               else None),
     })
 
 same_game = pr[pr.pick.notna()].game_id.nunique() <= 1

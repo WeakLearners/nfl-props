@@ -446,6 +446,16 @@
           }
         },
         {
+          "id": "card-p3-vol",
+          "label": "Card Phase 3 volume/yardage number",
+          "kind": "text",
+          "description": "Decision #31: Phase 3's ridge model for receiving_yards or rushing_yards (whichever stat the card shows), e.g. 'phase3 58.2'. Plain text next to the flags row, never merged into the card's own figure. Head-to-head (2021-2025) has THIS report's own projection winning on both stats -- shown for context, not as a competing claim. Absent on any report built before this decision, and absent if data/shipping/{targets,carries,receiving_yards,rushing_yards}.pkl are missing.",
+          "locate": {
+            "path": "templates/report.html:550",
+            "grep": "grep -n -F -- 'data-inspect-id=\"card-p3-vol\"' templates/report.html"
+          }
+        },
+        {
           "id": "report-back",
           "label": "Back to all reports",
           "kind": "nav",
