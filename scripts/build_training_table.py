@@ -29,13 +29,18 @@ or game_spine. Single-threaded, timeout=60.
 """
 
 import sqlite3
+import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-LIVE_DB = Path.home() / "Code/nfl-props/data/nflprops.db"
-FEATURES_DB = Path.home() / "Code/nfl-props/data/features.db"
+ROOT = Path.home() / "Code/nfl-props"
+sys.path.insert(0, str(ROOT))
+from nflprops.project import _roster  # noqa: E402  -- the one place "who's on the field" is decided
+
+LIVE_DB = ROOT / "data/nflprops.db"
+FEATURES_DB = ROOT / "data/features.db"
 
 WINDOWS = [1, 4, 8]
 
@@ -58,7 +63,7 @@ def load():
         "FROM injuries", live,
     )
     schedules = read_sql(
-        "SELECT game_id, season, week, home_team, away_team, home_rest, away_rest, "
+        "SELECT game_id, season, week, game_type, home_team, away_team, home_rest, away_rest, "
         "spread_line, total_line, roof, surface, stadium_id FROM schedules", live,
     )
 
@@ -435,22 +440,25 @@ def apply_cold_start(df):
     return df
 
 
-def main():
-    pg, snaps, injuries, schedules, xwalk, depth, stadiums, weather, spine = load()
+def assemble_features(pg, snaps, injuries, schedules, xwalk, depth, stadiums, weather, spine):
+    """The engineering pipeline, with no label join and no registry gate.
 
+    Split out of main() 2026-09-24 (decision #30) so the exact same code
+    path can build a row for a game that has NOT been played -- the
+    pre-game builder in pregame_features() below appends stub rows (real
+    keys, NaN outcome stats) to `pg` before calling this function, and every
+    feature in ROLLING_HISTORY_COLS is shift(1)-safe, so a stub row's own
+    (unplayed) stats are never read by anything. What comes back for that
+    row is therefore identical to what training_rows would hold for it once
+    the game is played -- see pregame_features()'s docstring for why, and
+    scripts/skew_check.py for the row-by-row proof.
+
+    Returns a features-only frame (base identity columns + every engineered
+    column), one row per (player_id, game_id) present in `pg`. No y_
+    columns, no feature_registry gating, no write.
+    """
     base = pg[["player_id", "player_display_name", "position", "position_group", "season", "week",
                "season_type", "game_id", "team", "opponent_team"]].copy()
-
-    # labels (actuals) -- not features, not gated, this is what Phase 3 predicts
-    labels = pg[["player_id", "game_id", "targets", "carries", "receptions",
-                 "receiving_yards", "rushing_yards", "receiving_tds", "rushing_tds",
-                 "target_share", "air_yards_share", "wopr"]].rename(columns={
-        "targets": "y_targets", "carries": "y_carries", "receptions": "y_receptions",
-        "receiving_yards": "y_receiving_yards", "rushing_yards": "y_rushing_yards",
-        "receiving_tds": "y_receiving_tds", "rushing_tds": "y_rushing_tds",
-        "target_share": "y_target_share_row", "air_yards_share": "y_air_yards_share_row",
-        "wopr": "y_wopr_row",
-    })
 
     player_roll = build_player_rolling(pg)
     player_roll_cols = ["player_id", "game_id", "player_prior_games"] + [
@@ -472,8 +480,7 @@ def main():
     context = build_context(schedules, stadiums, spine)
     weather_fc = build_weather(weather)
 
-    df = base.merge(labels, on=["player_id", "game_id"], how="left")
-    df = df.merge(player_roll, on=["player_id", "game_id"], how="left")
+    df = base.merge(player_roll, on=["player_id", "game_id"], how="left")
     df = df.merge(
         snap_share.drop(columns=["season", "week"]), on=["player_id", "game_id"], how="left"
     )
@@ -524,6 +531,113 @@ def main():
     )
 
     df = apply_cold_start(df)
+    return df
+
+
+def pregame_features(season, week):
+    """One row per player expected to play in (season, week), built by the
+    SAME code as training_rows -- decision #30.
+
+    THE TRICK. Every engineered column in assemble_features() is shift(1)
+    before it rolls: a value for row i only ever reads rows that come
+    strictly before it in that player's (or team's, or defense's) own
+    chronological order. Nothing anywhere reads a row's OWN outcome to
+    build that row's own features. So if a row's outcome columns
+    (targets, carries, receiving_yards, ...) are NaN -- unknown, because
+    the game has not been played -- assemble_features() does not care. It
+    only ever consumes them for a LATER row, and there is no later row
+    yet.
+
+    That means the one thing pregame serving needs that training does not
+    already have is a way to put a STUB row into `pg` for a game that has
+    no box score: real keys (player_id, game_id, season, week, team,
+    opponent_team, position, position_group, season_type), every stat
+    column NaN. Appending those stub rows to the real historical `pg` and
+    running assemble_features() over the combined frame produces, for
+    those stub rows, EXACTLY what training_rows would hold for them once
+    the game is played -- see scripts/skew_check.py, which proves this by
+    diffing a past week's stub-row output against training_rows' stored
+    values for that same week, column by column.
+
+    UNIVERSE. Who gets a stub row is the roster, not a guess -- reuses
+    nflprops.project._roster(season, week), the same active/absent split
+    tdmodel.py already serves from. Absent players (Out/Doubtful/inactive)
+    get no row: nobody bets what a player who won't take the field does.
+
+    Returns features only -- no y_ columns (there is nothing to label yet)
+    and no feature_registry gate (that gate exists to keep a leaky column
+    out of a TRAINING table; a pregame row was never a leak candidate to
+    begin with, since assemble_features() is the same code either way).
+    """
+    pg, snaps, injuries, schedules, xwalk, depth, stadiums, weather, spine = load()
+
+    # Strictly before (season, week) -- the same convention _history() and
+    # every feature query in nflprops/features.py already use. This is not
+    # only about a genuinely future week: calling this function on a PAST
+    # week (the skew check does exactly that) would otherwise find pg
+    # already holding that week's real, played rows, and appending a stub
+    # on top would give that player two rows for the same game. Truncating
+    # first makes "pretend this week hasn't happened yet" true regardless
+    # of which week is asked for, which is the only way a past-week call
+    # and a future-week call can honestly run the same code.
+    pg = pg[(pg.season < season) | ((pg.season == season) & (pg.week < week))].copy()
+
+    active, _absent = _roster(season, week)
+    if active.empty:
+        return pd.DataFrame(columns=list(pg.columns))
+
+    sched = schedules[schedules.season.eq(season) & schedules.week.eq(week)]
+    if sched.empty:
+        raise RuntimeError(f"no schedule rows for {season} W{week} -- cannot assign game_id/opponent")
+    team_to_game = {}
+    for r in sched.itertuples():
+        season_type = "REG" if r.game_type == "REG" else "POST"
+        team_to_game[r.home_team] = (r.game_id, r.away_team, season_type)
+        team_to_game[r.away_team] = (r.game_id, r.home_team, season_type)
+
+    stub = active[["player_id", "team", "position", "full_name"]].drop_duplicates("player_id").copy()
+    stub = stub[stub.team.isin(team_to_game)]
+    stub["game_id"] = stub.team.map(lambda t: team_to_game[t][0])
+    stub["opponent_team"] = stub.team.map(lambda t: team_to_game[t][1])
+    stub["season_type"] = stub.team.map(lambda t: team_to_game[t][2])
+    stub["position_group"] = stub["position"]        # QB/RB/WR/TE only -- _roster already filtered to these
+    stub["player_display_name"] = stub["full_name"]
+    stub["season"], stub["week"] = season, week
+    stub = stub.drop(columns=["full_name"])
+
+    # Every other pg column (targets, carries, receiving_yards, ...) is the
+    # thing being predicted. It does not exist yet, and every consumer of
+    # `pg` in assemble_features() only ever reads it via shift(1) off a
+    # LATER row -- there is none -- so leaving it unset (NaN) is correct,
+    # not a gap papered over.
+    for c in pg.columns:
+        if c not in stub.columns:
+            stub[c] = np.nan
+    stub = stub[list(pg.columns)]
+
+    pg_ext = pd.concat([pg, stub], ignore_index=True, sort=False)
+    df = assemble_features(pg_ext, snaps, injuries, schedules, xwalk, depth, stadiums, weather, spine)
+
+    out = df[df.player_id.isin(stub.player_id) & df.season.eq(season) & df.week.eq(week)].copy()
+    return out.reset_index(drop=True)
+
+
+def main():
+    pg, snaps, injuries, schedules, xwalk, depth, stadiums, weather, spine = load()
+
+    df = assemble_features(pg, snaps, injuries, schedules, xwalk, depth, stadiums, weather, spine)
+
+    # labels (actuals) -- not features, not gated, this is what Phase 3 predicts
+    labels = pg[["player_id", "game_id", "targets", "carries", "receptions",
+                 "receiving_yards", "rushing_yards", "receiving_tds", "rushing_tds",
+                 "target_share", "air_yards_share", "wopr"]].rename(columns={
+        "targets": "y_targets", "carries": "y_carries", "receptions": "y_receptions",
+        "receiving_yards": "y_receiving_yards", "rushing_yards": "y_rushing_yards",
+        "receiving_tds": "y_receiving_tds", "rushing_tds": "y_rushing_tds",
+        "target_share": "y_target_share_row", "air_yards_share": "y_air_yards_share_row",
+        "wopr": "y_wopr_row",
+    })
+    df = df.merge(labels, on=["player_id", "game_id"], how="left")
 
     con = sqlite3.connect(FEATURES_DB, timeout=60)
     registry = pd.read_sql_query("SELECT feature_name, status FROM feature_registry", con)

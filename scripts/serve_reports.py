@@ -1444,8 +1444,12 @@ class Handler(SimpleHTTPRequestHandler):
         m = NAME.search(name)
         td = td_markers().get(f"{m.group(3)}-{m.group(4)}") if m else None
         if td:
+            # phase3 rides along the same way: additive, absent on any
+            # marker written before decision #30, and never touching conf/
+            # basis, which stay exactly what they always were.
             blob = json.dumps({"player": td["player"], "conf": td["conf"],
-                               "basis": td["basis"], "team": td.get("team")})
+                               "basis": td["basis"], "team": td.get("team"),
+                               "phase3": td.get("phase3")})
             # Before the report's own script, which runs at the end of the body.
             html = html.replace("<meta charset=\"utf-8\">",
                                 "<meta charset=\"utf-8\">\n"

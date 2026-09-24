@@ -217,6 +217,14 @@
     border-radius:2px; padding:1px 4px; flex:none; text-align:center;
     background:var(--td-edge);
   }
+  /* The Phase 3 combined number, shown next to the badge above rather than
+     inside it -- two engines' independent reads on the same game, never
+     averaged into one figure. Plain text, not another badge shape, so it
+     never reads as a second claim the way a matching pill would. */
+  .td-phase3{
+    font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:500;
+    letter-spacing:.02em; color:var(--ink-2); flex:none; text-align:center;
+  }
   .pick-badge{
     font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:600;
     letter-spacing:.1em; text-transform:uppercase; color:var(--ink);
@@ -522,7 +530,9 @@ STATS.forEach(([key,label,unit])=>{
       +'<div class="card-flags" data-inspect-id="card-flags">'+history(d)
         +(d.pick?'<span class="pick-badge" data-inspect-id="card-pick-badge">pick '+d.pick+'</span>':'')
         +(isTD?'<span class="td-badge" data-inspect-id="card-td-badge">td '
-          +Math.round(TD.conf*100)+'%</span>':'')+'</div></div>'
+          +Math.round(TD.conf*100)+'%</span>':'')
+        +(isTD && TD.phase3?'<span class="td-phase3" data-inspect-id="card-td-phase3">phase3 '
+          +Math.round(TD.phase3.p_combined*100)+'%</span>':'')+'</div></div>'
       +'<svg data-inspect-id="card-curve" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+d.p+' '+label
       +': expected '+fmt(d.mu)+', middle range '+fmt(d.lo)+' to '+fmt(d.hi)+'">'
       +'<path d="'+c.band+'" fill="'+fill+'"></path>'

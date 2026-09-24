@@ -436,6 +436,16 @@
           }
         },
         {
+          "id": "card-td-phase3",
+          "label": "Card Phase 3 combined-TD number",
+          "kind": "text",
+          "description": "Decision #30: the Phase 3 rush+rec touchdown models' combined P(any TD) for the same player card-td-badge names, e.g. 'phase3 51%'. Plain text next to the badge, not another badge -- two engines' independent reads on one game, shown side by side, never averaged. Absent on any marker written before this decision, and absent if data/shipping/*.pkl are missing.",
+          "locate": {
+            "path": "templates/report.html:534",
+            "grep": "grep -n -F -- 'data-inspect-id=\"card-td-phase3\"' templates/report.html"
+          }
+        },
+        {
           "id": "report-back",
           "label": "Back to all reports",
           "kind": "nav",

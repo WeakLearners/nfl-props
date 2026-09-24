@@ -1,0 +1,226 @@
+{
+ "ARI-SF": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.623,
+  "model_p": 0.623,
+  "phase3": {
+   "p_combined": 0.506,
+   "p_rec": 0.221,
+   "p_rush": 0.366
+  },
+  "player": "Christian McCaffrey",
+  "position": "RB",
+  "team": "SF"
+ },
+ "ATL-GB": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.553,
+  "model_p": 0.553,
+  "phase3": {
+   "p_combined": 0.434,
+   "p_rec": 0.108,
+   "p_rush": 0.365
+  },
+  "player": "Bijan Robinson",
+  "position": "RB",
+  "team": "ATL"
+ },
+ "BAL-DAL": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.667,
+  "model_p": 0.667,
+  "phase3": {
+   "p_combined": 0.423,
+   "p_rec": 0.053,
+   "p_rush": 0.391
+  },
+  "player": "Derrick Henry",
+  "position": "RB",
+  "team": "BAL"
+ },
+ "CAR-CLE": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.362,
+  "model_p": 0.362,
+  "phase3": {
+   "p_combined": 0.415,
+   "p_rec": 0.161,
+   "p_rush": 0.303
+  },
+  "player": "Quinshon Judkins",
+  "position": "RB",
+  "team": "CLE"
+ },
+ "CIN-PIT": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.483,
+  "model_p": 0.483,
+  "phase3": {
+   "p_combined": 0.439,
+   "p_rec": 0.141,
+   "p_rush": 0.347
+  },
+  "player": "Chase Brown",
+  "position": "RB",
+  "team": "CIN"
+ },
+ "HOU-IND": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.464,
+  "model_p": 0.464,
+  "phase3": {
+   "p_combined": 0.35,
+   "p_rec": 0.023,
+   "p_rush": 0.335
+  },
+  "player": "David Montgomery",
+  "position": "RB",
+  "team": "HOU"
+ },
+ "KC-MIA": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.589,
+  "model_p": 0.589,
+  "phase3": {
+   "p_combined": 0.389,
+   "p_rec": 0.105,
+   "p_rush": 0.317
+  },
+  "player": "Kenneth Walker III",
+  "position": "RB",
+  "team": "KC"
+ },
+ "LA-DEN": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.415,
+  "model_p": 0.415,
+  "phase3": {
+   "p_combined": 0.38,
+   "p_rec": 0.091,
+   "p_rush": 0.318
+  },
+  "player": "Kyren Williams",
+  "position": "RB",
+  "team": "LA"
+ },
+ "LAC-BUF": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.574,
+  "model_p": 0.574,
+  "phase3": {
+   "p_combined": 0.436,
+   "p_rec": 0.088,
+   "p_rush": 0.381
+  },
+  "player": "James Cook",
+  "position": "RB",
+  "team": "BUF"
+ },
+ "LV-NO": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.42,
+  "model_p": 0.42,
+  "phase3": {
+   "p_combined": 0.389,
+   "p_rec": 0.114,
+   "p_rush": 0.31
+  },
+  "player": "Ashton Jeanty",
+  "position": "RB",
+  "team": "LV"
+ },
+ "MIN-TB": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.411,
+  "model_p": 0.411,
+  "phase3": {
+   "p_combined": 0.292,
+   "p_rec": 0.044,
+   "p_rush": 0.259
+  },
+  "player": "Aaron Jones",
+  "position": "RB",
+  "team": "MIN"
+ },
+ "NE-JAX": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.395,
+  "model_p": 0.395,
+  "phase3": {
+   "p_combined": 0.348,
+   "p_rec": 0.236,
+   "p_rush": 0.147
+  },
+  "player": "Parker Washington",
+  "position": "WR",
+  "team": "JAX"
+ },
+ "NYJ-DET": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.572,
+  "model_p": 0.572,
+  "phase3": {
+   "p_combined": 0.494,
+   "p_rec": 0.176,
+   "p_rush": 0.386
+  },
+  "player": "Jahmyr Gibbs",
+  "position": "RB",
+  "team": "DET"
+ },
+ "PHI-CHI": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.49,
+  "model_p": 0.49,
+  "phase3": {
+   "p_combined": 0.324,
+   "p_rec": 0.039,
+   "p_rush": 0.297
+  },
+  "player": "Saquon Barkley",
+  "position": "RB",
+  "team": "PHI"
+ },
+ "SEA-WAS": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.422,
+  "model_p": 0.422,
+  "phase3": {
+   "p_combined": 0.501,
+   "p_rec": 0.37,
+   "p_rush": 0.207
+  },
+  "player": "Jaxon Smith-Njigba",
+  "position": "WR",
+  "team": "SEA"
+ },
+ "TEN-NYG": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.389,
+  "model_p": 0.389,
+  "phase3": {
+   "p_combined": 0.387,
+   "p_rec": 0.11,
+   "p_rush": 0.311
+  },
+  "player": "Cam Skattebo",
+  "position": "RB",
+  "team": "NYG"
+ }
+}
