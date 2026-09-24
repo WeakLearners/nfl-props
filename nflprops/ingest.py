@@ -16,6 +16,32 @@ def seasons(first=FIRST_SEASON, last=CURRENT_SEASON):
     return list(range(first, last + 1))
 
 
+# Known-bad values in the upstream nflreadpy feed itself, applied after every
+# load so a fresh `build()` re-pulling from nflreadpy can't silently
+# reintroduce a bug that was already found and fixed. Confirmed live on
+# 2026-09-24 (decision #34): nflreadpy.load_rosters_weekly(seasons=[2026])
+# itself returns team="ATL" for Tua Tagovailoa's 2026 weeks 1-3, not
+# something ingest.py or _roster() introduced -- so the correction belongs
+# here, not as a special case in the projection code, and it stays in force
+# for every future rebuild until nflreadpy fixes its own data upstream.
+# Each entry: (gsis_id, season) -> corrected team. Add new rows here, with a
+# decision reference, rather than patching the live db by hand again.
+ROSTER_TEAM_CORRECTIONS = {
+    ("00-0036212", 2026): "MIA",  # Tua Tagovailoa; decision #34, 2026-09-24
+}
+
+
+def _apply_roster_corrections(df: pl.DataFrame) -> pl.DataFrame:
+    for (gsis_id, season), team in ROSTER_TEAM_CORRECTIONS.items():
+        df = df.with_columns(
+            pl.when((pl.col("gsis_id") == gsis_id) & (pl.col("season") == season))
+            .then(pl.lit(team))
+            .otherwise(pl.col("team"))
+            .alias("team")
+        )
+    return df
+
+
 def _pd(df: pl.DataFrame):
     return df.to_pandas()
 
@@ -82,6 +108,7 @@ def build(yrs=None, con=None):
         # movement makes unanswerable from player_games alone at Week 1.
         ros = nfl.load_rosters_weekly(seasons=yrs).select(
             "season", "week", "team", "position", "status", "gsis_id", "full_name")
+        ros = _apply_roster_corrections(ros)
         counts["rosters"] = write_table(_pd(ros), "rosters", con, yrs)
         counts["rz_usage"] = write_table(_pd(red_zone_usage(yrs)), "rz_usage", con, yrs)
     return counts

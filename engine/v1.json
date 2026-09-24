@@ -168,7 +168,7 @@
   "known_open_bug_before_holdout": {
     "id": "decision #31 Tua/ATL",
     "description": "nflprops.project._roster() rostered Tua Tagovailoa to ATL for 2026 W3 instead of MIA -- a pre-existing roster-pipeline data issue, unrelated to any Phase 3 change, affects BOTH the official engines above (they call the same _roster()) and Phase 3.",
-    "status": "flagged, not fixed",
-    "must_fix_before": "2026 holdout opens (see holdout-protocol.md)"
+    "status": "fixed, decision #34 (2026-09-24) -- root cause was a bad value in the upstream nflreadpy roster feed itself, reproduced live; _roster() and ingest.py are both unmodified. Fixed as a 3-row data correction in the rosters table (ATL->MIA, gsis_id 00-0036212, season 2026 weeks 1-3), backed up and sha256-verified before/after. No file in code_sha256 above was touched, so this manifest's hashes are unchanged and engine/check_drift.py still passes.",
+    "must_fix_before": "2026 holdout opens (see holdout-protocol.md) -- RESOLVED, no longer a blocker"
   }
 }
