@@ -29,6 +29,7 @@
     --den-fill:rgba(235,104,52,.16); --kc-fill:rgba(42,120,214,.16);
     --band:rgba(20,20,15,.055);
     --good:#1c7a4d; --bad:#b3261e;
+    --p3:#7b52c7;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
@@ -39,6 +40,7 @@
       --den-fill:rgba(217,89,38,.22); --kc-fill:rgba(57,135,229,.22);
       --band:rgba(255,255,255,.06);
       --good:#4fbd85; --bad:#f2685c;
+      --p3:#a98bf0;
     }
   }
   :root[data-theme="dark"]{
@@ -49,6 +51,7 @@
     --den-fill:rgba(217,89,38,.22); --kc-fill:rgba(57,135,229,.22);
     --band:rgba(255,255,255,.06);
     --good:#4fbd85; --bad:#f2685c;
+    --p3:#a98bf0;
   }
   *{box-sizing:border-box}
   body{
@@ -191,6 +194,13 @@
     font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
     font-size:17px; font-weight:600; flex:none;
   }
+  /* Both engines' numbers for this leg: old (team colour, the card's big
+     number) and new (purple, the Phase 3 model). Same colours as the lines
+     on the curves. */
+  .pk-models{font-family:"IBM Plex Mono",monospace; font-size:12px; flex:none;
+    width:118px; text-align:right; white-space:nowrap; color:var(--ink-3);
+    font-variant-numeric:tabular-nums}
+  .pk-models b{font-weight:600}
   .pk-px{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-3);
     width:46px; text-align:right; flex:none; font-variant-numeric:tabular-nums}
   .picks-foot{
@@ -237,6 +247,8 @@
     font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:500;
     letter-spacing:.02em; color:var(--ink-3); align-self:flex-start; margin-top:3px;
   }
+  .p3-vol .o, .p3-vol .n{font-weight:600}
+  .p3-vol .n{color:var(--p3)}
   .p3-vol.big{
     color:var(--ink); font-weight:600; background:var(--band);
     padding:1px 5px; border-radius:2px;
@@ -295,6 +307,7 @@
     color:var(--ink-3); font-size:12.5px; max-width:68ch}
   footer strong{color:var(--ink-2); font-weight:600}
   @media (max-width:560px){
+    .pk-models{display:none}
     .wrap{padding:24px 14px 48px}
     .grid{grid-template-columns:1fr; gap:12px}
     .legend{gap:10px 14px}
@@ -321,7 +334,8 @@
     <span class="key"><span class="swatch" style="background:var(--den)"></span><span id="teamA"></span></span>
     <span class="key"><span class="swatch" style="background:var(--kc)"></span><span id="teamB"></span></span>
     <span class="key"><span class="swatch band-key"></span>middle ~68% of outcomes</span>
-    <span class="key"><span class="swatch" style="background:none;border-top:2px dashed var(--ink-3);height:0"></span>expected</span>
+    <span class="key"><span class="swatch" style="background:none;border-top:2px dashed var(--ink-3);height:0"></span>old engine's expected (team colour)</span>
+    <span class="key" data-inspect-id="legend-p3"><span class="swatch" style="background:none;border-top:2px dashed var(--p3);height:0"></span>new model's expected</span>
     <span class="key"><span class="swatch" style="background:none;border-left:2px solid var(--ink);width:0;height:14px"></span>FanDuel's ~&minus;__TARGET_ABS__ number</span>
     <span class="key" data-inspect-id="legend-actual"><span class="swatch" style="background:none;border-left:2px solid var(--good);width:0;height:14px"></span>what he actually did &mdash; <em class="lg-good">green</em> cleared the number, <em class="lg-bad">red</em> did not, grey means none was offered</span>
   </div>
@@ -381,6 +395,9 @@
     ridge regression: a straight-line fit that is penalized for leaning hard on any one input, so it
     can't memorize noise. It was trained on 2019&ndash;2025 over a wider table of inputs. Neither
     engine ever sees the other's number.</p>
+    <p><strong>On the curve.</strong> The curve belongs to the old engine. Its dashed line, in the
+    team's colour, marks the old engine's number. The purple dashed line marks the new model's. When
+    the two lines sit apart, the engines disagree. The shortlist shows the same pair, in the same colours.</p>
     <p><strong>Reading the gap.</strong> The number in brackets is new minus old. A minus sign means
     the new model expects less. The two are never averaged into one figure. The line is shaded when
     the gap is more than half the card's spread. The spread is the distance from the big number to
@@ -509,13 +526,24 @@ function actualMark(d,c){
 // engine" is nflprops/project.py (the first model, 2026-09-13); "new model"
 // is the Phase 3 ridge model added 2026-09-24 (decision #31). Emphasized when the two
 // disagree by more than half this card's own spread (d.sd).
-function p3Cmp(d){
+function p3Cmp(d,col){
   if(d.p3==null) return "";
   const gap = d.p3 - d.mu;
   const gapTxt = (gap>=0?"+":"") + fmt(gap);
   const big = Math.abs(gap) >= 0.5*d.sd;
-  return '<span class="p3-vol'+(big?" big":"")+'" data-inspect-id="card-p3-vol">old engine '
-    + fmt(d.mu) + ' &middot; new model ' + fmt(d.p3) + ' (' + gapTxt + ')</span>';
+  return '<span class="p3-vol'+(big?" big":"")+'" data-inspect-id="card-p3-vol">old engine <span class="o" style="color:'+col+'">'
+    + fmt(d.mu) + '</span> &middot; new model <span class="n">' + fmt(d.p3) + '</span> (' + gapTxt + ')</span>';
+}
+
+// The new model's number on the same curve: a purple dashed rule, the same
+// height as the old engine's. Pinned to the edge (and drawn shorter-dashed) when it
+// falls outside the drawn range, like the actual-result mark.
+function p3Mark(d,c){
+  if(d.p3==null) return "";
+  const raw=c.X(d.p3), x=Math.max(1,Math.min(W-1,raw)), off=raw<1||raw>W-1;
+  return '<line class="meanline" data-inspect-id="card-p3-mark" x1="'+x.toFixed(1)+'" y1="'+(H-10)
+    +'" x2="'+x.toFixed(1)+'" y2="'+c.Y(c.peak).toFixed(1)+'" stroke="var(--p3)"'
+    +(off?' stroke-dasharray="1 2"':'')+'></line>';
 }
 
 function compare(d){
@@ -585,7 +613,7 @@ STATS.forEach(([key,label,unit])=>{
           +'<span class="role '+d.tm+'" data-inspect-id="card-role-badge">'+d.role+'</span></div>'
         +'<div class="fig-row"><span class="fig" data-inspect-id="card-expected">'
           +fmt(d.mu)+'</span>'+result(d)+'</div>'
-        +'<div class="rng" data-inspect-id="card-range">'+fmt(d.lo)+' – '+fmt(d.hi)+'</div>'+p3Cmp(d)+'</div>'
+        +'<div class="rng" data-inspect-id="card-range">'+fmt(d.lo)+' – '+fmt(d.hi)+'</div>'+p3Cmp(d,col)+'</div>'
       +'<div class="card-flags" data-inspect-id="card-flags">'+history(d)
         +(d.pick?'<span class="pick-badge" data-inspect-id="card-pick-badge">pick '+d.pick+'</span>':'')
         +(isTD?'<span class="td-badge" data-inspect-id="card-td-badge">td '
@@ -599,6 +627,7 @@ STATS.forEach(([key,label,unit])=>{
       +'<path class="curve" d="'+c.path+'" stroke="'+col+'"></path>'
       +'<line class="meanline" x1="'+c.X(d.mu).toFixed(1)+'" y1="'+(H-10)+'" x2="'
         +c.X(d.mu).toFixed(1)+'" y2="'+c.Y(c.peak).toFixed(1)+'" stroke="'+col+'"></line>'
+      +p3Mark(d,c)
       +'<line class="axis" x1="0" y1="'+(H-10)+'" x2="'+W+'" y2="'+(H-10)+'"></line>'
       +'<text class="tick" x="0" y="'+(H-1)+'">'+fmt(Math.max(0,c.lo))+'</text>'
       +'<text class="tick" x="'+W+'" y="'+(H-1)+'" text-anchor="end">'+fmt(c.hi)+'</text>'
@@ -637,6 +666,8 @@ DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick).forEach(d=>{
   li.innerHTML='<span class="pk-n">'+d.pick+'</span>'
     +'<span class="pk-name">'+d.p+'</span>'
     +'<span class="pk-bet">'+d.s.replace(/_/g," ")+' over <b>'+d.line+'</b></span>'
+    +'<span class="pk-models" data-inspect-id="pick-models">old <b style="color:'+col+'">'+fmt(d.mu)+'</b>'
+      +' &middot; new <b style="color:var(--p3)">'+(d.p3==null?'&mdash;':fmt(d.p3))+'</b></span>'
     +pickResult(d)
     +'<span class="pk-px">'+(d.price>0?"+":"")+d.price+'</span>'
     +'<span class="pk-conf" style="color:'+col+'">'+Math.round(Math.min(d.mp,d.bp)*100)+'%</span>';
