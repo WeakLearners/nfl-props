@@ -111,7 +111,7 @@
           "kind": "list-item",
           "description": "One leg: rank, player, bet and line, price, confidence percent.",
           "locate": {
-            "path": "templates/report.html:676",
+            "path": "templates/report.html:681",
             "grep": "grep -n -F -- 'dataset.inspectId=\"pick-row\"' templates/report.html"
           }
         },
@@ -171,7 +171,7 @@
           "kind": "heading",
           "description": "Stat name plus its unit, e.g. 'Rushing yards / yards'.",
           "locate": {
-            "path": "templates/report.html:592",
+            "path": "templates/report.html:597",
             "grep": "grep -n -F -- 'dataset.inspectId=\"stat-heading\"' templates/report.html"
           }
         },
@@ -181,7 +181,7 @@
           "kind": "layout",
           "description": "Responsive grid of player cards for one stat, ordered by how close the book's number sits to the curve's peak.",
           "locate": {
-            "path": "templates/report.html:595",
+            "path": "templates/report.html:600",
             "grep": "grep -n -F -- 'dataset.inspectId=\"stat-grid\"' templates/report.html"
           }
         },
@@ -191,7 +191,7 @@
           "kind": "card",
           "description": "One player-stat projection. Gets a heavier border when it is a shortlist pick.",
           "locate": {
-            "path": "templates/report.html:602",
+            "path": "templates/report.html:607",
             "grep": "grep -n -F -- 'dataset.inspectId=\"player-card\"' templates/report.html"
           }
         },
@@ -201,7 +201,7 @@
           "kind": "text",
           "description": "Player name in the card's top row. Wraps onto a second line rather than truncating, so a long name is always shown in full.",
           "locate": {
-            "path": "templates/report.html:624",
+            "path": "templates/report.html:629",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-player-name\"' templates/report.html"
           }
         },
@@ -211,7 +211,7 @@
           "kind": "badge",
           "description": "Team-coloured position badge, e.g. QB1 or WR2.",
           "locate": {
-            "path": "templates/report.html:625",
+            "path": "templates/report.html:630",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-role-badge\"' templates/report.html"
           }
         },
@@ -221,7 +221,7 @@
           "kind": "container",
           "description": "Left column of the card head: name and position, the expected number, and the range under it. Sits beside the flag stack so the two share the head's height.",
           "locate": {
-            "path": "templates/report.html:622",
+            "path": "templates/report.html:627",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-main\"' templates/report.html"
           }
         },
@@ -231,7 +231,7 @@
           "kind": "container",
           "description": "Left half of the card head: the player's name and his position badge.",
           "locate": {
-            "path": "templates/report.html:623",
+            "path": "templates/report.html:628",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-identity\"' templates/report.html"
           }
         },
@@ -241,7 +241,7 @@
           "kind": "container",
           "description": "Top-right column of the card. Holds the five-dot record, then the pick and td badges stacked below it. The old-vs-new engine line no longer lives here; it sat here until 2026-09-24 and its width squeezed the player name.",
           "locate": {
-            "path": "templates/report.html:629",
+            "path": "templates/report.html:634",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-flags\"' templates/report.html"
           }
         },
@@ -251,7 +251,7 @@
           "kind": "status",
           "description": "Last five calls we published on this player and stat, most recent on the left. Green cleared the line, red did not, grey means no number was offered. A hollow dot is a week we never made the call.",
           "locate": {
-            "path": "templates/report.html:513",
+            "path": "templates/report.html:518",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-history\"' templates/report.html"
           }
         },
@@ -261,7 +261,7 @@
           "kind": "status",
           "description": "One week of that record. Hover gives the week, the real number, and how it went.",
           "locate": {
-            "path": "templates/report.html:509",
+            "path": "templates/report.html:514",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-history-dot\"' templates/report.html"
           }
         },
@@ -271,7 +271,7 @@
           "kind": "badge",
           "description": "Only present when the player is on the shortlist. Shows the pick's rank.",
           "locate": {
-            "path": "templates/report.html:630",
+            "path": "templates/report.html:635",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-pick-badge\"' templates/report.html"
           }
         },
@@ -281,7 +281,7 @@
           "kind": "value",
           "description": "The projection's mu, after calibration.",
           "locate": {
-            "path": "templates/report.html:626",
+            "path": "templates/report.html:631",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-expected\"' templates/report.html"
           }
         },
@@ -291,7 +291,7 @@
           "kind": "value",
           "description": "The middle-68% band, mu plus or minus one sd, with sd already widened 10%.",
           "locate": {
-            "path": "templates/report.html:628",
+            "path": "templates/report.html:633",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-range\"' templates/report.html"
           }
         },
@@ -301,7 +301,7 @@
           "kind": "chart",
           "description": "Inline SVG Gaussian. Built by curve() from mu and sd alone.",
           "locate": {
-            "path": "templates/report.html:636",
+            "path": "templates/report.html:641",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-curve\"' templates/report.html"
           }
         },
@@ -311,7 +311,7 @@
           "kind": "overlay",
           "description": "Transparent rect that catches mousemove and drives the tooltip. The chart has no other pointer handling.",
           "locate": {
-            "path": "templates/report.html:648",
+            "path": "templates/report.html:653",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-curve-hitbox\"' templates/report.html"
           }
         },
@@ -321,7 +321,7 @@
           "kind": "panel",
           "description": "FanDuel's line and price against the model's and book's implied probabilities.",
           "locate": {
-            "path": "templates/report.html:565",
+            "path": "templates/report.html:570",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-compare\"' templates/report.html"
           }
         },
@@ -331,7 +331,7 @@
           "kind": "panel",
           "description": "Shown instead of the comparison when no price near the target was offered for this player-stat.",
           "locate": {
-            "path": "templates/report.html:562",
+            "path": "templates/report.html:567",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-compare-none\"' templates/report.html"
           }
         },
@@ -341,7 +341,7 @@
           "kind": "text",
           "description": "How many standard deviations separate the book's number from the curve's peak.",
           "locate": {
-            "path": "templates/report.html:572",
+            "path": "templates/report.html:577",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-compare-z\"' templates/report.html"
           }
         },
@@ -351,7 +351,7 @@
           "kind": "text",
           "description": "Defensive multiplier versus this position. Marked 'context only' for receiving stats, where applying it made projections worse.",
           "locate": {
-            "path": "templates/report.html:616",
+            "path": "templates/report.html:621",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-matchup\"' templates/report.html"
           }
         },
@@ -361,7 +361,7 @@
           "kind": "overlay",
           "description": "Fixed-position readout that follows the cursor across a curve, showing a value and the chance of more.",
           "locate": {
-            "path": "templates/report.html:433",
+            "path": "templates/report.html:438",
             "grep": "grep -n -F -- 'data-inspect-id=\"curve-tooltip\"' templates/report.html"
           }
         },
@@ -401,7 +401,7 @@
           "kind": "table-row",
           "description": "One player-stat row in the full table.",
           "locate": {
-            "path": "templates/report.html:713",
+            "path": "templates/report.html:718",
             "grep": "grep -n -F -- 'dataset.inspectId=\"table-row\"' templates/report.html"
           }
         },
@@ -421,7 +421,7 @@
           "kind": "card",
           "description": "The likeliest touchdown scorer's player card, washed in that player's team colour so the eye finds them before reading a name. Every card for that player is tinted, one per stat.",
           "locate": {
-            "path": "templates/report.html:609",
+            "path": "templates/report.html:614",
             "grep": "grep -n -F -- 'inspectId = \"td-scorer-card' templates/report.html"
           }
         },
@@ -431,7 +431,7 @@
           "kind": "badge",
           "description": "Confidence chip on a tinted card, e.g. 'td 55%'. The lower of the model's number and the book's, the same rule every leg follows.",
           "locate": {
-            "path": "templates/report.html:631",
+            "path": "templates/report.html:636",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-td-badge\"' templates/report.html"
           }
         },
@@ -441,7 +441,7 @@
           "kind": "text",
           "description": "'new td X%': the new (Phase 3, decision #30) touchdown model's number, under the old engine's td badge. The old number stays primary: each game's top-ranked scorer hit 45% (old) vs 41% (new) over 2021-2025.",
           "locate": {
-            "path": "templates/report.html:633",
+            "path": "templates/report.html:638",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-td-phase3\"' templates/report.html"
           }
         },
@@ -449,9 +449,9 @@
           "id": "card-p3-vol",
           "label": "Card Phase 3 volume/yardage number",
           "kind": "text",
-          "description": "The old-vs-new engine line, under the card's range: 'old engine X \u00b7 new model Y (+/-gap)'. Old engine = nflprops/project.py (first model, 2026-09-13), which also makes the card's big number. New model = the Phase 3 ridge model (decision #31, added 2026-09-24; extended to receptions decision #38, 2026-09-24). Covers receiving_yards, rushing_yards, and receptions; passing_yards has no new-model number (features.db has no passing target/features to fit on). Gap is new minus old. Shaded (.big) when |gap| >= half the card's spread (decision #37). Never merged into one figure. Head-to-head 2021-2025 is a near-tie on all three: receiving MAE 22.82 vs 22.84, rushing 21.30 vs 21.44, receptions 1.65 vs 1.65. Absent if data/shipping/{targets,carries,receiving_yards,rushing_yards}.pkl are missing.",
+          "description": "The old-vs-new engine line, under the card's range: 'old engine X · new model Y (+/-gap)'. Old engine = nflprops/project.py (first model, 2026-09-13), which also makes the card's big number. New model = the Phase 3 ridge model (decision #31, added 2026-09-24; extended to receptions decision #38, and to passing_yards decision #39, both 2026-09-24). Covers receiving_yards, rushing_yards, receptions, and passing_yards. Gap is new minus old. Shaded (.big) when |gap| >= half the card's spread (decision #37). Never merged into one figure. Head-to-head 2021-2025 is a near-tie on three of the four: receiving MAE 22.82 vs 22.84, rushing 21.30 vs 21.44, receptions 1.65 vs 1.65. Passing yards is not a tie -- old 67.09 vs new 62.56 MAE (n=3,107), new model won all 5 seasons tested. Absent if data/shipping/{targets,carries,receiving_yards,rushing_yards,passing_yards}.pkl are missing.",
           "locate": {
-            "path": "templates/report.html:546",
+            "path": "templates/report.html:551",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-p3-vol\"' templates/report.html"
           }
         },
@@ -459,10 +459,10 @@
           "id": "card-p3-mark",
           "label": "New model's expected, on the curve",
           "kind": "mark",
-          "description": "Purple (--p3) dashed rule at the Phase 3 new model's number (d.p3), same height as the old engine's team-coloured dashed mean line. Pinned to the edge, finer dash, when outside the drawn range. Absent when d.p3 is null (passing_yards, or no shipping pickles). The curve itself is still the old engine's.",
+          "description": "Purple (--p3) dashed rule at the Phase 3 new model's number (d.p3), same height as the old engine's team-coloured dashed mean line. Pinned to the edge, finer dash, when outside the drawn range. Absent when d.p3 is null (no shipping pickles for that stat). The curve itself is still the old engine's.",
           "locate": {
             "grep": "grep -n -F -- 'data-inspect-id=\"card-p3-mark\"' templates/report.html",
-            "path": "templates/report.html:556"
+            "path": "templates/report.html:561"
           }
         },
         {
@@ -481,7 +481,7 @@
           "kind": "status",
           "description": "Filled pill on a player card's headline row, beside the number the model expected. Carries the number the player actually put up; green means it beat the line, red means it did not. Fixed width so a one-digit and a three-digit actual make the same block. Drawn for every projected player with a line, not only the shortlisted ones. The values arrive as window.__ACTUALS__, spliced in by scripts/serve_reports.py at serve time -- a report is written before kickoff and never rewritten, so the outcome cannot be baked in. Hover text and aria-label say hit or miss in words, since colour alone is not readable to everyone.",
           "locate": {
-            "path": "templates/report.html:493",
+            "path": "templates/report.html:498",
             "grep": "grep -n -F -- 'id||\"card-result\"' templates/report.html"
           }
         },
@@ -491,7 +491,7 @@
           "kind": "chart",
           "description": "Vertical rule drawn on a player's curve at the number he actually put up, with a dot at its foot. Green cleared the betting line, red did not, grey means no number was offered on that stat. The pill says whether the leg won; this says whether the projection was any good -- a leg can win with the real figure way out in the tail. A figure past the drawn range is pinned to the edge and dashed.",
           "locate": {
-            "path": "templates/report.html:531",
+            "path": "templates/report.html:536",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-actual-mark\"' templates/report.html"
           }
         },
@@ -521,7 +521,7 @@
           "kind": "status",
           "description": "The pill itself on a shortlist row. Same markup as the card pill, under its own id so the inspector can tell the two apart.",
           "locate": {
-            "path": "templates/report.html:670",
+            "path": "templates/report.html:675",
             "grep": "grep -n -F -- 'pick-result-mark' templates/report.html"
           }
         },
@@ -531,7 +531,7 @@
           "kind": "status",
           "description": "The same pill on a shortlist row, sitting directly after the leg it grades rather than at the far end of the row. The slot keeps its width when a game has not finished, so the rows stay a column while results land one game at a time.",
           "locate": {
-            "path": "templates/report.html:669",
+            "path": "templates/report.html:674",
             "grep": "grep -n -F -- 'data-inspect-id=\"pick-result\"' templates/report.html"
           }
         },
@@ -539,10 +539,10 @@
           "id": "pick-models",
           "label": "Shortlist old vs new numbers",
           "kind": "text",
-          "description": "'old X \u00b7 new Y' on each shortlist row: old engine (d.mu, team colour) and new model (d.p3, purple, '\u2014' when none, e.g. receptions). Same colours as the curve lines. Hidden under 560px width.",
+          "description": "'old X · new Y' on each shortlist row: old engine (d.mu, team colour) and new model (d.p3, purple, '—' when none, e.g. receptions). Same colours as the curve lines. Hidden under 560px width.",
           "locate": {
             "grep": "grep -n -F -- 'data-inspect-id=\"pick-models\"' templates/report.html",
-            "path": "templates/report.html:681"
+            "path": "templates/report.html:686"
           }
         }
       ]

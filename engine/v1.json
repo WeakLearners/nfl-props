@@ -8,8 +8,8 @@
       "official_engine": "nflprops/project.py (project_week -> SPECS['passing_yards'])",
       "code_sha256": {
         "nflprops/project.py": "f999cf836bebcee3a090c91342b3059c66ab07b8ca59c5d99fd555598de13f32",
-        "nflprops/report.py": "4c6384f3a0fb0dd045a14c10a147754397bc8981ca7bfe0c15d7968667f9fe8b",
-        "scripts/make_report.py": "1a10580ce874e55aa0360699103eafd3577fb09b61caae1467cab4b97f62abe4"
+        "nflprops/report.py": "1b1d1388a194fb67c5053d67f2f4ef0f64a2f6d7cf9c01c0ee26e71e497da49a",
+        "scripts/make_report.py": "494b0ce3eff6d502e1deb5485be90d8fe44470d140d4cceaaed13db6b8431a3e"
       },
       "config": {
         "DECAY": 0.85, "PRIOR_SEASON_W": 0.55, "MIN_GAMES": 3,
@@ -27,8 +27,10 @@
       "model_artifact": null,
       "artifact_sha256": null,
       "informational_only": {
-        "phase3_engine": "ridge, scripts/retrain_vol_models.py -> data/shipping/targets.pkl + receiving_yards.pkl (composed via volume x efficiency is NOT how phase3 ships this stat -- phase3 ships receiving_yards directly, see #31)",
-        "head_to_head_result": "project.py wins, ridge -0.09% MAE (decision #31, scripts/vol_head_to_head.py, 2021-2025 walk-forward)"
+        "phase3_engine": "ridge, scripts/retrain_vol_models.py -> data/shipping/passing_yards.pkl (decision #39, 2026-09-24). Trained on features.db's QB passing features (pass_attempts/completions/yards_per_attempt/completion_rate/pass_adot, l4/l8/career) added the same day, plus the shared usage/context feature set. build_design(..., include_passing=True) is required to serve or refit this artifact -- the default (False) excludes those columns so the other four vol/yardage models' design matrices stay exactly as they were before #39 (see rung2_ridge.PASSING_COLS).",
+        "phase3_artifact_sha256": "1eaf25b6a51c97d8f6f90e82069d5397aba5032985a0f171be3d9af018543094",
+        "phase3_train_seasons": [2019, 2020, 2021, 2022, 2023, 2024, 2025],
+        "head_to_head_result": "ridge wins, +6.76% MAE lift over project.py, 5/5 seasons (decision #39, scripts/passing_head_to_head.py, 2021-2025 walk-forward, n=3,107; project.py 67.09 MAE vs ridge 62.56 MAE). Shipped additively per decision #37's posture regardless -- shown as a second number on the card, never replacing project.py's own."
       }
     },
     "completions": {

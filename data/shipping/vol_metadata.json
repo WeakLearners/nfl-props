@@ -1,6 +1,6 @@
 {
-  "trained_at": "2026-09-25T00:00:52.234528+00:00",
-  "git_commit": "4713437",
+  "trained_at": "2026-09-25T00:27:06.401151+00:00",
+  "git_commit": "8b894d6",
   "train_seasons": [
     2019,
     2020,
@@ -36,6 +36,12 @@
       "alpha": 562.341325190349,
       "train_mae_insample": 21.1808,
       "artifact": "/Users/Sean/Code/nfl-props/data/shipping/rushing_yards.pkl"
+    },
+    "passing_yards": {
+      "n_train_rows": 4501,
+      "alpha": 177.82794100389228,
+      "train_mae_insample": 61.256,
+      "artifact": "/Users/Sean/Code/nfl-props/data/shipping/passing_yards.pkl"
     },
     "receptions": {
       "n_train_rows": 17746,

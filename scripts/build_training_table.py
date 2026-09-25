@@ -141,6 +141,45 @@ def build_player_rolling(pg):
     return df
 
 
+def build_qb_passing_rolling(pg):
+    """QB pregame passing-volume features, added 2026-09-24 (decision #39):
+    attempts, completions, yards-per-attempt, completion rate, and air yards
+    per attempt, each shift(1) before rolling -- exact same convention as
+    build_player_rolling(): last-4/last-8/career, computed only from that
+    player's STRICTLY earlier games. Not screened here; the qualifying
+    screen (qual_attempts) is a scoring-time decision built in
+    rung2_ridge.add_derived(), same as qual_targets/qual_carries."""
+    df = pg.sort_values(["player_id", "season", "week"]).copy()
+
+    df["row_yards_per_attempt"] = np.where(df["attempts"] > 0, df["passing_yards"] / df["attempts"], np.nan)
+    df["row_completion_rate"] = np.where(df["attempts"] > 0, df["completions"] / df["attempts"], np.nan)
+    df["row_pass_adot"] = np.where(df["attempts"] > 0, df["passing_air_yards"] / df["attempts"], np.nan)
+
+    grouped = df.groupby("player_id", group_keys=False)
+
+    for w in (4, 8):
+        df[f"pass_attempts_l{w}"] = grouped.apply(lambda g, w=w: shifted_roll(g, "attempts", w))
+        df[f"pass_completions_l{w}"] = grouped.apply(lambda g, w=w: shifted_roll(g, "completions", w))
+    df["pass_attempts_career"] = grouped.apply(lambda g: shifted_expanding(g, "attempts"))
+    df["pass_completions_career"] = grouped.apply(lambda g: shifted_expanding(g, "completions"))
+
+    for col, out in [
+        ("row_yards_per_attempt", "yards_per_attempt"),
+        ("row_completion_rate", "completion_rate"),
+        ("row_pass_adot", "pass_adot"),
+    ]:
+        for w in (4, 8):
+            df[f"{out}_l{w}"] = grouped.apply(lambda g, col=col, w=w: shifted_roll(g, col, w))
+        df[f"{out}_career"] = grouped.apply(lambda g, col=col: shifted_expanding(g, col))
+
+    cols = ["player_id", "game_id"] + [
+        f"pass_attempts_l{w}" for w in (4, 8)] + ["pass_attempts_career"] + [
+        f"pass_completions_l{w}" for w in (4, 8)] + ["pass_completions_career"] + [
+        f"{n}_l{w}" for n in ("yards_per_attempt", "completion_rate", "pass_adot") for w in (4, 8)] + [
+        f"{n}_career" for n in ("yards_per_attempt", "completion_rate", "pass_adot")]
+    return df[cols]
+
+
 def build_snap_share(pg, snaps, xwalk):
     """Join snap_counts -> player_xwalk -> game_id/gsis_id, then compute
     shifted rolling snap-share and the trend feature, per player."""
@@ -498,6 +537,7 @@ def assemble_features(pg, snaps, injuries, schedules, xwalk, depth, stadiums, we
 
     snap_share = build_snap_share(pg, snaps, xwalk)
     carry_share = build_carry_share(pg)
+    qb_passing = build_qb_passing_rolling(pg)
     team_pace = build_team_pace(pg)
     opp_def = build_opponent_defense(pg)
     games_missed = build_games_missed(pg, schedules)
@@ -511,6 +551,7 @@ def assemble_features(pg, snaps, injuries, schedules, xwalk, depth, stadiums, we
         snap_share.drop(columns=["season", "week"]), on=["player_id", "game_id"], how="left"
     )
     df = df.merge(carry_share, on=["player_id", "game_id"], how="left")
+    df = df.merge(qb_passing, on=["player_id", "game_id"], how="left")
     df = df.merge(team_pace, on=["season", "week", "team"], how="left")
     df = df.merge(
         opp_def.rename(columns={"defense_team": "opponent_team"}),
@@ -664,12 +705,12 @@ def main():
     # labels (actuals) -- not features, not gated, this is what Phase 3 predicts
     labels = pg[["player_id", "game_id", "targets", "carries", "receptions",
                  "receiving_yards", "rushing_yards", "receiving_tds", "rushing_tds",
-                 "target_share", "air_yards_share", "wopr"]].rename(columns={
+                 "target_share", "air_yards_share", "wopr", "passing_yards"]].rename(columns={
         "targets": "y_targets", "carries": "y_carries", "receptions": "y_receptions",
         "receiving_yards": "y_receiving_yards", "rushing_yards": "y_rushing_yards",
         "receiving_tds": "y_receiving_tds", "rushing_tds": "y_rushing_tds",
         "target_share": "y_target_share_row", "air_yards_share": "y_air_yards_share_row",
-        "wopr": "y_wopr_row",
+        "wopr": "y_wopr_row", "passing_yards": "y_passing_yards",
     })
     df = df.merge(labels, on=["player_id", "game_id"], how="left")
 

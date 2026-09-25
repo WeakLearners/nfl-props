@@ -57,7 +57,7 @@ OUT_DIR.mkdir(exist_ok=True)
 # (stat, target column, screen) -- direct final-stat route, and the two
 # usage stats. Pulled from rung2_ridge.SPECS rather than re-typed, so the
 # screen/target pairing can never drift from the validated protocol.
-WANT = {"targets", "carries", "receiving_yards", "rushing_yards"}
+WANT = {"targets", "carries", "receiving_yards", "rushing_yards", "passing_yards"}
 STATS = [(stat, tcol, screen) for _layer, stat, tcol, screen, _cnt in SPECS if stat in WANT]
 
 # Receptions (decision #38): scripts/vol_receptions_compare.py walk-forward
@@ -103,6 +103,13 @@ def main():
     df = df[df.season.between(2019, 2025)].reset_index(drop=True)  # 2026 never enters
     X_all, _ = build_design(df)
     X_all = X_all.astype(float)
+    # Decision #39: passing_yards gets its OWN design matrix, with
+    # include_passing=True, so PASSING_COLS enter its fit without also
+    # entering targets/carries/receiving_yards/rushing_yards' shared X_all
+    # above -- see rung2_ridge.PASSING_COLS's comment for why that guard
+    # exists at all.
+    X_passing, _ = build_design(df, include_passing=True)
+    X_passing = X_passing.astype(float)
     in_tr = df.season.isin(TRAIN_SEASONS).to_numpy()
 
     meta = {
@@ -115,14 +122,15 @@ def main():
     }
 
     for stat, tcol, screen in STATS:
+        X_use = X_passing if stat == "passing_yards" else X_all
         tr = in_tr & df[screen].to_numpy() & df[tcol].notna().to_numpy()
         n = int(tr.sum())
-        Xtr, ytr = X_all[tr], df.loc[tr, tcol].to_numpy(float)
+        Xtr, ytr = X_use[tr], df.loc[tr, tcol].to_numpy(float)
         fit = fit_ship(Xtr, ytr)
 
         path = OUT_DIR / f"{stat}.pkl"
         joblib.dump({
-            "model": fit["model"], "columns": list(X_all.columns), "screen": screen,
+            "model": fit["model"], "columns": list(X_use.columns), "screen": screen,
             "median": fit["median"], "mu": fit["mu"], "sd": fit["sd"], "alpha": fit["alpha"],
         }, path)
 

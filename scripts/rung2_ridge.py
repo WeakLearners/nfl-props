@@ -69,6 +69,29 @@ ID_COLS = {"player_id", "player_display_name", "game_id", "team", "opponent_team
 CATEGORICAL = ["position", "position_group", "season_type", "roof_state", "surface",
                "injury_report_status", "history_level"]
 
+# Decision #39 (2026-09-24): the QB passing features added to training_rows
+# alongside y_passing_yards. build_design() excludes these by default -- this
+# is what stops every EXISTING model (targets, carries, receiving_yards,
+# rushing_yards, receptions) from silently changing when a new column lands
+# in the table. build_design() has no allowlist; every non-ID/non-y column in
+# training_rows becomes a feature for every stat by construction, so a new
+# additive column is not free -- it changes every other model's design
+# matrix and refit unless explicitly excluded. Caught by rerunning
+# vol_head_to_head.py right after this migration: pooled MAE on
+# targets/carries/receiving_yards/rushing_yards moved by hundredths, purely
+# from these 15 new columns entering rung2_ridge's ridge fit uninvited.
+# include_passing=True (only the passing-yards model script passes this)
+# is the one place they are meant to be used.
+PASSING_COLS = {
+    f"pass_attempts_l{w}" for w in (4, 8)
+} | {"pass_attempts_career"} | {
+    f"pass_completions_l{w}" for w in (4, 8)
+} | {"pass_completions_career"} | {
+    f"{n}_l{w}" for n in ("yards_per_attempt", "completion_rate", "pass_adot") for w in (4, 8)
+} | {
+    f"{n}_career" for n in ("yards_per_attempt", "completion_rate", "pass_adot")
+}
+
 
 def load():
     con = sqlite3.connect(f"file:{DB}?mode=ro", uri=True, timeout=60)
@@ -86,14 +109,26 @@ def add_derived(df):
     # baselines used, so model and baseline are scored on identical rows.
     df["qual_targets"] = g["y_targets"].transform(lambda s: s.shift(1).expanding().mean()) >= MIN_PER_GAME
     df["qual_carries"] = g["y_carries"].transform(lambda s: s.shift(1).expanding().mean()) >= MIN_PER_GAME
+    # Decision #39: passing_yards qualifying screen. pass_attempts_career is
+    # already a shift(1)-before-expanding-mean feature (built the same way
+    # as qual_targets/qual_carries use their own y_ column), so it can be
+    # read directly rather than re-derived from a y_attempts label that
+    # doesn't exist.
+    df["qual_attempts"] = df["pass_attempts_career"].fillna(0) >= MIN_PER_GAME
     return df
 
 
-def build_design(df):
+def build_design(df, include_passing=False):
     """One-hot the categoricals, keep the numerics, add a missingness flag per
-    numeric column that has any. Standing rule #10: ignorance gets a column."""
+    numeric column that has any. Standing rule #10: ignorance gets a column.
+
+    include_passing=False (the default, and every existing call site) excludes
+    PASSING_COLS -- see that constant's comment. Only the passing_yards model
+    should ever pass True."""
     y_cols = [c for c in df.columns if c.startswith("y_")]
-    drop = ID_COLS | set(y_cols) | {"qual_targets", "qual_carries"}
+    drop = ID_COLS | set(y_cols) | {"qual_targets", "qual_carries", "qual_attempts"}
+    if not include_passing:
+        drop = drop | PASSING_COLS
     feat = [c for c in df.columns if c not in drop]
 
     num = [c for c in feat if c not in CATEGORICAL]
@@ -118,6 +153,10 @@ SPECS = [
     ("final",      "rushing_yards",    "y_rushing_yards",    "qual_carries", False),
     ("final",      "receiving_tds",    "y_receiving_tds",    "qual_targets", False),
     ("final",      "rushing_tds",      "y_rushing_tds",      "qual_carries", False),
+    # Decision #39 (2026-09-24): passing_yards, added once training_rows
+    # carried the QB passing features + y_passing_yards label. Appended, not
+    # inserted -- every existing SPECS consumer keys by name, not position.
+    ("final",      "passing_yards",    "y_passing_yards",    "qual_attempts", False),
 ]
 
 

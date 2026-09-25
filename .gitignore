@@ -5,6 +5,9 @@ __pycache__/
 
 # Rebuildable from nflverse in ~7s.
 data/*.db
+# Pre-migration safety backups (e.g. decision #39's features.db.bak-2026-09-24)
+# -- large, local-only, never a source of truth.
+data/*.db.bak-*
 
 # Backtest outputs — regenerable from code + the cached odds below.
 reports/*.csv

@@ -197,6 +197,42 @@ FEATURES = [
      "player_games grouped by opponent_team x position_group",
      "defense's own prior weekly aggregates, shift(1) before window(4)", 1, "PASS", None),
 
+    # ---------------- QB passing (decision #39, 2026-09-24) ----------------
+    ("pass_attempts_l4", "usage", "player_games.attempts",
+     "kickoff_utc of prior games used, shift(1) before window(4)", 1, "PASS", None),
+    ("pass_attempts_l8", "usage", "player_games.attempts",
+     "kickoff_utc of prior games used, shift(1) before window(8)", 1, "PASS", None),
+    ("pass_attempts_career", "usage", "player_games.attempts",
+     "kickoff_utc of all prior games, shift(1) before expanding mean", 1, "PASS", None),
+
+    ("pass_completions_l4", "usage", "player_games.completions",
+     "kickoff_utc of prior games used, shift(1) before window(4)", 1, "PASS", None),
+    ("pass_completions_l8", "usage", "player_games.completions",
+     "kickoff_utc of prior games used, shift(1) before window(8)", 1, "PASS", None),
+    ("pass_completions_career", "usage", "player_games.completions",
+     "kickoff_utc of all prior games, shift(1) before expanding mean", 1, "PASS", None),
+
+    ("yards_per_attempt_l4", "conversion", "player_games.passing_yards/attempts",
+     "kickoff_utc of prior games used, shift(1) before window(4)", 1, "PASS", None),
+    ("yards_per_attempt_l8", "conversion", "player_games.passing_yards/attempts",
+     "kickoff_utc of prior games used, shift(1) before window(8)", 1, "PASS", None),
+    ("yards_per_attempt_career", "conversion", "player_games.passing_yards/attempts",
+     "kickoff_utc of all prior games, shift(1) before expanding mean", 1, "PASS", None),
+
+    ("completion_rate_l4", "conversion", "player_games.completions/attempts",
+     "kickoff_utc of prior games used, shift(1) before window(4)", 1, "PASS", None),
+    ("completion_rate_l8", "conversion", "player_games.completions/attempts",
+     "kickoff_utc of prior games used, shift(1) before window(8)", 1, "PASS", None),
+    ("completion_rate_career", "conversion", "player_games.completions/attempts",
+     "kickoff_utc of all prior games, shift(1) before expanding mean", 1, "PASS", None),
+
+    ("pass_adot_l4", "conversion", "player_games.passing_air_yards/attempts",
+     "kickoff_utc of prior games used, shift(1) before window(4)", 1, "PASS", None),
+    ("pass_adot_l8", "conversion", "player_games.passing_air_yards/attempts",
+     "kickoff_utc of prior games used, shift(1) before window(8)", 1, "PASS", None),
+    ("pass_adot_career", "conversion", "player_games.passing_air_yards/attempts",
+     "kickoff_utc of all prior games, shift(1) before expanding mean", 1, "PASS", None),
+
     # ---------------- meta ----------------
     ("history_level", "meta", "derived from player/team/league rolling coverage",
      "computed entirely from each row's own prior-game features", None, "PASS", None),

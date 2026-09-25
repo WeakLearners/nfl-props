@@ -38,7 +38,7 @@ from build_training_table import pregame_features  # noqa: E402
 from rung2_ridge import build_design  # noqa: E402
 
 SHIPPING = ROOT / "data" / "shipping"
-STATS = ["targets", "carries", "receiving_yards", "rushing_yards"]
+STATS = ["targets", "carries", "receiving_yards", "rushing_yards", "passing_yards"]
 
 
 def phase3_vol(season, week):
@@ -54,7 +54,13 @@ def phase3_vol(season, week):
     pf = pregame_features(season, week)
     if pf.empty:
         return pd.DataFrame(columns=["player_id"] + [f"p3_{s}" for s in STATS] + ["p3_receptions"])
-    X, _ = build_design(pf)
+    # include_passing=True so the passing_yards artifact's own columns (which
+    # DO include PASSING_COLS) get real pregame values on reindex below,
+    # rather than the 0.0 fill_value a missing column would get. Every other
+    # artifact's "columns" list doesn't mention PASSING_COLS, so reindexing
+    # down to those still drops them for those stats -- this is safe for all
+    # five artifacts, not just passing_yards.
+    X, _ = build_design(pf, include_passing=True)
     X = X.astype(float)
 
     out = pf[["player_id"]].copy()
