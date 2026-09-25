@@ -125,21 +125,27 @@ for _team in TEAMS:
 pr = pr[pr.team.isin(TEAMS) & pr.player_key.isin(set(pool.player_key))].copy()
 rank = {r.player_key: int(r["rank"]) for _, r in pool.iterrows()}
 
-# Decision #31: Phase 3's ridge volume/yardage models, shown additively next
-# to this engine's own number for the two stats this report actually
-# displays. Head-to-head (2021-2025, data/vol_head_to_head.csv) has THIS
-# engine (project.py) still winning on both receiving_yards and rushing_yards
-# -- Phase 3 only wins on the internal targets/carries volume components,
-# which never reach the page. The number ships anyway, informational only,
-# same posture decision #30 set for the touchdown marker: never merged into
-# one figure, never claimed as better.
+# Decision #31 (extended by #38): Phase 3's ridge volume/yardage models,
+# shown additively next to this engine's own number for the three stats
+# this report displays -- receiving_yards, rushing_yards, receptions.
+# Head-to-head (2021-2025, data/vol_head_to_head.csv + data/vol_receptions_
+# compare.csv) is close to a coin flip on all three: THIS engine wins
+# receiving_yards and rushing_yards on pooled MAE, and receptions is a
+# near-tie the two models trade seasons on. No passing_yards -- features.db
+# has no passing target column or QB passing features to fit on (decision
+# #38's scope note). The number ships anyway, informational only, same
+# posture decision #30 set for the touchdown marker: never merged into one
+# figure, never claimed as better.
 try:
     p3 = phase3_vol(SEASON, WEEK)
 except Exception as e:
     print(f"  ! phase3_vol failed, skipping: {e}")
     p3 = pd.DataFrame(columns=["player_id"])
 pr = pr.merge(p3, on="player_id", how="left") if "player_id" in pr.columns else pr
-for _c in ("p3_receiving_yards", "p3_rushing_yards"):
+# Decision #38 adds receptions (targets.pkl x catch_rate_career, no
+# passing_yards -- features.db has no passing target/features to fit on;
+# see decisions.md #38's scope note).
+for _c in ("p3_receiving_yards", "p3_rushing_yards", "p3_receptions"):
     if _c not in pr.columns:
         pr[_c] = np.nan
 
@@ -230,6 +236,8 @@ for r in pr.itertuples():
                                                        and pd.notna(r.p3_receiving_yards)
                else round(float(r.p3_rushing_yards), 1) if r.stat == "rushing_yards"
                                                           and pd.notna(r.p3_rushing_yards)
+               else round(float(r.p3_receptions), 1) if r.stat == "receptions"
+                                                      and pd.notna(r.p3_receptions)
                else None),
     })
 

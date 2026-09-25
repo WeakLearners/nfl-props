@@ -1,6 +1,6 @@
 {
-  "trained_at": "2026-09-24T13:58:22.147857+00:00",
-  "git_commit": "3805f76",
+  "trained_at": "2026-09-25T00:00:52.234528+00:00",
+  "git_commit": "4713437",
   "train_seasons": [
     2019,
     2020,
@@ -36,6 +36,11 @@
       "alpha": 562.341325190349,
       "train_mae_insample": 21.1808,
       "artifact": "/Users/Sean/Code/nfl-props/data/shipping/rushing_yards.pkl"
+    },
+    "receptions": {
+      "n_train_rows": 17746,
+      "method": "targets.pkl prediction x catch_rate_career (decision #38, no separate artifact)",
+      "catch_rate_career_fill_if_missing": 0.6713
     }
   }
 }

@@ -8,8 +8,8 @@
       "official_engine": "nflprops/project.py (project_week -> SPECS['passing_yards'])",
       "code_sha256": {
         "nflprops/project.py": "f999cf836bebcee3a090c91342b3059c66ab07b8ca59c5d99fd555598de13f32",
-        "nflprops/report.py": "35e5d88d30f8d5fd12db89ef6fa0cb1b562dfe448e6b51c4381ff06515cfa6d9",
-        "scripts/make_report.py": "241f66ca9b0af32166c1fc5f09fdf1e99e4a57a986e18b45f8e40425c46957a9"
+        "nflprops/report.py": "4c6384f3a0fb0dd045a14c10a147754397bc8981ca7bfe0c15d7968667f9fe8b",
+        "scripts/make_report.py": "1a10580ce874e55aa0360699103eafd3577fb09b61caae1467cab4b97f62abe4"
       },
       "config": {
         "DECAY": 0.85, "PRIOR_SEASON_W": 0.55, "MIN_GAMES": 3,

@@ -60,6 +60,19 @@ OUT_DIR.mkdir(exist_ok=True)
 WANT = {"targets", "carries", "receiving_yards", "rushing_yards"}
 STATS = [(stat, tcol, screen) for _layer, stat, tcol, screen, _cnt in SPECS if stat in WANT]
 
+# Receptions (decision #38): scripts/vol_receptions_compare.py walk-forward
+# tested ridge-direct-on-receptions against targets x catch_rate_career on
+# 2021-2025 and the two were a statistical coin flip (pooled MAE 1.6532 vs
+# 1.6521, ridge-direct-wins-outright only 2/5 seasons). targets x rate won
+# pooled and won 3/5 seasons, so that's what ships -- no separate
+# receptions.pkl, it is served at inference time as targets.pkl's own
+# prediction times the player's own pregame catch_rate_career (already a
+# leak-gated feature in features.db). The only artifact receptions needs
+# from THIS script is the fallback catch rate for a player with no games
+# yet (rookies) -- the train population's own mean, same convention
+# build_design() uses for missingness everywhere else in this codebase.
+RECEPTIONS_SCREEN = "qual_targets"
+
 
 def git_commit():
     try:
@@ -122,6 +135,19 @@ def main():
             "artifact": str(path),
         }
         print(f"{stat:<17} n={n:,}  alpha={fit['alpha']:.1f}  in-sample MAE={mae_insample:.4f}  -> {path.name}")
+
+    # receptions: no model of its own -- served as targets.pkl x catch_rate_career
+    # (decision #38). Only the fallback fill value for a missing catch rate is
+    # computed here, from the same screened/train population targets.pkl fit on.
+    recep_tr = in_tr & df[RECEPTIONS_SCREEN].to_numpy() & df["y_receptions"].notna().to_numpy()
+    catch_rate_fill = float(df.loc[recep_tr, "catch_rate_career"].mean())
+    meta["stats"]["receptions"] = {
+        "n_train_rows": int(recep_tr.sum()),
+        "method": "targets.pkl prediction x catch_rate_career (decision #38, no separate artifact)",
+        "catch_rate_career_fill_if_missing": round(catch_rate_fill, 4),
+    }
+    print(f"{'receptions':<17} served as targets x catch_rate_career "
+          f"(fallback catch rate {catch_rate_fill:.4f} for missing/rookie rows)")
 
     meta_path = OUT_DIR / "vol_metadata.json"
     meta_path.write_text(json.dumps(meta, indent=2))

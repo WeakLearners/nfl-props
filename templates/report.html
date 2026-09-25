@@ -385,18 +385,25 @@
     <p><strong>What this is not.</strong> These are projections, not edges. Tested against
     real sportsbook lines, this model's point estimates were <em>less</em> accurate than the
     market's. Useful for seeing a player's plausible range; not evidence anyone is mispriced.</p>
-    <p><strong>Two engines, old and new.</strong> Every yardage card carries two forecasts
-    for the same player and stat. They come from two different models, built at different times.</p>
+    <p><strong>Two engines, old and new.</strong> Every receiving-yards, rushing-yards, and
+    receptions card carries two forecasts for the same player and stat. They come from two
+    different models, built at different times. There is no new-model number for passing yards
+    &mdash; the data this page's models train on doesn't have a passing-yards column to fit
+    against, so that card only shows the old engine.</p>
     <p><em>Old engine</em> (built 2026-09-13, <code>nflprops/project.py</code>). It makes the big
     number on every card and the range under it. It starts from the player's own recent games,
     weighting the latest most. It splits his workload (targets, carries) from what he does with each
     touch (yards per catch or carry). It forecasts each part on its own, multiplies them back
     together, then adjusts for how tough the opponent's defense is.</p>
-    <p><em>New model</em> (added 2026-09-24, decision #31, also called Phase 3). It makes the small
-    line under the range, e.g. <code>old engine 60 &middot; new model 52 (&minus;8)</code>. It is a
-    ridge regression: a straight-line fit that is penalized for leaning hard on any one input, so it
-    can't memorize noise. It was trained on 2019&ndash;2025 over a wider table of inputs. Neither
-    engine ever sees the other's number.</p>
+    <p><em>New model</em> (added 2026-09-24, decision #31, also called Phase 3; extended to
+    receptions 2026-09-24, decision #38). It makes the small line under the range, e.g.
+    <code>old engine 60 &middot; new model 52 (&minus;8)</code>. For receiving yards and rushing
+    yards it is a ridge regression: a straight-line fit that is penalized for leaning hard on any
+    one input, so it can't memorize noise, trained on 2019&ndash;2025 over a wider table of inputs.
+    For receptions it's a different route to the same idea &mdash; it predicts how many times a
+    player will be targeted, then multiplies by his own shrunk history of catching the targets he
+    gets. Head-to-head testing found that beat a ridge regression fit directly on receptions, by a
+    hair. Neither engine ever sees the other's number.</p>
     <p><strong>On the curve.</strong> The curve belongs to the old engine. Its dashed line, in the
     team's colour, marks the old engine's number. The purple dashed line marks the new model's. When
     the two lines sit apart, the engines disagree. The shortlist shows the same pair, in the same colours.</p>
@@ -407,12 +414,15 @@
     10 or more gets shaded. A gap that size is bigger than the old engine's own uncertainty, so the
     card deserves a second look.</p>
     <p><strong>Which one to trust.</strong> Neither, clearly. Scored on five seasons of real games
-    (2021&ndash;2025, <code>data/vol_head_to_head.csv</code>), they are close to a tie. On receiving
+    (2021&ndash;2025, <code>data/vol_head_to_head.csv</code> and
+    <code>data/vol_receptions_compare.csv</code>), all three are close to a tie. On receiving
     yards the old engine misses by 22.82 yards on average, the new model by 22.84 (12,040 games). On
-    rushing yards it is 21.30 against 21.44 (7,332 games). Season by season, the new model won
-    receiving in 3 of 5 years and rushing in 2 of 5. The new model is better at the raw counts
+    rushing yards it is 21.30 against 21.44 (7,332 games). On receptions it is 1.65 against 1.65
+    (12,040 games, sub-hundredth difference). Season by season, the new model won receiving in 3 of
+    5 years, rushing in 2 of 5, and receptions in 3 of 5. The new model is better at the raw counts
     underneath: how many targets and carries a player gets. This page doesn't show those counts.
-    The old engine keeps the headline because it hasn't been beaten, not because it clearly won.</p>
+    The old engine keeps the headline on every stat because it hasn't been beaten, not because it
+    clearly won.</p>
     <p><strong>Touchdowns work the same way.</strong> The <em>td %</em> badge is the old engine's
     anytime-touchdown number. The smaller <em>new td %</em> under it is the new model's (decision
     #30). In each game, both models name the player most likely to score. Over 2021&ndash;2025 the
