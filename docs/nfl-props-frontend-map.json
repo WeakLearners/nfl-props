@@ -1000,7 +1000,7 @@
       "label": "Explore results",
       "category": "generated-page",
       "file": "scripts/serve_reports.py",
-      "description": "Served at /explore. Every graded shortlisted leg across every week, grouped by a chosen category with an optional one-category filter. Server side is explore_html() in scripts/serve_reports.py, which grades through grade_legs (same rule as the listing tallies and the slate) and embeds the legs as window.__EXPLORE__; the page itself is templates/explore.html. Legs from games not yet final are counted as pending, never shown.",
+      "description": "Served at /explore. Every graded shortlisted leg across every week, grouped by a chosen category with an optional one-category filter. Server side is explore_html() in scripts/serve_reports.py, which grades through grade_legs (same rule as the listing tallies and the slate) and embeds the legs as window.__EXPLORE__; the page itself is templates/explore.html. Legs from games not yet final are counted as pending, never shown -- the pending count is season-wide, not scoped to the current Picks/Group by/Only selection.",
       "uiElements": [
         {
           "id": "explore-wrap",
@@ -1036,7 +1036,7 @@
           "id": "explore-subtitle",
           "label": "Subtitle",
           "kind": "text",
-          "description": "Defines Needed (mean implied probability of the prices) and $100 each (flat-stake return).",
+          "description": "Defines Needed (the hit rate at which $100 on each leg breaks even -- the group's dollar break-even, not the average implied probability of the prices) and $100 each (flat-stake return).",
           "locate": {
             "path": "templates/explore.html:85",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-subtitle\"' templates/explore.html"
@@ -1076,7 +1076,7 @@
           "id": "explore-group-by",
           "label": "Group by select",
           "kind": "input",
-          "description": "Chooses the category the graded legs are cut by: stat, position, depth role, week, kickoff window, price band, model confidence band, model vs book, opponent defense (the report's def multiplier: 1.0 = league average for that position), shortlist rank, team, opponent, player. The choice persists in localStorage 'nflprops-explore'.",
+          "description": "Chooses the category the graded legs are cut by: stat, position, depth role, week, kickoff window, price band, model confidence band, model vs book, opponent defense (model-used) (the report's def multiplier: 1.0 = league average for that position; only covers passing yards, completions and rushing yards -- rushing at half weight -- since DEF_WEIGHT is 0 for receiving yards and receptions, and those legs are left out of this grouping), shortlist rank, team, opponent, player. The choice persists in localStorage 'nflprops-explore'.",
           "locate": {
             "path": "templates/explore.html:101",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-group-by\"' templates/explore.html"
@@ -1166,7 +1166,7 @@
           "id": "explore-footer",
           "label": "Footer",
           "kind": "text",
-          "description": "Grading rule (same as the listing: actual beats the line, final games only) and the under-ten caveat.",
+          "description": "Grading rule (same as the listing: actual beats the line, final games only), the under-ten caveat, and which stats the opponent-defense grouping covers.",
           "locate": {
             "path": "templates/explore.html:114",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-footer\"' templates/explore.html"
