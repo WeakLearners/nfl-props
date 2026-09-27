@@ -1149,18 +1149,18 @@ def explore_html():
                 weeks.add((int(m.group(1)), int(m.group(2))))
     except FileNotFoundError:
         pass
-    legs, pending = [], 0
+    legs, pending = [], {"short": 0, "td": 0}
     for season, week in sorted(weeks):
         for r in grade_legs(season, week, [dict(x) for x in shortlist(season, week)]):
             if r["hit"] is None:
-                pending += 1
+                pending["short"] += 1
                 continue
             row = {k: r.get(k) for k in EXPLORE_FIELDS}
             row["season"], row["week"] = season, week
             legs.append(row)
         tds, waiting = td_legs(season, week)
         legs += tds
-        pending += waiting
+        pending["td"] += waiting
     blob = json.dumps({"legs": legs, "pending": pending}).replace("</", "<\\/")
     head = HEAD.replace("NFL Props \u2014 reports", "NFL Props \u2014 explore").format()
     body = open(EXPLORE_TPL, encoding="utf-8").read()

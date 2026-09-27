@@ -90,6 +90,13 @@
 
   <div class="controls" data-inspect-id="explore-controls">
     <div class="ctl">
+      <label for="kind">Picks</label>
+      <select id="kind" data-inspect-id="explore-kind">
+        <option value="short">Shortlist legs</option>
+        <option value="td">Anytime TD picks</option>
+      </select>
+    </div>
+    <div class="ctl">
       <label for="by">Group by</label>
       <select id="by" data-inspect-id="explore-group-by"></select>
     </div>
@@ -114,7 +121,15 @@
 <script>
 (function () {
   var D = window.__EXPLORE__ || {legs: [], pending: 0};
-  var LEGS = D.legs;
+  // Shortlist legs and TD picks are different products: a different model,
+  // one TD pick per game, and only the shortlist feeds the parlays. Pooling
+  // them made a headline that described nothing actually bet, so the page
+  // shows one kind at a time and never both.
+  var kind = document.getElementById("kind"), LEGS;
+  function scope() {
+    var td = kind.value === "td";
+    LEGS = D.legs.filter(function (l) { return (l.s === "anytime_td") === td; });
+  }
 
   var STAT = {receiving_yards: "Receiving yards", rushing_yards: "Rushing yards",
               passing_yards: "Passing yards", receptions: "Receptions",
@@ -135,8 +150,6 @@
   // Each dimension turns one leg into [label, sortKey]. Keys that are null
   // leave the leg out of that grouping rather than inventing a bucket.
   var DIMS = [
-    ["market", "Market", function (l) {
-      return l.s === "anytime_td" ? ["Anytime TD", 1] : ["Yards & catches", 0]; }],
     ["stat", "Stat", function (l) { return [STAT[l.s] || l.s, l.s]; }],
     ["pos", "Position", function (l) {
       var p = (l.role || "").replace(/\d+$/, ""); return p ? [p, p] : null; }],
@@ -243,7 +256,7 @@
     summary.innerHTML = "<b>" + all.h + "/" + all.n + "</b> hit (" + pct(all.rate) + ")" +
       (all.np ? " against <b>" + pct(all.be) + "</b> needed · $100 each: <b>" + money(all.pl) + "</b>" : "") +
       (all.np && all.np < all.n ? " · " + (all.n - all.np) + " unpriced legs left out of those two" : "") +
-      (D.pending ? " · " + D.pending + " legs still waiting on a final score" : "");
+      (D.pending[kind.value] ? " · " + D.pending[kind.value] + " still waiting on a final score" : "");
     if (!legs.length) { out.innerHTML = '<p class="empty">No graded legs match.</p>'; return; }
     var rows = gs.map(function (g, i) {
       var s = stats(g.legs), thin = s.n < 10;
@@ -290,15 +303,20 @@
 
   // The chosen cut survives a reload. Wrapped: blocked storage must not
   // cost the page, it just forgets.
-  function save() { try { localStorage.setItem("nflprops-explore", JSON.stringify({by: by.value, fd: fdim.value, fv: fval.value})); } catch (e) {} }
+  function save() { try { localStorage.setItem("nflprops-explore", JSON.stringify({k: kind.value, by: by.value, fd: fdim.value, fv: fval.value})); } catch (e) {} }
+  var st = null;
+  try { st = JSON.parse(localStorage.getItem("nflprops-explore") || "null"); } catch (e) {}
+  if (st && (st.k === "td" || st.k === "short")) kind.value = st.k;
+  scope();
   try {
-    var st = JSON.parse(localStorage.getItem("nflprops-explore") || "null");
     if (st) {
       if (BYKEY[st.by]) by.value = st.by;
       if (st.fd && BYKEY[st.fd]) { fdim.value = st.fd; fillValues(); fval.value = st.fv;
         if (fval.selectedIndex < 0) fval.selectedIndex = 0; }
     }
   } catch (e) {}
+  kind.addEventListener("change", function () {
+    scope(); fillValues(); save(); render(); });
   by.addEventListener("change", function () { save(); render(); });
   fdim.addEventListener("change", function () { fillValues(); save(); render(); });
   fval.addEventListener("change", function () { save(); render(); });
