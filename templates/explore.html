@@ -90,8 +90,8 @@
     <h1 data-inspect-id="explore-title">Explore results</h1>
   </header>
   <p class="sub" data-inspect-id="explore-subtitle">Every shortlisted leg from a finished
-    game, cut the way you choose. <b>Passed on</b> shows the legs a book priced that the
-    model didn't pick, to check what it left behind. <b>Needed</b> is the hit rate at which $100 on each leg
+    game, cut the way you choose. <b>All legs</b> adds the ones a book priced that the
+    model didn't pick; <b>Shortlist</b> narrows to the picks. <b>Needed</b> is the hit rate at which $100 on each leg
     breaks even. A group only paid if its hit rate beat it.
     <b>$100 each</b> is what a flat $100 on every leg in the group would have returned.</p>
   <a class="back" href="/" data-inspect-id="explore-back">&larr; All reports</a>
@@ -100,8 +100,8 @@
     <div class="ctl">
       <label for="kind">Picks</label>
       <select id="kind" data-inspect-id="explore-kind">
+        <option value="all">All legs with a line</option>
         <option value="short">Shortlist legs</option>
-        <option value="passed">Passed on (had a line)</option>
         <option value="td">Anytime TD picks</option>
       </select>
     </div>
@@ -136,13 +136,13 @@
   // Shortlist legs and TD picks are different products: a different model,
   // one TD pick per game, and only the shortlist feeds the parlays. Pooling
   // them made a headline that described nothing actually bet, so the page
-  // shows one kind at a time and never both. Passed-on legs had a book line
-  // but weren't shortlisted; they're graded the same way but were never bet.
+  // shows one kind at a time and never both. "All" is every leg a book
+  // priced; the shortlist is the subset the model picked.
   var kind = document.getElementById("kind"), LEGS;
   function scope() {
     var k = kind.value;
     LEGS = D.legs.filter(function (l) {
-      return l.s === "anytime_td" ? k === "td" : k === (l.pick ? "short" : "passed"); });
+      return l.s === "anytime_td" ? k === "td" : k === "all" || !!l.pick; });
   }
 
   var STAT = {receiving_yards: "Receiving yards", rushing_yards: "Rushing yards",
@@ -408,7 +408,7 @@
   }
   var st = null;
   try { st = JSON.parse(localStorage.getItem("nflprops-explore") || "null"); } catch (e) {}
-  if (st && (st.k === "td" || st.k === "short" || st.k === "passed")) kind.value = st.k;
+  if (st && (st.k === "td" || st.k === "short" || st.k === "all")) kind.value = st.k;
   scope();
   try {
     if (st) {

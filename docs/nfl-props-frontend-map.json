@@ -1036,7 +1036,7 @@
           "id": "explore-subtitle",
           "label": "Subtitle",
           "kind": "text",
-          "description": "Defines Needed (the hit rate at which $100 on each leg breaks even -- the group's dollar break-even, not the average implied probability of the prices) and $100 each (flat-stake return), and says what the Passed on option shows.",
+          "description": "Defines Needed (the hit rate at which $100 on each leg breaks even -- the group's dollar break-even, not the average implied probability of the prices) and $100 each (flat-stake return), and says what All legs vs Shortlist show.",
           "locate": {
             "path": "templates/explore.html:92",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-subtitle\"' templates/explore.html"
@@ -1066,7 +1066,7 @@
           "id": "explore-kind",
           "label": "Picks select",
           "kind": "input",
-          "description": "Scopes the whole page to one product: shortlist legs (default), passed-on legs (a book priced them but the model didn't shortlist them; graded the same way, never bet), or anytime-TD picks. Never pooled - only the shortlist feeds the parlays, so a blended headline would describe nothing actually bet. Pending counts are per product. Persists in localStorage 'nflprops-explore'.",
+          "description": "Scopes the whole page: all legs with a book line (default; picked or not, graded by the same rule), the shortlist subset the model actually picked, or anytime-TD picks. TD picks are never pooled with the others - a different model, one per game. Pending counts are per option. Persists in localStorage 'nflprops-explore'.",
           "locate": {
             "path": "templates/explore.html:102",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-kind\"' templates/explore.html"

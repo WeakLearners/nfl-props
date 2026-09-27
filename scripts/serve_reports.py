@@ -565,8 +565,8 @@ def shortlist(season, week):
 def lined(season, week):
     """Every leg a book priced for one week, picked or passed on.
 
-    A passed-on leg is graded by the same rule as a pick; the explore page
-    keeps the two apart so a hit rate never describes legs nobody bet.
+    A passed-on leg is graded by the same rule as a pick. The explore page
+    shows all of them, or narrows to the shortlist.
 
     Cached on the set of report files and their modification times, so a
     regenerated report is picked up on the next request and an unchanged week
@@ -1160,11 +1160,13 @@ def explore_html():
                 weeks.add((int(m.group(1)), int(m.group(2))))
     except FileNotFoundError:
         pass
-    legs, pending = [], {"short": 0, "passed": 0, "td": 0}
+    legs, pending = [], {"all": 0, "short": 0, "td": 0}
     for season, week in sorted(weeks):
         for r in grade_legs(season, week, [dict(x) for x in lined(season, week)]):
             if r["hit"] is None:
-                pending["short" if r.get("pick") else "passed"] += 1
+                pending["all"] += 1
+                if r.get("pick"):
+                    pending["short"] += 1
                 continue
             row = {k: r.get(k) for k in EXPLORE_FIELDS}
             row["season"], row["week"] = season, week
