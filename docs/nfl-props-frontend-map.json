@@ -1128,7 +1128,7 @@
           "kind": "table",
           "description": "One row per group: legs, hits, hit rate with a bar (tick = needed), needed, $100 each. Built at runtime.",
           "locate": {
-            "path": "templates/explore.html:275",
+            "path": "templates/explore.html:296",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-groups\"' templates/explore.html"
           }
         },
@@ -1138,7 +1138,7 @@
           "kind": "row",
           "description": "Click or Enter expands the legs in that group. Greyed (tr.thin) under 10 legs. Team/opponent/player/depth role sort by size; the rest keep natural band order.",
           "locate": {
-            "path": "templates/explore.html:265",
+            "path": "templates/explore.html:286",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-group-row\"' templates/explore.html"
           }
         },
@@ -1148,7 +1148,7 @@
           "kind": "row",
           "description": "Inserted under a group row by toggle(); lists each leg newest week first.",
           "locate": {
-            "path": "templates/explore.html:289",
+            "path": "templates/explore.html:310",
             "grep": "grep -n -F -- '\"explore-group-legs\"' templates/explore.html"
           }
         },
@@ -1158,7 +1158,7 @@
           "kind": "row",
           "description": "Player (links to its report), team role, week and game; the line, price, and the actual number as a HIT/MISS pill.",
           "locate": {
-            "path": "templates/explore.html:246",
+            "path": "templates/explore.html:266",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-leg\"' templates/explore.html"
           }
         },
