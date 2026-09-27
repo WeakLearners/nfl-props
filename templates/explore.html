@@ -83,8 +83,8 @@
     <h1 data-inspect-id="explore-title">Explore results</h1>
   </header>
   <p class="sub" data-inspect-id="explore-subtitle">Every shortlisted leg from a finished
-    game, cut the way you choose. <b>Needed</b> is the hit rate the prices required: the
-    average of what each price implies. A group only paid if its hit rate beat it.
+    game, cut the way you choose. <b>Needed</b> is the hit rate at which $100 on each leg
+    breaks even. A group only paid if its hit rate beat it.
     <b>$100 each</b> is what a flat $100 on every leg in the group would have returned.</p>
   <a class="back" href="/" data-inspect-id="explore-back">&larr; All reports</a>
 
@@ -116,7 +116,10 @@
     rushing or receiving touchdown; passing TDs don't count. TD picks without a book price
     count toward hit rate only. Rows under ten graded legs
     are greyed out &mdash; at that size a hit rate is mostly luck. Prices are what the report
-    held when it was generated.</footer>
+    held when it was generated. <b>Opponent defense</b> only groups legs the model actually used
+    that number for &mdash; passing yards, completions, and rushing yards (rushing at half
+    weight). It's never applied to receiving yards or receptions, so those legs sit outside
+    this grouping rather than being counted against a number that didn't shape them.</footer>
 </div>
 <script>
 (function () {
@@ -162,11 +165,14 @@
       var day = DOW[d.getDay()];
       var key = ({Thu: 0, Fri: 1, Sat: 2, Sun: 3, Mon: 4})[day];
       return [day + " " + part, (key == null ? 5 : key) * 3 + (h < 15 ? 0 : h < 19 ? 1 : 2)]; }],
+    // Sort key ascending = longest price first (Plus money), shortest last
+    // (-400 or shorter) -- same direction the old bucket list already sorted
+    // in, kept so the ladder doesn't reorder out from under a saved cut.
     ["price", "Price", function (l) {
       if (l.price == null) return null;
       if (l.price > 0) return ["Plus money", -1];
       return band(-l.price, [200, 250, 300, 400],
-        ["Under -200", "-200 to -249", "-250 to -299", "-300 to -399", "-400 or shorter"]); }],
+        ["-199 to -101", "-200 to -249", "-250 to -299", "-300 to -399", "-400 or shorter"]); }],
     ["conf", "Model confidence", function (l) {
       return band(l.mp * 100, [65, 70, 75, 80],
         ["Under 65%", "65–70%", "70–75%", "75–80%", "80%+"]); }],
@@ -174,8 +180,14 @@
       if (l.bp == null) return null;
       return band((l.mp - l.bp) * 100, [0, 3, 6],
         ["Model below book", "0–3 pts above", "3–6 pts above", "6+ pts above"]); }],
-    ["def", "Opponent defense", function (l) {
-      if (l.def == null) return null;
+    // report.py only feeds this multiplier into the projection for passing
+    // yards, completions, and rushing yards (rushing at half weight) -- it
+    // cost 12% of MAE for receiving yards/receptions in backtesting and was
+    // turned off there. l.app carries that same applied/not flag through
+    // unchanged, so a leg the model never used the number for is left out
+    // of this grouping rather than mixed in with the ones it did shape.
+    ["def", "Opponent defense (model-used)", function (l) {
+      if (l.def == null || !l.app) return null;
       return band(l.def, [0.9, 1.1],
         ["Tough (under 0.9)", "Average (0.9–1.1)", "Soft (over 1.1)"]); }],
     ["rank", "Shortlist rank", function (l) { return l.pick ? ["Pick #" + l.pick, l.pick] : null; }],
@@ -226,14 +238,22 @@
   function stats(legs) {
     // Needed and $100 each only count legs that carried a price. A TD
     // marker with no book number has nothing to pay out or to beat.
-    var n = legs.length, h = 0, pl = 0, be = 0, np = 0;
+    //
+    // Needed is the group's dollar break-even, not the average implied
+    // probability. Those two disagree whenever prices in the group are
+    // mixed: probability is a convex function of payout, so averaging
+    // per-leg break-evens overstates what $100-a-leg actually needs to
+    // clear. The correct break-even is what makes total payout equal
+    // total stake: N*100 / (sum of payouts + N*100).
+    var n = legs.length, h = 0, pl = 0, payoutSum = 0, np = 0;
     legs.forEach(function (l) {
       if (l.hit) h++;
       if (l.price == null || l.bp == null) return;
-      np++; be += l.bp;
+      np++; payoutSum += payout(l.price);
       pl += l.hit ? payout(l.price) : -100;
     });
-    return {n: n, h: h, rate: n ? h / n : 0, np: np, be: np ? be / np : null, pl: np ? pl : null};
+    var be = np ? (np * 100) / (payoutSum + np * 100) : null;
+    return {n: n, h: h, rate: n ? h / n : 0, np: np, be: be, pl: np ? pl : null};
   }
   function pct(x) { return (x * 100).toFixed(1) + "%"; }
   function money(x) { var r = Math.round(x); return (r > 0 ? "+$" : r < 0 ? "−$" : "$") + Math.abs(r); }
@@ -256,7 +276,8 @@
     summary.innerHTML = "<b>" + all.h + "/" + all.n + "</b> hit (" + pct(all.rate) + ")" +
       (all.np ? " against <b>" + pct(all.be) + "</b> needed · $100 each: <b>" + money(all.pl) + "</b>" : "") +
       (all.np && all.np < all.n ? " · " + (all.n - all.np) + " unpriced legs left out of those two" : "") +
-      (D.pending[kind.value] ? " · " + D.pending[kind.value] + " still waiting on a final score" : "");
+      (D.pending[kind.value] ? " · " + D.pending[kind.value] + " still waiting on a final score, " +
+        "season-wide -- not scoped to the group or filter above" : "");
     if (!legs.length) { out.innerHTML = '<p class="empty">No graded legs match.</p>'; return; }
     var rows = gs.map(function (g, i) {
       var s = stats(g.legs), thin = s.n < 10;
