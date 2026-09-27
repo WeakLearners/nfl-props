@@ -75,12 +75,31 @@
     border-radius:2px; font-size:11px; font-weight:600; color:var(--surface)}
   .mark.hit{background:var(--good)} .mark.miss{background:var(--bad)}
   .empty{color:var(--ink-3); font-style:italic; margin-top:20px}
+  /* Top 5: the best hit rates from every grouping at once. Each row is a
+     button that switches Group by to where that group lives. */
+  .top{margin:18px 0 0}
+  .top-h{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--ink-3); margin:0 0 4px}
+  .top ol{list-style:none; margin:0; padding:0}
+  .top-row{all:unset; box-sizing:border-box; cursor:pointer; width:100%; display:flex;
+    align-items:baseline; gap:10px; padding:7px 0; border-bottom:1px solid var(--line-soft)}
+  .top-row:hover{background:var(--line-soft)}
+  .top-row:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
+  .top-dim{font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--ink-3);
+    width:150px; flex:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .top-lbl{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:18px;
+    flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .top-num{font-family:"IBM Plex Mono",monospace; font-size:13px; flex:none;
+    font-variant-numeric:tabular-nums; text-align:right}
+  .top-rate{width:60px} .top-n{width:62px; color:var(--ink-2)} .top-be{width:92px; color:var(--ink-3)}
+  .top-note{font-size:12.5px; color:var(--ink-3); margin:6px 0 0; max-width:72ch}
   footer{margin-top:44px; padding-top:16px; border-top:1px solid var(--line);
     color:var(--ink-3); font-size:12.5px; max-width:68ch}
   @media (max-width:560px){
     .wrap{padding:24px 14px 48px}
     col.c-pl{width:0} th:nth-child(6), td.pl{display:none}
     col.c-be{width:62px} col.c-r{width:62px}
+    .top-dim{width:88px} .top-be{display:none}
     td:first-child{font-size:16px}
   }
 </style>
@@ -118,6 +137,7 @@
     </div>
   </div>
   <p class="summary" id="summary" data-inspect-id="explore-summary"></p>
+  <div class="top" id="top" data-inspect-id="explore-top5"></div>
   <div id="out" data-inspect-id="explore-table"></div>
 
   <footer data-inspect-id="explore-footer">A leg is graded once its game is final, by the
@@ -142,7 +162,7 @@
   function scope() {
     var k = kind.value;
     LEGS = D.legs.filter(function (l) {
-      return l.s === "anytime_td" ? k === "td" : k === "all" || !!l.pick; });
+      return l.s === "anytime_td" ? k === "td" : k === "all" || (k === "short" && !!l.pick); });
   }
 
   var STAT = {receiving_yards: "Receiving yards", rushing_yards: "Rushing yards",
@@ -325,6 +345,53 @@
     }).join("");
   }
 
+  // Best hit rates across every grouping at once. Player is left out: it
+  // splits too fine to ever reach the floor. A group that is the whole
+  // current set (Position = WR while filtered to WR) says nothing, so skip it.
+  var TOP_MIN = 20, top = document.getElementById("top");
+  function renderTop(legs) {
+    var cand = [], tried = 0;
+    DIMS.forEach(function (d) {
+      if (d[0] === "player") return;
+      groups(legs, d[0]).forEach(function (g) {
+        if (g.legs.length === legs.length) return;
+        tried++;
+        if (g.legs.length >= TOP_MIN) cand.push({d: d, g: g, s: stats(g.legs)});
+      });
+    });
+    cand.sort(function (a, b) { return b.s.rate - a.s.rate || b.s.n - a.s.n; });
+    // Position QB and Depth role QB1 are often the very same legs. Keep the
+    // first and skip its twin, so five rows mean five different groups.
+    var picked = [];
+    cand.forEach(function (c) {
+      if (picked.length >= 5) return;
+      var twin = picked.some(function (p) {
+        if (p.g.legs.length !== c.g.legs.length) return false;
+        var set = new Set(p.g.legs);
+        return c.g.legs.every(function (l) { return set.has(l); });
+      });
+      if (!twin) picked.push(c);
+    });
+    var head = '<p class="top-h">Top 5 groups by hit rate &middot; ' + TOP_MIN + '+ legs</p>';
+    if (!cand.length) { top.innerHTML = head + '<p class="top-note">No group has ' + TOP_MIN +
+      ' graded legs yet.</p>'; return; }
+    top.innerHTML = head + '<ol>' + picked.map(function (c) {
+      var cls = c.s.be == null ? "" : c.s.rate > c.s.be ? "up" : "down";
+      return '<li><button type="button" class="top-row" data-by="' + c.d[0] + '">' +
+        '<span class="top-dim">' + esc(c.d[1]) + '</span>' +
+        '<span class="top-lbl" title="' + esc(c.g.label) + '">' + esc(c.g.label) + '</span>' +
+        '<span class="top-num top-rate ' + cls + '">' + pct(c.s.rate) + '</span>' +
+        '<span class="top-num top-n">' + c.s.h + '/' + c.s.n + '</span>' +
+        '<span class="top-num top-be">' + (c.s.be == null ? "" : "needs " + pct(c.s.be)) + '</span>' +
+        '</button></li>';
+    }).join("") + '</ol><p class="top-note">Picked from ' + cand.length + ' qualifying groups (of ' + tried +
+      '). The best of many will look good partly by luck, so expect these to drift toward the average.</p>';
+  }
+  top.addEventListener("click", function (e) {
+    var b = e.target.closest(".top-row"); if (!b) return;
+    by.value = b.dataset.by; sortState = null; save(); render();
+  });
+
   function render() {
     var legs = filtered(), all = stats(legs), gs = groups(legs, by.value);
     summary.innerHTML = "<b>" + all.h + "/" + all.n + "</b> hit (" + pct(all.rate) + ")" +
@@ -333,6 +400,7 @@
       (D.pending[kind.value] ? " · " + D.pending[kind.value] + " still waiting on a final score, " +
         "season-wide -- not scoped to the group or filter above" : "") +
       ((D.void || {})[kind.value] ? " · " + D.void[kind.value] + " void (player didn't play), left out" : "");
+    renderTop(legs);
     if (!legs.length) { out.innerHTML = '<p class="empty">No graded legs match.</p>'; return; }
     // (g, s) pairs, default order first -- groups() already carries the
     // category's own natural/by-size order, which sortState === null falls
