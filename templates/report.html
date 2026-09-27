@@ -627,7 +627,7 @@ STATS.forEach(([key,label,unit])=>{
       +'<div class="card-main" data-inspect-id="card-main">'
         +'<div class="card-id" data-inspect-id="card-identity">'
           +'<span class="name" data-inspect-id="card-player-name">'+d.p+'</span>'
-          +'<span class="role '+d.tm+'" data-inspect-id="card-role-badge">'+d.role+'</span></div>'
+          +'<span class="role '+(d.tm===META.teamA?'a':'b')+'" data-inspect-id="card-role-badge">'+d.role+'</span></div>'
         +'<div class="fig-row"><span class="fig" data-inspect-id="card-expected">'
           +fmt(d.mu)+'</span>'+result(d)+'</div>'
         +'<div class="rng" data-inspect-id="card-range">'+fmt(d.lo)+' – '+fmt(d.hi)+'</div>'+p3Cmp(d,col)+'</div>'

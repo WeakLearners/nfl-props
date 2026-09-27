@@ -342,7 +342,7 @@ STATS.forEach(([key,label,unit])=>{
     }
     card.innerHTML=
       '<div class="card-top"><span class="name" data-inspect-id="card-player-name">'+d.p+'</span>'
-      +'<span class="role '+d.tm+'" data-inspect-id="card-role-badge">'+d.role+'</span>'
+      +'<span class="role '+(d.tm===META.teamA?'a':'b')+'" data-inspect-id="card-role-badge">'+d.role+'</span>'
       +(d.pick?'<span class="pick-badge" data-inspect-id="card-pick-badge">pick '+d.pick+'</span>':'')+'</div>'
       +'<div class="fig" data-inspect-id="card-expected">'+fmt(d.mu)+'</div>'
       +'<div class="rng" data-inspect-id="card-range">'+fmt(d.lo)+' – '+fmt(d.hi)+'</div>'
