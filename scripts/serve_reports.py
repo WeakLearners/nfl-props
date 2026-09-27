@@ -232,6 +232,7 @@ PAGE = HEAD + """
     border-bottom:1px solid transparent;
   }}
   a.slate-link:hover{{border-bottom-color:var(--accent)}}
+  a.slate-link + a.slate-link{{margin-left:22px}}
   .empty{{color:var(--ink-3); font-style:italic; margin-top:20px}}
   footer{{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
     color:var(--ink-3); font-size:12.5px; max-width:68ch}}
@@ -249,6 +250,7 @@ PAGE = HEAD + """
   <p class="sub" data-inspect-id="index-subtitle">Pick a week. Games sit in kickoff order
     inside it. TD marks the likeliest scorer. Nothing here claims an edge.</p>
   <a class="slate-link" href="/slate" data-inspect-id="index-slate-link">Top picks by sitting &rarr;</a>
+  <a class="slate-link" href="/explore" data-inspect-id="index-explore-link">Explore results &rarr;</a>
 {tabs}
 {rows}
   <footer data-inspect-id="index-footer">Projections, not edges. Tested against real
@@ -1067,6 +1069,47 @@ def slate_html():
                 + "\n".join(tabs) + "\n  </nav>")
     return SLATE_PAGE.format(tabs=tabstrip, windows="\n".join(panels))
 
+# ------------------------------------------------------------- explore page
+
+EXPLORE_TPL = os.path.join(BASE, "templates", "explore.html")
+# Only what the page groups or prints. The report blob carries the model's
+# whole distribution per leg; none of it is needed to count hits.
+EXPLORE_FIELDS = ("p", "tm", "vs", "role", "s", "line", "price", "mp", "bp",
+                  "def", "pick", "game", "kick", "hit", "actual", "file")
+
+
+def explore_html():
+    """Every graded leg across every week, handed to a page that groups them.
+
+    Grading goes through grade_legs, the same rule as the listing's tallies
+    and the slate's pills, so a group total here can never disagree with the
+    cards it came from. Legs from games not yet final are counted, not shown:
+    a pending leg in a hit-rate table would be a miss that isn't one.
+    """
+    weeks = set()
+    try:
+        for f in os.listdir(ROOT):
+            m = NAME.search(f)
+            if m:
+                weeks.add((int(m.group(1)), int(m.group(2))))
+    except FileNotFoundError:
+        pass
+    legs, pending = [], 0
+    for season, week in sorted(weeks):
+        for r in grade_legs(season, week, [dict(x) for x in shortlist(season, week)]):
+            if r["hit"] is None:
+                pending += 1
+                continue
+            row = {k: r.get(k) for k in EXPLORE_FIELDS}
+            row["season"], row["week"] = season, week
+            legs.append(row)
+    blob = json.dumps({"legs": legs, "pending": pending}).replace("</", "<\\/")
+    head = HEAD.replace("NFL Props \u2014 reports", "NFL Props \u2014 explore").format()
+    body = open(EXPLORE_TPL, encoding="utf-8").read()
+    return (head.replace(CHARSET, CHARSET + f"\n<script>window.__EXPLORE__={blob};</script>", 1)
+            + body)
+
+
 # ------------------------------------------------------------- theme toggle
 
 # Three states, cycled in this order, because "auto" is a real answer and not
@@ -1519,6 +1562,14 @@ class Handler(SimpleHTTPRequestHandler):
             # spliced in per request, never written to disk. Nothing is stored
             # for this page at all — it is read back out of the report files.
             body = (with_theme(slate_html() + TABS_JS) +
+                    '\n<script src="/_inspector.js"></script>\n').encode()
+            self._send(body, "text/html; charset=utf-8")
+            return
+
+        if path in ("/explore", "/explore/", "/explore.html"):
+            # Built per request from the reports on disk and the results in
+            # the database, like the slate. Nothing is stored for it.
+            body = (with_theme(explore_html()) +
                     '\n<script src="/_inspector.js"></script>\n').encode()
             self._send(body, "text/html; charset=utf-8")
             return

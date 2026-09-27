@@ -1,0 +1,292 @@
+
+  /* The explorer is the slate's sibling: same tokens, same three typefaces.
+     A control row picks how to cut the graded legs; one table shows the cut.
+     Tables here follow the slate's rules -- mono tabular figures, hairline
+     rows, the HIT/MISS pills in --good / --bad. */
+  a.back{display:inline-block; margin:16px 0 0; text-decoration:none;
+    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px;
+    letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3)}
+  a.back:hover{color:var(--accent)}
+  .controls{display:flex; flex-wrap:wrap; gap:14px 22px; margin:26px 0 0;
+    padding:14px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
+  .ctl{display:flex; flex-direction:column; gap:5px; min-width:0}
+  .ctl label{font-family:"IBM Plex Mono",monospace; font-size:10px;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3)}
+  .ctl .pair{display:flex; gap:6px}
+  select{appearance:none; -webkit-appearance:none; cursor:pointer;
+    background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2384827a' stroke-width='1.4'/%3E%3C/svg%3E") no-repeat right 9px center;
+    color:var(--ink); border:1px solid var(--line); border-radius:3px;
+    padding:6px 28px 6px 10px; font:500 14px/1.2 "Public Sans",sans-serif; max-width:100%}
+  select:hover{border-color:var(--ink-3)}
+  select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  select:disabled{opacity:.45; cursor:default}
+  .summary{margin:18px 0 0; font-size:14px; color:var(--ink-2)}
+  .summary b{color:var(--ink); font-family:"IBM Plex Mono",monospace; font-weight:600;
+    font-variant-numeric:tabular-nums}
+
+  table{width:100%; border-collapse:collapse; margin-top:14px; table-layout:fixed}
+  th{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:500;
+    letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3);
+    text-align:right; padding:0 6px 7px; border-bottom:1px solid var(--ink)}
+  th:first-child{text-align:left; padding-left:0}
+  td{padding:9px 6px; border-bottom:1px solid var(--line-soft); text-align:right;
+    font-family:"IBM Plex Mono",monospace; font-size:13px; font-variant-numeric:tabular-nums}
+  td:first-child{text-align:left; padding-left:0; font-family:"Barlow Condensed",sans-serif;
+    font-weight:600; font-size:18px; letter-spacing:.01em; white-space:nowrap;
+    overflow:hidden; text-overflow:ellipsis}
+  col.c-n{width:52px} col.c-h{width:52px} col.c-r{width:74px} col.c-be{width:74px} col.c-pl{width:84px}
+  tr.grp{cursor:pointer}
+  tr.grp:hover td{background:var(--line-soft)}
+  tr.grp:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
+  tr.grp td:first-child::before{content:"\25B8"; display:inline-block; width:14px;
+    color:var(--ink-3); font-size:12px; transition:transform .15s}
+  tr.grp[aria-expanded="true"] td:first-child::before{transform:rotate(90deg)}
+  /* Under ten graded legs a hit rate is a coin telling you a story. The row
+     stays, so the category is complete, but it drops to the quiet ink. */
+  tr.thin td{color:var(--ink-3)}
+  .up{color:var(--good)} .down{color:var(--bad)}
+  tr.thin .up, tr.thin .down{color:var(--ink-3)}
+  /* The bar under the hit rate: how far it got, with a tick where it needed
+     to get. Hit rate beats the tick = the group paid. */
+  .bar{position:relative; height:3px; margin-top:4px; background:var(--line-soft)}
+  .bar i{position:absolute; left:0; top:0; bottom:0; background:var(--ink-3)}
+  .bar i.up{background:var(--good)} .bar i.down{background:var(--bad)}
+  .bar b{position:absolute; top:-3px; width:2px; height:9px; background:var(--ink)}
+
+  tr.legs > td{padding:0 0 12px 14px; background:none; cursor:default}
+  tr.legs table{margin-top:4px}
+  tr.legs td{font-size:12px; padding:6px 6px; font-family:"IBM Plex Mono",monospace}
+  tr.legs td:first-child{font-family:"Public Sans",sans-serif; font-weight:500;
+    font-size:13.5px; letter-spacing:0}
+  tr.legs td:first-child::before{content:none}
+  tr.legs .meta{display:block; font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+    color:var(--ink-3); font-weight:400}
+  tr.legs a{color:inherit; text-decoration:none}
+  tr.legs a:hover{text-decoration:underline}
+  col.l-st{width:118px} col.l-pr{width:58px} col.l-ac{width:66px}
+  .mark{display:inline-flex; align-items:center; height:18px; padding:0 6px;
+    border-radius:2px; font-size:11px; font-weight:600; color:var(--surface)}
+  .mark.hit{background:var(--good)} .mark.miss{background:var(--bad)}
+  .empty{color:var(--ink-3); font-style:italic; margin-top:20px}
+  footer{margin-top:44px; padding-top:16px; border-top:1px solid var(--line);
+    color:var(--ink-3); font-size:12.5px; max-width:68ch}
+  @media (max-width:560px){
+    .wrap{padding:24px 14px 48px}
+    col.c-pl{width:0} th:nth-child(6), td.pl{display:none}
+    col.c-be{width:62px} col.c-r{width:62px}
+    td:first-child{font-size:16px}
+  }
+</style>
+<div class="wrap" data-inspect-id="explore-wrap">
+  <header>
+    <p class="eyebrow" data-inspect-id="explore-eyebrow">Graded picks</p>
+    <h1 data-inspect-id="explore-title">Explore results</h1>
+  </header>
+  <p class="sub" data-inspect-id="explore-subtitle">Every shortlisted leg from a finished
+    game, cut the way you choose. <b>Needed</b> is the hit rate the prices required: the
+    average of what each price implies. A group only paid if its hit rate beat it.
+    <b>$100 each</b> is what a flat $100 on every leg in the group would have returned.</p>
+  <a class="back" href="/" data-inspect-id="explore-back">&larr; All reports</a>
+
+  <div class="controls" data-inspect-id="explore-controls">
+    <div class="ctl">
+      <label for="by">Group by</label>
+      <select id="by" data-inspect-id="explore-group-by"></select>
+    </div>
+    <div class="ctl">
+      <label for="fdim">Only</label>
+      <div class="pair">
+        <select id="fdim" data-inspect-id="explore-filter-dim"></select>
+        <select id="fval" data-inspect-id="explore-filter-val" disabled></select>
+      </div>
+    </div>
+  </div>
+  <p class="summary" id="summary" data-inspect-id="explore-summary"></p>
+  <div id="out" data-inspect-id="explore-table"></div>
+
+  <footer data-inspect-id="explore-footer">A leg is graded once its game is final, by the
+    same rule the listing uses: the real number beats the line. Rows under ten graded legs
+    are greyed out &mdash; at that size a hit rate is mostly luck. Prices are what the report
+    held when it was generated.</footer>
+</div>
+<script>
+(function () {
+  var D = window.__EXPLORE__ || {legs: [], pending: 0};
+  var LEGS = D.legs;
+
+  var STAT = {receiving_yards: "Receiving yards", rushing_yards: "Rushing yards",
+              passing_yards: "Passing yards", receptions: "Receptions",
+              completions: "Completions"};
+  var SHORT = {receiving_yards: "rec yds", rushing_yards: "rush yds",
+               passing_yards: "pass yds", receptions: "rec", completions: "comp"};
+  var DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  function payout(p) { return p < 0 ? 10000 / -p : p; }
+  // A band is [label, sortKey]. Sorting on the key keeps bands in their
+  // natural order (cheap to expensive) rather than alphabetical.
+  function band(v, cuts, labels) {
+    for (var i = 0; i < cuts.length; i++) if (v < cuts[i]) return [labels[i], i];
+    return [labels[cuts.length], cuts.length];
+  }
+
+  // Each dimension turns one leg into [label, sortKey]. Keys that are null
+  // leave the leg out of that grouping rather than inventing a bucket.
+  var DIMS = [
+    ["stat", "Stat", function (l) { return [STAT[l.s] || l.s, l.s]; }],
+    ["pos", "Position", function (l) {
+      var p = (l.role || "").replace(/\d+$/, ""); return p ? [p, p] : null; }],
+    ["role", "Depth role", function (l) { return l.role ? [l.role, l.role] : null; }],
+    ["week", "Week", function (l) { return ["Week " + l.week, l.season * 100 + l.week]; }],
+    ["window", "Kickoff window", function (l) {
+      if (!l.kick) return null;
+      var d = new Date(l.kick.replace(" ", "T")), h = d.getHours();
+      var part = h < 15 ? "early" : h < 19 ? "afternoon" : "night";
+      var day = DOW[d.getDay()];
+      var key = ({Thu: 0, Fri: 1, Sat: 2, Sun: 3, Mon: 4})[day];
+      return [day + " " + part, (key == null ? 5 : key) * 3 + (h < 15 ? 0 : h < 19 ? 1 : 2)]; }],
+    ["price", "Price", function (l) {
+      return band(-l.price, [200, 250, 300, 400],
+        ["Under -200", "-200 to -249", "-250 to -299", "-300 to -399", "-400 or shorter"]); }],
+    ["conf", "Model confidence", function (l) {
+      return band(l.mp * 100, [65, 70, 75, 80],
+        ["Under 65%", "65–70%", "70–75%", "75–80%", "80%+"]); }],
+    ["edge", "Model vs book", function (l) {
+      return band((l.mp - l.bp) * 100, [0, 3, 6],
+        ["Model below book", "0–3 pts above", "3–6 pts above", "6+ pts above"]); }],
+    ["def", "Opponent defense", function (l) {
+      if (l.def == null) return null;
+      return band(l.def, [0.9, 1.1],
+        ["Tough (under 0.9)", "Average (0.9–1.1)", "Soft (over 1.1)"]); }],
+    ["rank", "Shortlist rank", function (l) { return l.pick ? ["Pick #" + l.pick, l.pick] : null; }],
+    ["team", "Team", function (l) { return [l.tm, l.tm]; }],
+    ["opp", "Opponent", function (l) { return l.vs ? [l.vs, l.vs] : null; }],
+    ["player", "Player", function (l) { return [l.p, l.p]; }]
+  ];
+  var BYKEY = {};
+  DIMS.forEach(function (d) { BYKEY[d[0]] = d; });
+  // Categories with many small groups sort by size; the rest keep their order.
+  var BY_SIZE = {team: 1, opp: 1, player: 1, role: 1};
+
+  var by = document.getElementById("by"), fdim = document.getElementById("fdim"),
+      fval = document.getElementById("fval"), out = document.getElementById("out"),
+      summary = document.getElementById("summary");
+
+  function opt(sel, v, t) { var o = document.createElement("option"); o.value = v; o.textContent = t; sel.appendChild(o); }
+  DIMS.forEach(function (d) { opt(by, d[0], d[1]); });
+  opt(fdim, "", "All legs");
+  DIMS.forEach(function (d) { opt(fdim, d[0], d[1]); });
+
+  function groups(legs, key) {
+    var f = BYKEY[key][2], m = {};
+    legs.forEach(function (l) {
+      var g = f(l); if (!g) return;
+      (m[g[0]] = m[g[0]] || {label: g[0], sort: g[1], legs: []}).legs.push(l);
+    });
+    var arr = Object.keys(m).map(function (k) { return m[k]; });
+    arr.sort(BY_SIZE[key]
+      ? function (a, b) { return b.legs.length - a.legs.length || (a.label < b.label ? -1 : 1); }
+      : function (a, b) { return a.sort < b.sort ? -1 : a.sort > b.sort ? 1 : 0; });
+    return arr;
+  }
+
+  function fillValues() {
+    fval.innerHTML = "";
+    if (!fdim.value) { fval.disabled = true; return; }
+    fval.disabled = false;
+    groups(LEGS, fdim.value).forEach(function (g) { opt(fval, g.label, g.label + " (" + g.legs.length + ")"); });
+  }
+
+  function filtered() {
+    if (!fdim.value || !fval.value) return LEGS;
+    var f = BYKEY[fdim.value][2];
+    return LEGS.filter(function (l) { var g = f(l); return g && g[0] === fval.value; });
+  }
+
+  function stats(legs) {
+    var n = legs.length, h = 0, pl = 0, be = 0;
+    legs.forEach(function (l) {
+      if (l.hit) { h++; pl += payout(l.price); } else pl -= 100;
+      be += l.bp;
+    });
+    return {n: n, h: h, rate: n ? h / n : 0, be: n ? be / n : 0, pl: pl};
+  }
+  function pct(x) { return (x * 100).toFixed(1) + "%"; }
+  function money(x) { var r = Math.round(x); return (r > 0 ? "+$" : r < 0 ? "−$" : "$") + Math.abs(r); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+
+  function legRows(legs) {
+    return legs.slice().sort(function (a, b) {
+      return b.season - a.season || b.week - a.week || (a.p < b.p ? -1 : 1);
+    }).map(function (l) {
+      return '<tr data-inspect-id="explore-leg"><td><a href="/' + esc(l.file) + '">' + esc(l.p) + '</a>' +
+        '<span class="meta">' + esc(l.tm + " " + (l.role || "") + " · W" + l.week + " " + l.game) + '</span></td>' +
+        '<td>o' + l.line + ' ' + (SHORT[l.s] || l.s) + '</td>' +
+        '<td>' + l.price + '</td>' +
+        '<td><span class="mark ' + (l.hit ? "hit" : "miss") + '">' + l.actual + '</span></td></tr>';
+    }).join("");
+  }
+
+  function render() {
+    var legs = filtered(), all = stats(legs), gs = groups(legs, by.value);
+    summary.innerHTML = "<b>" + all.h + "/" + all.n + "</b> hit (" + pct(all.rate) +
+      ") against <b>" + pct(all.be) + "</b> needed · $100 each: <b>" + money(all.pl) + "</b>" +
+      (D.pending ? " · " + D.pending + " legs still waiting on a final score" : "");
+    if (!legs.length) { out.innerHTML = '<p class="empty">No graded legs match.</p>'; return; }
+    var rows = gs.map(function (g, i) {
+      var s = stats(g.legs), cls = s.rate > s.be ? "up" : "down", thin = s.n < 10;
+      return '<tr class="grp' + (thin ? " thin" : "") + '" tabindex="0" aria-expanded="false" data-i="' + i +
+        '" data-inspect-id="explore-group-row">' +
+        '<td title="' + esc(g.label) + '">' + esc(g.label) + '</td>' +
+        '<td>' + s.n + '</td><td>' + s.h + '</td>' +
+        '<td><span class="' + cls + '">' + pct(s.rate) + '</span>' +
+        '<div class="bar"><i class="' + (thin ? "" : cls) + '" style="width:' + (s.rate * 100) + '%"></i>' +
+        '<b style="left:calc(' + (s.be * 100) + '% - 1px)"></b></div></td>' +
+        '<td>' + pct(s.be) + '</td>' +
+        '<td class="pl ' + (s.pl >= 0 ? "up" : "down") + '">' + money(s.pl) + '</td></tr>';
+    }).join("");
+    out.innerHTML = '<table data-inspect-id="explore-groups"><colgroup><col><col class="c-n"><col class="c-h">' +
+      '<col class="c-r"><col class="c-be"><col class="c-pl"></colgroup>' +
+      '<thead><tr><th>' + esc(BYKEY[by.value][1]) + '</th><th>Legs</th><th>Hits</th><th>Hit rate</th>' +
+      '<th>Needed</th><th>$100 each</th></tr></thead><tbody>' + rows + '</tbody></table>';
+    out._groups = gs;
+  }
+
+  function toggle(tr) {
+    var open = tr.getAttribute("aria-expanded") === "true";
+    var next = tr.nextElementSibling;
+    if (open) { if (next && next.classList.contains("legs")) next.remove(); tr.setAttribute("aria-expanded", "false"); return; }
+    var g = out._groups[+tr.getAttribute("data-i")];
+    var x = document.createElement("tr");
+    x.className = "legs";
+    x.setAttribute("data-inspect-id", "explore-group-legs");
+    x.innerHTML = '<td colspan="6"><table><colgroup><col><col class="l-st"><col class="l-pr"><col class="l-ac"></colgroup>' +
+      '<tbody>' + legRows(g.legs) + '</tbody></table></td>';
+    tr.after(x);
+    tr.setAttribute("aria-expanded", "true");
+  }
+  out.addEventListener("click", function (e) {
+    if (e.target.closest("a")) return;
+    var tr = e.target.closest("tr.grp"); if (tr) toggle(tr);
+  });
+  out.addEventListener("keydown", function (e) {
+    var tr = e.target.closest("tr.grp");
+    if (tr && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); toggle(tr); }
+  });
+
+  // The chosen cut survives a reload. Wrapped: blocked storage must not
+  // cost the page, it just forgets.
+  function save() { try { localStorage.setItem("nflprops-explore", JSON.stringify({by: by.value, fd: fdim.value, fv: fval.value})); } catch (e) {} }
+  try {
+    var st = JSON.parse(localStorage.getItem("nflprops-explore") || "null");
+    if (st) {
+      if (BYKEY[st.by]) by.value = st.by;
+      if (st.fd && BYKEY[st.fd]) { fdim.value = st.fd; fillValues(); fval.value = st.fv;
+        if (fval.selectedIndex < 0) fval.selectedIndex = 0; }
+    }
+  } catch (e) {}
+  by.addEventListener("change", function () { save(); render(); });
+  fdim.addEventListener("change", function () { fillValues(); save(); render(); });
+  fval.addEventListener("change", function () { save(); render(); });
+  render();
+})();
+</script>
