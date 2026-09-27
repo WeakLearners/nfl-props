@@ -3,15 +3,24 @@
 (targets, carries, receiving_yards, rushing_yards) as versioned artifacts,
 same convention as scripts/retrain_td_models.py.
 
-WHY RIDGE, NOT LIGHTGBM. phase3-model.md's "PHASE 3 -- CLOSED" table
-labels all four "model: LightGBM" and "ships: yes", scored against
-baseline only. Decision #20, recorded the same day, is the one that
-actually resolves which model ships: LightGBM (rung 3) failed to beat
+WHY RIDGE, NOT LIGHTGBM -- for four of the five stats. phase3-model.md's
+"PHASE 3 -- CLOSED" table labels all four "model: LightGBM" and "ships: yes",
+scored against baseline only. Decision #20, recorded the same day, is the one
+that actually resolves which model ships: LightGBM (rung 3) failed to beat
 ridge (rung 2) by the required 3% margin on all four stats -- and lost
 outright on rushing yards in 2025 (-1.28%). Decision #20's own words:
 "Ridge is the production model for targets, carries, receiving yards and
-rushing yards." This script ships that model, not the one the stale table
-names.
+rushing yards." This script ships that model for those four, not the one the
+stale table names.
+
+PASSING_YARDS IS THE EXCEPTION (decision #40, adopted 2026-09-27). Rung 3 had
+never been run for passing_yards until scripts/rung3_passing_lightgbm.py --
+it wasn't part of decision #20's four-stat comparison because passing_yards
+didn't exist as a model until decision #39. That experiment found LightGBM
+beats ridge 5/5 seasons, 2021-2025 (pooled MAE 59.85 vs 62.56, +4.3%), on
+rung3_lightgbm.py's fixed, untuned hyperparameters. Still informational-only
+(engine/v1.json's "official_engine" for passing_yards stays project.py) --
+this only changes which model produces the second, informational p3 number.
 
 WHAT'S FIT. rung2_ridge.py's exact "raw" variant (no log1p -- decision #18
 found the transform wasn't the lever) and the "direct" final-stat route,
@@ -42,10 +51,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import joblib
+import lightgbm as lgb
 import numpy as np
 import pandas as pd
 
 from rung2_ridge import load, add_derived, build_design, SPECS, ALPHAS
+from rung3_lightgbm import PARAMS as LGBM_PARAMS
 from sklearn.linear_model import Ridge, RidgeCV
 
 LATEST_COMPLETE_SEASON = 2025
@@ -98,6 +109,15 @@ def fit_ship(Xtr, ytr):
             "median": med, "mu": mu, "sd": sd}
 
 
+def fit_ship_lightgbm(Xtr, ytr):
+    """Decision #40: passing_yards ships as LightGBM instead. No scaling, no
+    imputation -- same reasoning as rung3_lightgbm.py's docstring point 1;
+    fixed hyperparameters imported from there too, not re-tuned here."""
+    m = lgb.LGBMRegressor(objective="regression_l1", **LGBM_PARAMS)
+    m.fit(Xtr.to_numpy(float), ytr)
+    return {"model": m}
+
+
 def main():
     df = add_derived(load())
     df = df[df.season.between(2019, 2025)].reset_index(drop=True)  # 2026 never enters
@@ -116,7 +136,8 @@ def main():
         "trained_at": datetime.now(timezone.utc).isoformat(),
         "git_commit": git_commit(),
         "train_seasons": TRAIN_SEASONS,
-        "model": "ridge (decision #20 -- LightGBM/rung3 failed to beat this by its 3% bar)",
+        "model": "ridge (decision #20 -- LightGBM/rung3 failed to beat this by its 3% bar); "
+                 "passing_yards is LightGBM (decision #40, adopted 2026-09-27)",
         "holdout": "2026 -- not fit, not scored, not read by this script (decision #24)",
         "stats": {},
     }
@@ -126,23 +147,41 @@ def main():
         tr = in_tr & df[screen].to_numpy() & df[tcol].notna().to_numpy()
         n = int(tr.sum())
         Xtr, ytr = X_use[tr], df.loc[tr, tcol].to_numpy(float)
-        fit = fit_ship(Xtr, ytr)
 
         path = OUT_DIR / f"{stat}.pkl"
-        joblib.dump({
-            "model": fit["model"], "columns": list(X_use.columns), "screen": screen,
-            "median": fit["median"], "mu": fit["mu"], "sd": fit["sd"], "alpha": fit["alpha"],
-        }, path)
+        if stat == "passing_yards":
+            fit = fit_ship_lightgbm(Xtr, ytr)
+            joblib.dump({
+                "model": fit["model"], "columns": list(X_use.columns), "screen": screen,
+                "model_type": "lightgbm",
+            }, path)
+            p = fit["model"].predict(Xtr.to_numpy(float))
+            alpha_report = None
+        else:
+            fit = fit_ship(Xtr, ytr)
+            # No "model_type" key here, unlike the lightgbm branch below --
+            # keeping this dict's exact prior shape means targets/carries/
+            # receiving_yards/rushing_yards.pkl stay byte-identical to before
+            # decision #40 touched anything (verified below by hash). Absence
+            # of the key is what vol_predict.py's serving branch treats as
+            # "ridge" -- see its `.get("model_type") == "lightgbm"` check.
+            joblib.dump({
+                "model": fit["model"], "columns": list(X_use.columns), "screen": screen,
+                "median": fit["median"], "mu": fit["mu"], "sd": fit["sd"], "alpha": fit["alpha"],
+            }, path)
+            p = fit["model"].predict(((Xtr.fillna(fit["median"]).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+                                        - fit["mu"]) / fit["sd"]).to_numpy(float))
+            alpha_report = fit["alpha"]
 
-        p = fit["model"].predict(((Xtr.fillna(fit["median"]).replace([np.inf, -np.inf], np.nan).fillna(0.0)
-                                    - fit["mu"]) / fit["sd"]).to_numpy(float))
         mae_insample = float(np.abs(ytr - p).mean())
         meta["stats"][stat] = {
-            "n_train_rows": n, "alpha": fit["alpha"],
+            "n_train_rows": n, "alpha": alpha_report,
             "train_mae_insample": round(mae_insample, 4),
             "artifact": str(path),
+            "model_type": "lightgbm" if stat == "passing_yards" else "ridge",
         }
-        print(f"{stat:<17} n={n:,}  alpha={fit['alpha']:.1f}  in-sample MAE={mae_insample:.4f}  -> {path.name}")
+        alpha_txt = f"alpha={alpha_report:.1f}" if alpha_report is not None else "lightgbm"
+        print(f"{stat:<17} n={n:,}  {alpha_txt}  in-sample MAE={mae_insample:.4f}  -> {path.name}")
 
     # receptions: no model of its own -- served as targets.pkl x catch_rate_career
     # (decision #38). Only the fallback fill value for a missing catch rate is

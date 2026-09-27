@@ -67,8 +67,15 @@ def phase3_vol(season, week):
     for stat, path in paths.items():
         art = joblib.load(path)
         Xs = X.reindex(columns=art["columns"], fill_value=0.0)
-        Xs = Xs.fillna(art["median"]).replace([np.inf, -np.inf], np.nan).fillna(0.0)
-        Xs = ((Xs - art["mu"]) / art["sd"]).to_numpy(float)
+        if art.get("model_type") == "lightgbm":
+            # Decision #40 (passing_yards only): no scaling, no imputation --
+            # LightGBM routes missing values down their own branch natively,
+            # same as rung3_lightgbm.py's training-time protocol. Standardizing
+            # here would score it on a different input than it was fit on.
+            Xs = Xs.replace([np.inf, -np.inf], np.nan).to_numpy(float)
+        else:
+            Xs = Xs.fillna(art["median"]).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+            Xs = ((Xs - art["mu"]) / art["sd"]).to_numpy(float)
         # Clipped at serving time only -- a real value can't be negative.
         # The head-to-head script (vol_head_to_head.py) leaves predictions
         # raw, matching rung2_ridge.py's own unclipped validation protocol,

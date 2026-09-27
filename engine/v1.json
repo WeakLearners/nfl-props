@@ -27,10 +27,10 @@
       "model_artifact": null,
       "artifact_sha256": null,
       "informational_only": {
-        "phase3_engine": "ridge, scripts/retrain_vol_models.py -> data/shipping/passing_yards.pkl (decision #39, 2026-09-24). Trained on features.db's QB passing features (pass_attempts/completions/yards_per_attempt/completion_rate/pass_adot, l4/l8/career) added the same day, plus the shared usage/context feature set. build_design(..., include_passing=True) is required to serve or refit this artifact -- the default (False) excludes those columns so the other four vol/yardage models' design matrices stay exactly as they were before #39 (see rung2_ridge.PASSING_COLS).",
-        "phase3_artifact_sha256": "1eaf25b6a51c97d8f6f90e82069d5397aba5032985a0f171be3d9af018543094",
+        "phase3_engine": "lightgbm, scripts/retrain_vol_models.py -> data/shipping/passing_yards.pkl (decision #40, adopted 2026-09-27, superseding decision #39's ridge artifact). Same feature set as before (build_design(..., include_passing=True)); no scaling/imputation -- LightGBM routes missing values down their own branch natively (fixed rung3_lightgbm.py PARAMS, not tuned on these seasons). Still informational-only: official_engine for passing_yards stays project.py, unchanged.",
+        "phase3_artifact_sha256": "94f82c72cba944f9745c90af7d7e868ff7cda5e846e0a9d258fcc09ce01ea1bf",
         "phase3_train_seasons": [2019, 2020, 2021, 2022, 2023, 2024, 2025],
-        "head_to_head_result": "ridge wins, +6.76% MAE lift over project.py, 5/5 seasons (decision #39, scripts/passing_head_to_head.py, 2021-2025 walk-forward, n=3,107; project.py 67.09 MAE vs ridge 62.56 MAE). Shipped additively per decision #37's posture regardless -- shown as a second number on the card, never replacing project.py's own."
+        "head_to_head_result": "lightgbm beats ridge 5/5 seasons and the old engine 5/5 seasons (decision #40, scripts/rung3_passing_lightgbm.py, 2021-2025 walk-forward, same population as decision #39's passing_head_to_head.py: n=3,107 pooled; lightgbm 59.85 MAE vs ridge 62.56 (+4.3%) vs project.py 67.09 (+10.8%)). Shipped additively per decision #37's posture regardless -- shown as a second number on the card, never replacing project.py's own."
       }
     },
     "completions": {

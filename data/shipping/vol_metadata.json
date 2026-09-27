@@ -1,6 +1,6 @@
 {
-  "trained_at": "2026-09-25T00:27:06.401151+00:00",
-  "git_commit": "8b894d6",
+  "trained_at": "2026-09-27T12:52:16.695863+00:00",
+  "git_commit": "a0a22e6",
   "train_seasons": [
     2019,
     2020,
@@ -10,38 +10,43 @@
     2024,
     2025
   ],
-  "model": "ridge (decision #20 -- LightGBM/rung3 failed to beat this by its 3% bar)",
+  "model": "ridge (decision #20 -- LightGBM/rung3 failed to beat this by its 3% bar); passing_yards is LightGBM (decision #40, adopted 2026-09-27)",
   "holdout": "2026 -- not fit, not scored, not read by this script (decision #24)",
   "stats": {
     "targets": {
       "n_train_rows": 17746,
       "alpha": 562.341325190349,
       "train_mae_insample": 2.1195,
-      "artifact": "/Users/Sean/Code/nfl-props/data/shipping/targets.pkl"
+      "artifact": "/Users/Sean/Code/nfl-props/data/shipping/targets.pkl",
+      "model_type": "ridge"
     },
     "carries": {
       "n_train_rows": 10603,
       "alpha": 316.22776601683796,
       "train_mae_insample": 3.5063,
-      "artifact": "/Users/Sean/Code/nfl-props/data/shipping/carries.pkl"
+      "artifact": "/Users/Sean/Code/nfl-props/data/shipping/carries.pkl",
+      "model_type": "ridge"
     },
     "receiving_yards": {
       "n_train_rows": 17746,
       "alpha": 1000.0,
       "train_mae_insample": 22.916,
-      "artifact": "/Users/Sean/Code/nfl-props/data/shipping/receiving_yards.pkl"
+      "artifact": "/Users/Sean/Code/nfl-props/data/shipping/receiving_yards.pkl",
+      "model_type": "ridge"
     },
     "rushing_yards": {
       "n_train_rows": 10603,
       "alpha": 562.341325190349,
       "train_mae_insample": 21.1808,
-      "artifact": "/Users/Sean/Code/nfl-props/data/shipping/rushing_yards.pkl"
+      "artifact": "/Users/Sean/Code/nfl-props/data/shipping/rushing_yards.pkl",
+      "model_type": "ridge"
     },
     "passing_yards": {
       "n_train_rows": 4501,
-      "alpha": 177.82794100389228,
-      "train_mae_insample": 61.256,
-      "artifact": "/Users/Sean/Code/nfl-props/data/shipping/passing_yards.pkl"
+      "alpha": null,
+      "train_mae_insample": 39.7147,
+      "artifact": "/Users/Sean/Code/nfl-props/data/shipping/passing_yards.pkl",
+      "model_type": "lightgbm"
     },
     "receptions": {
       "n_train_rows": 17746,
