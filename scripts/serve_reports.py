@@ -558,7 +558,15 @@ _LEG_CACHE = {}
 
 
 def shortlist(season, week):
-    """Every shortlisted leg for one week, with its game and kickoff attached.
+    """Every shortlisted leg for one week, with its game and kickoff attached."""
+    return [r for r in lined(season, week) if r.get("pick")]
+
+
+def lined(season, week):
+    """Every leg a book priced for one week, picked or passed on.
+
+    A passed-on leg is graded by the same rule as a pick; the explore page
+    keeps the two apart so a hit rate never describes legs nobody bet.
 
     Cached on the set of report files and their modification times, so a
     regenerated report is picked up on the next request and an unchanged week
@@ -589,9 +597,9 @@ def shortlist(season, week):
         away, home = m.group(3), m.group(4)
         kick = kicks.get((season, week, away, home))
         for r in rows:
-            # A leg with no price was projected but never shortlisted. It has
-            # no line to rank and no odds to compare, so it is not a pick.
-            if not r.get("pick") or r.get("price") is None:
+            # A leg with no price had no book line, so there is nothing to
+            # grade it against.
+            if r.get("price") is None:
                 continue
             r["game"] = f"{away} @ {home}"
             r["file"] = f
@@ -1152,11 +1160,11 @@ def explore_html():
                 weeks.add((int(m.group(1)), int(m.group(2))))
     except FileNotFoundError:
         pass
-    legs, pending = [], {"short": 0, "td": 0}
+    legs, pending = [], {"short": 0, "passed": 0, "td": 0}
     for season, week in sorted(weeks):
-        for r in grade_legs(season, week, [dict(x) for x in shortlist(season, week)]):
+        for r in grade_legs(season, week, [dict(x) for x in lined(season, week)]):
             if r["hit"] is None:
-                pending["short"] += 1
+                pending["short" if r.get("pick") else "passed"] += 1
                 continue
             row = {k: r.get(k) for k in EXPLORE_FIELDS}
             row["season"], row["week"] = season, week
