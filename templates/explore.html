@@ -105,7 +105,9 @@
   <div id="out" data-inspect-id="explore-table"></div>
 
   <footer data-inspect-id="explore-footer">A leg is graded once its game is final, by the
-    same rule the listing uses: the real number beats the line. Rows under ten graded legs
+    same rule the listing uses: the real number beats the line. An anytime-TD pick hits on a
+    rushing or receiving touchdown; passing TDs don't count. TD picks without a book price
+    count toward hit rate only. Rows under ten graded legs
     are greyed out &mdash; at that size a hit rate is mostly luck. Prices are what the report
     held when it was generated.</footer>
 </div>
@@ -116,9 +118,10 @@
 
   var STAT = {receiving_yards: "Receiving yards", rushing_yards: "Rushing yards",
               passing_yards: "Passing yards", receptions: "Receptions",
-              completions: "Completions"};
+              completions: "Completions", anytime_td: "Anytime TD"};
   var SHORT = {receiving_yards: "rec yds", rushing_yards: "rush yds",
-               passing_yards: "pass yds", receptions: "rec", completions: "comp"};
+               passing_yards: "pass yds", receptions: "rec", completions: "comp",
+               anytime_td: "anytime TD"};
   var DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   function payout(p) { return p < 0 ? 10000 / -p : p; }
@@ -132,6 +135,8 @@
   // Each dimension turns one leg into [label, sortKey]. Keys that are null
   // leave the leg out of that grouping rather than inventing a bucket.
   var DIMS = [
+    ["market", "Market", function (l) {
+      return l.s === "anytime_td" ? ["Anytime TD", 1] : ["Yards & catches", 0]; }],
     ["stat", "Stat", function (l) { return [STAT[l.s] || l.s, l.s]; }],
     ["pos", "Position", function (l) {
       var p = (l.role || "").replace(/\d+$/, ""); return p ? [p, p] : null; }],
@@ -145,12 +150,15 @@
       var key = ({Thu: 0, Fri: 1, Sat: 2, Sun: 3, Mon: 4})[day];
       return [day + " " + part, (key == null ? 5 : key) * 3 + (h < 15 ? 0 : h < 19 ? 1 : 2)]; }],
     ["price", "Price", function (l) {
+      if (l.price == null) return null;
+      if (l.price > 0) return ["Plus money", -1];
       return band(-l.price, [200, 250, 300, 400],
         ["Under -200", "-200 to -249", "-250 to -299", "-300 to -399", "-400 or shorter"]); }],
     ["conf", "Model confidence", function (l) {
       return band(l.mp * 100, [65, 70, 75, 80],
         ["Under 65%", "65–70%", "70–75%", "75–80%", "80%+"]); }],
     ["edge", "Model vs book", function (l) {
+      if (l.bp == null) return null;
       return band((l.mp - l.bp) * 100, [0, 3, 6],
         ["Model below book", "0–3 pts above", "3–6 pts above", "6+ pts above"]); }],
     ["def", "Opponent defense", function (l) {
@@ -203,12 +211,16 @@
   }
 
   function stats(legs) {
-    var n = legs.length, h = 0, pl = 0, be = 0;
+    // Needed and $100 each only count legs that carried a price. A TD
+    // marker with no book number has nothing to pay out or to beat.
+    var n = legs.length, h = 0, pl = 0, be = 0, np = 0;
     legs.forEach(function (l) {
-      if (l.hit) { h++; pl += payout(l.price); } else pl -= 100;
-      be += l.bp;
+      if (l.hit) h++;
+      if (l.price == null || l.bp == null) return;
+      np++; be += l.bp;
+      pl += l.hit ? payout(l.price) : -100;
     });
-    return {n: n, h: h, rate: n ? h / n : 0, be: n ? be / n : 0, pl: pl};
+    return {n: n, h: h, rate: n ? h / n : 0, np: np, be: np ? be / np : null, pl: np ? pl : null};
   }
   function pct(x) { return (x * 100).toFixed(1) + "%"; }
   function money(x) { var r = Math.round(x); return (r > 0 ? "+$" : r < 0 ? "−$" : "$") + Math.abs(r); }
@@ -220,29 +232,32 @@
     }).map(function (l) {
       return '<tr data-inspect-id="explore-leg"><td><a href="/' + esc(l.file) + '">' + esc(l.p) + '</a>' +
         '<span class="meta">' + esc(l.tm + " " + (l.role || "") + " · W" + l.week + " " + l.game) + '</span></td>' +
-        '<td>o' + l.line + ' ' + (SHORT[l.s] || l.s) + '</td>' +
-        '<td>' + l.price + '</td>' +
+        '<td>' + (l.s === "anytime_td" ? "anytime TD" : 'o' + l.line + ' ' + (SHORT[l.s] || l.s)) + '</td>' +
+        '<td>' + (l.price == null ? "—" : (l.price > 0 ? "+" : "") + l.price) + '</td>' +
         '<td><span class="mark ' + (l.hit ? "hit" : "miss") + '">' + l.actual + '</span></td></tr>';
     }).join("");
   }
 
   function render() {
     var legs = filtered(), all = stats(legs), gs = groups(legs, by.value);
-    summary.innerHTML = "<b>" + all.h + "/" + all.n + "</b> hit (" + pct(all.rate) +
-      ") against <b>" + pct(all.be) + "</b> needed · $100 each: <b>" + money(all.pl) + "</b>" +
+    summary.innerHTML = "<b>" + all.h + "/" + all.n + "</b> hit (" + pct(all.rate) + ")" +
+      (all.np ? " against <b>" + pct(all.be) + "</b> needed · $100 each: <b>" + money(all.pl) + "</b>" : "") +
+      (all.np && all.np < all.n ? " · " + (all.n - all.np) + " unpriced legs left out of those two" : "") +
       (D.pending ? " · " + D.pending + " legs still waiting on a final score" : "");
     if (!legs.length) { out.innerHTML = '<p class="empty">No graded legs match.</p>'; return; }
     var rows = gs.map(function (g, i) {
-      var s = stats(g.legs), cls = s.rate > s.be ? "up" : "down", thin = s.n < 10;
+      var s = stats(g.legs), thin = s.n < 10;
+      var cls = s.be == null ? "" : s.rate > s.be ? "up" : "down";
       return '<tr class="grp' + (thin ? " thin" : "") + '" tabindex="0" aria-expanded="false" data-i="' + i +
         '" data-inspect-id="explore-group-row">' +
         '<td title="' + esc(g.label) + '">' + esc(g.label) + '</td>' +
         '<td>' + s.n + '</td><td>' + s.h + '</td>' +
         '<td><span class="' + cls + '">' + pct(s.rate) + '</span>' +
         '<div class="bar"><i class="' + (thin ? "" : cls) + '" style="width:' + (s.rate * 100) + '%"></i>' +
-        '<b style="left:calc(' + (s.be * 100) + '% - 1px)"></b></div></td>' +
-        '<td>' + pct(s.be) + '</td>' +
-        '<td class="pl ' + (s.pl >= 0 ? "up" : "down") + '">' + money(s.pl) + '</td></tr>';
+        (s.be == null ? "" : '<b style="left:calc(' + (s.be * 100) + '% - 1px)"></b>') + '</div></td>' +
+        '<td>' + (s.be == null ? "—" : pct(s.be)) + '</td>' +
+        '<td class="pl ' + (s.pl == null ? "" : s.pl >= 0 ? "up" : "down") + '">' +
+        (s.pl == null ? "—" : money(s.pl)) + '</td></tr>';
     }).join("");
     out.innerHTML = '<table data-inspect-id="explore-groups"><colgroup><col><col class="c-n"><col class="c-h">' +
       '<col class="c-r"><col class="c-be"><col class="c-pl"></colgroup>' +

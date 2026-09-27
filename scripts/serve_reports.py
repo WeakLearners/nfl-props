@@ -1078,6 +1078,61 @@ EXPLORE_FIELDS = ("p", "tm", "vs", "role", "s", "line", "price", "mp", "bp",
                   "def", "pick", "game", "kick", "hit", "actual", "file")
 
 
+def td_legs(season, week):
+    """The week's anytime-TD markers as graded legs, shaped like the others.
+
+    One marker per game: the likeliest scorer. It hits when the player scored
+    a rushing or receiving touchdown -- passing TDs do not count, the same as
+    a book's anytime-TD market. A marker carries a price only when the book
+    number kept its vig (basis model+book_vig); that probability is exactly
+    what the price implied, so the price is recovered from it. Without one,
+    the leg counts toward hit rate but not toward Needed or $100 each.
+    Returns (graded legs, count still waiting on a final score).
+    """
+    fname = os.path.join(ROOT, f"td_markers_{season}_w{week}.json")
+    try:
+        marks = json.loads(open(fname).read())
+    except (FileNotFoundError, ValueError):
+        return [], 0
+    done = outcomes(season, week)[1]
+    scored = {}
+    if done and name_key is not None:
+        try:
+            db = sqlite3.connect(f"file:{DB}?mode=ro", uri=True)
+            for n, ru, re_ in db.execute(
+                    "SELECT player_display_name, rushing_tds, receiving_tds FROM player_games "
+                    "WHERE season=? AND week=? AND season_type='REG'", (season, week)):
+                k = name_key(n)
+                if k:
+                    scored[k] = (ru or 0) + (re_ or 0)
+            db.close()
+        except Exception as e:  # noqa: BLE001 -- ungraded beats a 500
+            sys.stderr.write(f"td outcomes unavailable: {e}\n")
+    kicks = kickoffs()
+    legs, waiting = [], 0
+    for gk, m in marks.items():
+        away, home = gk.split("-")
+        if f"{away}@{home}" not in done:
+            waiting += 1
+            continue
+        tds = scored.get(name_key(m["player"])) if name_key else None
+        if tds is None:  # no stat line: did not play, a book would void it
+            continue
+        bp = m.get("book_p") if m.get("basis") == "model+book_vig" else None
+        price = None
+        if bp:
+            price = round(-100 * bp / (1 - bp)) if bp >= 0.5 else round(100 * (1 - bp) / bp)
+        legs.append({
+            "p": m["player"], "tm": m.get("team"), "role": m.get("position"),
+            "vs": home if m.get("team") == away else away,
+            "s": "anytime_td", "line": 0.5, "price": price, "mp": m.get("model_p"),
+            "bp": bp, "def": None, "pick": None, "game": f"{away} @ {home}",
+            "kick": kicks.get((season, week, away, home)), "hit": tds > 0,
+            "actual": tds, "file": f"report_{season}_w{week}_{away}-{home}.html",
+            "season": season, "week": week})
+    return legs, waiting
+
+
 def explore_html():
     """Every graded leg across every week, handed to a page that groups them.
 
@@ -1103,6 +1158,9 @@ def explore_html():
             row = {k: r.get(k) for k in EXPLORE_FIELDS}
             row["season"], row["week"] = season, week
             legs.append(row)
+        tds, waiting = td_legs(season, week)
+        legs += tds
+        pending += waiting
     blob = json.dumps({"legs": legs, "pending": pending}).replace("</", "<\\/")
     head = HEAD.replace("NFL Props \u2014 reports", "NFL Props \u2014 explore").format()
     body = open(EXPLORE_TPL, encoding="utf-8").read()
