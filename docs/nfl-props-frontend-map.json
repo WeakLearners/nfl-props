@@ -1066,7 +1066,7 @@
           "id": "explore-group-by",
           "label": "Group by select",
           "kind": "input",
-          "description": "Chooses the category the graded legs are cut by: stat, position, depth role, week, kickoff window, price band, model confidence band, model vs book, opponent defense (the report's def multiplier: 1.0 = league average for that position), shortlist rank, team, opponent, player. The choice persists in localStorage 'nflprops-explore'.",
+          "description": "Chooses the category the graded legs are cut by: market (yards & catches vs anytime TD), stat, position, depth role, week, kickoff window, price band, model confidence band, model vs book, opponent defense (the report's def multiplier: 1.0 = league average for that position), shortlist rank, team, opponent, player. The choice persists in localStorage 'nflprops-explore'.",
           "locate": {
             "path": "templates/explore.html:94",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-group-by\"' templates/explore.html"
@@ -1118,7 +1118,7 @@
           "kind": "table",
           "description": "One row per group: legs, hits, hit rate with a bar (tick = needed), needed, $100 each. Built at runtime.",
           "locate": {
-            "path": "templates/explore.html:247",
+            "path": "templates/explore.html:262",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-groups\"' templates/explore.html"
           }
         },
@@ -1128,7 +1128,7 @@
           "kind": "row",
           "description": "Click or Enter expands the legs in that group. Greyed (tr.thin) under 10 legs. Team/opponent/player/depth role sort by size; the rest keep natural band order.",
           "locate": {
-            "path": "templates/explore.html:238",
+            "path": "templates/explore.html:252",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-group-row\"' templates/explore.html"
           }
         },
@@ -1138,7 +1138,7 @@
           "kind": "row",
           "description": "Inserted under a group row by toggle(); lists each leg newest week first.",
           "locate": {
-            "path": "templates/explore.html:261",
+            "path": "templates/explore.html:276",
             "grep": "grep -n -F -- '\"explore-group-legs\"' templates/explore.html"
           }
         },
@@ -1148,7 +1148,7 @@
           "kind": "row",
           "description": "Player (links to its report), team role, week and game; the line, price, and the actual number as a HIT/MISS pill.",
           "locate": {
-            "path": "templates/explore.html:221",
+            "path": "templates/explore.html:233",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-leg\"' templates/explore.html"
           }
         },
