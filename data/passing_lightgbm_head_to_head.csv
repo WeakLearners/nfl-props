@@ -1,0 +1,6 @@
+season,stat,n,mae_lightgbm,mae_old_projectpy,mae_ridge_reference,lightgbm_beats_ridge,lightgbm_beats_old_engine
+2021,passing_yards,607,61.9138,68.1188,64.66,True,True
+2022,passing_yards,601,59.2042,63.3586,60.442,True,True
+2023,passing_yards,637,60.2319,67.5734,64.0952,True,True
+2024,passing_yards,630,59.7589,69.0597,62.2261,True,True
+2025,passing_yards,632,58.1767,67.205,61.3207,True,True

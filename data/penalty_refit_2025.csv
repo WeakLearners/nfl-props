@@ -1,0 +1,6 @@
+penalty,n_flagged,current_weight,fitted_weight,reliable,oof_hit_rate_current
+doubtful_or_out,1,0.6,,False,
+dnp_gt_25pct,62,0.04,-0.0066,True,
+abs_spread_gt_9,42,0.02,-0.0266,True,
+thin_history_lt6,0,0.1,,False,
+changed_team,134,0.06,0.2035,True,
