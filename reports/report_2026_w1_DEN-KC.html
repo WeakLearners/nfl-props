@@ -71,6 +71,9 @@
   .role{
     font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
     letter-spacing:.09em; padding:2px 5px; border-radius:2px; color:var(--surface);
+    /* Baseline alignment leaves the pill hanging below the name by its padding
+       plus the mono font's descent (~3px at line-height 1). Lift it by that. */
+    line-height:1; position:relative; bottom:3px;
   }
   .role.a{background:var(--den)} .role.b{background:var(--kc)}
   .name{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:19px;
