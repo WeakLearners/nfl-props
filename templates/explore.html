@@ -7,7 +7,7 @@
     font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px;
     letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3)}
   a.back:hover{color:var(--accent)}
-  .controls{display:flex; flex-wrap:wrap; gap:14px 22px; margin:26px 0 0;
+  .controls{display:flex; flex-wrap:wrap; gap:14px 22px; margin:18px 0 0;
     padding:14px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
   .ctl{display:flex; flex-direction:column; gap:5px; min-width:0}
   .ctl label{font-family:"IBM Plex Mono",monospace; font-size:10px;
@@ -79,7 +79,14 @@
      button that switches Group by to where that group lives. */
   .top{margin:18px 0 0}
   .top-h{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.14em;
-    text-transform:uppercase; color:var(--ink-3); margin:0 0 4px}
+    text-transform:uppercase; color:var(--ink-3); margin:0 0 4px; cursor:pointer;
+    list-style:none}
+  .top-h::-webkit-details-marker{display:none}
+  .top-h::before{content:"\25B8"; display:inline-block; width:14px; font-size:12px;
+    transition:transform .15s}
+  .top[open] .top-h::before{transform:rotate(90deg)}
+  .top-h:hover{color:var(--ink)}
+  .top-h:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
   .top ol{list-style:none; margin:0; padding:0}
   .top-row{all:unset; box-sizing:border-box; cursor:pointer; width:100%; display:flex;
     align-items:baseline; gap:10px; padding:7px 0; border-bottom:1px solid var(--line-soft)}
@@ -108,6 +115,10 @@
     <p class="eyebrow" data-inspect-id="explore-eyebrow">Graded picks</p>
     <h1 data-inspect-id="explore-title">Explore results</h1>
   </header>
+  <details class="top" id="topbox" open data-inspect-id="explore-top5">
+    <summary class="top-h">Top 5 groups by hit rate &middot; 20+ legs</summary>
+    <div id="top"></div>
+  </details>
   <p class="sub" data-inspect-id="explore-subtitle">Every shortlisted leg from a finished
     game, cut the way you choose. <b>All legs</b> adds the ones a book priced that the
     model didn't pick; <b>Shortlist</b> narrows to the picks. <b>Needed</b> is the hit rate at which $100 on each leg
@@ -115,6 +126,7 @@
     <b>$100 each</b> is what a flat $100 on every leg in the group would have returned.</p>
   <a class="back" href="/" data-inspect-id="explore-back">&larr; All reports</a>
 
+  <p class="summary" id="summary" data-inspect-id="explore-summary"></p>
   <div class="controls" data-inspect-id="explore-controls">
     <div class="ctl">
       <label for="kind">Picks</label>
@@ -136,8 +148,6 @@
       </div>
     </div>
   </div>
-  <p class="summary" id="summary" data-inspect-id="explore-summary"></p>
-  <div class="top" id="top" data-inspect-id="explore-top5"></div>
   <div id="out" data-inspect-id="explore-table"></div>
 
   <footer data-inspect-id="explore-footer">A leg is graded once its game is final, by the
@@ -348,7 +358,7 @@
   // Best hit rates across every grouping at once. Player is left out: it
   // splits too fine to ever reach the floor. A group that is the whole
   // current set (Position = WR while filtered to WR) says nothing, so skip it.
-  var TOP_MIN = 20, top = document.getElementById("top");
+  var TOP_MIN = 20, top = document.getElementById("top"), topbox = document.getElementById("topbox");
   function renderTop(legs) {
     var cand = [], tried = 0;
     DIMS.forEach(function (d) {
@@ -372,10 +382,9 @@
       });
       if (!twin) picked.push(c);
     });
-    var head = '<p class="top-h">Top 5 groups by hit rate &middot; ' + TOP_MIN + '+ legs</p>';
-    if (!cand.length) { top.innerHTML = head + '<p class="top-note">No group has ' + TOP_MIN +
+    if (!cand.length) { top.innerHTML = '<p class="top-note">No group has ' + TOP_MIN +
       ' graded legs yet.</p>'; return; }
-    top.innerHTML = head + '<ol>' + picked.map(function (c) {
+    top.innerHTML = '<ol>' + picked.map(function (c) {
       var cls = c.s.be == null ? "" : c.s.rate > c.s.be ? "up" : "down";
       return '<li><button type="button" class="top-row" data-by="' + c.d[0] + '">' +
         '<span class="top-dim">' + esc(c.d[1]) + '</span>' +
@@ -472,6 +481,7 @@
       localStorage.setItem("nflprops-explore", JSON.stringify({
         k: kind.value, by: by.value, fd: fdim.value, fv: fval.value,
         sc: sortState ? sortState.col : null, sd: sortState ? sortState.dir : null,
+        t: topbox.open,
       }));
     } catch (e) {}
   }
@@ -490,6 +500,8 @@
       }
     }
   } catch (e) {}
+  if (st && st.t === false) topbox.open = false;
+  topbox.addEventListener("toggle", save);
   kind.addEventListener("change", function () {
     scope(); fillValues(); sortState = null; save(); render(); });
   by.addEventListener("change", function () { sortState = null; save(); render(); });
