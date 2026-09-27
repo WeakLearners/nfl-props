@@ -20,6 +20,51 @@ from .config import require
 # knew that. A 13-game Sunday failed where a 9-game one would have passed.
 MAX_BLOCKS = 50
 
+# Per-block content limits Slack also enforces. _chunk() fixes an over-length
+# *message* by splitting it into several. None of these can be fixed that way
+# -- an oversized header or section is oversized in every message it lands
+# in -- so validate_blocks() catches them separately and post() falls back
+# to a plain-text message rather than crash on a second, different
+# "invalid_blocks" 400.
+MAX_SECTION_CHARS = 3000
+MAX_HEADER_CHARS = 150
+MAX_FIELDS = 10
+MAX_FIELD_CHARS = 2000
+
+
+def validate_blocks(blocks):
+    """Check blocks against Slack's per-block Block Kit limits.
+
+    Returns a list of human-readable problem strings; empty means clean.
+    Does not check the 50-block-per-message ceiling -- post() handles that
+    by splitting, which is a real fix, not a validation failure.
+    """
+    problems = []
+    for i, b in enumerate(blocks or []):
+        t = b.get("type")
+        if t in ("header", "section"):
+            text = b.get("text", {}).get("text", "")
+            if not text.strip():
+                problems.append(f"block {i} ({t}): empty text")
+                continue
+            limit = MAX_HEADER_CHARS if t == "header" else MAX_SECTION_CHARS
+            if len(text) > limit:
+                problems.append(
+                    f"block {i} ({t}): text is {len(text)} chars, limit {limit}")
+        if t == "section":
+            fields = b.get("fields") or []
+            if len(fields) > MAX_FIELDS:
+                problems.append(
+                    f"block {i} (section): {len(fields)} fields, limit {MAX_FIELDS}")
+            for j, f in enumerate(fields):
+                ftext = f.get("text", "")
+                if not ftext.strip():
+                    problems.append(f"block {i} field {j}: empty text")
+                elif len(ftext) > MAX_FIELD_CHARS:
+                    problems.append(
+                        f"block {i} field {j}: {len(ftext)} chars, limit {MAX_FIELD_CHARS}")
+    return problems
+
 
 def _chunk(blocks, size=MAX_BLOCKS):
     """Split blocks into postable runs, preferring to break after a divider.
@@ -65,8 +110,18 @@ def post(blocks=None, text="", webhook=None):
 
     Splits automatically past MAX_BLOCKS and posts the parts in order, so a
     big slate arrives as several messages rather than as nothing at all.
+
+    Before any of that, validate_blocks() checks the per-block limits that
+    splitting can't fix. If those fail, this posts `text` alone (no blocks)
+    instead of sending Slack something it will 400 on -- a plainer message
+    beats a launchd job that dies at the delivery step.
     """
     url = webhook or require("SLACK_WEBHOOK_URL")
+    if blocks:
+        problems = validate_blocks(blocks)
+        if problems:
+            fallback = text or "(report generated; Slack formatting failed validation -- see logs)"
+            return _post_one(url, None, fallback)
     if not blocks or len(blocks) <= MAX_BLOCKS:
         return _post_one(url, blocks, text)
     parts = _chunk(blocks)
