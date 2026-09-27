@@ -29,6 +29,13 @@
     letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3);
     text-align:right; padding:0 6px 7px; border-bottom:1px solid var(--ink)}
   th:first-child{text-align:left; padding-left:0}
+  /* Chromeless: the button carries none of its own look, it inherits the
+     th's mono/10px/uppercase entirely. The sort arrow is just trailing text
+     appended to the label, not a separate element. */
+  .sort-btn{all:unset; cursor:pointer; font:inherit; color:inherit;
+    letter-spacing:inherit; text-transform:inherit}
+  .sort-btn:hover{color:var(--ink)}
+  .sort-btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
   td{padding:9px 6px; border-bottom:1px solid var(--line-soft); text-align:right;
     font-family:"IBM Plex Mono",monospace; font-size:13px; font-variant-numeric:tabular-nums}
   td:first-child{text-align:left; padding-left:0; font-family:"Barlow Condensed",sans-serif;
@@ -259,6 +266,49 @@
   function money(x) { var r = Math.round(x); return (r > 0 ? "+$" : r < 0 ? "−$" : "$") + Math.abs(r); }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
 
+  // The six header columns, in table order. Each reads off the same (g, s)
+  // pair render() already builds per group -- g is the group, s is its
+  // stats() result -- so sorting always runs on the raw number, never the
+  // formatted "73.4%" or "—" string a reader sees.
+  var SORT_COLS = [
+    {type: "text", get: function (g, s) { return g.label; }},
+    {type: "num", get: function (g, s) { return s.n; }},
+    {type: "num", get: function (g, s) { return s.h; }},
+    {type: "num", get: function (g, s) { return s.rate; }},
+    {type: "num", get: function (g, s) { return s.be; }},
+    {type: "num", get: function (g, s) { return s.pl; }}
+  ];
+  // null = the category's own default order (natural band order, or by
+  // size for team/opp/player/role -- whatever groups() already returned).
+  // Otherwise {col, dir}, dir one of "desc"/"asc". Resets whenever Group by
+  // or Picks changes, since a column index from one grouping means nothing
+  // once the rows underneath it are a different category entirely.
+  var sortState = null;
+
+  function cmpNum(a, b, dir) {
+    var an = a == null, bn = b == null;
+    if (an || bn) return an === bn ? 0 : (an ? 1 : -1); // null always sorts last
+    return dir === "desc" ? b - a : a - b;
+  }
+  function cmpText(a, b, dir) {
+    if (a === b) return 0;
+    // "Descending" on the label column means A-to-Z -- the forward reading
+    // order, same sense as "biggest first" for the numeric columns -- not
+    // Z-to-A, which would be the numeric columns' sense of "descending"
+    // applied to letters instead of what a reader actually expects first.
+    var lt = a < b;
+    return dir === "desc" ? (lt ? -1 : 1) : (lt ? 1 : -1);
+  }
+  function onSortClick(i) {
+    if (sortState && sortState.col === i) {
+      sortState = sortState.dir === "desc" ? {col: i, dir: "asc"} : null;
+    } else {
+      sortState = {col: i, dir: "desc"};
+    }
+    save();
+    render();
+  }
+
   function legRows(legs) {
     return legs.slice().sort(function (a, b) {
       return b.season - a.season || b.week - a.week || (a.p < b.p ? -1 : 1);
@@ -279,8 +329,19 @@
       (D.pending[kind.value] ? " · " + D.pending[kind.value] + " still waiting on a final score, " +
         "season-wide -- not scoped to the group or filter above" : "");
     if (!legs.length) { out.innerHTML = '<p class="empty">No graded legs match.</p>'; return; }
-    var rows = gs.map(function (g, i) {
-      var s = stats(g.legs), thin = s.n < 10;
+    // (g, s) pairs, default order first -- groups() already carries the
+    // category's own natural/by-size order, which sortState === null falls
+    // straight back to.
+    var rowsData = gs.map(function (g) { return {g: g, s: stats(g.legs)}; });
+    if (sortState) {
+      var col = SORT_COLS[sortState.col], dir = sortState.dir;
+      rowsData = rowsData.slice().sort(function (a, b) {
+        var av = col.get(a.g, a.s), bv = col.get(b.g, b.s);
+        return col.type === "text" ? cmpText(av, bv, dir) : cmpNum(av, bv, dir);
+      });
+    }
+    var rows = rowsData.map(function (row, i) {
+      var g = row.g, s = row.s, thin = s.n < 10;
       var cls = s.be == null ? "" : s.rate > s.be ? "up" : "down";
       return '<tr class="grp' + (thin ? " thin" : "") + '" tabindex="0" aria-expanded="false" data-i="' + i +
         '" data-inspect-id="explore-group-row">' +
@@ -293,11 +354,18 @@
         '<td class="pl ' + (s.pl == null ? "" : s.pl >= 0 ? "up" : "down") + '">' +
         (s.pl == null ? "—" : money(s.pl)) + '</td></tr>';
     }).join("");
+    var HEADS = [esc(BYKEY[by.value][1]), "Legs", "Hits", "Hit rate", "Needed", "$100 each"];
+    var head = HEADS.map(function (t, i) {
+      var active = sortState && sortState.col === i;
+      var ariaSort = !active ? "none" : sortState.dir === "desc" ? "descending" : "ascending";
+      var arrow = !active ? "" : sortState.dir === "desc" ? " ▼" : " ▲";
+      return '<th aria-sort="' + ariaSort + '"><button type="button" class="sort-btn" data-col="' + i +
+        '" data-inspect-id="explore-sort-header">' + t + arrow + '</button></th>';
+    }).join("");
     out.innerHTML = '<table data-inspect-id="explore-groups"><colgroup><col><col class="c-n"><col class="c-h">' +
       '<col class="c-r"><col class="c-be"><col class="c-pl"></colgroup>' +
-      '<thead><tr><th>' + esc(BYKEY[by.value][1]) + '</th><th>Legs</th><th>Hits</th><th>Hit rate</th>' +
-      '<th>Needed</th><th>$100 each</th></tr></thead><tbody>' + rows + '</tbody></table>';
-    out._groups = gs;
+      '<thead><tr>' + head + '</tr></thead><tbody>' + rows + '</tbody></table>';
+    out._groups = rowsData.map(function (row) { return row.g; });
   }
 
   function toggle(tr) {
@@ -314,6 +382,8 @@
     tr.setAttribute("aria-expanded", "true");
   }
   out.addEventListener("click", function (e) {
+    var btn = e.target.closest(".sort-btn");
+    if (btn) { onSortClick(+btn.getAttribute("data-col")); return; }
     if (e.target.closest("a")) return;
     var tr = e.target.closest("tr.grp"); if (tr) toggle(tr);
   });
@@ -324,7 +394,14 @@
 
   // The chosen cut survives a reload. Wrapped: blocked storage must not
   // cost the page, it just forgets.
-  function save() { try { localStorage.setItem("nflprops-explore", JSON.stringify({k: kind.value, by: by.value, fd: fdim.value, fv: fval.value})); } catch (e) {} }
+  function save() {
+    try {
+      localStorage.setItem("nflprops-explore", JSON.stringify({
+        k: kind.value, by: by.value, fd: fdim.value, fv: fval.value,
+        sc: sortState ? sortState.col : null, sd: sortState ? sortState.dir : null,
+      }));
+    } catch (e) {}
+  }
   var st = null;
   try { st = JSON.parse(localStorage.getItem("nflprops-explore") || "null"); } catch (e) {}
   if (st && (st.k === "td" || st.k === "short")) kind.value = st.k;
@@ -334,11 +411,15 @@
       if (BYKEY[st.by]) by.value = st.by;
       if (st.fd && BYKEY[st.fd]) { fdim.value = st.fd; fillValues(); fval.value = st.fv;
         if (fval.selectedIndex < 0) fval.selectedIndex = 0; }
+      if (Number.isInteger(st.sc) && st.sc >= 0 && st.sc < SORT_COLS.length &&
+          (st.sd === "desc" || st.sd === "asc")) {
+        sortState = {col: st.sc, dir: st.sd};
+      }
     }
   } catch (e) {}
   kind.addEventListener("change", function () {
-    scope(); fillValues(); save(); render(); });
-  by.addEventListener("change", function () { save(); render(); });
+    scope(); fillValues(); sortState = null; save(); render(); });
+  by.addEventListener("change", function () { sortState = null; save(); render(); });
   fdim.addEventListener("change", function () { fillValues(); save(); render(); });
   fval.addEventListener("change", function () { save(); render(); });
   render();
