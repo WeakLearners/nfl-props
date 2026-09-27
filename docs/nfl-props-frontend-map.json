@@ -1106,7 +1106,7 @@
           "id": "explore-summary",
           "label": "Summary line",
           "kind": "text",
-          "description": "Hits/graded, hit rate vs needed, and flat $100 return for the current filter; plus how many legs are still waiting on a final score -- that count is season-wide, not scoped to the current Picks/Group by/Only selection. Also counts legs still waiting on a final score, and void legs (game final but the player has no stat line - he didn't play, a book would void it), both per Picks option and season-wide.",
+          "description": "Hits/graded, hit rate vs needed, and flat $100 return for the current filter; plus how many legs are still waiting on a final score -- that count is season-wide, not scoped to the current Picks/Group by/Only selection. Also counts void legs (game final but the player has no stat line - he didn't play, a book would void it), also season-wide.",
           "locate": {
             "path": "templates/explore.html:120",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-summary\"' templates/explore.html"
