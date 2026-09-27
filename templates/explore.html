@@ -132,7 +132,7 @@
 </div>
 <script>
 (function () {
-  var D = window.__EXPLORE__ || {legs: [], pending: 0};
+  var D = window.__EXPLORE__ || {legs: [], pending: {}, void: {}};
   // Shortlist legs and TD picks are different products: a different model,
   // one TD pick per game, and only the shortlist feeds the parlays. Pooling
   // them made a headline that described nothing actually bet, so the page
@@ -331,7 +331,8 @@
       (all.np ? " against <b>" + pct(all.be) + "</b> needed · $100 each: <b>" + money(all.pl) + "</b>" : "") +
       (all.np && all.np < all.n ? " · " + (all.n - all.np) + " unpriced legs left out of those two" : "") +
       (D.pending[kind.value] ? " · " + D.pending[kind.value] + " still waiting on a final score, " +
-        "season-wide -- not scoped to the group or filter above" : "");
+        "season-wide -- not scoped to the group or filter above" : "") +
+      ((D.void || {})[kind.value] ? " · " + D.void[kind.value] + " void (player didn't play), left out" : "");
     if (!legs.length) { out.innerHTML = '<p class="empty">No graded legs match.</p>'; return; }
     // (g, s) pairs, default order first -- groups() already carries the
     // category's own natural/by-size order, which sortState === null falls

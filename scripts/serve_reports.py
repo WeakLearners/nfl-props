@@ -1098,13 +1098,13 @@ def td_legs(season, week):
     number kept its vig (basis model+book_vig); that probability is exactly
     what the price implied, so the price is recovered from it. Without one,
     the leg counts toward hit rate but not toward Needed or $100 each.
-    Returns (graded legs, count still waiting on a final score).
+    Returns (graded legs, count still waiting on a final score, count void).
     """
     fname = os.path.join(ROOT, f"td_markers_{season}_w{week}.json")
     try:
         marks = json.loads(open(fname).read())
     except (FileNotFoundError, ValueError):
-        return [], 0
+        return [], 0, 0
     done = outcomes(season, week)[1]
     scored = {}
     if done and name_key is not None:
@@ -1120,7 +1120,7 @@ def td_legs(season, week):
         except Exception as e:  # noqa: BLE001 -- ungraded beats a 500
             sys.stderr.write(f"td outcomes unavailable: {e}\n")
     kicks = kickoffs()
-    legs, waiting = [], 0
+    legs, waiting, void = [], 0, 0
     for gk, m in marks.items():
         away, home = gk.split("-")
         if f"{away}@{home}" not in done:
@@ -1128,6 +1128,7 @@ def td_legs(season, week):
             continue
         tds = scored.get(name_key(m["player"])) if name_key else None
         if tds is None:  # no stat line: did not play, a book would void it
+            void += 1
             continue
         bp = m.get("book_p") if m.get("basis") == "model+book_vig" else None
         price = None
@@ -1141,7 +1142,7 @@ def td_legs(season, week):
             "kick": kicks.get((season, week, away, home)), "hit": tds > 0,
             "actual": tds, "file": f"report_{season}_w{week}_{away}-{home}.html",
             "season": season, "week": week})
-    return legs, waiting
+    return legs, waiting, void
 
 
 def explore_html():
@@ -1160,21 +1161,26 @@ def explore_html():
                 weeks.add((int(m.group(1)), int(m.group(2))))
     except FileNotFoundError:
         pass
-    legs, pending = [], {"all": 0, "short": 0, "td": 0}
+    legs, pending, void = [], {"all": 0, "short": 0, "td": 0}, {"all": 0, "short": 0, "td": 0}
     for season, week in sorted(weeks):
+        done = outcomes(season, week)[1]
         for r in grade_legs(season, week, [dict(x) for x in lined(season, week)]):
             if r["hit"] is None:
-                pending["all"] += 1
+                # A final game with no stat line for the player means he
+                # didn't play. A book voids that bet, so it is not waiting.
+                bucket = void if r["game"].replace(" @ ", "@") in done else pending
+                bucket["all"] += 1
                 if r.get("pick"):
-                    pending["short"] += 1
+                    bucket["short"] += 1
                 continue
             row = {k: r.get(k) for k in EXPLORE_FIELDS}
             row["season"], row["week"] = season, week
             legs.append(row)
-        tds, waiting = td_legs(season, week)
+        tds, waiting, tvoid = td_legs(season, week)
         legs += tds
         pending["td"] += waiting
-    blob = json.dumps({"legs": legs, "pending": pending}).replace("</", "<\\/")
+        void["td"] += tvoid
+    blob = json.dumps({"legs": legs, "pending": pending, "void": void}).replace("</", "<\\/")
     head = HEAD.replace("NFL Props \u2014 reports", "NFL Props \u2014 explore").format()
     body = open(EXPLORE_TPL, encoding="utf-8").read()
     return (head.replace(CHARSET, CHARSET + f"\n<script>window.__EXPLORE__={blob};</script>", 1)
