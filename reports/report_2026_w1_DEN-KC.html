@@ -105,6 +105,7 @@
   }
   .pk-name{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:20px;
     line-height:1; flex:none}
+  .pk-name .role{margin-left:8px; display:inline-block}
   .pk-bet{color:var(--ink-2); font-size:13.5px; flex:1}
   .pk-bet b{color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums;
     font-family:"IBM Plex Mono",monospace; font-size:12.5px}
@@ -385,7 +386,7 @@ DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick).forEach(d=>{
   li.dataset.inspectId="pick-row";
   const col=d.tm===META.teamA?"var(--den)":"var(--kc)";
   li.innerHTML='<span class="pk-n">'+d.pick+'</span>'
-    +'<span class="pk-name">'+d.p+'</span>'
+    +'<span class="pk-name">'+d.p+'<span class="role '+(d.tm===META.teamA?'a':'b')+'">'+d.role+'</span></span>'
     +'<span class="pk-bet">'+d.s.replace(/_/g," ")+' over <b>'+fmt(d.line)+'</b></span>'
     +'<span class="pk-px">'+(d.price>0?"+":"")+d.price+'</span>'
     +'<span class="pk-conf" style="color:'+col+'">'+Math.round(Math.min(d.mp,d.bp)*100)+'%</span>';

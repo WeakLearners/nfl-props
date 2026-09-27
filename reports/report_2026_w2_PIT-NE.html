@@ -184,6 +184,7 @@
   .pk-name{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:20px;
     line-height:1; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis;
     white-space:nowrap}
+  .pk-name .role{margin-left:8px; display:inline-block}
   /* Fixed slot, text pushed to its right edge. The longest leg on the slate is
      "receiving yards over 59.5" at 25 characters; every shorter one ends flush
      with it, so the line and the pill always touch. */
@@ -578,7 +579,7 @@ DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick).forEach(d=>{
   li.dataset.inspectId="pick-row";
   const col=d.tm===META.teamA?"var(--den)":"var(--kc)";
   li.innerHTML='<span class="pk-n">'+d.pick+'</span>'
-    +'<span class="pk-name">'+d.p+'</span>'
+    +'<span class="pk-name">'+d.p+'<span class="role '+(d.tm===META.teamA?'a':'b')+'">'+d.role+'</span></span>'
     +'<span class="pk-bet">'+d.s.replace(/_/g," ")+' over <b>'+d.line+'</b></span>'
     +pickResult(d)
     +'<span class="pk-px">'+(d.price>0?"+":"")+d.price+'</span>'
