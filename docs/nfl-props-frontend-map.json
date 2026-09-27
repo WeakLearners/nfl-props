@@ -1063,12 +1063,22 @@
           }
         },
         {
+          "id": "explore-kind",
+          "label": "Picks select",
+          "kind": "input",
+          "description": "Scopes the whole page to one product: shortlist legs (default) or anytime-TD picks. Never both - TD picks come from a different model, one per game, and are not part of the parlay shortlist, so pooling them produced a headline describing nothing actually bet. Pending counts are per product. Persists in localStorage 'nflprops-explore'.",
+          "locate": {
+            "path": "templates/explore.html:94",
+            "grep": "grep -n -F -- 'data-inspect-id=\"explore-kind\"' templates/explore.html"
+          }
+        },
+        {
           "id": "explore-group-by",
           "label": "Group by select",
           "kind": "input",
-          "description": "Chooses the category the graded legs are cut by: market (yards & catches vs anytime TD), stat, position, depth role, week, kickoff window, price band, model confidence band, model vs book, opponent defense (the report's def multiplier: 1.0 = league average for that position), shortlist rank, team, opponent, player. The choice persists in localStorage 'nflprops-explore'.",
+          "description": "Chooses the category the graded legs are cut by: stat, position, depth role, week, kickoff window, price band, model confidence band, model vs book, opponent defense (the report's def multiplier: 1.0 = league average for that position), shortlist rank, team, opponent, player. The choice persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:94",
+            "path": "templates/explore.html:101",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-group-by\"' templates/explore.html"
           }
         },
@@ -1078,7 +1088,7 @@
           "kind": "input",
           "description": "'Only' - picks a category to filter by, or All legs. Filling it enables the value select.",
           "locate": {
-            "path": "templates/explore.html:99",
+            "path": "templates/explore.html:106",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-filter-dim\"' templates/explore.html"
           }
         },
@@ -1088,7 +1098,7 @@
           "kind": "input",
           "description": "The value of the filter category to keep, with its leg count.",
           "locate": {
-            "path": "templates/explore.html:100",
+            "path": "templates/explore.html:107",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-filter-val\"' templates/explore.html"
           }
         },
@@ -1098,7 +1108,7 @@
           "kind": "text",
           "description": "Hits/graded, hit rate vs needed, and flat $100 return for the current filter; plus how many legs are still waiting on a final score.",
           "locate": {
-            "path": "templates/explore.html:104",
+            "path": "templates/explore.html:111",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-summary\"' templates/explore.html"
           }
         },
@@ -1108,7 +1118,7 @@
           "kind": "layout",
           "description": "Receives the grouped table, rendered by render() in the page script.",
           "locate": {
-            "path": "templates/explore.html:105",
+            "path": "templates/explore.html:112",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-table\"' templates/explore.html"
           }
         },
@@ -1118,7 +1128,7 @@
           "kind": "table",
           "description": "One row per group: legs, hits, hit rate with a bar (tick = needed), needed, $100 each. Built at runtime.",
           "locate": {
-            "path": "templates/explore.html:262",
+            "path": "templates/explore.html:275",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-groups\"' templates/explore.html"
           }
         },
@@ -1128,7 +1138,7 @@
           "kind": "row",
           "description": "Click or Enter expands the legs in that group. Greyed (tr.thin) under 10 legs. Team/opponent/player/depth role sort by size; the rest keep natural band order.",
           "locate": {
-            "path": "templates/explore.html:252",
+            "path": "templates/explore.html:265",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-group-row\"' templates/explore.html"
           }
         },
@@ -1138,7 +1148,7 @@
           "kind": "row",
           "description": "Inserted under a group row by toggle(); lists each leg newest week first.",
           "locate": {
-            "path": "templates/explore.html:276",
+            "path": "templates/explore.html:289",
             "grep": "grep -n -F -- '\"explore-group-legs\"' templates/explore.html"
           }
         },
@@ -1148,7 +1158,7 @@
           "kind": "row",
           "description": "Player (links to its report), team role, week and game; the line, price, and the actual number as a HIT/MISS pill.",
           "locate": {
-            "path": "templates/explore.html:233",
+            "path": "templates/explore.html:246",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-leg\"' templates/explore.html"
           }
         },
@@ -1158,7 +1168,7 @@
           "kind": "text",
           "description": "Grading rule (same as the listing: actual beats the line, final games only) and the under-ten caveat.",
           "locate": {
-            "path": "templates/explore.html:107",
+            "path": "templates/explore.html:114",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-footer\"' templates/explore.html"
           }
         }
