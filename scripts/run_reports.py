@@ -3,7 +3,8 @@
 
 Usage: run_reports.py [thursday|sunday|snf|mnf] [--picks 6] [--dry]
 
-One HTML report per game lands in reports/. Slack gets a single digest with
+One HTML report per game lands in reports/ (--dry writes nothing: no HTML, no
+saved board, no Slack post). Slack gets a single digest with
 each game's shortlist -- one message per slate, not one per game, because a
 13-game Sunday would otherwise bury the channel.
 
@@ -42,7 +43,6 @@ def dec(a):
 
 def main():
     from nflprops import report as RP
-    from nflprops.config import ROOT
     from nflprops.db import connect, team_abbr_map
     from nflprops.slack import post, section, header, divider
 
@@ -68,7 +68,9 @@ def main():
         a, h = abbr.get(e.away_team), abbr.get(e.home_team)
         if not a or not h:
             print(f"  ! unknown team abbr for {e.away_team} @ {e.home_team}"); continue
-        lines, rem = RP.event_lines(e.id, season=season, week=week, teams=[a, h])
+        # Passing season/week/teams makes event_lines save the raw board to disk.
+        save = {} if DRY else dict(season=season, week=week, teams=[a, h])
+        lines, rem = RP.event_lines(e.id, **save)
         if lines.empty:
             print(f"  ! no alternate lines yet: {a}@{h}"); continue
         rows, short, qb_notes = RP.build(season, week, [a, h], lines, n_picks=N_PICKS)
@@ -77,8 +79,9 @@ def main():
 
         html = RP.render(rows, e.away_team, e.home_team, a, week, season,
                          kick=e.et, same_game=True, qb_notes=qb_notes)
-        out = ROOT / "reports" / f"report_{season}_w{week}_{a}-{h}.html"
-        out.write_text(html)
+        out = RP.report_path(season, week, a, h)
+        if not DRY:
+            out.write_text(html)
         made.append(out.name)
 
         pay = short.price.map(dec).prod()
@@ -110,7 +113,7 @@ def main():
                           f"Credits remaining: {rem}._"))
 
     if DRY:
-        print(f"\n[dry] would post {len(blocks)} blocks; {len(made)} reports written")
+        print(f"\n[dry] would post {len(blocks)} blocks and write {len(made)} reports; nothing written")
     else:
         print(post(blocks=blocks, text=f"Production ranges — W{week} {SLATE}"))
         print(f"posted; credits remaining {rem}")

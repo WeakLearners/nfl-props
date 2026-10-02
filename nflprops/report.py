@@ -17,7 +17,7 @@ from .odds import name_key
 from .db import connect
 
 # scripts/vol_predict.py is not part of the nflprops package (it lives beside
-# it, not inside it) -- same import shape scripts/make_report.py uses.
+# it, not inside it) -- same sys.path shim the scripts use.
 _SCRIPTS = str(pathlib.Path(__file__).resolve().parent.parent / "scripts")
 if _SCRIPTS not in sys.path:
     sys.path.insert(0, _SCRIPTS)
@@ -83,6 +83,10 @@ def event_lines(event_id, target=DEFAULT_TARGET, season=None, week=None, teams=N
     return df.sort_values("d").drop_duplicates(["player_key", "stat"]), rem
 
 
+def report_path(season, week, team_a, team_b):
+    return ROOT / "reports" / f"report_{season}_w{week}_{team_a}-{team_b}.html"
+
+
 def _imp(a):
     if pd.isna(a):
         return np.nan
@@ -106,8 +110,8 @@ def build(season, week, teams, lines, n_picks=6):
 
     # Decision #36: when FanDuel prices passing yards for exactly one QB on a
     # team, that QB is the featured QB1 -- replacing star_pool's usage-ranked
-    # pick if it disagrees. Same rule as scripts/make_report.py; duplicated
-    # here because this is the code path the scheduled job actually runs.
+    # pick if it disagrees. This is the only copy; scripts/make_report.py
+    # now calls build() instead of carrying its own.
     qb_notes = []
     if not lines.empty:
         qb_priced = set(lines.loc[lines.stat == "passing_yards", "player_key"])

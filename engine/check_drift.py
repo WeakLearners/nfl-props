@@ -127,9 +127,8 @@ def check_live_config(manifest: dict) -> list[str]:
         if live != exp:
             problems.append(f"CONFIG DRIFT: CALIB[{stat}] live={live!r} manifest={exp!r}")
 
-    # report.py's shortlist screens (MIN_SNAP / MIN_GAMES) live in
-    # scripts/make_report.py, not an importable module -- covered by the
-    # file-hash check above instead of a live-value check here.
+    # report.py's shortlist screens (MIN_SNAP / MIN_GAMES) are covered by the
+    # file-hash check above rather than a live-value check here.
 
     return problems
 
