@@ -12,6 +12,7 @@ import os
 import re
 import sqlite3
 import sys
+import urllib.parse
 from datetime import datetime
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
@@ -27,6 +28,7 @@ except Exception as _e:  # noqa: BLE001 — the pages still work ungraded
     name_key = None
 from nflprops.badges import BADGE_CSS, markers_html, player_badges, trend_html  # noqa: E402
 from nflprops.teams import team_css  # noqa: E402
+from nflprops.tray import TRAY_HTML, player_season  # noqa: E402
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT = os.path.join(BASE, "reports")
@@ -1896,6 +1898,7 @@ class Handler(SimpleHTTPRequestHandler):
             if m:
                 html = html.replace('<meta charset="utf-8">',
                                     '<meta charset="utf-8">\n' + team_css(m.group(3), m.group(4)), 1)
+                html += "\n" + TRAY_HTML  # player tray: after the report script, which defines DATA
         body = (with_theme(html) +
                 '\n<script src="/_inspector.js"></script>\n').encode()
         self._send(body, "text/html; charset=utf-8")
@@ -1913,6 +1916,17 @@ class Handler(SimpleHTTPRequestHandler):
             # directory listing, and never cached anywhere.
             # _send already sets Cache-Control: no-store on everything.
             self._send(data_version().encode(), "text/plain; charset=utf-8")
+            return
+        if path == "/api/player":
+            # Season game log for the player tray (nflprops/tray.py). Read-only.
+            q = urllib.parse.parse_qs(_query)
+            try:
+                games = player_season(DB, q.get("name", [""])[0], q.get("team", [""])[0],
+                                      int(q.get("season", ["0"])[0]))
+            except (ValueError, sqlite3.Error) as e:
+                sys.stderr.write(f"api/player: {e}\n")
+                games = []
+            self._send(json.dumps(games).encode(), "application/json; charset=utf-8")
             return
         if path == "/_frontend-map.json":
             self._send(open(MAP, "rb").read(), "application/json; charset=utf-8")
