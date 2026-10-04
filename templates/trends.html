@@ -1,0 +1,83 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trends and Insights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#f7f6f3; --surface:#fcfcfb; --line:#e2e0d9; --line-soft:#eceae3;
+    --ink:#14140f; --ink-2:#52514e; --ink-3:#84827a; --den:#eb6834;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --bg:#121211; --surface:#1a1a19; --line:#33322e; --line-soft:#262521;
+      --ink:#f6f5ef; --ink-2:#c3c2b7; --ink-3:#8b897f; --den:#d95926;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#121211; --surface:#1a1a19; --line:#33322e; --line-soft:#262521;
+    --ink:#f6f5ef; --ink-2:#c3c2b7; --ink-3:#8b897f; --den:#d95926;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Public Sans",ui-sans-serif,system-ui,sans-serif; font-size:15px; line-height:1.55}
+  .wrap{max-width:760px; margin:0 auto; padding:32px 16px 64px}
+  a.back{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--ink-3); text-decoration:none}
+  a.back:hover{color:var(--den)}
+  h1{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:34px; margin:14px 0 4px}
+  h2{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:24px; margin:32px 0 8px}
+  .eyebrow{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--ink-3); margin:0}
+  .note{color:var(--ink-2); margin:6px 0}
+  .tablewrap{overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:3px}
+  table{border-collapse:collapse; width:100%; font-size:14px}
+  th,td{padding:6px 10px; text-align:left; border-bottom:1px solid var(--line-soft); white-space:nowrap}
+  th{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--ink-3); font-weight:500}
+  td.num,th.num{text-align:right; font-family:"IBM Plex Mono",monospace}
+  tr:last-child td{border-bottom:0}
+  .links{display:flex; gap:14px; margin:6px 0}
+  .filter{display:flex; gap:8px; margin:14px 0; flex-wrap:wrap}
+  .filter button{font-family:"IBM Plex Mono",monospace; font-size:12px; padding:6px 12px; border:1px solid var(--line);
+    background:var(--surface); color:var(--ink-2); border-radius:3px; cursor:pointer}
+  .filter button[aria-pressed="true"]{border-color:var(--den); color:var(--den)}
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:3px; margin:10px 0; padding:0 14px}
+  .card summary{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:22px; padding:12px 0; cursor:pointer}
+  .card h4{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--ink-3); margin:16px 0 6px; font-weight:500}
+  .card ul{list-style:none; margin:0 0 8px; padding:0}
+  .trow{padding:8px 0; border-bottom:1px solid var(--line-soft)}
+  .trow:last-child{border-bottom:0}
+  .t1{display:flex; gap:8px; align-items:baseline; flex-wrap:wrap}
+  .nm{font-weight:600} .tm{color:var(--ink-3); font-size:12px; font-family:"IBM Plex Mono",monospace}
+  .dl{margin-left:auto; font-family:"IBM Plex Mono",monospace; color:var(--den)}
+  .t2{font-size:13px; color:var(--ink-2)} .ol{color:var(--ink)}
+  .none{color:var(--ink-3); font-size:13px}
+  [hidden]{display:none !important}
+</style><div class="wrap" data-inspect-id="trends-wrap">
+  <a class="back" href="/" data-inspect-id="trends-back">&larr; All reports</a>
+  <header data-inspect-id="trends-header">
+    <h1>Trends and insights</h1>
+    <p class="eyebrow" data-inspect-id="trends-data-through">Data through __WEEK__ &middot; built __BUILT__</p>
+    <div class="links"><a class="back" href="/rankings.html" data-inspect-id="trends-link-rankings">Player rankings &rarr;</a></div>
+  </header>
+  <p class="note" data-inspect-id="trends-disclaimer"><strong>Entertainment. Past data is not a pick.</strong> Every outlook is a past rate, not a promise.</p>
+  <div class="filter" data-inspect-id="trends-filter" role="group" aria-label="Position">
+    <button type="button" aria-pressed="true" data-p="ALL">All</button><button type="button" aria-pressed="false" data-p="QB">QB</button><button type="button" aria-pressed="false" data-p="RB">RB</button><button type="button" aria-pressed="false" data-p="WR">WR</button><button type="button" aria-pressed="false" data-p="TE">TE</button>
+  </div>
+__CARDS__
+  <p class="note" data-inspect-id="trends-footer">Outlook labels: Likely to hold (60% or more of past cases held, 50 or more cases), Likely to fade (40% or less), Watch (everything else). A change "held" if at least half of it carried into the next 3 games. Rates use 2021-2025 only.</p>
+</div>
+<script>
+document.querySelectorAll('.filter button').forEach(function(b){b.addEventListener('click',function(){
+  var p=b.dataset.p;
+  document.querySelectorAll('.filter button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});
+  document.querySelectorAll('[data-pos]').forEach(function(e){e.hidden=!(p==='ALL'||e.dataset.pos===p)});
+});});
+</script>

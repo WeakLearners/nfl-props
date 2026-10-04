@@ -281,7 +281,7 @@ def render_rankings(season, week, df):
             f'<td class="num">{int(r.n_games)}</td><td class="num">{r.vol:.1f}</td></tr>'
             for _, r in d.iterrows())
         out.append(
-            f'<h2 data-inspect-id="rankings-heading">{label}</h2>'
+            f'<h2 data-inspect-id="rankings-heading-{pos_.lower()}">{label}</h2>'
             f'<div class="tablewrap" data-inspect-id="rankings-table-{pos_.lower()}"><table>'
             f'<thead><tr><th class="num">Rank</th><th>Player</th><th>Team</th><th class="num">Rating</th>'
             f'<th class="num">Games</th><th class="num">{RANK_VOL[pos_][1]} (last 5)</th></tr></thead>'
@@ -294,10 +294,16 @@ def render_rankings(season, week, df):
 
 
 def write_rankings():
-    """Write reports/rankings.html. Called by every report build, so the page
-    refreshes whenever a weekly report is built."""
+    """Write reports/rankings.html (and reports/trends.html). Called by every report build, so the pages
+    refresh whenever a weekly report is built."""
     from .config import ROOT
     season, week, df = current_ratings()
     path = ROOT / "reports" / "rankings.html"
     path.write_text(render_rankings(season, week, df), encoding="utf-8")
+    try:  # the Trends page refreshes on the same build; a failure must not stop a report
+        from .trends import write_trends
+        write_trends()
+    except Exception as e:  # noqa: BLE001
+        import sys
+        print(f"trends page not rebuilt: {e}", file=sys.stderr)
     return path
