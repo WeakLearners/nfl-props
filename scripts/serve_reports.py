@@ -6,6 +6,7 @@ listening socket itself never faces the network. Tailnet-only, not Funnel:
 these pages name real players and real prices under Sean's own account, and
 nothing about them needs the public internet.
 """
+import html
 import json
 import os
 import re
@@ -714,6 +715,33 @@ def payout(price):
     return 100 * 100 // -price if price < 0 else price
 
 
+CHIPS_FILE = os.path.join(BASE, "data", "ratings", "chips.json")
+_CHIPS = {"mtime": None, "data": {}}
+
+
+def chip_for(player, role):
+    """(text, hover) rank chip from nflprops.rating.chip_lookup, or None below the floor.
+    Read from data/ratings/chips.json, which every report build rewrites, so a
+    page never shows last week's rank. Re-read whenever the file changes."""
+    try:
+        m = os.path.getmtime(CHIPS_FILE)
+        if m != _CHIPS["mtime"]:
+            _CHIPS["data"], _CHIPS["mtime"] = json.load(open(CHIPS_FILE)), m
+    except (OSError, ValueError):
+        return None
+    if name_key is None:
+        return None
+    return _CHIPS["data"].get(f'{name_key(player)}|{re.sub(r"[0-9]+$", "", role or "")}')
+
+
+def rk_chip(chip, inspect_id):
+    """The outline chip, same markup as templates/report.html rkChip()."""
+    if not chip:
+        return ""
+    return (f'<span class="rk" data-inspect-id="{inspect_id}" '
+            f'title="{html.escape(chip[1], quote=True)}">{html.escape(chip[0])}</span>')
+
+
 def leg_rows(legs, graded):
     out = []
     for i, r in enumerate(legs, 1):
@@ -731,7 +759,8 @@ def leg_rows(legs, graded):
             f'<tr data-inspect-id="slate-leg">'
             f'<td class="rank">{i}</td>'
             f'<td class="who"><a href="/{r["file"]}">{r["p"]}</a>'
-            f'<span class="meta">{r["tm"]} {r["role"]} &middot; {r["game"]}</span></td>'
+            f'<span class="meta">{r["tm"]} {r["role"]}'
+            f'{rk_chip(chip_for(r["p"], r["role"]), "slate-rank-chip")} &middot; {r["game"]}</span></td>'
             f'<td class="stat">o{r["line"]:g} {stat}</td>'
             + (f'<td class="res">{mark}</td>' if graded else "")
             + (
@@ -885,6 +914,9 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
     font-family:"IBM Plex Mono",monospace; font-size:10.5px;
     color:var(--ink-3); letter-spacing:.02em; margin-top:1px; font-weight:400;
   }}
+  .rk{{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:500; line-height:1;
+    padding:1px 4px; border-radius:2px; color:var(--ink-2); box-shadow:inset 0 0 0 1px var(--ink-3);
+    margin-left:6px; white-space:nowrap; display:inline-block}}
   .stat{{
     font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--ink-2);
     white-space:nowrap;
@@ -1175,8 +1207,11 @@ def explore_html():
                 continue
             row = {k: r.get(k) for k in EXPLORE_FIELDS}
             row["season"], row["week"] = season, week
+            row["rk"], row["rkt"] = chip_for(r["p"], r.get("role")) or (None, None)
             legs.append(row)
         tds, waiting, tvoid = td_legs(season, week)
+        for t in tds:
+            t["rk"], t["rkt"] = chip_for(t["p"], t.get("role")) or (None, None)
         legs += tds
         pending["td"] += waiting
         void["td"] += tvoid

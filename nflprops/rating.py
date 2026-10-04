@@ -267,6 +267,19 @@ def chip_lookup(name_key):
     return _CACHE["chips"]
 
 
+CHIPS_PATH = DATA_DIR / "ratings" / "chips.json"
+
+
+def write_chips():
+    """Dump chip_lookup() to data/ratings/chips.json so the slate and explore pages
+    (a long-running server) read the current chips without recomputing a rating."""
+    from .odds import name_key
+    _CACHE.pop("chips", None)
+    d = {f"{k[0]}|{k[1]}": list(v) for k, v in chip_lookup(name_key).items()}
+    CHIPS_PATH.write_text(json.dumps(d), encoding="utf-8")
+    return CHIPS_PATH
+
+
 def render_rankings(season, week, df):
     """The full rankings page: one table per position. Plain HTML from templates/rankings.html."""
     import html
@@ -300,6 +313,7 @@ def write_rankings():
     season, week, df = current_ratings()
     path = ROOT / "reports" / "rankings.html"
     path.write_text(render_rankings(season, week, df), encoding="utf-8")
+    write_chips()
     try:  # the Trends page refreshes on the same build; a failure must not stop a report
         from .trends import write_trends
         write_trends()
