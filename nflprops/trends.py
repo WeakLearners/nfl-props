@@ -48,7 +48,8 @@ def label(rate):
         return "Watch", f"Watch (history too thin, n={n})"
     s, n = rate["hold_share"], rate["n"]
     lab = "Likely to hold" if s >= HOLD_AT else "Likely to fade" if s <= FADE_AT else "Watch"
-    return lab, f"{lab} ({s*100:.0f}%, n={n})"
+    mg = f", merged: {rate['merge']}" if rate.get("merge") else ""
+    return lab, f"{lab} ({s*100:.0f}%, n={n}{mg})"
 
 
 # ---- entity frames ---------------------------------------------------------
@@ -127,6 +128,70 @@ def holdup_rates(frames, seasons=HIST_SEASONS):
     return rates
 
 
+def _bucket_names(metric):
+    return [f"{lo:g}+" if hi == 999 else f"{lo:g}-{hi:g}" for lo, hi in METRICS[metric][4]]
+
+
+def _pool(rates, keys):
+    n = sum(rates.get(k, {}).get("n", 0) for k in keys)
+    held = sum(rates.get(k, {}).get("held", 0) for k in keys)
+    return n, held
+
+
+def merge_candidates(metric, pos, typ, direction, b):
+    """Ordered merge options (list of key lists) for one thin bucket. Same stat, position
+    and direction always. Size steps keep the type. Game-number steps pool types A and B."""
+    names = _bucket_names(metric)
+    i = names.index(b)
+    k = lambda t, nm: f"{metric}|{pos}|{t}|{direction}|{nm}"
+    pairs = [sorted((i, j)) for j in (i - 1, i + 1) if 0 <= j < len(names)]
+    out = []
+    for types in ([typ], ["A", "B"]):
+        if len(types) == 2:
+            out.append([[k(t, names[i]) for t in types]])
+        out.append([[k(t, names[x]) for t in types for x in pr] for pr in pairs])
+        out.append([[k(t, nm) for t in types for nm in names]])
+    return [c for c in out if c and c[0]]
+
+
+def merged_rate(rates, metric, pos, typ, direction, b):
+    """Smallest merge with n >= MIN_N, or None. Within a step, the larger n wins."""
+    for step in merge_candidates(metric, pos, typ, direction, b):
+        best = max(((_pool(rates, ks), ks) for ks in step), key=lambda x: x[0][0])
+        (n, held), ks = best
+        if n >= MIN_N:
+            return {"n": n, "held": held, "hold_share": round(held / n, 3), "sources": ks,
+                    "merge": merge_text(ks, direction)}
+    return None
+
+
+def merge_text(keys, direction):
+    parts = [k.split("|") for k in keys]
+    types = sorted({p[2] for p in parts})
+    sizes = []
+    for p in parts:
+        if p[4] not in sizes:
+            sizes.append(p[4])
+    s = " + ".join(sizes) if len(sizes) > 1 else sizes[0]
+    return f"{direction} {s}" + (", games 3-5 + 6+" if len(types) > 1 else "")
+
+
+def all_merges(rates):
+    out = {}
+    for m, (pos_l, *_rest) in METRICS.items():
+        for pos in pos_l:
+            for typ in "AB":
+                for d in ("rise", "fall"):
+                    for b in _bucket_names(m):
+                        k = f"{m}|{pos}|{typ}|{d}|{b}"
+                        if rates.get(k, {}).get("n", 0) >= MIN_N:
+                            continue
+                        r = merged_rate(rates, m, pos, typ, d, b)
+                        if r:
+                            out[k] = r
+    return out
+
+
 def rate_key(metric, pos, typ, delta, b):
     return f"{metric}|{pos}|{typ}|{'rise' if delta > 0 else 'fall'}|{b}"
 
@@ -137,12 +202,20 @@ def fit_and_save(frames):
     RATES_PATH.write_text(json.dumps({
         "version": 1, "seasons": "2021-2025", "held_if_carry_at_least": HOLD_CARRY,
         "thresholds": {"hold": HOLD_AT, "fade": FADE_AT, "min_n": MIN_N},
-        "rates": dict(sorted(rates.items()))}, indent=1))
+        "rates": dict(sorted(rates.items())),
+        "merged": dict(sorted(all_merges(rates).items()))}, indent=1))
     return rates
 
 
 def load_rates():
-    return json.loads(RATES_PATH.read_text())["rates"] if RATES_PATH.exists() else {}
+    """Effective rates: a thin bucket is replaced by its stored merge, if one exists."""
+    if not RATES_PATH.exists():
+        return {}
+    d = json.loads(RATES_PATH.read_text())
+    rates = dict(d["rates"])
+    for k, m in d.get("merged", {}).items():
+        rates[k] = m
+    return rates
 
 
 # ---- live rows -------------------------------------------------------------

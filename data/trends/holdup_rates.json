@@ -608,5 +608,574 @@
    "held": 94,
    "hold_share": 0.429
   }
+ },
+ "merged": {
+  "carry_share|RB|A|fall|10+": {
+   "n": 64,
+   "held": 41,
+   "hold_share": 0.641,
+   "sources": [
+    "carry_share|RB|A|fall|5-10",
+    "carry_share|RB|A|fall|10+"
+   ],
+   "merge": "fall 5-10 + 10+"
+  },
+  "carry_share|RB|A|fall|2-5": {
+   "n": 82,
+   "held": 53,
+   "hold_share": 0.646,
+   "sources": [
+    "carry_share|RB|A|fall|2-5",
+    "carry_share|RB|A|fall|5-10",
+    "carry_share|RB|A|fall|10+"
+   ],
+   "merge": "fall 2-5 + 5-10 + 10+"
+  },
+  "carry_share|RB|A|fall|5-10": {
+   "n": 64,
+   "held": 41,
+   "hold_share": 0.641,
+   "sources": [
+    "carry_share|RB|A|fall|5-10",
+    "carry_share|RB|A|fall|10+"
+   ],
+   "merge": "fall 5-10 + 10+"
+  },
+  "carry_share|RB|A|rise|10+": {
+   "n": 84,
+   "held": 52,
+   "hold_share": 0.619,
+   "sources": [
+    "carry_share|RB|A|rise|5-10",
+    "carry_share|RB|A|rise|10+"
+   ],
+   "merge": "rise 5-10 + 10+"
+  },
+  "carry_share|RB|A|rise|2-5": {
+   "n": 57,
+   "held": 35,
+   "hold_share": 0.614,
+   "sources": [
+    "carry_share|RB|A|rise|2-5",
+    "carry_share|RB|A|rise|5-10"
+   ],
+   "merge": "rise 2-5 + 5-10"
+  },
+  "carry_share|RB|A|rise|5-10": {
+   "n": 84,
+   "held": 52,
+   "hold_share": 0.619,
+   "sources": [
+    "carry_share|RB|A|rise|5-10",
+    "carry_share|RB|A|rise|10+"
+   ],
+   "merge": "rise 5-10 + 10+"
+  },
+  "pass_rate|TEAM|A|fall|10+": {
+   "n": 65,
+   "held": 29,
+   "hold_share": 0.446,
+   "sources": [
+    "pass_rate|TEAM|A|fall|10+",
+    "pass_rate|TEAM|B|fall|10+"
+   ],
+   "merge": "fall 10+, games 3-5 + 6+"
+  },
+  "pass_rate|TEAM|A|fall|3-6": {
+   "n": 85,
+   "held": 38,
+   "hold_share": 0.447,
+   "sources": [
+    "pass_rate|TEAM|A|fall|3-6",
+    "pass_rate|TEAM|B|fall|3-6"
+   ],
+   "merge": "fall 3-6, games 3-5 + 6+"
+  },
+  "pass_rate|TEAM|A|fall|6-10": {
+   "n": 70,
+   "held": 40,
+   "hold_share": 0.571,
+   "sources": [
+    "pass_rate|TEAM|A|fall|6-10",
+    "pass_rate|TEAM|B|fall|6-10"
+   ],
+   "merge": "fall 6-10, games 3-5 + 6+"
+  },
+  "pass_rate|TEAM|A|rise|10+": {
+   "n": 57,
+   "held": 23,
+   "hold_share": 0.404,
+   "sources": [
+    "pass_rate|TEAM|A|rise|3-6",
+    "pass_rate|TEAM|A|rise|6-10",
+    "pass_rate|TEAM|A|rise|10+"
+   ],
+   "merge": "rise 3-6 + 6-10 + 10+"
+  },
+  "pass_rate|TEAM|A|rise|3-6": {
+   "n": 57,
+   "held": 23,
+   "hold_share": 0.404,
+   "sources": [
+    "pass_rate|TEAM|A|rise|3-6",
+    "pass_rate|TEAM|A|rise|6-10",
+    "pass_rate|TEAM|A|rise|10+"
+   ],
+   "merge": "rise 3-6 + 6-10 + 10+"
+  },
+  "pass_rate|TEAM|A|rise|6-10": {
+   "n": 57,
+   "held": 23,
+   "hold_share": 0.404,
+   "sources": [
+    "pass_rate|TEAM|A|rise|3-6",
+    "pass_rate|TEAM|A|rise|6-10",
+    "pass_rate|TEAM|A|rise|10+"
+   ],
+   "merge": "rise 3-6 + 6-10 + 10+"
+  },
+  "pass_rate|TEAM|B|rise|10+": {
+   "n": 109,
+   "held": 44,
+   "hold_share": 0.404,
+   "sources": [
+    "pass_rate|TEAM|B|rise|6-10",
+    "pass_rate|TEAM|B|rise|10+"
+   ],
+   "merge": "rise 6-10 + 10+"
+  },
+  "pass_rate|TEAM|B|rise|3-6": {
+   "n": 114,
+   "held": 52,
+   "hold_share": 0.456,
+   "sources": [
+    "pass_rate|TEAM|B|rise|3-6",
+    "pass_rate|TEAM|B|rise|6-10"
+   ],
+   "merge": "rise 3-6 + 6-10"
+  },
+  "rz10|RB|A|fall|0.25-0.5": {
+   "n": 86,
+   "held": 51,
+   "hold_share": 0.593,
+   "sources": [
+    "rz10|RB|A|fall|0.25-0.5",
+    "rz10|RB|A|fall|0.5-1"
+   ],
+   "merge": "fall 0.25-0.5 + 0.5-1"
+  },
+  "rz10|RB|A|fall|0.5-1": {
+   "n": 86,
+   "held": 51,
+   "hold_share": 0.593,
+   "sources": [
+    "rz10|RB|A|fall|0.25-0.5",
+    "rz10|RB|A|fall|0.5-1"
+   ],
+   "merge": "fall 0.25-0.5 + 0.5-1"
+  },
+  "rz10|RB|A|fall|1+": {
+   "n": 81,
+   "held": 52,
+   "hold_share": 0.642,
+   "sources": [
+    "rz10|RB|A|fall|0.5-1",
+    "rz10|RB|A|fall|1+"
+   ],
+   "merge": "fall 0.5-1 + 1+"
+  },
+  "rz10|RB|A|rise|0.25-0.5": {
+   "n": 62,
+   "held": 26,
+   "hold_share": 0.419,
+   "sources": [
+    "rz10|RB|A|rise|0.25-0.5",
+    "rz10|RB|A|rise|0.5-1"
+   ],
+   "merge": "rise 0.25-0.5 + 0.5-1"
+  },
+  "rz10|RB|A|rise|0.5-1": {
+   "n": 67,
+   "held": 26,
+   "hold_share": 0.388,
+   "sources": [
+    "rz10|RB|A|rise|0.5-1",
+    "rz10|RB|A|rise|1+"
+   ],
+   "merge": "rise 0.5-1 + 1+"
+  },
+  "rz10|RB|A|rise|1+": {
+   "n": 67,
+   "held": 26,
+   "hold_share": 0.388,
+   "sources": [
+    "rz10|RB|A|rise|0.5-1",
+    "rz10|RB|A|rise|1+"
+   ],
+   "merge": "rise 0.5-1 + 1+"
+  },
+  "rz10|TE|A|fall|0.5-1": {
+   "n": 75,
+   "held": 33,
+   "hold_share": 0.44,
+   "sources": [
+    "rz10|TE|A|fall|0.25-0.5",
+    "rz10|TE|A|fall|0.5-1"
+   ],
+   "merge": "fall 0.25-0.5 + 0.5-1"
+  },
+  "rz10|TE|A|fall|1+": {
+   "n": 77,
+   "held": 35,
+   "hold_share": 0.455,
+   "sources": [
+    "rz10|TE|A|fall|0.25-0.5",
+    "rz10|TE|A|fall|0.5-1",
+    "rz10|TE|A|fall|1+"
+   ],
+   "merge": "fall 0.25-0.5 + 0.5-1 + 1+"
+  },
+  "rz10|TE|A|rise|0.25-0.5": {
+   "n": 50,
+   "held": 19,
+   "hold_share": 0.38,
+   "sources": [
+    "rz10|TE|A|rise|0.25-0.5",
+    "rz10|TE|A|rise|0.5-1"
+   ],
+   "merge": "rise 0.25-0.5 + 0.5-1"
+  },
+  "rz10|TE|A|rise|0.5-1": {
+   "n": 50,
+   "held": 19,
+   "hold_share": 0.38,
+   "sources": [
+    "rz10|TE|A|rise|0.25-0.5",
+    "rz10|TE|A|rise|0.5-1"
+   ],
+   "merge": "rise 0.25-0.5 + 0.5-1"
+  },
+  "rz10|TE|A|rise|1+": {
+   "n": 54,
+   "held": 20,
+   "hold_share": 0.37,
+   "sources": [
+    "rz10|TE|A|rise|0.25-0.5",
+    "rz10|TE|A|rise|0.5-1",
+    "rz10|TE|A|rise|1+"
+   ],
+   "merge": "rise 0.25-0.5 + 0.5-1 + 1+"
+  },
+  "rz10|TE|B|fall|1+": {
+   "n": 62,
+   "held": 36,
+   "hold_share": 0.581,
+   "sources": [
+    "rz10|TE|B|fall|0.5-1",
+    "rz10|TE|B|fall|1+"
+   ],
+   "merge": "fall 0.5-1 + 1+"
+  },
+  "rz10|TE|B|rise|1+": {
+   "n": 101,
+   "held": 28,
+   "hold_share": 0.277,
+   "sources": [
+    "rz10|TE|B|rise|0.5-1",
+    "rz10|TE|B|rise|1+"
+   ],
+   "merge": "rise 0.5-1 + 1+"
+  },
+  "rz10|WR|A|fall|0.5-1": {
+   "n": 140,
+   "held": 70,
+   "hold_share": 0.5,
+   "sources": [
+    "rz10|WR|A|fall|0.25-0.5",
+    "rz10|WR|A|fall|0.5-1"
+   ],
+   "merge": "fall 0.25-0.5 + 0.5-1"
+  },
+  "rz10|WR|A|fall|1+": {
+   "n": 143,
+   "held": 71,
+   "hold_share": 0.497,
+   "sources": [
+    "rz10|WR|A|fall|0.25-0.5",
+    "rz10|WR|A|fall|0.5-1",
+    "rz10|WR|A|fall|1+"
+   ],
+   "merge": "fall 0.25-0.5 + 0.5-1 + 1+"
+  },
+  "rz10|WR|A|rise|0.5-1": {
+   "n": 112,
+   "held": 27,
+   "hold_share": 0.241,
+   "sources": [
+    "rz10|WR|A|rise|0.25-0.5",
+    "rz10|WR|A|rise|0.5-1"
+   ],
+   "merge": "rise 0.25-0.5 + 0.5-1"
+  },
+  "rz10|WR|A|rise|1+": {
+   "n": 54,
+   "held": 10,
+   "hold_share": 0.185,
+   "sources": [
+    "rz10|WR|A|rise|0.5-1",
+    "rz10|WR|A|rise|1+"
+   ],
+   "merge": "rise 0.5-1 + 1+"
+  },
+  "snap_share|RB|A|fall|10+": {
+   "n": 64,
+   "held": 40,
+   "hold_share": 0.625,
+   "sources": [
+    "snap_share|RB|A|fall|5-10",
+    "snap_share|RB|A|fall|10+"
+   ],
+   "merge": "fall 5-10 + 10+"
+  },
+  "snap_share|RB|A|fall|2-5": {
+   "n": 83,
+   "held": 54,
+   "hold_share": 0.651,
+   "sources": [
+    "snap_share|RB|A|fall|2-5",
+    "snap_share|RB|A|fall|5-10",
+    "snap_share|RB|A|fall|10+"
+   ],
+   "merge": "fall 2-5 + 5-10 + 10+"
+  },
+  "snap_share|RB|A|fall|5-10": {
+   "n": 64,
+   "held": 40,
+   "hold_share": 0.625,
+   "sources": [
+    "snap_share|RB|A|fall|5-10",
+    "snap_share|RB|A|fall|10+"
+   ],
+   "merge": "fall 5-10 + 10+"
+  },
+  "snap_share|RB|A|rise|2-5": {
+   "n": 60,
+   "held": 33,
+   "hold_share": 0.55,
+   "sources": [
+    "snap_share|RB|A|rise|2-5",
+    "snap_share|RB|A|rise|5-10"
+   ],
+   "merge": "rise 2-5 + 5-10"
+  },
+  "snap_share|RB|A|rise|5-10": {
+   "n": 94,
+   "held": 58,
+   "hold_share": 0.617,
+   "sources": [
+    "snap_share|RB|A|rise|5-10",
+    "snap_share|RB|A|rise|10+"
+   ],
+   "merge": "rise 5-10 + 10+"
+  },
+  "snap_share|TE|A|fall|2-5": {
+   "n": 122,
+   "held": 71,
+   "hold_share": 0.582,
+   "sources": [
+    "snap_share|TE|A|fall|2-5",
+    "snap_share|TE|A|fall|5-10",
+    "snap_share|TE|A|fall|10+"
+   ],
+   "merge": "fall 2-5 + 5-10 + 10+"
+  },
+  "snap_share|TE|A|fall|5-10": {
+   "n": 104,
+   "held": 66,
+   "hold_share": 0.635,
+   "sources": [
+    "snap_share|TE|A|fall|5-10",
+    "snap_share|TE|A|fall|10+"
+   ],
+   "merge": "fall 5-10 + 10+"
+  },
+  "snap_share|TE|A|rise|2-5": {
+   "n": 52,
+   "held": 20,
+   "hold_share": 0.385,
+   "sources": [
+    "snap_share|TE|A|rise|2-5",
+    "snap_share|TE|A|rise|5-10"
+   ],
+   "merge": "rise 2-5 + 5-10"
+  },
+  "snap_share|TE|A|rise|5-10": {
+   "n": 100,
+   "held": 63,
+   "hold_share": 0.63,
+   "sources": [
+    "snap_share|TE|A|rise|5-10",
+    "snap_share|TE|A|rise|10+"
+   ],
+   "merge": "rise 5-10 + 10+"
+  },
+  "snap_share|WR|A|fall|2-5": {
+   "n": 75,
+   "held": 39,
+   "hold_share": 0.52,
+   "sources": [
+    "snap_share|WR|A|fall|2-5",
+    "snap_share|WR|A|fall|5-10"
+   ],
+   "merge": "fall 2-5 + 5-10"
+  },
+  "snap_share|WR|A|fall|5-10": {
+   "n": 158,
+   "held": 84,
+   "hold_share": 0.532,
+   "sources": [
+    "snap_share|WR|A|fall|5-10",
+    "snap_share|WR|A|fall|10+"
+   ],
+   "merge": "fall 5-10 + 10+"
+  },
+  "snap_share|WR|A|rise|2-5": {
+   "n": 105,
+   "held": 55,
+   "hold_share": 0.524,
+   "sources": [
+    "snap_share|WR|A|rise|2-5",
+    "snap_share|WR|A|rise|5-10"
+   ],
+   "merge": "rise 2-5 + 5-10"
+  },
+  "target_share|TE|A|fall|10+": {
+   "n": 119,
+   "held": 58,
+   "hold_share": 0.487,
+   "sources": [
+    "target_share|TE|A|fall|2-5",
+    "target_share|TE|A|fall|5-10",
+    "target_share|TE|A|fall|10+",
+    "target_share|TE|B|fall|2-5",
+    "target_share|TE|B|fall|5-10",
+    "target_share|TE|B|fall|10+"
+   ],
+   "merge": "fall 2-5 + 5-10 + 10+, games 3-5 + 6+"
+  },
+  "target_share|TE|A|fall|2-5": {
+   "n": 71,
+   "held": 38,
+   "hold_share": 0.535,
+   "sources": [
+    "target_share|TE|A|fall|2-5",
+    "target_share|TE|B|fall|2-5"
+   ],
+   "merge": "fall 2-5, games 3-5 + 6+"
+  },
+  "target_share|TE|A|fall|5-10": {
+   "n": 113,
+   "held": 57,
+   "hold_share": 0.504,
+   "sources": [
+    "target_share|TE|A|fall|2-5",
+    "target_share|TE|A|fall|5-10",
+    "target_share|TE|B|fall|2-5",
+    "target_share|TE|B|fall|5-10"
+   ],
+   "merge": "fall 2-5 + 5-10, games 3-5 + 6+"
+  },
+  "target_share|TE|A|rise|10+": {
+   "n": 55,
+   "held": 33,
+   "hold_share": 0.6,
+   "sources": [
+    "target_share|TE|A|rise|2-5",
+    "target_share|TE|A|rise|5-10",
+    "target_share|TE|A|rise|10+"
+   ],
+   "merge": "rise 2-5 + 5-10 + 10+"
+  },
+  "target_share|TE|A|rise|2-5": {
+   "n": 51,
+   "held": 33,
+   "hold_share": 0.647,
+   "sources": [
+    "target_share|TE|A|rise|2-5",
+    "target_share|TE|A|rise|5-10"
+   ],
+   "merge": "rise 2-5 + 5-10"
+  },
+  "target_share|TE|A|rise|5-10": {
+   "n": 51,
+   "held": 33,
+   "hold_share": 0.647,
+   "sources": [
+    "target_share|TE|A|rise|2-5",
+    "target_share|TE|A|rise|5-10"
+   ],
+   "merge": "rise 2-5 + 5-10"
+  },
+  "target_share|TE|B|fall|10+": {
+   "n": 76,
+   "held": 42,
+   "hold_share": 0.553,
+   "sources": [
+    "target_share|TE|B|fall|2-5",
+    "target_share|TE|B|fall|5-10",
+    "target_share|TE|B|fall|10+"
+   ],
+   "merge": "fall 2-5 + 5-10 + 10+"
+  },
+  "target_share|TE|B|fall|5-10": {
+   "n": 73,
+   "held": 42,
+   "hold_share": 0.575,
+   "sources": [
+    "target_share|TE|B|fall|2-5",
+    "target_share|TE|B|fall|5-10"
+   ],
+   "merge": "fall 2-5 + 5-10"
+  },
+  "target_share|TE|B|rise|10+": {
+   "n": 119,
+   "held": 57,
+   "hold_share": 0.479,
+   "sources": [
+    "target_share|TE|B|rise|5-10",
+    "target_share|TE|B|rise|10+"
+   ],
+   "merge": "rise 5-10 + 10+"
+  },
+  "target_share|WR|A|fall|10+": {
+   "n": 63,
+   "held": 33,
+   "hold_share": 0.524,
+   "sources": [
+    "target_share|WR|A|fall|5-10",
+    "target_share|WR|A|fall|10+"
+   ],
+   "merge": "fall 5-10 + 10+"
+  },
+  "target_share|WR|A|rise|10+": {
+   "n": 90,
+   "held": 44,
+   "hold_share": 0.489,
+   "sources": [
+    "target_share|WR|A|rise|5-10",
+    "target_share|WR|A|rise|10+"
+   ],
+   "merge": "rise 5-10 + 10+"
+  },
+  "target_share|WR|B|fall|10+": {
+   "n": 163,
+   "held": 92,
+   "hold_share": 0.564,
+   "sources": [
+    "target_share|WR|B|fall|5-10",
+    "target_share|WR|B|fall|10+"
+   ],
+   "merge": "fall 5-10 + 10+"
+  }
  }
 }
