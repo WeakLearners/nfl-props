@@ -1,4 +1,4 @@
-"""Defense rankings: total, run, pass. Display only, never a model input.
+"""Defense rankings: total, run, pass, and by position. Display only, never a model input.
 
 Rank 1 = toughest defense (allows the least). Built from what each defense
 allowed, per game, from player_games and schedules. Each game is adjusted for
@@ -11,18 +11,18 @@ import pandas as pd
 from .project import DECAY, PRIOR_SEASON_W, K_VOL_GAMES
 
 LOOKBACK_SEASONS = 1  # two seasons: the current one and the one before
-# Score weights inside each rank. Total is one stat, so it has one weight.
-WEIGHTS = {
-    "pass":  {"epa_db": .70, "pass_ypg": .30},
-    "run":   {"epa_rush": .50, "rush_ypg": .30, "ypc": .20},
-    "total": {"epa_play": 1.0},
-}
+# Each rank is the order of ONE stat, the same number the page shows.
+RANK_STAT = {"total": "epa_play", "run": "epa_rush", "pass": "epa_db",
+             "qb": "qb_ypg", "rb": "rb_ypg", "wr": "wr_ypg", "te": "te_ypg"}
 # stat -> (numerator, denominator or None for a per-game value)
 STATS = {
     "epa_db": ("pass_epa", "dropbacks"), "pass_ypg": ("pass_yds", None),
     "epa_rush": ("rush_epa", "carries"), "rush_ypg": ("rush_yds", None),
     "ypc": ("rush_yds", "carries"), "epa_play": ("epa", "plays"),
+    "qb_ypg": ("qb_yds", None), "rb_ypg": ("rb_yds", None),
+    "wr_ypg": ("wr_yds", None), "te_ypg": ("te_yds", None),
 }
+POSITIONS = (("qb", "QB"), ("rb", "RB"), ("wr", "WR"), ("te", "TE"))
 
 
 def team_games(con, season, week):
@@ -31,7 +31,11 @@ def team_games(con, season, week):
                   SUM(COALESCE(passing_epa,0)) pass_epa, SUM(COALESCE(rushing_epa,0)) rush_epa,
                   SUM(COALESCE(attempts,0)+COALESCE(sacks_suffered,0)) dropbacks,
                   SUM(COALESCE(passing_yards,0)) pass_yds, SUM(COALESCE(carries,0)) carries,
-                  SUM(COALESCE(rushing_yards,0)) rush_yds
+                  SUM(COALESCE(rushing_yards,0)) rush_yds,
+                  SUM(CASE WHEN position='QB' THEN COALESCE(passing_yards,0) ELSE 0 END) qb_yds,
+                  SUM(CASE WHEN position='RB' THEN COALESCE(rushing_yards,0)+COALESCE(receiving_yards,0) ELSE 0 END) rb_yds,
+                  SUM(CASE WHEN position='WR' THEN COALESCE(receiving_yards,0) ELSE 0 END) wr_yds,
+                  SUM(CASE WHEN position='TE' THEN COALESCE(receiving_yards,0) ELSE 0 END) te_yds
            FROM player_games WHERE season_type='REG' AND season >= ?
              AND (season < ? OR (season = ? AND week <= ?))
            GROUP BY game_id, season, week, team, opponent_team"""
@@ -51,7 +55,7 @@ def _val(g, stat):
 
 
 def rank_defenses(g, season):
-    """32 rows: team, adjusted stats, score, and total/run/pass rank (1 = toughest)."""
+    """32 rows: team, adjusted stats, and one rank per RANK_STAT key (1 = allows the least of that stat)."""
     g = g.copy()
     for st in STATS:
         g[st] = _val(g, st)
@@ -74,14 +78,15 @@ def rank_defenses(g, season):
     cur = g[g.season == season]
     out["pa_pg"] = cur.groupby("defn").pa.mean()
     out["games"] = cur.groupby("defn").size()
-    for r, ws in WEIGHTS.items():
-        z = sum(wt * (out[s] - out[s].mean()) / out[s].std(ddof=0) for s, wt in ws.items())
-        out[f"{r}_rank"] = z.rank(method="first").astype(int)  # lowest allowed = 1
+    for r, st in RANK_STAT.items():
+        out[f"{r}_rank"] = out[st].rank(method="first").astype(int)  # lowest allowed = 1
     return out.reset_index(names="team")
 
 
-VIEWS = (("total", "Total", "epa_play", "EPA/play"), ("run", "Run", "epa_rush", "EPA/rush"),
-         ("pass", "Pass", "epa_db", "EPA/dropback"))
+# key, button label, rank stat, header unit, extra display columns (stat, header, decimals)
+VIEWS = (("total", "Total", "epa_play", "EPA/play", ()),
+         ("run", "Run", "epa_rush", "EPA/rush", (("rush_ypg", "Rush yds/g", 1), ("ypc", "Yds/carry", 2))),
+         ("pass", "Pass", "epa_db", "EPA/dropback", (("pass_ypg", "Pass yds/g", 1),)))
 
 
 def current_defense_ranks():
@@ -95,22 +100,40 @@ def current_defense_ranks():
 
 
 def render_defenses(season, week, df):
-    """reports/defenses.html: one table per view (Total, Run, Pass), switched by buttons."""
+    """reports/defenses.html: Total, Run, Pass tables and a By position table, switched by buttons."""
     import html
     from .config import ROOT
     btns, tables = [], []
-    for key, label, col, unit in VIEWS:
+
+    def button(key, label):
+        btns.append(f'<button type="button" aria-pressed="{str(key == "total").lower()}" data-v="{key}" '
+                    f'data-inspect-id="defenses-btn-{key}">{label}</button>')
+
+    def wrap(key, head, rows):
+        tables.append(
+            f'<div class="tablewrap" data-v="{key}" data-inspect-id="defenses-table-{key}"{"" if key == "total" else " hidden"}>'
+            f'<table><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div>')
+
+    for key, label, col, unit, extra in VIEWS:
         d = df.sort_values(f"{key}_rank")
         rows = "".join(
             f'<tr data-inspect-id="defenses-row-{key}"><td class="num">{r[f"{key}_rank"]}</td>'
             f'<td>{html.escape(r.team)}</td><td class="num">{r[col]:+.3f}</td>'
-            f'<td class="num">{r.pa_pg:.1f}</td></tr>' for _, r in d.iterrows())
-        btns.append(f'<button type="button" aria-pressed="{str(key == "total").lower()}" data-v="{key}" '
-                    f'data-inspect-id="defenses-btn-{key}">{label}</button>')
-        tables.append(
-            f'<div class="tablewrap" data-v="{key}" data-inspect-id="defenses-table-{key}"{"" if key == "total" else " hidden"}>'
-            f'<table><thead><tr><th class="num">Rank</th><th>Team</th><th class="num">{unit} allowed</th>'
-            f'<th class="num">Pts/g allowed</th></tr></thead><tbody>{rows}</tbody></table></div>')
+            + "".join(f'<td class="num">{r[c]:.{dp}f}</td>' for c, _, dp in extra)
+            + f'<td class="num">{r.pa_pg:.1f}</td></tr>' for _, r in d.iterrows())
+        head = (f'<th class="num">Rank</th><th>Team</th><th class="num">{unit} allowed</th>'
+                + "".join(f'<th class="num">{n}</th>' for _, n, _ in extra) + '<th class="num">Pts/g allowed</th>')
+        button(key, label)
+        wrap(key, head, rows)
+    d = df.sort_values("team")
+    rows = "".join(
+        '<tr data-inspect-id="defenses-row-pos"><td>' + html.escape(r.team) + "</td>"
+        + "".join(f'<td class="num">{r[f"{k}_rank"]} <span class="yds">{r[f"{k}_ypg"]:.1f}</span></td>'
+                  for k, _ in POSITIONS) + "</tr>" for _, r in d.iterrows())
+    head = ('<th>Team</th>' + "".join(
+        f'<th class="num" data-inspect-id="defenses-col-{k}">vs {n} rank / yds</th>' for k, n in POSITIONS))
+    button("pos", "By position")
+    wrap("pos", head, rows)
     tpl = (ROOT / "templates" / "defenses.html").read_text()
     return (tpl.replace("__WEEK__", f"{season} Week {week}").replace("__BUTTONS__", "".join(btns))
                .replace("__TABLES__", "\n".join(tables)))
