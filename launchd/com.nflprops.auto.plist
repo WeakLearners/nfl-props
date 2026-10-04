@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<!-- Build a report for every game before kickoff, whatever the day or hour.
+
+     Replaces the fixed thursday, sunday, snf and mnf jobs. Those ran at set
+     clock times, so a 9:30 AM London kickoff (2026-10-04) was already over
+     when the 11:45 Sunday job ran, and Friday, Saturday and holiday games
+     had no job at all.
+
+     Every thirty minutes this asks the odds API for the event list (free),
+     finds sittings that kick off within 3 hours, and builds only the games
+     that have no report yet. One Slack post per sitting. Idle runs cost
+     no credits. The logic is in nflprops/schedule.py. -->
+<dict>
+  <key>Label</key><string>com.nflprops.auto</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/Sean/Code/nfl-props/.venv/bin/python</string>
+    <string>/Users/Sean/Code/nfl-props/scripts/run_reports.py</string>
+    <string>auto</string>
+    <string>--picks</string>
+    <string>6</string>
+  </array>
+  <key>WorkingDirectory</key><string>/Users/Sean/Code/nfl-props</string>
+  <key>StartInterval</key><integer>1800</integer>
+  <key>StandardOutPath</key><string>/Users/Sean/Code/nfl-props/logs/auto.log</string>
+  <key>StandardErrorPath</key><string>/Users/Sean/Code/nfl-props/logs/auto.err</string>
+</dict>
+</plist>

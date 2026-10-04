@@ -67,6 +67,11 @@ def event_lines(event_id, target=DEFAULT_TARGET, season=None, week=None, teams=N
         rem = r.headers.get("x-requests-remaining")
     if season is not None and week is not None and teams is not None:
         save_board(season, week, teams, d)
+    return parse_lines(d, target), rem
+
+
+def parse_lines(d, target=DEFAULT_TARGET):
+    """Closest-to-target rung per player-stat from one raw odds payload."""
     rows = []
     for bm in d.get("bookmakers", []):
         for m in bm.get("markets", []):
@@ -78,11 +83,11 @@ def event_lines(event_id, target=DEFAULT_TARGET, season=None, week=None, teams=N
                     rows.append({"stat": stat, "player": o.get("description"),
                                  "line": o.get("point"), "price": o.get("price")})
     if not rows:
-        return pd.DataFrame(), rem
+        return pd.DataFrame()
     df = pd.DataFrame(rows)
     df["player_key"] = df.player.map(name_key)
     df["d"] = (df.price - target).abs()
-    return df.sort_values("d").drop_duplicates(["player_key", "stat"]), rem
+    return df.sort_values("d").drop_duplicates(["player_key", "stat"])
 
 
 def report_path(season, week, team_a, team_b):
