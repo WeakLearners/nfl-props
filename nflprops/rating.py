@@ -285,7 +285,7 @@ def write_chips():
 def render_rankings(season, week, df, defenses_html=""):
     """The full rankings page: one table per position. Plain HTML from templates/rankings.html."""
     import html
-    from .badges import load_badges, markers_html, player_badges
+    from .badges import load_badges, markers_html, player_badges, trend_html
     from .config import ROOT
     from .odds import name_key
     bdata = load_badges()
@@ -296,8 +296,9 @@ def render_rankings(season, week, df, defenses_html=""):
         n_all = len(d_all)
         d = d_all.sort_values("rank").head(RANK_SHOW)  # display cut only: ranks stay as computed over all n_all
         rows = "".join(
-            f'<tr data-inspect-id="rankings-row"><td class="num">{r["rank"]}</td><td>{html.escape(r["name"])}'
-            f'{markers_html("", None, player_badges(f"{name_key(r["name"])}|{pos_}", data=bdata), "", "rankings-badge")}</td>'
+            f'<tr data-inspect-id="rankings-row"><td class="num">{r["rank"]}</td>'
+            f'<td>{trend_html(bd := player_badges(f"{name_key(r["name"])}|{pos_}", data=bdata), "rankings-badge")}{html.escape(r["name"])}'
+            f'{markers_html("", None, bd, "", "rankings-badge")}</td>'
             f'<td>{html.escape(str(r.team))}</td><td class="num">{r.rating:.1f}</td>'
             f'<td class="num">{int(r.n_games)}</td><td class="num">{r.vol:.1f}</td></tr>'
             for _, r in d.iterrows())

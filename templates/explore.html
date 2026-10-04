@@ -367,8 +367,15 @@
     }).join("");
   }
 
+  // Trend arrows go left of the name (trendMk). mk() leaves them out.
+  var TRENDRE = /\bbd-(up|down)\b/;
+  function trendMk(l, id) {
+    return bdBadges({bd: (l.bd || []).filter(function (b) { return TRENDRE.test(b[0]); })
+      .map(function (b) { return [b[0] + " tr-lead", b[1], b[2]]; })}, id);
+  }
+
   function mk(dep, l, rkId, bdId) {
-    var h = dep + rkChip(l, rkId) + bdBadges(l, bdId);
+    var h = dep + rkChip(l, rkId) + bdBadges({bd: (l.bd || []).filter(function (b) { return !TRENDRE.test(b[0]); })}, bdId);
     return h ? '<span class="mk">' + h + '</span>' : "";
   }
 
@@ -376,7 +383,7 @@
     return legs.slice().sort(function (a, b) {
       return b.season - a.season || b.week - a.week || (a.p < b.p ? -1 : 1);
     }).map(function (l) {
-      return '<tr data-inspect-id="explore-leg"><td><a href="/' + esc(l.file) + '">' + esc(l.p) + '</a>' +
+      return '<tr data-inspect-id="explore-leg"><td>' + trendMk(l, "explore-badge") + '<a href="/' + esc(l.file) + '">' + esc(l.p) + '</a>' +
         '<span class="meta">' + esc(l.tm) + mk('<span class="dp">' + esc(l.role || "") + '</span>', l, "explore-rank-chip", "explore-badge") + '<span class="gm">' + esc("· W" + l.week + " " + l.game) + '</span></span></td>' +
         '<td>' + (l.s === "anytime_td" ? "anytime TD" : 'o' + l.line + ' ' + (SHORT[l.s] || l.s)) + '</td>' +
         '<td>' + (l.price == null ? "—" : (l.price > 0 ? "+" : "") + l.price) + '</td>' +

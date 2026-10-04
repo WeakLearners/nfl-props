@@ -108,7 +108,7 @@ def current_defense_ranks():
 def render_defenses(season, week, df):
     """The Defenses view embedded in reports/rankings.html: Total, Run, Pass and By position tables, all shown at once."""
     import html
-    from .badges import defense_badge, load_badges, markers_html
+    from .badges import defense_badge, load_badges, markers_html, trend_html
     from .config import ROOT
     bdata = load_badges()
     tables = []
@@ -123,7 +123,7 @@ def render_defenses(season, week, df):
         d = df.sort_values(f"{key}_rank")
         rows = "".join(
             f'<tr data-inspect-id="defenses-row-{key}"><td class="num">{r[f"{key}_rank"]}</td>'
-            f'<td>{html.escape(r.team)}{markers_html("", None, defense_badge(r.team, key, bdata), "", "defenses-badge")}</td><td class="num">{r[col]:+.3f}</td>'
+            f'<td>{trend_html(defense_badge(r.team, key, bdata), "defenses-badge")}{html.escape(r.team)}</td><td class="num">{r[col]:+.3f}</td>'
             + "".join(f'<td class="num">{r[c]:.{dp}f}</td>' for c, _, dp in extra)
             + f'<td class="num">{r.pa_pg:.1f}</td></tr>' for _, r in d.iterrows())
         head = (f'<th class="num">Rk</th><th>Team</th><th class="num">{unit}</th>'

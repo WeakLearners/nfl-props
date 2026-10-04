@@ -25,7 +25,8 @@ try:
 except Exception as _e:  # noqa: BLE001 — the pages still work ungraded
     sys.stderr.write(f"grading unavailable, name_key did not import: {_e}\n")
     name_key = None
-from nflprops.badges import BADGE_CSS, markers_html, player_badges  # noqa: E402
+from nflprops.badges import BADGE_CSS, markers_html, player_badges, trend_html  # noqa: E402
+from nflprops.teams import team_css  # noqa: E402
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT = os.path.join(BASE, "reports")
@@ -54,24 +55,24 @@ HEAD = """<!doctype html><meta charset="utf-8">
     --accent:#eb6834;
     /* Results get their own two colours rather than the accent. The accent is
        orange and already means "this is the interesting one"; a result needs
-       to read as landed or not, which is a different question. The red is a
-       deep crimson rather than a red-orange, so it cannot be mistaken for the
-       accent sitting a few pixels away. */
-    --good:#1c7a4d; --bad:#b3261e;
+       to read as landed or not, which is a different question. Mint green and
+       a true red (Sean, 2026-10-04). The old dark-mode red read as light
+       orange next to the accent. */
+    --good:#12b886; --bad:#e01e1e;
   }}
   @media (prefers-color-scheme: dark){{
     :root:not([data-theme="light"]){{
       color-scheme: dark;
       --bg:#121211; --surface:#1a1a19; --line:#33322e; --line-soft:#262521;
       --ink:#f6f5ef; --ink-2:#c3c2b7; --ink-3:#8b897f;
-      --accent:#d95926; --good:#4fbd85; --bad:#f2685c;
+      --accent:#d95926; --good:#3ef0b0; --bad:#ff3b3b;
     }}
   }}
   :root[data-theme="dark"]{{
     color-scheme: dark;
     --bg:#121211; --surface:#1a1a19; --line:#33322e; --line-soft:#262521;
     --ink:#f6f5ef; --ink-2:#c3c2b7; --ink-3:#8b897f;
-    --accent:#d95926; --good:#4fbd85; --bad:#f2685c;
+    --accent:#d95926; --good:#3ef0b0; --bad:#ff3b3b;
   }}
   *{{box-sizing:border-box}}
   body{{
@@ -742,13 +743,13 @@ def leg_rows(legs, graded):
                 f'<span class="mark {"hit" if hit else "miss"}"'
                 f' data-inspect-id="slate-leg-result">'
                 f'{r["actual"]:g}</span>')
+        bd = badges_for(r["p"], r["role"], r.get("vs"), r.get("_wk"))
         mk = markers_html(f'<span class="dp">{r["role"]}</span>', chip_for(r["p"], r["role"]),
-                          badges_for(r["p"], r["role"], r.get("vs"), r.get("_wk")),
-                          "slate-rank-chip", "slate-badge")
+                          bd, "slate-rank-chip", "slate-badge")
         out.append(
             f'<tr data-inspect-id="slate-leg">'
             f'<td class="rank">{i}</td>'
-            f'<td class="who"><a href="/{r["file"]}">{r["p"]}</a>'
+            f'<td class="who">{trend_html(bd, "slate-badge")}<a href="/{r["file"]}">{r["p"]}</a>'
             f'<span class="meta">{r["tm"]}{mk}<span class="gm">&middot; {r["game"]}</span></span></td>'
             f'<td class="stat">o{r["line"]:g} {stat}</td>'
             + (f'<td class="res">{mark}</td>' if graded else "")
@@ -1891,6 +1892,10 @@ class Handler(SimpleHTTPRequestHandler):
         else:
             title = f"NFL Props \u00b7 {m.group(3)} @ {m.group(4)}" if m else "NFL Props"
             html = with_chrome(html, "week", None, title)
+            # Team colours replace the template's fixed orange and blue, old reports included.
+            if m:
+                html = html.replace('<meta charset="utf-8">',
+                                    '<meta charset="utf-8">\n' + team_css(m.group(3), m.group(4)), 1)
         body = (with_theme(html) +
                 '\n<script src="/_inspector.js"></script>\n').encode()
         self._send(body, "text/html; charset=utf-8")

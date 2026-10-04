@@ -305,14 +305,24 @@ def badge_html(items, inspect_id):
         f'title="{html.escape(t, quote=True)}">{html.escape(x)}</span>' for c, x, t in items)
 
 
+def is_trend(item):
+    """True for a trend arrow (player or defense). Trend arrows go left of the name, not in .mk."""
+    return any(c in ("bd-up", "bd-down", "bd-d-up", "bd-d-down") for c in item[0].split())
+
+
+def trend_html(items, badge_id=""):
+    """The trend arrow from player_badges() / defense_badge() output, for the left of a name."""
+    return badge_html([[i[0] + " tr-lead", i[1], i[2]] for i in items if is_trend(i)], badge_id)
+
+
 def markers_html(depth_html="", chip=None, items=(), chip_id="", badge_id=""):
-    """One name-marker group: depth, rank chip, trend, matchup, in that order.
+    """One name-marker group: depth, rank chip, matchup, in that order. Trend arrows are left out: see trend_html().
     depth_html: markup for the depth number (plain <span class="dp"> or a pill), already safe.
     chip: (text, title) from chips.json, or None. items: player_badges() / defense_badge() output.
     Returns "" when there is nothing to show."""
     chip_html = (f'<span class="rk" data-inspect-id="{chip_id}" '
                  f'title="{html.escape(chip[1], quote=True)}">{html.escape(chip[0])}</span>') if chip else ""
-    inner = depth_html + chip_html + badge_html(items, badge_id)
+    inner = depth_html + chip_html + badge_html([i for i in items if not is_trend(i)], badge_id)
     return f'<span class="mk">{inner}</span>' if inner else ""
 
 
@@ -327,6 +337,11 @@ def defense_badge(team, cat, data=None):
 
 # One stylesheet for every page. Palette tokens only, from each page's :root. Player arrows use good/bad. Defense arrows are neutral because tougher is not good or bad on its own.
 BADGE_CSS = """
+  /* Result colours: mint green and a true red. Repeated :root wins over the
+     :root tokens baked into older report files. */
+  :root:root:root{--good:#12b886; --bad:#e01e1e}
+  @media (prefers-color-scheme: dark){:root:root:root:not([data-theme="light"]){--good:#3ef0b0; --bad:#ff3b3b}}
+  :root:root:root[data-theme="dark"]{--good:#3ef0b0; --bad:#ff3b3b}
   /* Name markers. One system for every page: depth, rank chip, trend, matchup,
      in that order, in one .mk group. Spec: projects/nfl-props/design/name-markers-spec-2026-10-04.md.
      Depth is filled or plain. Rank is the only outline. Trend is a bare glyph. Matchup is tinted.
@@ -339,13 +354,34 @@ BADGE_CSS = """
     font-family:"IBM Plex Mono",monospace; font-size:10px; line-height:1; white-space:nowrap;
     position:static; bottom:auto; vertical-align:middle}
   .role{font-weight:600; letter-spacing:.06em; color:var(--surface)}
-  .role.a{background:var(--den)} .role.b{background:var(--kc)}
+  /* Team colours from nflprops/teams.py (served per report). Home: solid, white letters.
+     Away: white, team-colour border and letters. */
+  .role.a{background:#fff; color:var(--away,var(--den)); border:1px solid var(--away,var(--den))}
+  .role.b{background:var(--home,var(--kc)); color:#fff}
+  /* Dark mode: a faint edge, so a black or navy home badge does not merge into the card. */
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .role.b{box-shadow:inset 0 0 0 1px rgba(255,255,255,.28)}}
+  :root[data-theme="dark"] .role.b{box-shadow:inset 0 0 0 1px rgba(255,255,255,.28)}
   .rk{font-weight:500; color:var(--ink-2); background:transparent;
     border:1px solid var(--ink-3); box-shadow:none; cursor:help}
   .bd{font-weight:600; border:1px solid currentColor; cursor:help}
-  .bd-up,.bd-down,.bd-d-up,.bd-d-down{border:0; background:none; padding:0 1px}
-  .bd-up{color:var(--good)} .bd-down{color:var(--bad)}
-  .bd-d-up{color:var(--ink)} .bd-d-down{color:var(--ink-3)}
+  /* Trend: three triangles in a column. They light one after the other in the
+     direction of the trend, then all go dim again. The glyph text stays for copy and paste. */
+  .bd-up,.bd-down,.bd-d-up,.bd-d-down{border:0; padding:0; width:10px; height:18px; flex:none;
+    font-size:0; color:transparent; vertical-align:middle;
+    background-color:color-mix(in srgb, var(--c) 22%, transparent);
+    background-image:linear-gradient(var(--c),var(--c)); background-repeat:no-repeat;
+    -webkit-mask:var(--tri) center/100% 100% no-repeat; mask:var(--tri) center/100% 100% no-repeat;
+    animation:bd-seq 1.8s steps(1,end) infinite}
+  .bd-up,.bd-d-up{--tri:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 18'%3E%3Cpath d='M5 0L10 5H0ZM5 6.5L10 11.5H0ZM5 13L10 18H0Z'/%3E%3C/svg%3E"); background-position:bottom}
+  .bd-down,.bd-d-down{--tri:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 18'%3E%3Cpath d='M0 0H10L5 5ZM0 6.5H10L5 11.5ZM0 13H10L5 18Z'/%3E%3C/svg%3E"); background-position:top}
+  .bd-up{--c:var(--good)} .bd-down{--c:var(--bad)}
+  .bd-d-up{--c:var(--ink)} .bd-d-down{--c:var(--ink-3)}
+  @keyframes bd-seq{0%{background-size:100% 0} 20%{background-size:100% 36%}
+    40%{background-size:100% 68%} 60%,100%{background-size:100% 100%}}
+  @media (prefers-reduced-motion: reduce){
+    .bd-up,.bd-down,.bd-d-up,.bd-d-down{animation:none; background-size:100% 100%}}
+  /* Trend arrow left of a name: a space after it. */
+  .tr-lead{margin-right:6px}
   .bd-big{color:var(--den,var(--accent)); background:color-mix(in srgb, var(--den,var(--accent)) 12%, transparent)}
   .bd-caution{color:var(--ink); background:color-mix(in srgb, var(--ink) 10%, transparent); border-style:dashed}
 """
