@@ -382,6 +382,7 @@ BADGE_CSS = """
     .bd-up,.bd-down,.bd-d-up,.bd-d-down{animation:none; background-size:100% 100%}}
   /* Trend arrow left of a name: a space after it. */
   .tr-lead{margin-right:6px}
-  .bd-big{color:var(--den,var(--accent)); background:color-mix(in srgb, var(--den,var(--accent)) 12%, transparent)}
-  .bd-caution{color:var(--ink); background:color-mix(in srgb, var(--ink) 10%, transparent); border-style:dashed}
+  /* Matchup: solid fills. Big day red with white letters, Caution yellow with black letters. */
+  .bd-big{color:#fff; background:var(--bad); border-color:var(--bad)}
+  .bd-caution{color:#000; background:#ffd60a; border-color:#ffd60a}
 """
