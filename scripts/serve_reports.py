@@ -237,8 +237,10 @@ PAGE = HEAD + """
     <p class="eyebrow" data-inspect-id="index-eyebrow">Production ranges</p>
     <h1 data-inspect-id="index-title">{title}</h1>
   </header>
+  <div class="pg-intro"><div class="pg-lede">
   <p class="sub" data-inspect-id="index-subtitle">Games sit in kickoff order.
     TD marks the likeliest scorer. Nothing here claims an edge.</p>
+  </div></div>
 {tabs}
 {rows}
 </div>"""
@@ -961,10 +963,12 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
     <p class="eyebrow" data-inspect-id="slate-eyebrow">Consolidated picks</p>
     <h1 data-inspect-id="slate-title">The Slate</h1>
   </header>
+  <div class="pg-intro"><div class="pg-lede">
   <p class="sub" data-inspect-id="slate-subtitle">Every shortlisted leg in the week,
     pooled by sitting and ranked three ways. Model is this project's own chance the
     leg lands. Book is what FanDuel's price implies. The small figure under Book is
     the difference, and it is the only column that says anything the book doesn't.</p>
+  </div></div>
   {tabs}
 {windows}
   <footer data-inspect-id="slate-footer">Prices are whatever
@@ -1522,7 +1526,7 @@ def with_theme(html):
 # ------------------------------------------------------------- site chrome
 
 CHROME_CSS = """<style>
-  .sn{border-bottom:2px solid var(--ink); margin:0 0 18px; padding-bottom:2px;
+  .sn{border-bottom:2px solid var(--ink); margin:0 0 24px; padding-bottom:2px;
     font-family:"IBM Plex Mono",ui-monospace,monospace; text-transform:uppercase;
     letter-spacing:.12em}
   .sn-row{display:flex; justify-content:space-between; align-items:center; gap:12px}
@@ -1537,9 +1541,11 @@ CHROME_CSS = """<style>
   .sn-sub{font-size:10.5px; padding-bottom:4px}
   .sn-sub a{padding:6px 0}
   .sn-sub .sep{color:var(--ink-3); margin:0 6px}
-  .sn-stamp{color:var(--ink-3); font-size:10.5px; font-variant-numeric:tabular-nums}
+  .sn-stamp{color:var(--ink-3); font-size:10.5px; font-variant-numeric:tabular-nums;
+    display:inline-block; padding:6px 0}
   .sf{color:var(--ink-3); font-size:12.5px}
-  .sf p{margin:0; padding-top:16px; border-top:1px solid var(--line); max-width:72ch}
+  .sf p{margin:0; padding-top:16px; border-top:1px solid var(--line); max-width:none;
+    padding-right:max(0px, calc(100% - 72ch))}
   /* Links the old pages carry for themselves. The nav replaces them. The
      files on disk are never rewritten, so they are hidden here instead. */
   [data-inspect-id="report-back"],[data-inspect-id="report-rankings-link"],
@@ -1606,17 +1612,47 @@ LAYOUT_CSS = """<style>
   .wrap[data-page]{max-width:none; margin:0; padding:32px var(--gutter) 64px}
   .sf{max-width:none; margin:0; padding:0 var(--gutter) 48px}
   /* Prose keeps a readable line. The page does not. */
-  .wrap[data-page] :is(.sub,.note,.picks-note,.top-note,footer){max-width:72ch}
+  .wrap[data-page] :is(.sub,.note,.picks-note,.top-note){max-width:72ch}
   /* A wide row is hard to follow across. Tint the row under the pointer. */
   .wrap[data-page] .tablewrap tbody tr:hover td{background:var(--line-soft)}
 
-  /* Games: kickoff blocks side by side. :not([hidden]) keeps the week tabs
-     working -- without it this rule beats .panel[hidden]{display:none}. */
+  /* Shared page skeleton: header, intro row (lede | aside), controls, content.
+     Spec: projects/nfl-props/design/wide-layout-polish-spec-2026-10-04.md */
+  .wrap[data-page] header{margin-bottom:0}
+  .pg-intro{display:grid; grid-template-columns:minmax(0,72ch) minmax(0,1fr);
+    column-gap:48px; row-gap:16px; align-items:start; margin:16px 0 0}
+  .pg-lede p{margin:0 0 8px; max-width:72ch; font-size:14.5px; line-height:1.55;
+    color:var(--ink-2)}
+  .pg-lede p:last-child{margin-bottom:0}
+  .pg-lede strong{color:var(--ink)}
+  .pg-aside{min-width:0}
+  .pg-aside > :first-child{margin-top:0}
+  .pg-controls{display:flex; flex-wrap:wrap; align-items:flex-end; gap:12px 24px;
+    margin:24px 0 0; padding-bottom:12px; border-bottom:1px solid var(--line)}
+  .pg-controls > *{margin:0}
+  .wrap[data-page] .tabs{margin-top:24px}
+  .pg-content{margin-top:24px}
+  /* Page footers: rule full width, text at a readable line. */
+  .wrap[data-page] footer{max-width:none; margin-top:48px;
+    padding-right:max(0px, calc(100% - 72ch))}
+  @media (max-width:1023px){
+    .pg-intro{grid-template-columns:minmax(0,1fr)}
+  }
+  /* Week tabs on a phone: one line, swipe if they do not fit. */
+  @media (max-width:560px){
+    .wrap[data-page] .tabs{flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none}
+    .wrap[data-page] .tab{flex:none; padding:9px 10px 7px; font-size:18px}
+  }
+
+  /* Games: one row per kickoff. When on the left, games on the right. */
   @media (min-width:1024px){
-    .wrap[data-page="games"] .panel:not([hidden]){display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(420px,1fr));
-      column-gap:40px; align-items:start}
-    .wrap[data-page="games"] .panel > .slot{margin-top:18px}
+    .wrap[data-page="games"] .slot{display:grid; grid-template-columns:280px minmax(0,1fr);
+      column-gap:24px; align-items:start; margin:0; padding:12px 0;
+      border-bottom:1px solid var(--line-soft)}
+    .wrap[data-page="games"] .slot:first-child{margin-top:12px}
+    .wrap[data-page="games"] .slot-h{border-bottom:0; padding:12px 0 0}
+    .wrap[data-page="games"] .slot .rows{margin-top:0;
+      grid-template-columns:repeat(auto-fill,minmax(168px,1fr))}
   }
 
   /* Slate: the three rankings of a sitting side by side when 600px each fits. */
@@ -1624,6 +1660,9 @@ LAYOUT_CSS = """<style>
     grid-template-columns:repeat(auto-fill,minmax(min(100%,600px),1fr));
     column-gap:32px; align-items:start}
   .wrap[data-page="slate"] .win-h{grid-column:1/-1}
+  .wrap[data-page="slate"] .win{margin-top:48px}
+  .wrap[data-page="slate"] .panel > .win:first-child{margin-top:24px}
+  .wrap[data-page="slate"] .win-h{border-bottom:1px solid var(--line); padding-bottom:6px}
 
   /* Report: the shortlist in two columns when each column is 680px or more.
      The rule moves from border-top to border-bottom so that the top of
@@ -1633,25 +1672,66 @@ LAYOUT_CSS = """<style>
     border-bottom:1px solid var(--line-soft)}
   .wrap[data-page="report"] #picklist li:last-child{border-bottom:0}
 
-  /* Rankings: one column per position. */
-  .rk-grid{display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr));
-    column-gap:24px; align-items:start}
-  .rk-pos h2{margin-top:28px}
+  /* Rankings: 4 positions in one row on wide screens, 2 + 2 in the middle. */
+  .rk-grid{display:grid; grid-template-columns:minmax(0,1fr); gap:32px 24px; align-items:start}
+  @media (min-width:900px){ .rk-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @media (min-width:1700px){ .rk-grid{grid-template-columns:repeat(4,minmax(0,1fr))} }
+  .wrap[data-page="rankings"] .rk-grid :is(th,td){padding:6px 6px}
+  .wrap[data-page="rankings"] .rk-grid th:last-child{white-space:normal}
+  /* One section-heading pattern (see 2.2). */
+  .wrap[data-page="rankings"] :is(.rk-pos,.dfn-cat) h2{display:flex; align-items:baseline;
+    gap:12px; margin:0 0 8px; padding-bottom:6px; border-bottom:1px solid var(--line);
+    font:600 22px/1.1 "Barlow Condensed",sans-serif; text-transform:uppercase; letter-spacing:.04em}
+  .wrap[data-page="rankings"] .rk-pos h2 .yds{margin-left:auto; font-family:"IBM Plex Mono",monospace;
+    font-size:11px; letter-spacing:.1em; text-transform:none}
 
-  /* Defenses view (inside Rankings): four compact tables in a grid, styled in templates/rankings.html. */
+  /* Defenses view (inside Rankings): four compact tables in a grid, styled in templates/rankings.html.
+     A fixed slot for the trend arrow keeps each column of numbers on one right edge. */
+  .wrap[data-page="rankings"] .dfn-grid td.num{position:relative; padding-right:calc(6px + 1.1em)}
+  .wrap[data-page="rankings"] .dfn-grid td.num .mk{position:absolute; right:2px; top:50%;
+    transform:translateY(-50%); margin:0}
 
-  /* Trends: the six cards in a grid. */
+  /* Trends: closed cards are an index; an open card takes the full row. */
   .tr-grid{display:grid;
     grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr));
-    gap:14px; align-items:start; margin:14px 0}
-  .tr-grid > .card{margin:0}
+    gap:12px 16px; align-items:start}
+  .tr-grid > .card{margin:0; padding:0 14px}
+  .tr-grid > .card[open]{grid-column:1/-1; padding-bottom:12px}
+  .tr-grid > .card[open] ul{columns:3 340px; column-gap:32px}
+  .tr-grid > .card[open] .trow{break-inside:avoid}
+  .tr-grid > .card[open] .note{max-width:72ch}
 
-  /* Results: top 5 and the explainer on the left, the table on the right. */
+  /* Results: the top 5 in the key panel; the grading note beside the table. */
+  .wrap[data-page="results"] .ex-side .top{max-width:640px; background:var(--surface);
+    border:1px solid var(--line); border-radius:3px; padding:12px 14px}
+  .wrap[data-page="results"] .top-lbl{flex:1 1 8ch}
+  .wrap[data-page="results"] .summary{max-width:72ch}
   @media (min-width:1280px){
-    .ex-grid{display:grid; grid-template-columns:minmax(320px,400px) minmax(0,1fr);
+    .ex-grid{display:grid; grid-template-columns:minmax(0,1fr) minmax(280px,360px);
       column-gap:48px; align-items:start}
+    .ex-grid > footer{margin-top:0; padding-right:0}
   }
+
+  /* Report: intro on the left, legend as a key panel on the right. The wrap
+     becomes a grid only at 1280px+. dense puts the legend beside the first
+     .sub without a fixed row number, so older report files place it too. */
+  @media (min-width:1280px){
+    .wrap[data-page="report"]{display:grid; grid-auto-flow:row dense;
+      grid-template-columns:minmax(0,72ch) minmax(0,1fr); column-gap:48px; align-content:start}
+    .wrap[data-page="report"] > *{grid-column:1/-1; min-width:0}
+    .wrap[data-page="report"] > .sub{grid-column:1; margin:16px 0 0}
+    .wrap[data-page="report"] > .legend{grid-column:2; grid-row:span 2; align-self:start;
+      flex-direction:column; align-items:flex-start; gap:6px; margin:16px 0 0;
+      background:var(--surface); border:1px solid var(--line); border-radius:3px; padding:12px 14px}
+    .wrap[data-page="report"] > .picks{margin-top:24px}
+  }
+  .wrap[data-page="report"] h2{margin-top:48px}
+  .wrap[data-page="report"] .picks{border-radius:3px}
+  .wrap[data-page="report"] .card{padding:12px 14px}
+  /* The last legend key is a sentence. Let it wrap as text, not as flex items. */
+  .wrap[data-page="report"] .key[data-inspect-id="legend-actual"]{display:block}
+  .wrap[data-page="report"] .key[data-inspect-id="legend-actual"] .swatch{display:inline-block;
+    vertical-align:middle; margin-right:8px}
 
   @media (max-width:560px){
     :root{--gutter:16px}

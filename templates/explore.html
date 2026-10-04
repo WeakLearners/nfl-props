@@ -7,8 +7,8 @@
     font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px;
     letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3)}
   a.back:hover{color:var(--accent)}
-  .controls{display:flex; flex-wrap:wrap; gap:14px 22px; margin:18px 0 0;
-    padding:14px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
+  .controls{display:flex; flex-wrap:wrap; gap:14px 22px; margin:0;
+    padding:0; border-top:0; border-bottom:0}
   .ctl{display:flex; flex-direction:column; gap:5px; min-width:0}
   .ctl label{font-family:"IBM Plex Mono",monospace; font-size:10px;
     letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3)}
@@ -20,7 +20,7 @@
   select:hover{border-color:var(--ink-3)}
   select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
   select:disabled{opacity:.45; cursor:default}
-  .summary{margin:18px 0 0; font-size:14px; color:var(--ink-2)}
+  .summary{margin:0; font-size:14px; color:var(--ink-2)}
   .summary b{color:var(--ink); font-family:"IBM Plex Mono",monospace; font-weight:600;
     font-variant-numeric:tabular-nums}
 
@@ -80,7 +80,7 @@
   .empty{color:var(--ink-3); font-style:italic; margin-top:20px}
   /* Top 5: the best hit rates from every grouping at once. Each row is a
      button that switches Group by to where that group lives. */
-  .top{margin:18px 0 0}
+  .top{margin:0}
   .top-h{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.14em;
     text-transform:uppercase; color:var(--ink-3); margin:0 0 4px; cursor:pointer;
     list-style:none}
@@ -117,21 +117,22 @@
     <p class="eyebrow" data-inspect-id="explore-eyebrow">Graded picks</p>
     <h1 data-inspect-id="explore-title">Results</h1>
   </header>
-<div class="ex-grid" data-inspect-id="explore-grid">
-<div class="ex-side" data-inspect-id="explore-side">
-  <details class="top" id="topbox" open data-inspect-id="explore-top5">
-    <summary class="top-h">Top 5 groups by hit rate &middot; 20+ legs</summary>
-    <div id="top"></div>
-  </details>
+  <div class="pg-intro">
+    <div class="pg-lede">
   <p class="sub" data-inspect-id="explore-subtitle">Every shortlisted leg from a finished
     game, cut the way you choose. <b>All legs</b> adds the ones a book priced that the
     model didn't pick; <b>Shortlist</b> narrows to the picks. <b>Needed</b> is the hit rate at which $100 on each leg
     breaks even. A group only paid if its hit rate beat it.
     <b>$100 each</b> is what a flat $100 on every leg in the group would have returned.</p>
-
-</div>
-<div class="ex-main" data-inspect-id="explore-main">
-  <p class="summary" id="summary" data-inspect-id="explore-summary"></p>
+    </div>
+    <div class="pg-aside ex-side" data-inspect-id="explore-side">
+  <details class="top" id="topbox" open data-inspect-id="explore-top5">
+    <summary class="top-h">Top 5 groups by hit rate &middot; 20+ legs</summary>
+    <div id="top"></div>
+  </details>
+    </div>
+  </div>
+  <div class="pg-controls">
   <div class="controls" data-inspect-id="explore-controls">
     <div class="ctl">
       <label for="kind">Picks</label>
@@ -153,10 +154,12 @@
       </div>
     </div>
   </div>
-  <div id="out" data-inspect-id="explore-table"></div>
-
-</div>
-</div>
+  </div>
+  <div class="ex-grid pg-content" data-inspect-id="explore-grid">
+    <div class="ex-main" data-inspect-id="explore-main">
+      <p class="summary" id="summary" data-inspect-id="explore-summary"></p>
+      <div id="out" data-inspect-id="explore-table"></div>
+    </div>
   <footer data-inspect-id="explore-footer">A leg is graded once its game is final, by the
     same rule the listing uses: the real number beats the line. An anytime-TD pick hits on a
     rushing or receiving touchdown; passing TDs don't count. TD picks without a book price
@@ -166,6 +169,7 @@
     that number for &mdash; passing yards, completions, and rushing yards (rushing at half
     weight). It's never applied to receiving yards or receptions, so those legs sit outside
     this grouping rather than being counted against a number that didn't shape them.</footer>
+  </div>
 </div>
 <script>
 (function () {

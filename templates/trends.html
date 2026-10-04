@@ -41,7 +41,7 @@
     color:var(--ink-3); font-weight:500}
   td.num,th.num{text-align:right; font-family:"IBM Plex Mono",monospace}
   tr:last-child td{border-bottom:0}
-  .filter{display:flex; gap:8px; margin:14px 0; flex-wrap:wrap}
+  .filter{display:flex; gap:8px; margin:0; flex-wrap:wrap}
   .filter button{font-family:"IBM Plex Mono",monospace; font-size:12px; padding:6px 12px; border:1px solid var(--line);
     background:var(--surface); color:var(--ink-2); border-radius:3px; cursor:pointer}
   .filter button[aria-pressed="true"]{border-color:var(--den); color:var(--den)}
@@ -63,14 +63,18 @@
     <p class="eyebrow" data-inspect-id="trends-data-through">Trends use games through __WEEK__ &middot; built __BUILT__</p>
     <h1>Trends and insights</h1>
   </header>
+  <div class="pg-intro"><div class="pg-lede">
   <p class="note" data-inspect-id="trends-disclaimer"><strong>Entertainment. Past data is not a pick.</strong> Every outlook is a past rate, not a promise.</p>
+  <p class="note" data-inspect-id="trends-footer">Outlook labels: Likely to hold (60.0% or more of past cases held, 50 or more cases), Likely to fade (40.0% or less), Watch (everything else). A change "held" if at least half of it carried into the next 3 games. Rates use 2021-2025 only.</p>
+  </div></div>
+  <div class="pg-controls">
   <div class="filter" data-inspect-id="trends-filter" role="group" aria-label="Position">
     <button type="button" aria-pressed="true" data-p="ALL">All</button><button type="button" aria-pressed="false" data-p="QB">QB</button><button type="button" aria-pressed="false" data-p="RB">RB</button><button type="button" aria-pressed="false" data-p="WR">WR</button><button type="button" aria-pressed="false" data-p="TE">TE</button>
   </div>
-<div class="tr-grid" data-inspect-id="trends-grid">
+  </div>
+<div class="tr-grid pg-content" data-inspect-id="trends-grid">
 __CARDS__
 </div>
-  <p class="note" data-inspect-id="trends-footer">Outlook labels: Likely to hold (60.0% or more of past cases held, 50 or more cases), Likely to fade (40.0% or less), Watch (everything else). A change "held" if at least half of it carried into the next 3 games. Rates use 2021-2025 only.</p>
 </div>
 <script>
 document.querySelectorAll('.filter button').forEach(function(b){b.addEventListener('click',function(){

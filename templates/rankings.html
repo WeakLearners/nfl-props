@@ -34,35 +34,51 @@
   .eyebrow{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.14em;
     text-transform:uppercase; color:var(--ink-3); margin:0 0 10px}
   .note{color:var(--ink-2); margin:6px 0}
-  .tablewrap{overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:3px}
+  .tablewrap{overflow-x:auto; background:none; border:0; border-radius:0}
   table{border-collapse:collapse; width:100%; font-size:14px}
   th,td{padding:6px 10px; text-align:left; border-bottom:1px solid var(--line-soft); white-space:nowrap}
   th{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase;
-    color:var(--ink-3); font-weight:500}
+    color:var(--ink-3); font-weight:500; border-bottom:1px solid var(--ink)}
   td.num,th.num{text-align:right; font-family:"IBM Plex Mono",monospace}
   tr:last-child td{border-bottom:0}
-  .filter{display:flex; gap:8px; margin:14px 0; flex-wrap:wrap}
+  .filter{display:flex; gap:8px; margin:0; flex-wrap:wrap}
   .filter button{font-family:"IBM Plex Mono",monospace; font-size:12px; padding:6px 12px; border:1px solid var(--line);
     background:var(--surface); color:var(--ink-2); border-radius:3px; cursor:pointer}
   .filter button[aria-pressed="true"]{border-color:var(--den); color:var(--den)}
   .yds{color:var(--ink-3); font-size:12px; margin-left:4px}
   /* Defenses: four compact tables side by side. */
-  .dfn-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr)); gap:16px; align-items:start; margin:16px 0}
-  .dfn-cat h2{font-size:18px; margin:0 0 6px}
+  .dfn-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr)); gap:16px; align-items:start; margin:0}
   .dfn-grid table{font-size:12.5px}
   .dfn-grid th,.dfn-grid td{padding:3px 6px}
   .dfn-grid th{font-size:9px; letter-spacing:.06em}
   .dfn-grid .yds{font-size:11px; margin-left:2px}
-  .legend{margin:6px 0 14px; padding:10px 14px; background:var(--surface); border:1px solid var(--line); border-radius:3px; font-size:13px; color:var(--ink-2)}
+  .legend{margin:0; padding:12px 14px; background:var(--surface); border:1px solid var(--line); border-radius:3px; font-size:13px; color:var(--ink-2)}
   .legend p{margin:3px 0}
   .legend .bd{margin-right:6px; vertical-align:middle}
   [hidden]{display:none !important}
 </style>
 <div class="wrap" data-inspect-id="rankings-wrap">
-  <div class="filter" data-group="top" data-inspect-id="rankings-switch" role="group" aria-label="Rankings view">
-    <button type="button" aria-pressed="true" data-view="players" data-inspect-id="rankings-switch-players">Players</button>
-    <button type="button" aria-pressed="false" data-view="defenses" data-inspect-id="rankings-switch-defenses">Defenses</button>
+  <div data-view="players">
+  <header data-inspect-id="rankings-header">
+    <p class="eyebrow" data-inspect-id="rankings-data-through">Ratings use games through __WEEK__</p>
+    <h1>Player rankings</h1>
+  </header>
   </div>
+  <div data-view="defenses" hidden>
+__DEFENSES_HEAD__
+  </div>
+  <div class="pg-intro">
+    <div class="pg-lede">
+      <div data-view="players">
+  <p class="note" data-inspect-id="rankings-disclaimer"><strong>Entertainment. A rating describes past production.</strong></p>
+  <p class="note" data-inspect-id="rankings-not-depth">Rank = recent production within the position. It is not the depth chart.</p>
+  <p class="note" data-inspect-id="rankings-floor">Ranked: at least __MINGAMES__ games counted and a regular role (last-5 average of at least __FLOORS__), with a game in the current season. Players below that floor are not listed. Each table shows the top 25 only. Ranks are over every ranked player.</p>
+      </div>
+      <div data-view="defenses" hidden>
+__DEFENSES_LEDE__
+      </div>
+    </div>
+    <aside class="pg-aside">
   <div class="legend" data-inspect-id="rankings-legend">
     <p><strong>Badges are rare by design.</strong> Most players and defenses have none. Each badge has a hover note with the numbers behind it. Badges describe past games and one matchup. They are not picks.</p>
     <p data-inspect-id="rankings-legend-trend"><span class="bd bd-up">&#9650;</span><span class="bd bd-down">&#9660;</span>Player trend. Production per game, opponents removed, over the last 3 games against the 6 to 12 before. It needs a large change (t of 2 or more, at least 25%) and the same direction in 2 of the 3 games.</p>
@@ -70,19 +86,20 @@
     <p data-inspect-id="rankings-legend-big"><span class="bd bd-big">Big day</span>A top-15% player at his position against one of the 5 defenses that allow the most to that position. Shown on the slate, results and report pages for this week's game.</p>
     <p data-inspect-id="rankings-legend-caution"><span class="bd bd-caution">Caution</span>A top-15% player against one of the 5 toughest defenses to that position. An average player against a mid or good defense gets no badge.</p>
   </div>
-  <div data-view="players" data-inspect-id="rankings-view-players">
-  <header data-inspect-id="rankings-header">
-    <p class="eyebrow" data-inspect-id="rankings-data-through">Ratings use games through __WEEK__</p>
-    <h1>Player rankings</h1>
-  </header>
-  <p class="note" data-inspect-id="rankings-disclaimer"><strong>Entertainment. A rating describes past production.</strong></p>
-  <p class="note" data-inspect-id="rankings-not-depth">Rank = recent production within the position. It is not the depth chart.</p>
-  <p class="note" data-inspect-id="rankings-floor">Ranked: at least __MINGAMES__ games counted and a regular role (last-5 average of at least __FLOORS__), with a game in the current season. Players below that floor are not listed. Each table shows the top 25 only. Ranks are over every ranked player.</p>
+    </aside>
+  </div>
+  <div class="pg-controls">
+  <div class="filter" data-group="top" data-inspect-id="rankings-switch" role="group" aria-label="Rankings view">
+    <button type="button" aria-pressed="true" data-view="players" data-inspect-id="rankings-switch-players">Players</button>
+    <button type="button" aria-pressed="false" data-view="defenses" data-inspect-id="rankings-switch-defenses">Defenses</button>
+  </div>
+  </div>
+  <div class="pg-content" data-view="players" data-inspect-id="rankings-view-players">
 <div class="rk-grid" data-inspect-id="rankings-grid">
 __TABLES__
 </div>
   </div>
-  <div data-view="defenses" data-inspect-id="rankings-view-defenses" hidden>
+  <div class="pg-content" data-view="defenses" data-inspect-id="rankings-view-defenses" hidden>
 __DEFENSES__
   </div>
 </div>

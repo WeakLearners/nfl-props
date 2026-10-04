@@ -309,11 +309,15 @@ def render_rankings(season, week, df, defenses_html=""):
             f'<th class="num">Games</th><th class="num">{RANK_VOL[pos_][1]} (last 5)</th></tr></thead>'
             f'<tbody>{rows}</tbody></table></div></section>')
     tpl = (ROOT / "templates" / "rankings.html").read_text()
+    parts = defenses_html.split("<!--split-->")
+    d_head, d_lede, d_body = parts if len(parts) == 3 else ("", "", defenses_html)
     return (tpl.replace("__WEEK__", f"{season} Week {week}")
                .replace("__MINGAMES__", str(RANK_MIN_GAMES))
                .replace("__FLOORS__", "QB 10 attempts, RB 5 carries, WR 3 targets, TE 3 targets")
                .replace("__TABLES__", "\n".join(out))
-               .replace("__DEFENSES__", defenses_html))
+               .replace("__DEFENSES_HEAD__", d_head)
+               .replace("__DEFENSES_LEDE__", d_lede)
+               .replace("__DEFENSES__", d_body))
 
 
 def write_rankings():
