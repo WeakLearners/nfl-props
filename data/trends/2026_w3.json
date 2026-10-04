@@ -16,7 +16,7 @@
     "games": 3,
     "vol": 21,
     "label": "Watch",
-    "outlook": "Watch (49%, n=90, merged: rise 5-10 + 10+)",
+    "outlook": "Watch (48.9%, n=90, merged: rise 5-10 + 10+)",
     "next": "vs NYJ",
     "dvp": 0.95
    },
@@ -33,7 +33,7 @@
     "games": 3,
     "vol": 23,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (60%, n=55, merged: rise 2-5 + 5-10 + 10+)",
+    "outlook": "Likely to hold (60.0%, n=55, merged: rise 2-5 + 5-10 + 10+)",
     "next": "vs ARI",
     "dvp": 1.02
    },
@@ -50,7 +50,7 @@
     "games": 3,
     "vol": 30,
     "label": "Watch",
-    "outlook": "Watch (49%, n=90, merged: rise 5-10 + 10+)",
+    "outlook": "Watch (48.9%, n=90, merged: rise 5-10 + 10+)",
     "next": "at TB",
     "dvp": 1.06
    },
@@ -67,7 +67,7 @@
     "games": 3,
     "vol": 23,
     "label": "Watch",
-    "outlook": "Watch (49%, n=90, merged: rise 5-10 + 10+)",
+    "outlook": "Watch (48.9%, n=90, merged: rise 5-10 + 10+)",
     "next": "at MIN",
     "dvp": 1.05
    },
@@ -84,7 +84,7 @@
     "games": 3,
     "vol": 11,
     "label": "Watch",
-    "outlook": "Watch (52%, n=63, merged: fall 5-10 + 10+)",
+    "outlook": "Watch (52.4%, n=63, merged: fall 5-10 + 10+)",
     "next": "vs DEN",
     "dvp": 1.07
    },
@@ -101,7 +101,7 @@
     "games": 3,
     "vol": 23,
     "label": "Watch",
-    "outlook": "Watch (49%, n=90, merged: rise 5-10 + 10+)",
+    "outlook": "Watch (48.9%, n=90, merged: rise 5-10 + 10+)",
     "next": "at CIN",
     "dvp": 0.91
    },
@@ -118,7 +118,7 @@
     "games": 3,
     "vol": 23,
     "label": "Watch",
-    "outlook": "Watch (49%, n=90, merged: rise 5-10 + 10+)",
+    "outlook": "Watch (48.9%, n=90, merged: rise 5-10 + 10+)",
     "next": "vs NYJ",
     "dvp": 0.95
    },
@@ -135,7 +135,7 @@
     "games": 3,
     "vol": 9,
     "label": "Watch",
-    "outlook": "Watch (52%, n=63, merged: fall 5-10 + 10+)",
+    "outlook": "Watch (52.4%, n=63, merged: fall 5-10 + 10+)",
     "next": "at NYG",
     "dvp": 1.0
    },
@@ -152,7 +152,7 @@
     "games": 3,
     "vol": 18,
     "label": "Watch",
-    "outlook": "Watch (52%, n=63, merged: fall 5-10 + 10+)",
+    "outlook": "Watch (52.4%, n=63, merged: fall 5-10 + 10+)",
     "next": "at BAL",
     "dvp": 1.15
    },
@@ -169,7 +169,7 @@
     "games": 3,
     "vol": 18,
     "label": "Watch",
-    "outlook": "Watch (43%, n=61)",
+    "outlook": "Watch (42.6%, n=61)",
     "next": "vs IND",
     "dvp": 1.04
    },
@@ -186,7 +186,7 @@
     "games": 3,
     "vol": 13,
     "label": "Watch",
-    "outlook": "Watch (56%, n=50)",
+    "outlook": "Watch (56.0%, n=50)",
     "next": "vs NYJ",
     "dvp": 0.95
    },
@@ -203,7 +203,7 @@
     "games": 3,
     "vol": 16,
     "label": "Watch",
-    "outlook": "Watch (43%, n=61)",
+    "outlook": "Watch (42.6%, n=61)",
     "next": "at SEA",
     "dvp": 1.01
    },
@@ -220,7 +220,7 @@
     "games": 3,
     "vol": 17,
     "label": "Watch",
-    "outlook": "Watch (56%, n=50)",
+    "outlook": "Watch (56.0%, n=50)",
     "next": "at LV",
     "dvp": 1.0
    },
@@ -237,7 +237,7 @@
     "games": 3,
     "vol": 11,
     "label": "Watch",
-    "outlook": "Watch (56%, n=50)",
+    "outlook": "Watch (56.0%, n=50)",
     "next": "at CIN",
     "dvp": 0.91
    },
@@ -254,7 +254,7 @@
     "games": 3,
     "vol": 21,
     "label": "Watch",
-    "outlook": "Watch (43%, n=61)",
+    "outlook": "Watch (42.6%, n=61)",
     "next": "vs DAL",
     "dvp": 1.0
    },
@@ -271,7 +271,7 @@
     "games": 3,
     "vol": 27,
     "label": "Watch",
-    "outlook": "Watch (43%, n=61)",
+    "outlook": "Watch (42.6%, n=61)",
     "next": "vs LA",
     "dvp": 0.97
    },
@@ -288,7 +288,7 @@
     "games": 3,
     "vol": 25,
     "label": "Watch",
-    "outlook": "Watch (56%, n=50)",
+    "outlook": "Watch (56.0%, n=50)",
     "next": "vs JAX",
     "dvp": 1.09
    },
@@ -305,7 +305,7 @@
     "games": 3,
     "vol": 18,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (65%, n=51, merged: rise 2-5 + 5-10)",
+    "outlook": "Likely to hold (64.7%, n=51, merged: rise 2-5 + 5-10)",
     "next": "vs TEN",
     "dvp": 0.9
    },
@@ -322,7 +322,7 @@
     "games": 3,
     "vol": 24,
     "label": "Watch",
-    "outlook": "Watch (43%, n=61)",
+    "outlook": "Watch (42.6%, n=61)",
     "next": "at PIT",
     "dvp": 1.05
    },
@@ -339,7 +339,7 @@
     "games": 3,
     "vol": 11,
     "label": "Watch",
-    "outlook": "Watch (43%, n=61)",
+    "outlook": "Watch (42.6%, n=61)",
     "next": "at TB",
     "dvp": 1.06
    },
@@ -356,7 +356,7 @@
     "games": 3,
     "vol": 31,
     "label": "Watch",
-    "outlook": "Watch (43%, n=61)",
+    "outlook": "Watch (42.6%, n=61)",
     "next": "at NYG",
     "dvp": 1.0
    },
@@ -373,7 +373,7 @@
     "games": 3,
     "vol": 9,
     "label": "Watch",
-    "outlook": "Watch (50%, n=113, merged: fall 2-5 + 5-10, games 3-5 + 6+)",
+    "outlook": "Watch (50.4%, n=113, merged: fall 2-5 + 5-10, games 3-5 + 6+)",
     "next": "vs NYJ",
     "dvp": 0.98
    },
@@ -390,7 +390,7 @@
     "games": 3,
     "vol": 18,
     "label": "Watch",
-    "outlook": "Watch (43%, n=61)",
+    "outlook": "Watch (42.6%, n=61)",
     "next": "at HOU",
     "dvp": 1.01
    },
@@ -407,7 +407,7 @@
     "games": 3,
     "vol": 14,
     "label": "Watch",
-    "outlook": "Watch (43%, n=61)",
+    "outlook": "Watch (42.6%, n=61)",
     "next": "at BUF",
     "dvp": 0.94
    },
@@ -424,7 +424,7 @@
     "games": 3,
     "vol": 18,
     "label": "Watch",
-    "outlook": "Watch (43%, n=61)",
+    "outlook": "Watch (42.6%, n=61)",
     "next": "vs NE",
     "dvp": 0.96
    },
@@ -441,7 +441,7 @@
     "games": 3,
     "vol": 9,
     "label": "Watch",
-    "outlook": "Watch (56%, n=50)",
+    "outlook": "Watch (56.0%, n=50)",
     "next": "at BAL",
     "dvp": 1.15
    },
@@ -458,7 +458,7 @@
     "games": 3,
     "vol": 12,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (65%, n=51, merged: rise 2-5 + 5-10)",
+    "outlook": "Likely to hold (64.7%, n=51, merged: rise 2-5 + 5-10)",
     "next": "at PHI",
     "dvp": 0.86
    },
@@ -475,7 +475,7 @@
     "games": 3,
     "vol": 11,
     "label": "Watch",
-    "outlook": "Watch (56%, n=50)",
+    "outlook": "Watch (56.0%, n=50)",
     "next": "vs GB",
     "dvp": 0.95
    },
@@ -492,7 +492,7 @@
     "games": 3,
     "vol": 22,
     "label": "Watch",
-    "outlook": "Watch (43%, n=61)",
+    "outlook": "Watch (42.6%, n=61)",
     "next": "vs DET",
     "dvp": 1.15
    },
@@ -509,7 +509,7 @@
     "games": 3,
     "vol": 15,
     "label": "Watch",
-    "outlook": "Watch (43%, n=61)",
+    "outlook": "Watch (42.6%, n=61)",
     "next": "vs LA",
     "dvp": 0.97
    },
@@ -526,7 +526,7 @@
     "games": 3,
     "vol": 11,
     "label": "Watch",
-    "outlook": "Watch (50%, n=113, merged: fall 2-5 + 5-10, games 3-5 + 6+)",
+    "outlook": "Watch (50.4%, n=113, merged: fall 2-5 + 5-10, games 3-5 + 6+)",
     "next": "at HOU",
     "dvp": 0.97
    },
@@ -543,7 +543,7 @@
     "games": 3,
     "vol": 9,
     "label": "Watch",
-    "outlook": "Watch (56%, n=50)",
+    "outlook": "Watch (56.0%, n=50)",
     "next": "vs NE",
     "dvp": 0.96
    },
@@ -560,7 +560,7 @@
     "games": 3,
     "vol": 17,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (65%, n=51, merged: rise 2-5 + 5-10)",
+    "outlook": "Likely to hold (64.7%, n=51, merged: rise 2-5 + 5-10)",
     "next": "vs NE",
     "dvp": 1.04
    },
@@ -577,7 +577,7 @@
     "games": 3,
     "vol": 10,
     "label": "Watch",
-    "outlook": "Watch (43%, n=61)",
+    "outlook": "Watch (42.6%, n=61)",
     "next": "at NO",
     "dvp": 1.01
    },
@@ -594,7 +594,7 @@
     "games": 3,
     "vol": 10,
     "label": "Watch",
-    "outlook": "Watch (56%, n=50)",
+    "outlook": "Watch (56.0%, n=50)",
     "next": "vs LAC",
     "dvp": 0.97
    },
@@ -611,7 +611,7 @@
     "games": 3,
     "vol": 29,
     "label": "Watch",
-    "outlook": "Watch (43%, n=61)",
+    "outlook": "Watch (42.6%, n=61)",
     "next": "at TB",
     "dvp": 1.06
    },
@@ -628,7 +628,7 @@
     "games": 3,
     "vol": 16,
     "label": "Watch",
-    "outlook": "Watch (43%, n=61)",
+    "outlook": "Watch (42.6%, n=61)",
     "next": "vs MIA",
     "dvp": 0.9
    },
@@ -645,7 +645,7 @@
     "games": 3,
     "vol": 17,
     "label": "Watch",
-    "outlook": "Watch (50%, n=113, merged: fall 2-5 + 5-10, games 3-5 + 6+)",
+    "outlook": "Watch (50.4%, n=113, merged: fall 2-5 + 5-10, games 3-5 + 6+)",
     "next": "at TB",
     "dvp": 1.08
    },
@@ -662,7 +662,7 @@
     "games": 3,
     "vol": 16,
     "label": "Watch",
-    "outlook": "Watch (56%, n=50)",
+    "outlook": "Watch (56.0%, n=50)",
     "next": "vs DEN",
     "dvp": 1.07
    },
@@ -679,7 +679,7 @@
     "games": 3,
     "vol": 11,
     "label": "Watch",
-    "outlook": "Watch (52%, n=67)",
+    "outlook": "Watch (52.2%, n=67)",
     "next": "at BUF",
     "dvp": 0.94
    },
@@ -696,7 +696,7 @@
     "games": 3,
     "vol": 13,
     "label": "Watch",
-    "outlook": "Watch (51%, n=76)",
+    "outlook": "Watch (51.3%, n=76)",
     "next": "vs TEN",
     "dvp": 0.95
    },
@@ -713,7 +713,7 @@
     "games": 3,
     "vol": 22,
     "label": "Watch",
-    "outlook": "Watch (51%, n=76)",
+    "outlook": "Watch (51.3%, n=76)",
     "next": "vs ATL",
     "dvp": 1.05
    },
@@ -730,7 +730,7 @@
     "games": 3,
     "vol": 23,
     "label": "Watch",
-    "outlook": "Watch (51%, n=76)",
+    "outlook": "Watch (51.3%, n=76)",
     "next": "vs JAX",
     "dvp": 1.09
    },
@@ -747,7 +747,7 @@
     "games": 3,
     "vol": 17,
     "label": "Watch",
-    "outlook": "Watch (52%, n=67)",
+    "outlook": "Watch (52.2%, n=67)",
     "next": "vs MIA",
     "dvp": 0.9
    },
@@ -764,7 +764,7 @@
     "games": 3,
     "vol": 9,
     "label": "Watch",
-    "outlook": "Watch (52%, n=67)",
+    "outlook": "Watch (52.2%, n=67)",
     "next": "vs DAL",
     "dvp": 1.0
    },
@@ -781,7 +781,7 @@
     "games": 3,
     "vol": 10,
     "label": "Watch",
-    "outlook": "Watch (54%, n=71, merged: fall 2-5, games 3-5 + 6+)",
+    "outlook": "Watch (53.5%, n=71, merged: fall 2-5, games 3-5 + 6+)",
     "next": "at BUF",
     "dvp": 0.89
    },
@@ -798,7 +798,7 @@
     "games": 3,
     "vol": 34,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (65%, n=51, merged: rise 2-5 + 5-10)",
+    "outlook": "Likely to hold (64.7%, n=51, merged: rise 2-5 + 5-10)",
     "next": "at NYG",
     "dvp": 0.85
    },
@@ -815,7 +815,7 @@
     "games": 3,
     "vol": 12,
     "label": "Watch",
-    "outlook": "Watch (52%, n=67)",
+    "outlook": "Watch (52.2%, n=67)",
     "next": "at CIN",
     "dvp": 0.91
    },
@@ -832,7 +832,7 @@
     "games": 3,
     "vol": 13,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (65%, n=51, merged: rise 2-5 + 5-10)",
+    "outlook": "Likely to hold (64.7%, n=51, merged: rise 2-5 + 5-10)",
     "next": "vs MIA",
     "dvp": 1.12
    },
@@ -849,7 +849,7 @@
     "games": 3,
     "vol": 15,
     "label": "Watch",
-    "outlook": "Watch (52%, n=67)",
+    "outlook": "Watch (52.2%, n=67)",
     "next": "at SEA",
     "dvp": 1.01
    },
@@ -866,7 +866,7 @@
     "games": 3,
     "vol": 23,
     "label": "Watch",
-    "outlook": "Watch (52%, n=67)",
+    "outlook": "Watch (52.2%, n=67)",
     "next": "vs DET",
     "dvp": 1.15
    },
@@ -883,7 +883,7 @@
     "games": 3,
     "vol": 13,
     "label": "Watch",
-    "outlook": "Watch (54%, n=71, merged: fall 2-5, games 3-5 + 6+)",
+    "outlook": "Watch (53.5%, n=71, merged: fall 2-5, games 3-5 + 6+)",
     "next": "vs DET",
     "dvp": 1.03
    },
@@ -900,7 +900,7 @@
     "games": 3,
     "vol": 17,
     "label": "Watch",
-    "outlook": "Watch (52%, n=67)",
+    "outlook": "Watch (52.2%, n=67)",
     "next": "at CAR",
     "dvp": 0.94
    },
@@ -917,7 +917,7 @@
     "games": 3,
     "vol": 12,
     "label": "Watch",
-    "outlook": "Watch (54%, n=71, merged: fall 2-5, games 3-5 + 6+)",
+    "outlook": "Watch (53.5%, n=71, merged: fall 2-5, games 3-5 + 6+)",
     "next": "vs LAC",
     "dvp": 0.93
    },
@@ -934,7 +934,7 @@
     "games": 3,
     "vol": 11,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (65%, n=51, merged: rise 2-5 + 5-10)",
+    "outlook": "Likely to hold (64.7%, n=51, merged: rise 2-5 + 5-10)",
     "next": "at BAL",
     "dvp": 0.97
    },
@@ -951,7 +951,7 @@
     "games": 3,
     "vol": 15,
     "label": "Watch",
-    "outlook": "Watch (52%, n=67)",
+    "outlook": "Watch (52.2%, n=67)",
     "next": "vs NE",
     "dvp": 0.96
    },
@@ -968,7 +968,7 @@
     "games": 3,
     "vol": 36,
     "label": "Watch",
-    "outlook": "Watch (51%, n=76)",
+    "outlook": "Watch (51.3%, n=76)",
     "next": "vs LAC",
     "dvp": 0.97
    },
@@ -985,7 +985,7 @@
     "games": 3,
     "vol": 19,
     "label": "Watch",
-    "outlook": "Watch (52%, n=67)",
+    "outlook": "Watch (52.2%, n=67)",
     "next": "at NO",
     "dvp": 1.01
    },
@@ -1002,7 +1002,7 @@
     "games": 3,
     "vol": 16,
     "label": "Watch",
-    "outlook": "Watch (52%, n=67)",
+    "outlook": "Watch (52.2%, n=67)",
     "next": "at SF",
     "dvp": 0.96
    },
@@ -1019,7 +1019,7 @@
     "games": 3,
     "vol": 9,
     "label": "Watch",
-    "outlook": "Watch (51%, n=76)",
+    "outlook": "Watch (51.3%, n=76)",
     "next": "at CAR",
     "dvp": 0.94
    },
@@ -1036,7 +1036,7 @@
     "games": 3,
     "vol": 11,
     "label": "Watch",
-    "outlook": "Watch (51%, n=76)",
+    "outlook": "Watch (51.3%, n=76)",
     "next": "at PHI",
     "dvp": 1.05
    },
@@ -1053,7 +1053,7 @@
     "games": 3,
     "vol": 20,
     "label": "Watch",
-    "outlook": "Watch (52%, n=67)",
+    "outlook": "Watch (52.2%, n=67)",
     "next": "vs GB",
     "dvp": 0.95
    },
@@ -1070,7 +1070,7 @@
     "games": 3,
     "vol": 19,
     "label": "Watch",
-    "outlook": "Watch (54%, n=71, merged: fall 2-5, games 3-5 + 6+)",
+    "outlook": "Watch (53.5%, n=71, merged: fall 2-5, games 3-5 + 6+)",
     "next": "vs ATL",
     "dvp": 0.91
    },
@@ -1087,7 +1087,7 @@
     "games": 3,
     "vol": 16,
     "label": "Watch",
-    "outlook": "Watch (51%, n=76)",
+    "outlook": "Watch (51.3%, n=76)",
     "next": "at BUF",
     "dvp": 0.94
    },
@@ -1104,7 +1104,7 @@
     "games": 3,
     "vol": 10,
     "label": "Watch",
-    "outlook": "Watch (54%, n=71, merged: fall 2-5, games 3-5 + 6+)",
+    "outlook": "Watch (53.5%, n=71, merged: fall 2-5, games 3-5 + 6+)",
     "next": "at CIN",
     "dvp": 1.25
    },
@@ -1121,7 +1121,7 @@
     "games": 3,
     "vol": 14,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (65%, n=51, merged: rise 2-5 + 5-10)",
+    "outlook": "Likely to hold (64.7%, n=51, merged: rise 2-5 + 5-10)",
     "next": "vs KC",
     "dvp": 0.98
    },
@@ -1138,7 +1138,7 @@
     "games": 3,
     "vol": 14,
     "label": "Watch",
-    "outlook": "Watch (51%, n=76)",
+    "outlook": "Watch (51.3%, n=76)",
     "next": "at NYG",
     "dvp": 1.0
    },
@@ -1155,7 +1155,7 @@
     "games": 3,
     "vol": 29,
     "label": "Watch",
-    "outlook": "Watch (51%, n=76)",
+    "outlook": "Watch (51.3%, n=76)",
     "next": "at PHI",
     "dvp": 1.05
    },
@@ -1172,7 +1172,7 @@
     "games": 3,
     "vol": 22,
     "label": "Watch",
-    "outlook": "Watch (51%, n=76)",
+    "outlook": "Watch (51.3%, n=76)",
     "next": "vs NYG",
     "dvp": 1.0
    },
@@ -1189,7 +1189,7 @@
     "games": 3,
     "vol": 12,
     "label": "Watch",
-    "outlook": "Watch (52%, n=67)",
+    "outlook": "Watch (52.2%, n=67)",
     "next": "vs LAC",
     "dvp": 0.97
    },
@@ -1206,7 +1206,7 @@
     "games": 3,
     "vol": 14,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (65%, n=51, merged: rise 2-5 + 5-10)",
+    "outlook": "Likely to hold (64.7%, n=51, merged: rise 2-5 + 5-10)",
     "next": "vs IND",
     "dvp": 1.1
    }
@@ -1225,7 +1225,7 @@
     "games": 3,
     "vol": 43,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=84, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.9%, n=84, merged: rise 5-10 + 10+)",
     "next": "at CIN",
     "dvp": 0.99
    },
@@ -1242,7 +1242,7 @@
     "games": 3,
     "vol": 65,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=84, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.9%, n=84, merged: rise 5-10 + 10+)",
     "next": "at LV",
     "dvp": 1.06
    },
@@ -1259,7 +1259,7 @@
     "games": 3,
     "vol": 41,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=84, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.9%, n=84, merged: rise 5-10 + 10+)",
     "next": "vs DET",
     "dvp": 0.87
    },
@@ -1276,7 +1276,7 @@
     "games": 3,
     "vol": 65,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=84, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.9%, n=84, merged: rise 5-10 + 10+)",
     "next": "at CAR",
     "dvp": 1.17
    },
@@ -1293,7 +1293,7 @@
     "games": 3,
     "vol": 35,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (64%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (64.1%, n=64, merged: fall 5-10 + 10+)",
     "next": "vs DEN",
     "dvp": 0.92
    },
@@ -1310,7 +1310,7 @@
     "games": 3,
     "vol": 52,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=84, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.9%, n=84, merged: rise 5-10 + 10+)",
     "next": "vs MIA",
     "dvp": 0.98
    },
@@ -1327,7 +1327,7 @@
     "games": 3,
     "vol": 30,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (64%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (64.1%, n=64, merged: fall 5-10 + 10+)",
     "next": "vs ATL",
     "dvp": 0.94
    },
@@ -1344,7 +1344,7 @@
     "games": 3,
     "vol": 50,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=84, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.9%, n=84, merged: rise 5-10 + 10+)",
     "next": "vs ARI",
     "dvp": 1.06
    },
@@ -1361,7 +1361,7 @@
     "games": 3,
     "vol": 15,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=84, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.9%, n=84, merged: rise 5-10 + 10+)",
     "next": "vs LAC",
     "dvp": 0.94
    },
@@ -1378,7 +1378,7 @@
     "games": 3,
     "vol": 37,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=84, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.9%, n=84, merged: rise 5-10 + 10+)",
     "next": "vs DAL",
     "dvp": 0.98
    },
@@ -1395,7 +1395,7 @@
     "games": 3,
     "vol": 34,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (64%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (64.1%, n=64, merged: fall 5-10 + 10+)",
     "next": "at MIN",
     "dvp": 1.05
    },
@@ -1412,7 +1412,7 @@
     "games": 3,
     "vol": 32,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=84, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.9%, n=84, merged: rise 5-10 + 10+)",
     "next": "vs LAC",
     "dvp": 0.94
    },
@@ -1429,7 +1429,7 @@
     "games": 3,
     "vol": 47,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=84, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.9%, n=84, merged: rise 5-10 + 10+)",
     "next": "vs NYG",
     "dvp": 1.04
    },
@@ -1446,7 +1446,7 @@
     "games": 3,
     "vol": 34,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (64%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (64.1%, n=64, merged: fall 5-10 + 10+)",
     "next": "vs LA",
     "dvp": 0.99
    },
@@ -1463,7 +1463,7 @@
     "games": 3,
     "vol": 22,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (64%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (64.1%, n=64, merged: fall 5-10 + 10+)",
     "next": "vs DAL",
     "dvp": 0.98
    },
@@ -1480,7 +1480,7 @@
     "games": 3,
     "vol": 42,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (64%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (64.1%, n=64, merged: fall 5-10 + 10+)",
     "next": "at NYJ",
     "dvp": 1.1
    },
@@ -1497,7 +1497,7 @@
     "games": 3,
     "vol": 30,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=84, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.9%, n=84, merged: rise 5-10 + 10+)",
     "next": "at NO",
     "dvp": 1.1
    },
@@ -1514,7 +1514,7 @@
     "games": 3,
     "vol": 49,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=84, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.9%, n=84, merged: rise 5-10 + 10+)",
     "next": "vs JAX",
     "dvp": 0.95
    },
@@ -1531,7 +1531,7 @@
     "games": 3,
     "vol": 66,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=84, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.9%, n=84, merged: rise 5-10 + 10+)",
     "next": "vs TEN",
     "dvp": 1.05
    },
@@ -1548,7 +1548,7 @@
     "games": 3,
     "vol": 38,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (64%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (64.1%, n=64, merged: fall 5-10 + 10+)",
     "next": "at PHI",
     "dvp": 1.0
    },
@@ -1565,7 +1565,7 @@
     "games": 3,
     "vol": 20,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (64%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (64.1%, n=64, merged: fall 5-10 + 10+)",
     "next": "at CIN",
     "dvp": 0.99
    },
@@ -1582,7 +1582,7 @@
     "games": 3,
     "vol": 22,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (64%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (64.1%, n=64, merged: fall 5-10 + 10+)",
     "next": "vs NYG",
     "dvp": 1.04
    },
@@ -1599,7 +1599,7 @@
     "games": 3,
     "vol": 66,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=84, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.9%, n=84, merged: rise 5-10 + 10+)",
     "next": "at PIT",
     "dvp": 0.99
    },
@@ -1616,7 +1616,7 @@
     "games": 3,
     "vol": 17,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=84, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.9%, n=84, merged: rise 5-10 + 10+)",
     "next": "at SEA",
     "dvp": 0.98
    },
@@ -1633,7 +1633,7 @@
     "games": 3,
     "vol": 58,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=84, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.9%, n=84, merged: rise 5-10 + 10+)",
     "next": "vs NE",
     "dvp": 1.02
    },
@@ -1650,7 +1650,7 @@
     "games": 3,
     "vol": 50,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=84, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.9%, n=84, merged: rise 5-10 + 10+)",
     "next": "at SEA",
     "dvp": 0.98
    },
@@ -1667,7 +1667,7 @@
     "games": 3,
     "vol": 35,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (65%, n=82, merged: fall 2-5 + 5-10 + 10+)",
+    "outlook": "Likely to hold (64.6%, n=82, merged: fall 2-5 + 5-10 + 10+)",
     "next": "at SF",
     "dvp": 1.03
    },
@@ -1684,7 +1684,7 @@
     "games": 3,
     "vol": 38,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (65%, n=82, merged: fall 2-5 + 5-10 + 10+)",
+    "outlook": "Likely to hold (64.6%, n=82, merged: fall 2-5 + 5-10 + 10+)",
     "next": "at BAL",
     "dvp": 0.89
    },
@@ -1701,7 +1701,7 @@
     "games": 3,
     "vol": 28,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (61%, n=57, merged: rise 2-5 + 5-10)",
+    "outlook": "Likely to hold (61.4%, n=57, merged: rise 2-5 + 5-10)",
     "next": "at PHI",
     "dvp": 1.0
    },
@@ -1718,7 +1718,7 @@
     "games": 3,
     "vol": 51,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (61%, n=57, merged: rise 2-5 + 5-10)",
+    "outlook": "Likely to hold (61.4%, n=57, merged: rise 2-5 + 5-10)",
     "next": "at CHI",
     "dvp": 1.04
    },
@@ -1735,7 +1735,7 @@
     "games": 3,
     "vol": 54,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (61%, n=57, merged: rise 2-5 + 5-10)",
+    "outlook": "Likely to hold (61.4%, n=57, merged: rise 2-5 + 5-10)",
     "next": "vs NYJ",
     "dvp": 1.1
    },
@@ -1752,7 +1752,7 @@
     "games": 3,
     "vol": 31,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (61%, n=57, merged: rise 2-5 + 5-10)",
+    "outlook": "Likely to hold (61.4%, n=57, merged: rise 2-5 + 5-10)",
     "next": "at BUF",
     "dvp": 0.99
    },
@@ -1769,7 +1769,7 @@
     "games": 3,
     "vol": 30,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (65%, n=82, merged: fall 2-5 + 5-10 + 10+)",
+    "outlook": "Likely to hold (64.6%, n=82, merged: fall 2-5 + 5-10 + 10+)",
     "next": "vs NYJ",
     "dvp": 1.1
    },
@@ -1786,7 +1786,7 @@
     "games": 3,
     "vol": 63,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (65%, n=82, merged: fall 2-5 + 5-10 + 10+)",
+    "outlook": "Likely to hold (64.6%, n=82, merged: fall 2-5 + 5-10 + 10+)",
     "next": "vs KC",
     "dvp": 0.91
    },
@@ -1803,7 +1803,7 @@
     "games": 3,
     "vol": 43,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (61%, n=57, merged: rise 2-5 + 5-10)",
+    "outlook": "Likely to hold (61.4%, n=57, merged: rise 2-5 + 5-10)",
     "next": "at HOU",
     "dvp": 0.96
    }
@@ -1822,7 +1822,7 @@
     "games": 3,
     "vol": 231,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "at CHI",
     "dvp": 1.03
    },
@@ -1839,7 +1839,7 @@
     "games": 3,
     "vol": 126,
     "label": "Watch",
-    "outlook": "Watch (53%, n=113)",
+    "outlook": "Watch (53.1%, n=113)",
     "next": "at CIN",
     "dvp": 0.9
    },
@@ -1856,7 +1856,7 @@
     "games": 3,
     "vol": 160,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (70%, n=80)",
+    "outlook": "Likely to hold (70.0%, n=80)",
     "next": "at NO",
     "dvp": 1.07
    },
@@ -1873,7 +1873,7 @@
     "games": 3,
     "vol": 241,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "vs LA",
     "dvp": 0.98
    },
@@ -1890,7 +1890,7 @@
     "games": 3,
     "vol": 187,
     "label": "Watch",
-    "outlook": "Watch (53%, n=113)",
+    "outlook": "Watch (53.1%, n=113)",
     "next": "vs KC",
     "dvp": 0.91
    },
@@ -1907,7 +1907,7 @@
     "games": 3,
     "vol": 205,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (72%, n=71)",
+    "outlook": "Likely to hold (71.8%, n=71)",
     "next": "vs NE",
     "dvp": 1.01
    },
@@ -1924,7 +1924,7 @@
     "games": 3,
     "vol": 250,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "at TB",
     "dvp": 1.03
    },
@@ -1941,7 +1941,7 @@
     "games": 3,
     "vol": 108,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=62)",
+    "outlook": "Likely to hold (62.9%, n=62)",
     "next": "vs LAC",
     "dvp": 0.96
    },
@@ -1958,7 +1958,7 @@
     "games": 3,
     "vol": 275,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "vs ATL",
     "dvp": 1.05
    },
@@ -1975,7 +1975,7 @@
     "games": 3,
     "vol": 168,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "at BUF",
     "dvp": 0.95
    },
@@ -1992,7 +1992,7 @@
     "games": 3,
     "vol": 245,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (72%, n=71)",
+    "outlook": "Likely to hold (71.8%, n=71)",
     "next": "at BAL",
     "dvp": 0.98
    },
@@ -2009,7 +2009,7 @@
     "games": 3,
     "vol": 197,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "vs NYJ",
     "dvp": 0.95
    },
@@ -2026,7 +2026,7 @@
     "games": 3,
     "vol": 257,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "at MIN",
     "dvp": 1.04
    },
@@ -2043,7 +2043,7 @@
     "games": 3,
     "vol": 148,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=62)",
+    "outlook": "Likely to hold (62.9%, n=62)",
     "next": "at CIN",
     "dvp": 1.07
    },
@@ -2060,7 +2060,7 @@
     "games": 3,
     "vol": 171,
     "label": "Watch",
-    "outlook": "Watch (53%, n=113)",
+    "outlook": "Watch (53.1%, n=113)",
     "next": "vs NE",
     "dvp": 0.92
    },
@@ -2077,7 +2077,7 @@
     "games": 3,
     "vol": 143,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=62)",
+    "outlook": "Likely to hold (62.9%, n=62)",
     "next": "at TB",
     "dvp": 0.81
    },
@@ -2094,7 +2094,7 @@
     "games": 3,
     "vol": 220,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=62)",
+    "outlook": "Likely to hold (62.9%, n=62)",
     "next": "vs DET",
     "dvp": 0.86
    },
@@ -2111,7 +2111,7 @@
     "games": 3,
     "vol": 223,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=62)",
+    "outlook": "Likely to hold (62.9%, n=62)",
     "next": "at LV",
     "dvp": 1.02
    },
@@ -2128,7 +2128,7 @@
     "games": 3,
     "vol": 99,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "vs TEN",
     "dvp": 1.02
    },
@@ -2145,7 +2145,7 @@
     "games": 3,
     "vol": 204,
     "label": "Watch",
-    "outlook": "Watch (53%, n=113)",
+    "outlook": "Watch (53.1%, n=113)",
     "next": "vs MIA",
     "dvp": 0.91
    },
@@ -2162,7 +2162,7 @@
     "games": 3,
     "vol": 208,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (72%, n=71)",
+    "outlook": "Likely to hold (71.8%, n=71)",
     "next": "at MIN",
     "dvp": 0.93
    },
@@ -2179,7 +2179,7 @@
     "games": 3,
     "vol": 77,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=62)",
+    "outlook": "Likely to hold (62.9%, n=62)",
     "next": "at CAR",
     "dvp": 1.33
    },
@@ -2196,7 +2196,7 @@
     "games": 3,
     "vol": 159,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (62.5%, n=64, merged: fall 5-10 + 10+)",
     "next": "vs LA",
     "dvp": 0.99
    },
@@ -2213,7 +2213,7 @@
     "games": 3,
     "vol": 198,
     "label": "Watch",
-    "outlook": "Watch (53%, n=113)",
+    "outlook": "Watch (53.1%, n=113)",
     "next": "at BAL",
     "dvp": 1.15
    },
@@ -2230,7 +2230,7 @@
     "games": 3,
     "vol": 173,
     "label": "Watch",
-    "outlook": "Watch (53%, n=113)",
+    "outlook": "Watch (53.1%, n=113)",
     "next": "vs ARI",
     "dvp": 1.01
    },
@@ -2247,7 +2247,7 @@
     "games": 3,
     "vol": 191,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "vs NYJ",
     "dvp": 0.95
    },
@@ -2264,7 +2264,7 @@
     "games": 3,
     "vol": 107,
     "label": "Watch",
-    "outlook": "Watch (53%, n=113)",
+    "outlook": "Watch (53.1%, n=113)",
     "next": "at NO",
     "dvp": 0.98
    },
@@ -2281,7 +2281,7 @@
     "games": 3,
     "vol": 213,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "at HOU",
     "dvp": 0.98
    },
@@ -2298,7 +2298,7 @@
     "games": 3,
     "vol": 119,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (70%, n=80)",
+    "outlook": "Likely to hold (70.0%, n=80)",
     "next": "at SEA",
     "dvp": 1.04
    },
@@ -2315,7 +2315,7 @@
     "games": 3,
     "vol": 159,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=62)",
+    "outlook": "Likely to hold (62.9%, n=62)",
     "next": "at NYG",
     "dvp": 1.17
    },
@@ -2332,7 +2332,7 @@
     "games": 3,
     "vol": 215,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "at SEA",
     "dvp": 0.87
    },
@@ -2349,7 +2349,7 @@
     "games": 3,
     "vol": 252,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (72%, n=71)",
+    "outlook": "Likely to hold (71.8%, n=71)",
     "next": "vs KC",
     "dvp": 1.09
    },
@@ -2366,7 +2366,7 @@
     "games": 3,
     "vol": 75,
     "label": "Watch",
-    "outlook": "Watch (53%, n=113)",
+    "outlook": "Watch (53.1%, n=113)",
     "next": "vs GB",
     "dvp": 0.95
    },
@@ -2383,7 +2383,7 @@
     "games": 3,
     "vol": 179,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (70%, n=80)",
+    "outlook": "Likely to hold (70.0%, n=80)",
     "next": "vs DEN",
     "dvp": 1.04
    },
@@ -2400,7 +2400,7 @@
     "games": 3,
     "vol": 240,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "at PIT",
     "dvp": 1.08
    },
@@ -2417,7 +2417,7 @@
     "games": 3,
     "vol": 94,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "at TB",
     "dvp": 1.03
    },
@@ -2434,7 +2434,7 @@
     "games": 3,
     "vol": 191,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "at CAR",
     "dvp": 0.94
    },
@@ -2451,7 +2451,7 @@
     "games": 3,
     "vol": 190,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (62.5%, n=64, merged: fall 5-10 + 10+)",
     "next": "vs DEN",
     "dvp": 0.86
    },
@@ -2468,7 +2468,7 @@
     "games": 3,
     "vol": 167,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (62.5%, n=64, merged: fall 5-10 + 10+)",
     "next": "at MIN",
     "dvp": 0.96
    },
@@ -2485,7 +2485,7 @@
     "games": 3,
     "vol": 252,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (72%, n=71)",
+    "outlook": "Likely to hold (71.8%, n=71)",
     "next": "vs NYJ",
     "dvp": 0.93
    },
@@ -2502,7 +2502,7 @@
     "games": 3,
     "vol": 96,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "vs DEN",
     "dvp": 0.99
    },
@@ -2519,7 +2519,7 @@
     "games": 3,
     "vol": 95,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=62)",
+    "outlook": "Likely to hold (62.9%, n=62)",
     "next": "vs LA",
     "dvp": 0.99
    },
@@ -2536,7 +2536,7 @@
     "games": 3,
     "vol": 185,
     "label": "Watch",
-    "outlook": "Watch (53%, n=113)",
+    "outlook": "Watch (53.1%, n=113)",
     "next": "at BAL",
     "dvp": 1.15
    },
@@ -2553,7 +2553,7 @@
     "games": 3,
     "vol": 164,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=62)",
+    "outlook": "Likely to hold (62.9%, n=62)",
     "next": "vs DAL",
     "dvp": 1.02
    },
@@ -2570,7 +2570,7 @@
     "games": 3,
     "vol": 158,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (72%, n=71)",
+    "outlook": "Likely to hold (71.8%, n=71)",
     "next": "vs DEN",
     "dvp": 1.04
    },
@@ -2587,7 +2587,7 @@
     "games": 3,
     "vol": 259,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "vs TEN",
     "dvp": 1.02
    },
@@ -2604,7 +2604,7 @@
     "games": 3,
     "vol": 100,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=62)",
+    "outlook": "Likely to hold (62.9%, n=62)",
     "next": "at NO",
     "dvp": 1.12
    },
@@ -2621,7 +2621,7 @@
     "games": 3,
     "vol": 183,
     "label": "Watch",
-    "outlook": "Watch (53%, n=113)",
+    "outlook": "Watch (53.1%, n=113)",
     "next": "at SEA",
     "dvp": 0.87
    },
@@ -2638,7 +2638,7 @@
     "games": 3,
     "vol": 175,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (72%, n=71)",
+    "outlook": "Likely to hold (71.8%, n=71)",
     "next": "at SF",
     "dvp": 0.94
    },
@@ -2655,7 +2655,7 @@
     "games": 3,
     "vol": 173,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "vs IND",
     "dvp": 1.1
    },
@@ -2672,7 +2672,7 @@
     "games": 3,
     "vol": 112,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "at PHI",
     "dvp": 0.94
    },
@@ -2689,7 +2689,7 @@
     "games": 3,
     "vol": 217,
     "label": "Watch",
-    "outlook": "Watch (53%, n=113)",
+    "outlook": "Watch (53.1%, n=113)",
     "next": "vs NYJ",
     "dvp": 0.95
    },
@@ -2706,7 +2706,7 @@
     "games": 3,
     "vol": 135,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (70%, n=80)",
+    "outlook": "Likely to hold (70.0%, n=80)",
     "next": "at CAR",
     "dvp": 1.06
    },
@@ -2723,7 +2723,7 @@
     "games": 3,
     "vol": 198,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=62)",
+    "outlook": "Likely to hold (62.9%, n=62)",
     "next": "vs IND",
     "dvp": 1.04
    },
@@ -2740,7 +2740,7 @@
     "games": 3,
     "vol": 173,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "at LV",
     "dvp": 1.0
    },
@@ -2757,7 +2757,7 @@
     "games": 3,
     "vol": 246,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "at TB",
     "dvp": 1.03
    },
@@ -2774,7 +2774,7 @@
     "games": 3,
     "vol": 116,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "vs DET",
     "dvp": 1.17
    },
@@ -2791,7 +2791,7 @@
     "games": 3,
     "vol": 207,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=62)",
+    "outlook": "Likely to hold (62.9%, n=62)",
     "next": "vs MIA",
     "dvp": 1.02
    },
@@ -2808,7 +2808,7 @@
     "games": 3,
     "vol": 94,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=62)",
+    "outlook": "Likely to hold (62.9%, n=62)",
     "next": "at SEA",
     "dvp": 0.91
    },
@@ -2825,7 +2825,7 @@
     "games": 3,
     "vol": 213,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=62)",
+    "outlook": "Likely to hold (62.9%, n=62)",
     "next": "vs NE",
     "dvp": 1.02
    },
@@ -2842,7 +2842,7 @@
     "games": 3,
     "vol": 199,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (72%, n=71)",
+    "outlook": "Likely to hold (71.8%, n=71)",
     "next": "vs IND",
     "dvp": 1.21
    },
@@ -2859,7 +2859,7 @@
     "games": 3,
     "vol": 197,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=62)",
+    "outlook": "Likely to hold (62.9%, n=62)",
     "next": "vs ARI",
     "dvp": 1.14
    },
@@ -2876,7 +2876,7 @@
     "games": 3,
     "vol": 113,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (70%, n=80)",
+    "outlook": "Likely to hold (70.0%, n=80)",
     "next": "at BAL",
     "dvp": 0.98
    },
@@ -2893,7 +2893,7 @@
     "games": 3,
     "vol": 223,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "at CIN",
     "dvp": 0.9
    },
@@ -2910,7 +2910,7 @@
     "games": 3,
     "vol": 178,
     "label": "Watch",
-    "outlook": "Watch (53%, n=113)",
+    "outlook": "Watch (53.1%, n=113)",
     "next": "vs DEN",
     "dvp": 0.99
    },
@@ -2927,7 +2927,7 @@
     "games": 3,
     "vol": 188,
     "label": "Watch",
-    "outlook": "Watch (53%, n=113)",
+    "outlook": "Watch (53.1%, n=113)",
     "next": "vs LAC",
     "dvp": 0.97
    },
@@ -2944,7 +2944,7 @@
     "games": 3,
     "vol": 116,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "vs DAL",
     "dvp": 1.11
    },
@@ -2961,7 +2961,7 @@
     "games": 3,
     "vol": 168,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "at PHI",
     "dvp": 0.94
    },
@@ -2978,7 +2978,7 @@
     "games": 3,
     "vol": 213,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (72%, n=71)",
+    "outlook": "Likely to hold (71.8%, n=71)",
     "next": "vs NE",
     "dvp": 1.01
    },
@@ -2995,7 +2995,7 @@
     "games": 3,
     "vol": 195,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "at SF",
     "dvp": 0.95
    },
@@ -3012,7 +3012,7 @@
     "games": 3,
     "vol": 196,
     "label": "Watch",
-    "outlook": "Watch (53%, n=113)",
+    "outlook": "Watch (53.1%, n=113)",
     "next": "at BUF",
     "dvp": 0.95
    },
@@ -3029,7 +3029,7 @@
     "games": 3,
     "vol": 79,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (72%, n=71)",
+    "outlook": "Likely to hold (71.8%, n=71)",
     "next": "vs NYG",
     "dvp": 0.85
    },
@@ -3046,7 +3046,7 @@
     "games": 3,
     "vol": 162,
     "label": "Watch",
-    "outlook": "Watch (53%, n=113)",
+    "outlook": "Watch (53.1%, n=113)",
     "next": "vs DEN",
     "dvp": 0.99
    },
@@ -3063,7 +3063,7 @@
     "games": 3,
     "vol": 200,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (62.5%, n=64, merged: fall 5-10 + 10+)",
     "next": "at NO",
     "dvp": 1.12
    },
@@ -3080,7 +3080,7 @@
     "games": 3,
     "vol": 246,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "at LV",
     "dvp": 1.0
    },
@@ -3097,7 +3097,7 @@
     "games": 3,
     "vol": 122,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (70%, n=80)",
+    "outlook": "Likely to hold (70.0%, n=80)",
     "next": "at PHI",
     "dvp": 0.65
    },
@@ -3114,7 +3114,7 @@
     "games": 3,
     "vol": 183,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=62)",
+    "outlook": "Likely to hold (62.9%, n=62)",
     "next": "at NYJ",
     "dvp": 1.07
    },
@@ -3131,7 +3131,7 @@
     "games": 3,
     "vol": 204,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (71%, n=133)",
+    "outlook": "Likely to hold (70.7%, n=133)",
     "next": "at NO",
     "dvp": 0.98
    },
@@ -3148,7 +3148,7 @@
     "games": 3,
     "vol": 202,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (72%, n=71)",
+    "outlook": "Likely to hold (71.8%, n=71)",
     "next": "vs ARI",
     "dvp": 1.06
    },
@@ -3165,7 +3165,7 @@
     "games": 3,
     "vol": 283,
     "label": "Watch",
-    "outlook": "Watch (50%, n=72)",
+    "outlook": "Watch (50.0%, n=72)",
     "next": "vs LA",
     "dvp": 0.98
    },
@@ -3182,7 +3182,7 @@
     "games": 3,
     "vol": 151,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (62.5%, n=64, merged: fall 5-10 + 10+)",
     "next": "vs ATL",
     "dvp": 0.95
    },
@@ -3199,7 +3199,7 @@
     "games": 3,
     "vol": 186,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (64%, n=104, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (63.5%, n=104, merged: fall 5-10 + 10+)",
     "next": "vs NYJ",
     "dvp": 0.93
    },
@@ -3216,7 +3216,7 @@
     "games": 3,
     "vol": 272,
     "label": "Watch",
-    "outlook": "Watch (50%, n=72)",
+    "outlook": "Watch (50.0%, n=72)",
     "next": "at NYG",
     "dvp": 1.04
    },
@@ -3233,7 +3233,7 @@
     "games": 3,
     "vol": 160,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (62.5%, n=64, merged: fall 5-10 + 10+)",
     "next": "at BAL",
     "dvp": 0.81
    },
@@ -3250,7 +3250,7 @@
     "games": 3,
     "vol": 163,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (62.5%, n=64, merged: fall 5-10 + 10+)",
     "next": "at SEA",
     "dvp": 0.91
    },
@@ -3267,7 +3267,7 @@
     "games": 3,
     "vol": 126,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (62.5%, n=64, merged: fall 5-10 + 10+)",
     "next": "at SF",
     "dvp": 1.03
    },
@@ -3284,7 +3284,7 @@
     "games": 3,
     "vol": 259,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=100, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (63.0%, n=100, merged: rise 5-10 + 10+)",
     "next": "vs LAC",
     "dvp": 0.87
    },
@@ -3301,7 +3301,7 @@
     "games": 3,
     "vol": 288,
     "label": "Watch",
-    "outlook": "Watch (50%, n=72)",
+    "outlook": "Watch (50.0%, n=72)",
     "next": "vs IND",
     "dvp": 1.1
    },
@@ -3318,7 +3318,7 @@
     "games": 3,
     "vol": 254,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=100, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (63.0%, n=100, merged: rise 5-10 + 10+)",
     "next": "at NYJ",
     "dvp": 0.93
    },
@@ -3335,7 +3335,7 @@
     "games": 3,
     "vol": 199,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (64%, n=104, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (63.5%, n=104, merged: fall 5-10 + 10+)",
     "next": "vs ATL",
     "dvp": 0.94
    },
@@ -3352,7 +3352,7 @@
     "games": 3,
     "vol": 172,
     "label": "Watch",
-    "outlook": "Watch (53%, n=158, merged: fall 5-10 + 10+)",
+    "outlook": "Watch (53.2%, n=158, merged: fall 5-10 + 10+)",
     "next": "vs NE",
     "dvp": 0.92
    },
@@ -3369,7 +3369,7 @@
     "games": 3,
     "vol": 188,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (64%, n=104, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (63.5%, n=104, merged: fall 5-10 + 10+)",
     "next": "vs DAL",
     "dvp": 0.91
    },
@@ -3386,7 +3386,7 @@
     "games": 3,
     "vol": 226,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=94, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.7%, n=94, merged: rise 5-10 + 10+)",
     "next": "at CAR",
     "dvp": 1.33
    },
@@ -3403,7 +3403,7 @@
     "games": 3,
     "vol": 191,
     "label": "Watch",
-    "outlook": "Watch (50%, n=72)",
+    "outlook": "Watch (50.0%, n=72)",
     "next": "at PIT",
     "dvp": 1.08
    },
@@ -3420,7 +3420,7 @@
     "games": 3,
     "vol": 143,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=94, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.7%, n=94, merged: rise 5-10 + 10+)",
     "next": "vs NYG",
     "dvp": 1.17
    },
@@ -3437,7 +3437,7 @@
     "games": 3,
     "vol": 276,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=100, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (63.0%, n=100, merged: rise 5-10 + 10+)",
     "next": "at PIT",
     "dvp": 1.12
    },
@@ -3454,7 +3454,7 @@
     "games": 3,
     "vol": 119,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (64%, n=104, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (63.5%, n=104, merged: fall 5-10 + 10+)",
     "next": "at CHI",
     "dvp": 1.04
    },
@@ -3471,7 +3471,7 @@
     "games": 3,
     "vol": 209,
     "label": "Watch",
-    "outlook": "Watch (53%, n=158, merged: fall 5-10 + 10+)",
+    "outlook": "Watch (53.2%, n=158, merged: fall 5-10 + 10+)",
     "next": "at SF",
     "dvp": 0.95
    },
@@ -3488,7 +3488,7 @@
     "games": 3,
     "vol": 98,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=100, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (63.0%, n=100, merged: rise 5-10 + 10+)",
     "next": "at HOU",
     "dvp": 0.89
    },
@@ -3505,7 +3505,7 @@
     "games": 3,
     "vol": 171,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (62.5%, n=64, merged: fall 5-10 + 10+)",
     "next": "at CHI",
     "dvp": 1.15
    },
@@ -3522,7 +3522,7 @@
     "games": 3,
     "vol": 127,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (62.5%, n=64, merged: fall 5-10 + 10+)",
     "next": "vs GB",
     "dvp": 1.0
    },
@@ -3539,7 +3539,7 @@
     "games": 3,
     "vol": 142,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (63%, n=100, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (63.0%, n=100, merged: rise 5-10 + 10+)",
     "next": "vs ATL",
     "dvp": 0.94
    },
@@ -3556,7 +3556,7 @@
     "games": 3,
     "vol": 234,
     "label": "Watch",
-    "outlook": "Watch (50%, n=72)",
+    "outlook": "Watch (50.0%, n=72)",
     "next": "vs GB",
     "dvp": 0.95
    },
@@ -3573,7 +3573,7 @@
     "games": 3,
     "vol": 160,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (64%, n=104, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (63.5%, n=104, merged: fall 5-10 + 10+)",
     "next": "vs DET",
     "dvp": 1.01
    },
@@ -3590,7 +3590,7 @@
     "games": 3,
     "vol": 232,
     "label": "Watch",
-    "outlook": "Watch (50%, n=72)",
+    "outlook": "Watch (50.0%, n=72)",
     "next": "vs NYG",
     "dvp": 1.04
    },
@@ -3607,7 +3607,7 @@
     "games": 3,
     "vol": 194,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=94, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.7%, n=94, merged: rise 5-10 + 10+)",
     "next": "vs NYJ",
     "dvp": 1.07
    },
@@ -3624,7 +3624,7 @@
     "games": 3,
     "vol": 268,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=94, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.7%, n=94, merged: rise 5-10 + 10+)",
     "next": "at PIT",
     "dvp": 0.97
    },
@@ -3641,7 +3641,7 @@
     "games": 3,
     "vol": 236,
     "label": "Watch",
-    "outlook": "Watch (53%, n=158, merged: fall 5-10 + 10+)",
+    "outlook": "Watch (53.2%, n=158, merged: fall 5-10 + 10+)",
     "next": "at SF",
     "dvp": 0.95
    },
@@ -3658,7 +3658,7 @@
     "games": 3,
     "vol": 227,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=94, merged: rise 5-10 + 10+)",
+    "outlook": "Likely to hold (61.7%, n=94, merged: rise 5-10 + 10+)",
     "next": "at HOU",
     "dvp": 0.86
    },
@@ -3675,7 +3675,7 @@
     "games": 3,
     "vol": 177,
     "label": "Watch",
-    "outlook": "Watch (53%, n=158, merged: fall 5-10 + 10+)",
+    "outlook": "Watch (53.2%, n=158, merged: fall 5-10 + 10+)",
     "next": "vs KC",
     "dvp": 0.91
    },
@@ -3692,7 +3692,7 @@
     "games": 3,
     "vol": 236,
     "label": "Watch",
-    "outlook": "Watch (53%, n=158, merged: fall 5-10 + 10+)",
+    "outlook": "Watch (53.2%, n=158, merged: fall 5-10 + 10+)",
     "next": "at CIN",
     "dvp": 0.9
    },
@@ -3709,7 +3709,7 @@
     "games": 3,
     "vol": 253,
     "label": "Watch",
-    "outlook": "Watch (53%, n=158, merged: fall 5-10 + 10+)",
+    "outlook": "Watch (53.2%, n=158, merged: fall 5-10 + 10+)",
     "next": "at NO",
     "dvp": 0.98
    },
@@ -3726,7 +3726,7 @@
     "games": 3,
     "vol": 136,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (62.5%, n=64, merged: fall 5-10 + 10+)",
     "next": "vs DAL",
     "dvp": 1.02
    },
@@ -3743,7 +3743,7 @@
     "games": 3,
     "vol": 83,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (62.5%, n=64, merged: fall 5-10 + 10+)",
     "next": "at CIN",
     "dvp": 1.07
    },
@@ -3760,7 +3760,7 @@
     "games": 3,
     "vol": 240,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (64%, n=104, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (63.5%, n=104, merged: fall 5-10 + 10+)",
     "next": "at TB",
     "dvp": 1.17
    },
@@ -3777,7 +3777,7 @@
     "games": 3,
     "vol": 191,
     "label": "Watch",
-    "outlook": "Watch (50%, n=72)",
+    "outlook": "Watch (50.0%, n=72)",
     "next": "vs DAL",
     "dvp": 1.11
    },
@@ -3794,7 +3794,7 @@
     "games": 3,
     "vol": 136,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (62%, n=64, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (62.5%, n=64, merged: fall 5-10 + 10+)",
     "next": "vs NYG",
     "dvp": 1.17
    },
@@ -3811,7 +3811,7 @@
     "games": 3,
     "vol": 230,
     "label": "Watch",
-    "outlook": "Watch (50%, n=72)",
+    "outlook": "Watch (50.0%, n=72)",
     "next": "at NYG",
     "dvp": 1.04
    },
@@ -3828,7 +3828,7 @@
     "games": 3,
     "vol": 187,
     "label": "Watch",
-    "outlook": "Watch (53%, n=158, merged: fall 5-10 + 10+)",
+    "outlook": "Watch (53.2%, n=158, merged: fall 5-10 + 10+)",
     "next": "vs DAL",
     "dvp": 1.11
    },
@@ -3845,7 +3845,7 @@
     "games": 3,
     "vol": 259,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (64%, n=104, merged: fall 5-10 + 10+)",
+    "outlook": "Likely to hold (63.5%, n=104, merged: fall 5-10 + 10+)",
     "next": "at NYG",
     "dvp": 0.85
    },
@@ -3862,7 +3862,7 @@
     "games": 3,
     "vol": 190,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (65%, n=83, merged: fall 2-5 + 5-10 + 10+)",
+    "outlook": "Likely to hold (65.1%, n=83, merged: fall 2-5 + 5-10 + 10+)",
     "next": "at PHI",
     "dvp": 0.96
    },
@@ -3879,7 +3879,7 @@
     "games": 3,
     "vol": 126,
     "label": "Watch",
-    "outlook": "Watch (55%, n=60, merged: rise 2-5 + 5-10)",
+    "outlook": "Watch (55.0%, n=60, merged: rise 2-5 + 5-10)",
     "next": "vs TEN",
     "dvp": 1.04
    },
@@ -3896,7 +3896,7 @@
     "games": 3,
     "vol": 168,
     "label": "Watch",
-    "outlook": "Watch (52%, n=75, merged: fall 2-5 + 5-10)",
+    "outlook": "Watch (52.0%, n=75, merged: fall 2-5 + 5-10)",
     "next": "vs LAC",
     "dvp": 0.97
    },
@@ -3913,7 +3913,7 @@
     "games": 3,
     "vol": 108,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (65%, n=83, merged: fall 2-5 + 5-10 + 10+)",
+    "outlook": "Likely to hold (65.1%, n=83, merged: fall 2-5 + 5-10 + 10+)",
     "next": "vs NYJ",
     "dvp": 1.07
    },
@@ -3930,7 +3930,7 @@
     "games": 3,
     "vol": 239,
     "label": "Watch",
-    "outlook": "Watch (52%, n=105, merged: rise 2-5 + 5-10)",
+    "outlook": "Watch (52.4%, n=105, merged: rise 2-5 + 5-10)",
     "next": "at LV",
     "dvp": 1.0
    },
@@ -3947,7 +3947,7 @@
     "games": 3,
     "vol": 166,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (38%, n=52, merged: rise 2-5 + 5-10)",
+    "outlook": "Likely to fade (38.5%, n=52, merged: rise 2-5 + 5-10)",
     "next": "vs MIA",
     "dvp": 1.17
    },
@@ -3964,7 +3964,7 @@
     "games": 3,
     "vol": 220,
     "label": "Watch",
-    "outlook": "Watch (58%, n=122, merged: fall 2-5 + 5-10 + 10+)",
+    "outlook": "Watch (58.2%, n=122, merged: fall 2-5 + 5-10 + 10+)",
     "next": "vs MIA",
     "dvp": 1.17
    },
@@ -3981,7 +3981,7 @@
     "games": 3,
     "vol": 269,
     "label": "Watch",
-    "outlook": "Watch (52%, n=105, merged: rise 2-5 + 5-10)",
+    "outlook": "Watch (52.4%, n=105, merged: rise 2-5 + 5-10)",
     "next": "vs MIA",
     "dvp": 0.91
    },
@@ -3998,7 +3998,7 @@
     "games": 3,
     "vol": 246,
     "label": "Watch",
-    "outlook": "Watch (52%, n=105, merged: rise 2-5 + 5-10)",
+    "outlook": "Watch (52.4%, n=105, merged: rise 2-5 + 5-10)",
     "next": "vs GB",
     "dvp": 0.95
    },
@@ -4015,7 +4015,7 @@
     "games": 3,
     "vol": 202,
     "label": "Watch",
-    "outlook": "Watch (52%, n=75, merged: fall 2-5 + 5-10)",
+    "outlook": "Watch (52.0%, n=75, merged: fall 2-5 + 5-10)",
     "next": "at PHI",
     "dvp": 0.94
    },
@@ -4032,7 +4032,7 @@
     "games": 3,
     "vol": 212,
     "label": "Watch",
-    "outlook": "Watch (55%, n=60, merged: rise 2-5 + 5-10)",
+    "outlook": "Watch (55.0%, n=60, merged: rise 2-5 + 5-10)",
     "next": "vs JAX",
     "dvp": 0.9
    },
@@ -4049,7 +4049,7 @@
     "games": 3,
     "vol": 196,
     "label": "Watch",
-    "outlook": "Watch (52%, n=75, merged: fall 2-5 + 5-10)",
+    "outlook": "Watch (52.0%, n=75, merged: fall 2-5 + 5-10)",
     "next": "vs DET",
     "dvp": 1.17
    },
@@ -4066,7 +4066,7 @@
     "games": 3,
     "vol": 244,
     "label": "Watch",
-    "outlook": "Watch (52%, n=105, merged: rise 2-5 + 5-10)",
+    "outlook": "Watch (52.4%, n=105, merged: rise 2-5 + 5-10)",
     "next": "vs LAC",
     "dvp": 0.97
    },
@@ -4083,7 +4083,7 @@
     "games": 3,
     "vol": 173,
     "label": "Watch",
-    "outlook": "Watch (52%, n=105, merged: rise 2-5 + 5-10)",
+    "outlook": "Watch (52.4%, n=105, merged: rise 2-5 + 5-10)",
     "next": "vs NYG",
     "dvp": 1.04
    },
@@ -4100,7 +4100,7 @@
     "games": 3,
     "vol": 217,
     "label": "Watch",
-    "outlook": "Watch (52%, n=105, merged: rise 2-5 + 5-10)",
+    "outlook": "Watch (52.4%, n=105, merged: rise 2-5 + 5-10)",
     "next": "at BUF",
     "dvp": 0.95
    },
@@ -4117,7 +4117,7 @@
     "games": 3,
     "vol": 193,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (38%, n=52, merged: rise 2-5 + 5-10)",
+    "outlook": "Likely to fade (38.5%, n=52, merged: rise 2-5 + 5-10)",
     "next": "vs IND",
     "dvp": 1.21
    },
@@ -4134,7 +4134,7 @@
     "games": 3,
     "vol": 235,
     "label": "Watch",
-    "outlook": "Watch (58%, n=122, merged: fall 2-5 + 5-10 + 10+)",
+    "outlook": "Watch (58.2%, n=122, merged: fall 2-5 + 5-10 + 10+)",
     "next": "at LV",
     "dvp": 0.98
    },
@@ -4151,7 +4151,7 @@
     "games": 3,
     "vol": 174,
     "label": "Watch",
-    "outlook": "Watch (55%, n=60, merged: rise 2-5 + 5-10)",
+    "outlook": "Watch (55.0%, n=60, merged: rise 2-5 + 5-10)",
     "next": "vs TEN",
     "dvp": 1.04
    },
@@ -4168,7 +4168,7 @@
     "games": 3,
     "vol": 83,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (65%, n=83, merged: fall 2-5 + 5-10 + 10+)",
+    "outlook": "Likely to hold (65.1%, n=83, merged: fall 2-5 + 5-10 + 10+)",
     "next": "vs LAC",
     "dvp": 0.96
    },
@@ -4185,7 +4185,7 @@
     "games": 3,
     "vol": 195,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (38%, n=52, merged: rise 2-5 + 5-10)",
+    "outlook": "Likely to fade (38.5%, n=52, merged: rise 2-5 + 5-10)",
     "next": "vs TEN",
     "dvp": 0.86
    },
@@ -4202,7 +4202,7 @@
     "games": 3,
     "vol": 246,
     "label": "Watch",
-    "outlook": "Watch (52%, n=105, merged: rise 2-5 + 5-10)",
+    "outlook": "Watch (52.4%, n=105, merged: rise 2-5 + 5-10)",
     "next": "at SEA",
     "dvp": 0.87
    },
@@ -4219,7 +4219,7 @@
     "games": 3,
     "vol": 97,
     "label": "Watch",
-    "outlook": "Watch (55%, n=60, merged: rise 2-5 + 5-10)",
+    "outlook": "Watch (55.0%, n=60, merged: rise 2-5 + 5-10)",
     "next": "at PHI",
     "dvp": 0.96
    },
@@ -4236,7 +4236,7 @@
     "games": 3,
     "vol": 168,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (38%, n=52, merged: rise 2-5 + 5-10)",
+    "outlook": "Likely to fade (38.5%, n=52, merged: rise 2-5 + 5-10)",
     "next": "at LV",
     "dvp": 0.98
    },
@@ -4253,7 +4253,7 @@
     "games": 3,
     "vol": 263,
     "label": "Watch",
-    "outlook": "Watch (52%, n=75, merged: fall 2-5 + 5-10)",
+    "outlook": "Watch (52.0%, n=75, merged: fall 2-5 + 5-10)",
     "next": "at CAR",
     "dvp": 0.94
    },
@@ -4270,7 +4270,7 @@
     "games": 3,
     "vol": 144,
     "label": "Watch",
-    "outlook": "Watch (52%, n=75, merged: fall 2-5 + 5-10)",
+    "outlook": "Watch (52.0%, n=75, merged: fall 2-5 + 5-10)",
     "next": "vs TEN",
     "dvp": 1.02
    },
@@ -4287,7 +4287,7 @@
     "games": 3,
     "vol": 191,
     "label": "Watch",
-    "outlook": "Watch (55%, n=60, merged: rise 2-5 + 5-10)",
+    "outlook": "Watch (55.0%, n=60, merged: rise 2-5 + 5-10)",
     "next": "vs GB",
     "dvp": 1.0
    },
@@ -4304,7 +4304,7 @@
     "games": 3,
     "vol": 125,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (38%, n=52, merged: rise 2-5 + 5-10)",
+    "outlook": "Likely to fade (38.5%, n=52, merged: rise 2-5 + 5-10)",
     "next": "vs DET",
     "dvp": 1.01
    }
@@ -4323,7 +4323,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (39%, n=67, merged: rise 0.5-1 + 1+)",
+    "outlook": "Likely to fade (38.8%, n=67, merged: rise 0.5-1 + 1+)",
     "next": "vs TEN",
     "dvp": 1.3
    },
@@ -4340,7 +4340,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (39%, n=67, merged: rise 0.5-1 + 1+)",
+    "outlook": "Likely to fade (38.8%, n=67, merged: rise 0.5-1 + 1+)",
     "next": "at LV",
     "dvp": 1.09
    },
@@ -4357,7 +4357,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=143, merged: fall 0.25-0.5 + 0.5-1 + 1+)",
+    "outlook": "Watch (49.7%, n=143, merged: fall 0.25-0.5 + 0.5-1 + 1+)",
     "next": "at LV",
     "dvp": 0.94
    },
@@ -4374,7 +4374,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (39%, n=67, merged: rise 0.5-1 + 1+)",
+    "outlook": "Likely to fade (38.8%, n=67, merged: rise 0.5-1 + 1+)",
     "next": "vs LAC",
     "dvp": 0.74
    },
@@ -4391,7 +4391,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (39%, n=67, merged: rise 0.5-1 + 1+)",
+    "outlook": "Likely to fade (38.8%, n=67, merged: rise 0.5-1 + 1+)",
     "next": "vs NYJ",
     "dvp": 1.16
    },
@@ -4408,7 +4408,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (39%, n=67, merged: rise 0.5-1 + 1+)",
+    "outlook": "Likely to fade (38.8%, n=67, merged: rise 0.5-1 + 1+)",
     "next": "at CAR",
     "dvp": 1.45
    },
@@ -4425,7 +4425,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=143, merged: fall 0.25-0.5 + 0.5-1 + 1+)",
+    "outlook": "Watch (49.7%, n=143, merged: fall 0.25-0.5 + 0.5-1 + 1+)",
     "next": "at PHI",
     "dvp": 0.81
    },
@@ -4442,7 +4442,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (37%, n=54, merged: rise 0.25-0.5 + 0.5-1 + 1+)",
+    "outlook": "Likely to fade (37.0%, n=54, merged: rise 0.25-0.5 + 0.5-1 + 1+)",
     "next": "vs ATL",
     "dvp": 0.85
    },
@@ -4459,7 +4459,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (39%, n=67, merged: rise 0.5-1 + 1+)",
+    "outlook": "Likely to fade (38.8%, n=67, merged: rise 0.5-1 + 1+)",
     "next": "vs DET",
     "dvp": 1.02
    },
@@ -4476,7 +4476,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to hold",
-    "outlook": "Likely to hold (64%, n=81, merged: fall 0.5-1 + 1+)",
+    "outlook": "Likely to hold (64.2%, n=81, merged: fall 0.5-1 + 1+)",
     "next": "vs IND",
     "dvp": 1.16
    },
@@ -4493,7 +4493,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (39%, n=67, merged: rise 0.5-1 + 1+)",
+    "outlook": "Likely to fade (38.8%, n=67, merged: rise 0.5-1 + 1+)",
     "next": "vs KC",
     "dvp": 0.81
    },
@@ -4510,7 +4510,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (37%, n=54, merged: rise 0.25-0.5 + 0.5-1 + 1+)",
+    "outlook": "Likely to fade (37.0%, n=54, merged: rise 0.25-0.5 + 0.5-1 + 1+)",
     "next": "at NYG",
     "dvp": 0.73
    },
@@ -4527,7 +4527,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (39%, n=67, merged: rise 0.5-1 + 1+)",
+    "outlook": "Likely to fade (38.8%, n=67, merged: rise 0.5-1 + 1+)",
     "next": "at NO",
     "dvp": 1.27
    },
@@ -4544,7 +4544,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (18%, n=54, merged: rise 0.5-1 + 1+)",
+    "outlook": "Likely to fade (18.5%, n=54, merged: rise 0.5-1 + 1+)",
     "next": "vs LAC",
     "dvp": 0.94
    },
@@ -4561,7 +4561,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (37%, n=54, merged: rise 0.25-0.5 + 0.5-1 + 1+)",
+    "outlook": "Likely to fade (37.0%, n=54, merged: rise 0.25-0.5 + 0.5-1 + 1+)",
     "next": "at CAR",
     "dvp": 1.42
    },
@@ -4578,7 +4578,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (24%, n=112, merged: rise 0.25-0.5 + 0.5-1)",
+    "outlook": "Likely to fade (24.1%, n=112, merged: rise 0.25-0.5 + 0.5-1)",
     "next": "vs DET",
     "dvp": 1.07
    },
@@ -4595,7 +4595,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (24%, n=112, merged: rise 0.25-0.5 + 0.5-1)",
+    "outlook": "Likely to fade (24.1%, n=112, merged: rise 0.25-0.5 + 0.5-1)",
     "next": "vs DET",
     "dvp": 1.07
    },
@@ -4612,7 +4612,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (39%, n=67, merged: rise 0.5-1 + 1+)",
+    "outlook": "Likely to fade (38.8%, n=67, merged: rise 0.5-1 + 1+)",
     "next": "at BAL",
     "dvp": 0.91
    },
@@ -4629,7 +4629,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (59%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (59.3%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "vs GB",
     "dvp": 1.13
    },
@@ -4646,7 +4646,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (59%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (59.3%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "at PHI",
     "dvp": 0.77
    },
@@ -4663,7 +4663,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (24%, n=112, merged: rise 0.25-0.5 + 0.5-1)",
+    "outlook": "Likely to fade (24.1%, n=112, merged: rise 0.25-0.5 + 0.5-1)",
     "next": "at TB",
     "dvp": 0.99
    },
@@ -4680,7 +4680,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (24%, n=112, merged: rise 0.25-0.5 + 0.5-1)",
+    "outlook": "Likely to fade (24.1%, n=112, merged: rise 0.25-0.5 + 0.5-1)",
     "next": "vs LA",
     "dvp": 1.13
    },
@@ -4697,7 +4697,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (59%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (59.3%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "vs LA",
     "dvp": 0.63
    },
@@ -4714,7 +4714,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (39%, n=67, merged: rise 0.5-1 + 1+)",
+    "outlook": "Likely to fade (38.8%, n=67, merged: rise 0.5-1 + 1+)",
     "next": "vs LAC",
     "dvp": 0.74
    },
@@ -4731,7 +4731,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (59%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (59.3%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "at BUF",
     "dvp": 1.16
    },
@@ -4748,7 +4748,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (59%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (59.3%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "at CIN",
     "dvp": 1.16
    },
@@ -4765,7 +4765,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=140, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (50.0%, n=140, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "at NO",
     "dvp": 1.05
    },
@@ -4782,7 +4782,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (39%, n=67, merged: rise 0.5-1 + 1+)",
+    "outlook": "Likely to fade (38.8%, n=67, merged: rise 0.5-1 + 1+)",
     "next": "at CHI",
     "dvp": 1.09
    },
@@ -4799,7 +4799,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (59%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (59.3%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "at NYJ",
     "dvp": 1.16
    },
@@ -4816,7 +4816,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=140, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (50.0%, n=140, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "vs GB",
     "dvp": 1.05
    },
@@ -4833,7 +4833,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (24%, n=112, merged: rise 0.25-0.5 + 0.5-1)",
+    "outlook": "Likely to fade (24.1%, n=112, merged: rise 0.25-0.5 + 0.5-1)",
     "next": "vs NYJ",
     "dvp": 0.91
    },
@@ -4850,7 +4850,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (39%, n=67, merged: rise 0.5-1 + 1+)",
+    "outlook": "Likely to fade (38.8%, n=67, merged: rise 0.5-1 + 1+)",
     "next": "at TB",
     "dvp": 0.74
    },
@@ -4867,7 +4867,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (24%, n=112, merged: rise 0.25-0.5 + 0.5-1)",
+    "outlook": "Likely to fade (24.1%, n=112, merged: rise 0.25-0.5 + 0.5-1)",
     "next": "at PIT",
     "dvp": 0.99
    },
@@ -4884,7 +4884,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (44%, n=75, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (44.0%, n=75, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "at BUF",
     "dvp": 0.75
    },
@@ -4901,7 +4901,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (39%, n=67, merged: rise 0.5-1 + 1+)",
+    "outlook": "Likely to fade (38.8%, n=67, merged: rise 0.5-1 + 1+)",
     "next": "at HOU",
     "dvp": 0.81
    },
@@ -4918,7 +4918,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (39%, n=67, merged: rise 0.5-1 + 1+)",
+    "outlook": "Likely to fade (38.8%, n=67, merged: rise 0.5-1 + 1+)",
     "next": "at SF",
     "dvp": 1.2
    },
@@ -4935,7 +4935,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (59%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (59.3%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "vs NYG",
     "dvp": 1.16
    },
@@ -4952,7 +4952,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=140, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (50.0%, n=140, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "at BUF",
     "dvp": 0.91
    },
@@ -4969,7 +4969,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (38%, n=50, merged: rise 0.25-0.5 + 0.5-1)",
+    "outlook": "Likely to fade (38.0%, n=50, merged: rise 0.25-0.5 + 0.5-1)",
     "next": "vs DEN",
     "dvp": 0.85
    },
@@ -4986,7 +4986,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=140, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (50.0%, n=140, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "at SEA",
     "dvp": 0.97
    },
@@ -5003,7 +5003,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (24%, n=112, merged: rise 0.25-0.5 + 0.5-1)",
+    "outlook": "Likely to fade (24.1%, n=112, merged: rise 0.25-0.5 + 0.5-1)",
     "next": "at SF",
     "dvp": 0.99
    },
@@ -5020,7 +5020,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (44%, n=75, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (44.0%, n=75, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "vs TEN",
     "dvp": 0.92
    },
@@ -5037,7 +5037,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=140, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (50.0%, n=140, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "vs JAX",
     "dvp": 0.94
    },
@@ -5054,7 +5054,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (59%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (59.3%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "vs ATL",
     "dvp": 0.63
    },
@@ -5071,7 +5071,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (24%, n=112, merged: rise 0.25-0.5 + 0.5-1)",
+    "outlook": "Likely to fade (24.1%, n=112, merged: rise 0.25-0.5 + 0.5-1)",
     "next": "at LV",
     "dvp": 0.94
    },
@@ -5088,7 +5088,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=140, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (50.0%, n=140, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "at NYG",
     "dvp": 1.07
    },
@@ -5105,7 +5105,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (54%, n=54)",
+    "outlook": "Watch (53.7%, n=54)",
     "next": "at LV",
     "dvp": 1.36
    },
@@ -5122,7 +5122,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "at HOU",
     "dvp": 1.05
    },
@@ -5139,7 +5139,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (59%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (59.3%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "at NYG",
     "dvp": 1.16
    },
@@ -5156,7 +5156,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (38%, n=50, merged: rise 0.25-0.5 + 0.5-1)",
+    "outlook": "Likely to fade (38.0%, n=50, merged: rise 0.25-0.5 + 0.5-1)",
     "next": "vs ATL",
     "dvp": 0.85
    },
@@ -5173,7 +5173,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "vs LA",
     "dvp": 1.13
    },
@@ -5190,7 +5190,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (59%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (59.3%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "at PHI",
     "dvp": 0.77
    },
@@ -5207,7 +5207,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "vs ATL",
     "dvp": 1.26
    },
@@ -5224,7 +5224,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (54%, n=54)",
+    "outlook": "Watch (53.7%, n=54)",
     "next": "vs NE",
     "dvp": 0.81
    },
@@ -5241,7 +5241,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=98)",
+    "outlook": "Watch (50.0%, n=98)",
     "next": "vs NE",
     "dvp": 1.07
    },
@@ -5258,7 +5258,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (54%, n=54)",
+    "outlook": "Watch (53.7%, n=54)",
     "next": "vs DAL",
     "dvp": 0.98
    },
@@ -5275,7 +5275,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (54%, n=54)",
+    "outlook": "Watch (53.7%, n=54)",
     "next": "at NO",
     "dvp": 0.73
    },
@@ -5292,7 +5292,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=98)",
+    "outlook": "Watch (50.0%, n=98)",
     "next": "vs KC",
     "dvp": 0.86
    },
@@ -5309,7 +5309,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=98)",
+    "outlook": "Watch (50.0%, n=98)",
     "next": "at MIN",
     "dvp": 0.89
    },
@@ -5326,7 +5326,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (59%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (59.3%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "vs ARI",
     "dvp": 1.2
    },
@@ -5343,7 +5343,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (54%, n=54)",
+    "outlook": "Watch (53.7%, n=54)",
     "next": "vs IND",
     "dvp": 1.17
    },
@@ -5360,7 +5360,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (54%, n=54)",
+    "outlook": "Watch (53.7%, n=54)",
     "next": "at TB",
     "dvp": 1.29
    },
@@ -5377,7 +5377,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (59%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (59.3%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "at BAL",
     "dvp": 0.91
    },
@@ -5394,7 +5394,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "vs NYG",
     "dvp": 1.07
    },
@@ -5411,7 +5411,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "at NYG",
     "dvp": 1.07
    },
@@ -5428,7 +5428,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=98)",
+    "outlook": "Watch (50.0%, n=98)",
     "next": "vs MIA",
     "dvp": 0.91
    },
@@ -5445,7 +5445,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=98)",
+    "outlook": "Watch (50.0%, n=98)",
     "next": "at CIN",
     "dvp": 0.86
    },
@@ -5462,7 +5462,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "at SF",
     "dvp": 0.99
    },
@@ -5479,7 +5479,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (59%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (59.3%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "at PIT",
     "dvp": 0.74
    },
@@ -5496,7 +5496,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "at HOU",
     "dvp": 1.05
    },
@@ -5513,7 +5513,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (54%, n=54)",
+    "outlook": "Watch (53.7%, n=54)",
     "next": "vs DET",
     "dvp": 1.17
    },
@@ -5530,7 +5530,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "vs TEN",
     "dvp": 1.02
    },
@@ -5547,7 +5547,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "vs KC",
     "dvp": 0.86
    },
@@ -5564,7 +5564,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (54%, n=54)",
+    "outlook": "Watch (53.7%, n=54)",
     "next": "at MIN",
     "dvp": 0.66
    },
@@ -5581,7 +5581,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "at TB",
     "dvp": 0.99
    },
@@ -5598,7 +5598,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "at PHI",
     "dvp": 0.81
    },
@@ -5615,7 +5615,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "at TB",
     "dvp": 0.99
    },
@@ -5632,7 +5632,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=98)",
+    "outlook": "Watch (50.0%, n=98)",
     "next": "at PIT",
     "dvp": 0.99
    },
@@ -5649,7 +5649,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (42%, n=62, merged: rise 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (41.9%, n=62, merged: rise 0.25-0.5 + 0.5-1)",
     "next": "at MIN",
     "dvp": 0.91
    },
@@ -5666,7 +5666,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (38%, n=50, merged: rise 0.25-0.5 + 0.5-1)",
+    "outlook": "Likely to fade (38.0%, n=50, merged: rise 0.25-0.5 + 0.5-1)",
     "next": "vs LAC",
     "dvp": 0.66
    },
@@ -5683,7 +5683,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=98)",
+    "outlook": "Watch (50.0%, n=98)",
     "next": "at SF",
     "dvp": 0.99
    },
@@ -5700,7 +5700,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=98)",
+    "outlook": "Watch (50.0%, n=98)",
     "next": "vs DEN",
     "dvp": 0.6
    },
@@ -5717,7 +5717,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=98)",
+    "outlook": "Watch (50.0%, n=98)",
     "next": "at NO",
     "dvp": 1.05
    },
@@ -5734,7 +5734,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "vs NE",
     "dvp": 1.07
    },
@@ -5751,7 +5751,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "at BAL",
     "dvp": 0.99
    },
@@ -5768,7 +5768,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "at CIN",
     "dvp": 0.86
    },
@@ -5785,7 +5785,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "at SEA",
     "dvp": 0.97
    },
@@ -5802,7 +5802,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "at BAL",
     "dvp": 0.99
    },
@@ -5819,7 +5819,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=98)",
+    "outlook": "Watch (50.0%, n=98)",
     "next": "at BAL",
     "dvp": 0.99
    },
@@ -5836,7 +5836,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "vs NYJ",
     "dvp": 0.91
    },
@@ -5853,7 +5853,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (59%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (59.3%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "vs LA",
     "dvp": 0.63
    },
@@ -5870,7 +5870,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (54%, n=54)",
+    "outlook": "Watch (53.7%, n=54)",
     "next": "at PHI",
     "dvp": 0.66
    },
@@ -5887,7 +5887,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (59%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (59.3%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "vs GB",
     "dvp": 1.13
    },
@@ -5904,7 +5904,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "vs GB",
     "dvp": 1.05
    },
@@ -5921,7 +5921,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (59%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
+    "outlook": "Watch (59.3%, n=86, merged: fall 0.25-0.5 + 0.5-1)",
     "next": "vs DAL",
     "dvp": 1.27
    },
@@ -5938,7 +5938,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "at SEA",
     "dvp": 0.97
    },
@@ -5955,7 +5955,7 @@
     "games": 3,
     "vol": 0,
     "label": "Likely to fade",
-    "outlook": "Likely to fade (27%, n=74)",
+    "outlook": "Likely to fade (27.0%, n=74)",
     "next": "vs NYG",
     "dvp": 1.07
    },
@@ -5972,7 +5972,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (54%, n=54)",
+    "outlook": "Watch (53.7%, n=54)",
     "next": "vs MIA",
     "dvp": 1.04
    },
@@ -5989,7 +5989,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (54%, n=54)",
+    "outlook": "Watch (53.7%, n=54)",
     "next": "at CAR",
     "dvp": 1.42
    },
@@ -6006,7 +6006,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=98)",
+    "outlook": "Watch (50.0%, n=98)",
     "next": "vs DAL",
     "dvp": 1.36
    },
@@ -6023,7 +6023,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (50%, n=98)",
+    "outlook": "Watch (50.0%, n=98)",
     "next": "at BUF",
     "dvp": 0.91
    }
@@ -6042,7 +6042,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (40%, n=57, merged: rise 3-6 + 6-10 + 10+)",
+    "outlook": "Watch (40.4%, n=57, merged: rise 3-6 + 6-10 + 10+)",
     "next": "at TB",
     "dvp": null
    },
@@ -6059,7 +6059,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (40%, n=57, merged: rise 3-6 + 6-10 + 10+)",
+    "outlook": "Watch (40.4%, n=57, merged: rise 3-6 + 6-10 + 10+)",
     "next": "vs DET",
     "dvp": null
    },
@@ -6076,7 +6076,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (45%, n=65, merged: fall 10+, games 3-5 + 6+)",
+    "outlook": "Watch (44.6%, n=65, merged: fall 10+, games 3-5 + 6+)",
     "next": "at NO",
     "dvp": null
    },
@@ -6093,7 +6093,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (57%, n=70, merged: fall 6-10, games 3-5 + 6+)",
+    "outlook": "Watch (57.1%, n=70, merged: fall 6-10, games 3-5 + 6+)",
     "next": "vs KC",
     "dvp": null
    },
@@ -6110,7 +6110,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (57%, n=70, merged: fall 6-10, games 3-5 + 6+)",
+    "outlook": "Watch (57.1%, n=70, merged: fall 6-10, games 3-5 + 6+)",
     "next": "vs MIA",
     "dvp": null
    },
@@ -6127,7 +6127,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (57%, n=70, merged: fall 6-10, games 3-5 + 6+)",
+    "outlook": "Watch (57.1%, n=70, merged: fall 6-10, games 3-5 + 6+)",
     "next": "at LV",
     "dvp": null
    },
@@ -6144,7 +6144,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (40%, n=57, merged: rise 3-6 + 6-10 + 10+)",
+    "outlook": "Watch (40.4%, n=57, merged: rise 3-6 + 6-10 + 10+)",
     "next": "vs DAL",
     "dvp": null
    },
@@ -6161,7 +6161,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (40%, n=57, merged: rise 3-6 + 6-10 + 10+)",
+    "outlook": "Watch (40.4%, n=57, merged: rise 3-6 + 6-10 + 10+)",
     "next": "vs LAC",
     "dvp": null
    },
@@ -6178,7 +6178,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (40%, n=57, merged: rise 3-6 + 6-10 + 10+)",
+    "outlook": "Watch (40.4%, n=57, merged: rise 3-6 + 6-10 + 10+)",
     "next": "vs GB",
     "dvp": null
    },
@@ -6195,7 +6195,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (40%, n=57, merged: rise 3-6 + 6-10 + 10+)",
+    "outlook": "Watch (40.4%, n=57, merged: rise 3-6 + 6-10 + 10+)",
     "next": "vs IND",
     "dvp": null
    },
@@ -6212,7 +6212,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (45%, n=85, merged: fall 3-6, games 3-5 + 6+)",
+    "outlook": "Watch (44.7%, n=85, merged: fall 3-6, games 3-5 + 6+)",
     "next": "vs NYJ",
     "dvp": null
    },
@@ -6229,7 +6229,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (45%, n=85, merged: fall 3-6, games 3-5 + 6+)",
+    "outlook": "Watch (44.7%, n=85, merged: fall 3-6, games 3-5 + 6+)",
     "next": "at CIN",
     "dvp": null
    },
@@ -6246,7 +6246,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (45%, n=85, merged: fall 3-6, games 3-5 + 6+)",
+    "outlook": "Watch (44.7%, n=85, merged: fall 3-6, games 3-5 + 6+)",
     "next": "vs DEN",
     "dvp": null
    },
@@ -6263,7 +6263,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (40%, n=57, merged: rise 3-6 + 6-10 + 10+)",
+    "outlook": "Watch (40.4%, n=57, merged: rise 3-6 + 6-10 + 10+)",
     "next": "vs ATL",
     "dvp": null
    },
@@ -6280,7 +6280,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (45%, n=85, merged: fall 3-6, games 3-5 + 6+)",
+    "outlook": "Watch (44.7%, n=85, merged: fall 3-6, games 3-5 + 6+)",
     "next": "at NYJ",
     "dvp": null
    },
@@ -6297,7 +6297,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (45%, n=85, merged: fall 3-6, games 3-5 + 6+)",
+    "outlook": "Watch (44.7%, n=85, merged: fall 3-6, games 3-5 + 6+)",
     "next": "at NYG",
     "dvp": null
    },
@@ -6314,7 +6314,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (40%, n=57, merged: rise 3-6 + 6-10 + 10+)",
+    "outlook": "Watch (40.4%, n=57, merged: rise 3-6 + 6-10 + 10+)",
     "next": "at HOU",
     "dvp": null
    },
@@ -6331,7 +6331,7 @@
     "games": 3,
     "vol": 0,
     "label": "Watch",
-    "outlook": "Watch (40%, n=57, merged: rise 3-6 + 6-10 + 10+)",
+    "outlook": "Watch (40.4%, n=57, merged: rise 3-6 + 6-10 + 10+)",
     "next": "at CHI",
     "dvp": null
    }

@@ -223,17 +223,6 @@ PAGE = HEAD + """
     font-variant-numeric:tabular-nums; text-transform:none;
   }}
   .rows{{margin-top:12px}}
-  /* One way through to the slate, sitting under the subtitle where a reader
-     has just been told what the page is. Quiet on purpose: the listing's job
-     is still the games. */
-  a.slate-link{{
-    display:inline-block; margin:16px 0 0; text-decoration:none;
-    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px;
-    letter-spacing:.12em; text-transform:uppercase; color:var(--accent);
-    border-bottom:1px solid transparent;
-  }}
-  a.slate-link:hover{{border-bottom-color:var(--accent)}}
-  a.slate-link + a.slate-link{{margin-left:22px}}
   .empty{{color:var(--ink-3); font-style:italic; margin-top:20px}}
   footer{{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
     color:var(--ink-3); font-size:12.5px; max-width:68ch}}
@@ -246,16 +235,12 @@ PAGE = HEAD + """
 <div class="wrap" data-inspect-id="index-wrap">
   <header>
     <p class="eyebrow" data-inspect-id="index-eyebrow">Production ranges</p>
-    <h1 data-inspect-id="index-title">NFL Props</h1>
+    <h1 data-inspect-id="index-title">{title}</h1>
   </header>
-  <p class="sub" data-inspect-id="index-subtitle">Pick a week. Games sit in kickoff order
-    inside it. TD marks the likeliest scorer. Nothing here claims an edge.</p>
-  <a class="slate-link" href="/slate" data-inspect-id="index-slate-link">Top picks by sitting &rarr;</a>
-  <a class="slate-link" href="/explore" data-inspect-id="index-explore-link">Explore results &rarr;</a>
+  <p class="sub" data-inspect-id="index-subtitle">Games sit in kickoff order.
+    TD marks the likeliest scorer. Nothing here claims an edge.</p>
 {tabs}
 {rows}
-  <footer data-inspect-id="index-footer">Projections, not edges. Tested against real
-    sportsbook lines this model was the less accurate of the two.</footer>
 </div>"""
 
 
@@ -271,6 +256,7 @@ TABS_JS = """
   var strip = document.querySelector('[role="tablist"]');
   if (!strip) return;
   var tabs = [].slice.call(strip.querySelectorAll('[role="tab"]'));
+  var h1 = document.querySelector('header h1');
 
   function show(tab) {
     tabs.forEach(function (t) {
@@ -278,6 +264,7 @@ TABS_JS = """
       t.setAttribute("aria-selected", on ? "true" : "false");
       t.tabIndex = on ? 0 : -1;
       document.getElementById(t.getAttribute("aria-controls")).hidden = !on;
+      if (on && h1) h1.textContent = t.firstChild.textContent;
     });
   }
 
@@ -362,13 +349,12 @@ def index_html():
     # like a finished one. Now every game gets a card and the ones with no
     # report yet say so, which turns "is that all of them?" into a question the
     # page answers by itself.
-    reports, loose = {}, []
+    # Pages that are not game reports (rankings, trends) are not games.
+    reports = {}
     for f in files:
         m = NAME.search(f)
         if m:
             reports[(int(m.group(1)), int(m.group(2)), m.group(3), m.group(4))] = f
-        else:
-            loose.append(f)
 
     # Only weeks that have at least one report. Without that, every future week
     # in the schedules table would show up as a wall of empty cards.
@@ -382,8 +368,6 @@ def index_html():
     for (season, week, away, home), f in reports.items():
         if (season, week, away, home) not in kicks:
             entries.append((f, f"{away} @ {home}", season, week, None))
-    for f in loose:
-        entries.append((f, f[:-5], 0, 0, None))
 
     # Newest week first, and inside a week the games in the order they kick
     # off — the order you actually watch them in. Sorting the whole list by
@@ -501,11 +485,8 @@ def index_html():
     tabs, panels = [], []
     for n, ((season, week), slots) in enumerate(ordered):
         games = counts[(season, week)]
-        if not season:
-            label, slug = "Unscheduled", "none"
-        else:
-            label = f"{season} W{week}" if multi_season else f"Week {week}"
-            slug = f"{season}-{week}"
+        label = f"{season} W{week}" if multi_season else f"Week {week}"
+        slug = f"{season}-{week}"
         on = n == latest
         tabs.append(
             f'    <button class="tab" role="tab" id="tab-{slug}" type="button"'
@@ -529,7 +510,11 @@ def index_html():
                     ' data-inspect-id="index-tablist">\n'
                     + "\n".join(tabs) + "\n  </nav>")
 
-    return PAGE.format(tabs=tabstrip, rows="\n".join(panels)) + TABS_JS
+    # The h1 names the open week; TABS_JS keeps it in step with the tab.
+    title = "Games"
+    if tabs:
+        title = f"Week {ordered[-1][0][1]}"
+    return PAGE.format(title=title, tabs=tabstrip, rows="\n".join(panels)) + TABS_JS
 
 
 
@@ -978,12 +963,10 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
     pooled by sitting and ranked three ways. Model is this project's own chance the
     leg lands. Book is what FanDuel's price implies. The small figure under Book is
     the difference, and it is the only column that says anything the book doesn't.</p>
-  <a class="back" href="/" data-inspect-id="slate-back">&larr; All reports</a>
-{tabs}
+  {tabs}
 {windows}
-  <footer data-inspect-id="slate-footer">Projections, not edges. Prices are whatever
-    the report held when it was generated and move afterwards — check the live board.
-    Tested against real sportsbook lines this model was the less accurate of the two.</footer>
+  <footer data-inspect-id="slate-footer">Prices are whatever
+    the report held when it was generated and move afterwards — check the live board.</footer>
 </div>"""
 
 
@@ -1216,7 +1199,7 @@ def explore_html():
         pending["td"] += waiting
         void["td"] += tvoid
     blob = json.dumps({"legs": legs, "pending": pending, "void": void}).replace("</", "<\\/")
-    head = HEAD.replace("NFL Props \u2014 reports", "NFL Props \u2014 explore").format()
+    head = HEAD.replace("NFL Props \u2014 reports", "NFL Props \u00b7 Results").format()
     body = open(EXPLORE_TPL, encoding="utf-8").read()
     return (head.replace(CHARSET, CHARSET + f"\n<script>window.__EXPLORE__={blob};</script>", 1)
             + body)
@@ -1368,17 +1351,6 @@ LIVE = """<script>
 })();
 </script>
 """
-
-# For a report old enough that the template cannot rebuild it. Carries its own
-# rule, because that page's stylesheet was written before a.back existed.
-BACK_LINK = ('<style>a.back{display:inline-block; margin:0 0 18px;'
-             'text-decoration:none; font-family:"IBM Plex Mono",ui-monospace,'
-             'monospace; font-size:11px; letter-spacing:.12em;'
-             'text-transform:uppercase; color:var(--ink-3)}'
-             'a.back:hover{color:var(--den)}</style>'
-             '<a class="back" href="/" data-inspect-id="report-back">'
-             '&larr; All reports</a>')
-
 CHARSET = '<meta charset="utf-8">'
 DOCTYPE = "<!doctype html>"
 
@@ -1542,6 +1514,106 @@ def with_theme(html):
     return html
 
 
+# ------------------------------------------------------------- site chrome
+
+CHROME_CSS = """<style>
+  .sn{border-bottom:2px solid var(--ink); margin:0 0 18px; padding-bottom:2px;
+    font-family:"IBM Plex Mono",ui-monospace,monospace; text-transform:uppercase;
+    letter-spacing:.12em}
+  .sn-row{display:flex; justify-content:space-between; align-items:center; gap:12px}
+  .sn a{text-decoration:none; color:var(--ink-3); display:inline-block; padding:10px 0}
+  .sn a:hover{color:var(--ink)}
+  .sn a.on{color:var(--ink)}
+  .sn-top{font-size:11px}
+  .sn-top a.on{border-bottom:2px solid var(--ink)}
+  .sn-top .sn-links{display:flex; gap:16px}
+  .sn a.sn-brand{font-family:"Barlow Condensed",Impact,sans-serif; font-weight:700;
+    font-size:18px; letter-spacing:.02em; color:var(--ink)}
+  .sn-sub{font-size:10.5px; padding-bottom:4px}
+  .sn-sub a{padding:6px 0}
+  .sn-sub .sep{color:var(--ink-3); margin:0 6px}
+  .sn-stamp{color:var(--ink-3); font-size:10.5px; font-variant-numeric:tabular-nums}
+  .sf{max-width:720px; margin:0 auto; padding:0 24px 48px; color:var(--ink-3);
+    font-size:12.5px}
+  .sf p{margin:0; padding-top:16px; border-top:1px solid var(--line); max-width:68ch}
+  @media (max-width:560px){.sf{padding:0 14px 40px}}
+  /* Links the old pages carry for themselves. The nav replaces them. The
+     files on disk are never rewritten, so they are hidden here instead. */
+  [data-inspect-id="report-back"],[data-inspect-id="report-rankings-link"],
+  [data-inspect-id="report-trends-link"],[data-inspect-id="slate-back"],
+  [data-inspect-id="explore-back"],[data-inspect-id="rankings-back"],
+  [data-inspect-id="rankings-trends-link"],[data-inspect-id="trends-back"],
+  [data-inspect-id="trends-link-rankings"]{display:none !important}
+</style>"""
+
+# The full id sits in each tuple as a literal, so the frontend map can grep
+# for it. Only the root id is a parameter of site_nav().
+SECTIONS = (("week", "Week", "/", "site-nav-week"),
+            ("players", "Players", "/rankings.html", "site-nav-players"),
+            ("results", "Results", "/explore", "site-nav-results"))
+SUBPAGES = {"week": (("games", "Games", "/", "site-subnav-games"),
+                     ("slate", "Slate", "/slate", "site-subnav-slate")),
+            "players": (("rankings", "Rankings", "/rankings.html", "site-subnav-rankings"),
+                        ("trends", "Trends", "/trends.html", "site-subnav-trends"))}
+
+
+def results_stamp():
+    """"Wk 4 \u00b7 2/16 final": how far the season's results go. Empty if unknown."""
+    try:
+        db = sqlite3.connect(f"file:{DB}?mode=ro", uri=True)
+        row = db.execute(
+            "SELECT season, week FROM schedules WHERE away_score IS NOT NULL "
+            "ORDER BY season DESC, week DESC LIMIT 1").fetchone()
+        if not row:
+            db.close()
+            return ""
+        done, games = db.execute(
+            "SELECT SUM(away_score IS NOT NULL), COUNT(*) FROM schedules "
+            "WHERE season=? AND week=?", row).fetchone()
+        db.close()
+        return f"Wk {row[1]} \u00b7 {int(done)}/{games} final"
+    except Exception as e:  # noqa: BLE001 - never print a guess
+        sys.stderr.write(f"results stamp unavailable: {e}\n")
+        return ""
+
+
+def site_nav(section, page, inspect_id="site-nav"):
+    """The header every page shares. Two rows: sections, then the section's pages."""
+    top = "".join(
+        f'<a href="{href}"{" class=on" if key == section else ""}'
+        f' data-inspect-id="{iid}">{label}</a>'
+        for key, label, href, iid in SECTIONS)
+    sub = '<span class="sep">\u00b7</span>'.join(
+        f'<a href="{href}"{" class=on" if key == page else ""}'
+        f' data-inspect-id="{iid}">{label}</a>'
+        for key, label, href, iid in SUBPAGES.get(section, ()))
+    return (f'<div class="sn" role="navigation" aria-label="Site" data-inspect-id="{inspect_id}">'
+            f'<div class="sn-row sn-top">'
+            f'<a class="sn-brand" href="/" data-inspect-id="site-nav-brand">NFL Props</a>'
+            f'<span class="sn-links">{top}</span></div>'
+            f'<div class="sn-row sn-sub"><span data-inspect-id="site-subnav">{sub}</span>'
+            f'<span class="sn-stamp" data-inspect-id="site-stamp">{results_stamp()}</span></div></div>')
+
+
+SITE_FOOTER = ('<div class="sf" data-inspect-id="site-footer"><p>Entertainment only. '
+               'Projections, not edges. Against real sportsbook lines, this model was '
+               'the less accurate of the two.</p></div>')
+WRAP_OPEN = re.compile(r'<div class="wrap"[^>]*>')
+TITLE_TAG = re.compile(r"<title>.*?</title>", re.S)
+
+
+def with_chrome(html, section, page, title):
+    """Splice the site header, footer and title into a page, per request.
+
+    Same bargain as with_theme: nothing is written to disk, so the reports
+    already generated get the nav without a rebuild.
+    """
+    html = TITLE_TAG.sub(lambda _: f"<title>{title}</title>", html, 1)
+    html = WRAP_OPEN.sub(lambda m: m.group(0) + "\n" + CHROME_CSS + site_nav(section, page),
+                         html, 1)
+    return html + "\n" + SITE_FOOTER
+
+
 class Handler(SimpleHTTPRequestHandler):
     # Tailscale Serve proxies in front of this. An HTTP/1.0 server behind a
     # 1.1 proxy is a known way to get a request that never returns, so speak
@@ -1570,7 +1642,14 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
         self.end_headers()
-        self.wfile.write(body)
+        if self.command != "HEAD":
+            self.wfile.write(body)
+
+    def _redirect(self, to):
+        self.send_response(301)
+        self.send_header("Location", to)
+        self.send_header("Content-Length", "0")
+        self.end_headers()
 
     def _inspect_report(self, name):
         """Serve a report with the inspector overlay spliced in.
@@ -1618,11 +1697,6 @@ class Handler(SimpleHTTPRequestHandler):
         # and it never picked up the back link. Splice one in rather than
         # leave one page on the site with no way out but the browser's own
         # button, which a phone in full screen does not show.
-        if 'class="back"' not in html:
-            html = html.replace(
-                '<div class="wrap" data-inspect-id="page-wrap">',
-                '<div class="wrap" data-inspect-id="page-wrap">\n' + BACK_LINK, 1)
-
         # Only for a page that can draw them. Week 1's report cannot be
         # rebuilt against the current template, so its script has no result()
         # and the data would sit in the page unread.
@@ -1644,6 +1718,13 @@ class Handler(SimpleHTTPRequestHandler):
                                 f"<script>window.__HISTORY__={json.dumps(hist)};"
                                 "</script>", 1)
 
+        if name == "rankings.html":
+            html = with_chrome(html, "players", "rankings", "NFL Props \u00b7 Rankings")
+        elif name == "trends.html":
+            html = with_chrome(html, "players", "trends", "NFL Props \u00b7 Trends")
+        else:
+            title = f"NFL Props \u00b7 {m.group(3)} @ {m.group(4)}" if m else "NFL Props"
+            html = with_chrome(html, "week", None, title)
         body = (with_theme(html) +
                 '\n<script src="/_inspector.js"></script>\n').encode()
         self._send(body, "text/html; charset=utf-8")
@@ -1665,24 +1746,27 @@ class Handler(SimpleHTTPRequestHandler):
         if path == "/_frontend-map.json":
             self._send(open(MAP, "rb").read(), "application/json; charset=utf-8")
             return
-        if path.endswith(".html") and path != "/index.html":
-            self._inspect_report(os.path.basename(path))
+        if path in ("/rankings", "/rankings/"):
+            self._redirect("/rankings.html")
+            return
+        if path in ("/trends", "/trends/"):
+            self._redirect("/trends.html")
             return
 
         if path in ("/slate", "/slate/", "/slate.html"):
             # The slate gets the overlay on the same terms as the listing:
             # spliced in per request, never written to disk. Nothing is stored
-            # for this page at all — it is read back out of the report files.
-            body = (with_theme(slate_html() + TABS_JS) +
-                    '\n<script src="/_inspector.js"></script>\n').encode()
+            # for this page at all - it is read back out of the report files.
+            html = with_chrome(slate_html() + TABS_JS, "week", "slate", "NFL Props \u00b7 Slate")
+            body = (with_theme(html) + '\n<script src="/_inspector.js"></script>\n').encode()
             self._send(body, "text/html; charset=utf-8")
             return
 
         if path in ("/explore", "/explore/", "/explore.html"):
             # Built per request from the reports on disk and the results in
             # the database, like the slate. Nothing is stored for it.
-            body = (with_theme(explore_html()) +
-                    '\n<script src="/_inspector.js"></script>\n').encode()
+            html = with_chrome(explore_html(), "results", None, "NFL Props \u00b7 Results")
+            body = (with_theme(html) + '\n<script src="/_inspector.js"></script>\n').encode()
             self._send(body, "text/html; charset=utf-8")
             return
 
@@ -1690,18 +1774,24 @@ class Handler(SimpleHTTPRequestHandler):
             # The listing gets the overlay too, on the same terms as a report:
             # added here, never stored. Its own elements are mapped under the
             # report-index node, and they live in this file rather than in a
-            # template -- the listing is built by index_html() above.
-            body = (with_theme(index_html()) +
-                    '\n<script src="/_inspector.js"></script>\n').encode()
-            self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
-            self.send_header("Content-Length", str(len(body)))
-            # The index is a directory listing; never let a phone cache a stale one.
-            self.send_header("Cache-Control", "no-store")
-            self.end_headers()
-            self.wfile.write(body)
+            # template - the listing is built by index_html() above.
+            # _send says no-store: the index is built per request; never let a
+            # phone cache a stale one.
+            html = with_chrome(index_html(), "week", "games", "NFL Props \u00b7 Games")
+            body = (with_theme(html) + '\n<script src="/_inspector.js"></script>\n').encode()
+            self._send(body, "text/html; charset=utf-8")
             return
-        super().do_GET()
+
+        if path.endswith(".html"):
+            self._inspect_report(os.path.basename(path))
+            return
+
+        # Only the pages above and the report files are served. Raw data under
+        # reports/ (.csv, .json, .log, ...) is analysis output, not part of the
+        # site, so it answers 404 rather than being shared with the tailnet.
+        self.send_error(404)
+
+    do_HEAD = do_GET
 
     def log_message(self, fmt, *a):
         # On by default. When a phone "just hangs", the first thing worth

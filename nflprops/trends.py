@@ -49,7 +49,7 @@ def label(rate):
     s, n = rate["hold_share"], rate["n"]
     lab = "Likely to hold" if s >= HOLD_AT else "Likely to fade" if s <= FADE_AT else "Watch"
     mg = f", merged: {rate['merge']}" if rate.get("merge") else ""
-    return lab, f"{lab} ({s*100:.0f}%, n={n}{mg})"
+    return lab, f"{lab} ({s*100:.1f}%, n={n}{mg})"
 
 
 # ---- entity frames ---------------------------------------------------------
@@ -425,7 +425,7 @@ def render(data):
                      f'<span class="dl">{sign}{r["delta"]:.1f} pts</span></div>'
                      f'<div class="t2">Pass share {r["last3"]:.1f}% last 3 vs {r["base"]:.1f}% {r["baseline"]}{pts}</div>'
                      f'<div class="t2">3-game change, small sample</div>'
-                     f'<div class="t2 ol ol-{r["label"].split()[-1].lower()}" data-inspect-id="trends-outlook">Outlook: {_e(r["outlook"])} · next: {_e(r["next"])}</div></li>')
+                     f'<div class="t2 ol ol-{r["label"].split()[-1].lower()}" data-inspect-id="trends-team-outlook">Outlook: {_e(r["outlook"])} · next: {_e(r["next"])}</div></li>')
     card("team", "6 Team pass rate and scoring",
          "Pass share = pass attempts divided by attempts plus carries. Points per game is context. It has no history rate.",
          f'<ul>{"".join(items) or "<li class=none>No team moved 3 points or more.</li>"}</ul>')

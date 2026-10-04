@@ -56,7 +56,7 @@ class LabelRule(unittest.TestCase):
         self.assertEqual(T.label(None)[0], "Watch")
 
     def test_text_shows_rate_and_n(self):
-        self.assertEqual(T.label({"n": 212, "hold_share": .70})[1], "Likely to hold (70%, n=212)")
+        self.assertEqual(T.label({"n": 212, "hold_share": .70})[1], "Likely to hold (70.0%, n=212)")
 
 
 if __name__ == "__main__":
