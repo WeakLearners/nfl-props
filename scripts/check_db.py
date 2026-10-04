@@ -43,6 +43,16 @@ with connect() as con:
             "AND p.season=r.season AND p.week=r.week)").c[0] < 2000,
           "orphan rz rows are mostly QBs/defenders, a few hundred is normal")
 
+# snap_counts carries a PFR id; without the crosswalk the join matches zero
+# rows (rating system Phase 1, 2026-10-04). Reads features.db read-only.
+try:
+    from nflprops.shares import snap_coverage
+    cov, n = snap_coverage()
+    check("snap_counts join (via xwalk) covers > 95% of skill rows", cov > 0.95,
+          f"{cov:.1%} of {n:,}")
+except Exception as e:
+    check("snap_counts join (via xwalk) covers > 95% of skill rows", False, repr(e))
+
 bad = 0
 for ok, name, detail in CHECKS:
     print(f"  {'PASS' if ok else 'FAIL'}  {name}" + (f"   [{detail}]" if detail else ""))
