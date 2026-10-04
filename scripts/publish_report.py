@@ -126,6 +126,7 @@ def main():
             print(f"publish_report: not found in reports/: {', '.join(missing)}", file=sys.stderr)
             sys.exit(1)
 
+    # NOTE: reports/rankings.html (player rankings, linked from every report) is not matched by this glob. Add it here if Cloudflare is turned on.
     all_reports = sorted(REPORTS.glob("report_*.html"))
     if not all_reports:
         print("publish_report: no report_*.html files in reports/ -- nothing to publish", file=sys.stderr)
