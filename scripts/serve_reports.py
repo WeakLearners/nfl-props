@@ -25,6 +25,7 @@ try:
 except Exception as _e:  # noqa: BLE001 — the pages still work ungraded
     sys.stderr.write(f"grading unavailable, name_key did not import: {_e}\n")
     name_key = None
+from nflprops.badges import BADGE_CSS, badge_html, player_badges  # noqa: E402
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT = os.path.join(BASE, "reports")
@@ -726,6 +727,18 @@ def rk_chip(chip, inspect_id):
             f'title="{html.escape(chip[1], quote=True)}">{html.escape(chip[0])}</span>')
 
 
+def badges_for(player, role, opp=None, week=None):
+    """[class, text, title] badges for a player, from data/ratings/badges.json. A matchup
+    badge shows only when opp and week match the game it was computed for."""
+    if name_key is None:
+        return []
+    return player_badges(f'{name_key(player)}|{re.sub(r"[0-9]+$", "", role or "")}', opp, week)
+
+
+def bd_html(player, role, opp, week, inspect_id):
+    return badge_html(badges_for(player, role, opp, week), inspect_id)
+
+
 def leg_rows(legs, graded):
     out = []
     for i, r in enumerate(legs, 1):
@@ -744,7 +757,7 @@ def leg_rows(legs, graded):
             f'<td class="rank">{i}</td>'
             f'<td class="who"><a href="/{r["file"]}">{r["p"]}</a>'
             f'<span class="meta">{r["tm"]} {r["role"]}'
-            f'{rk_chip(chip_for(r["p"], r["role"]), "slate-rank-chip")} &middot; {r["game"]}</span></td>'
+            f'{rk_chip(chip_for(r["p"], r["role"]), "slate-rank-chip")}{bd_html(r["p"], r["role"], r.get("vs"), r.get("_wk"), "slate-badge")} &middot; {r["game"]}</span></td>'
             f'<td class="stat">o{r["line"]:g} {stat}</td>'
             + (f'<td class="res">{mark}</td>' if graded else "")
             + (
@@ -977,6 +990,7 @@ def slate_windows(season, week):
     # and are left out rather than grouped under a heading that would be a lie.
     wins = {}
     for r in legs:
+        r["_wk"] = week
         date_s, time_s = r["kick"].split(" ")
         rank, part = daypart(time_s)
         wins.setdefault((date_s, rank, part), []).append(r)
@@ -1189,10 +1203,12 @@ def explore_html():
             row = {k: r.get(k) for k in EXPLORE_FIELDS}
             row["season"], row["week"] = season, week
             row["rk"], row["rkt"] = chip_for(r["p"], r.get("role")) or (None, None)
+            row["bd"] = badges_for(r["p"], r.get("role"), r.get("vs"), week)
             legs.append(row)
         tds, waiting, tvoid = td_legs(season, week)
         for t in tds:
             t["rk"], t["rkt"] = chip_for(t["p"], t.get("role")) or (None, None)
+            t["bd"] = badges_for(t["p"], t.get("role"), t.get("vs"), week)
         legs += tds
         pending["td"] += waiting
         void["td"] += tvoid
@@ -1676,7 +1692,7 @@ def with_chrome(html, section, page, title):
     key = page or ("report" if section == "week" else section)
     html = WRAP_OPEN.sub(
         lambda m: m.group(0)[:-1] + f' data-page="{key}">' + "\n"
-                  + CHROME_CSS + LAYOUT_CSS + site_nav(section, page),
+                  + CHROME_CSS + LAYOUT_CSS + f"<style>{BADGE_CSS}</style>" + site_nav(section, page),
         html, 1)
     return html + "\n" + SITE_FOOTER
 

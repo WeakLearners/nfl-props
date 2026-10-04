@@ -16,6 +16,7 @@ from .config import require, ROOT, save_board
 from .odds import name_key
 from .db import connect
 from .rating import chip_lookup as rating_chips
+from .badges import get_badges, player_badges
 
 # scripts/vol_predict.py is not part of the nflprops package (it lives beside
 # it, not inside it) -- same sys.path shim the scripts use.
@@ -222,11 +223,13 @@ def build(season, week, teams, lines, n_picks=6):
         pr.loc[ix, "pick"] = i
 
     chips = rating_chips(name_key)
+    bdata = get_badges()  # the data compute_badges() writes to data/ratings/badges.json
     rows = []
     for r in pr.itertuples():
         rk = chips.get((r.player_key, r.position))
         rows.append({
             "rk": rk[0] if rk else None, "rkt": rk[1] if rk else None,
+            "bd": player_badges(f"{r.player_key}|{r.position}", r.opponent, week if season == bdata["season"] else None, bdata),
             "p": r.player, "role": r.position + str(rank.get(r.player_key, 1)),
             "tm": r.team, "vs": r.opponent, "s": r.stat,
             "mu": round(float(r.proj), 1), "sd": round(float(r.sd_adj), 1),

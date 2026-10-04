@@ -355,12 +355,19 @@
     return l.rk ? '<span class="rk" data-inspect-id="' + id + '" title="' + esc(l.rkt) + '">' + esc(l.rk) + '</span>' : "";
   }
 
+  // Badges (nflprops/badges.py): [class, text, title] items in each leg's bd field.
+  function bdBadges(l, id) {
+    return (l.bd || []).map(function (b) {
+      return '<span class="' + esc(b[0]) + '" data-inspect-id="' + id + '" title="' + esc(b[2]) + '">' + esc(b[1]) + '</span>';
+    }).join("");
+  }
+
   function legRows(legs) {
     return legs.slice().sort(function (a, b) {
       return b.season - a.season || b.week - a.week || (a.p < b.p ? -1 : 1);
     }).map(function (l) {
       return '<tr data-inspect-id="explore-leg"><td><a href="/' + esc(l.file) + '">' + esc(l.p) + '</a>' +
-        '<span class="meta">' + esc(l.tm + " " + (l.role || "")) + rkChip(l, "explore-rank-chip") + esc(" · W" + l.week + " " + l.game) + '</span></td>' +
+        '<span class="meta">' + esc(l.tm + " " + (l.role || "")) + rkChip(l, "explore-rank-chip") + bdBadges(l, "explore-badge") + esc(" · W" + l.week + " " + l.game) + '</span></td>' +
         '<td>' + (l.s === "anytime_td" ? "anytime TD" : 'o' + l.line + ' ' + (SHORT[l.s] || l.s)) + '</td>' +
         '<td>' + (l.price == null ? "—" : (l.price > 0 ? "+" : "") + l.price) + '</td>' +
         '<td><span class="mark ' + (l.hit ? "hit" : "miss") + '">' + l.actual + '</span></td></tr>';

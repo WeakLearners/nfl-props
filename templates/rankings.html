@@ -9,19 +9,19 @@
   :root{
     color-scheme: light;
     --bg:#f7f6f3; --surface:#fcfcfb; --line:#e2e0d9; --line-soft:#eceae3;
-    --ink:#14140f; --ink-2:#52514e; --ink-3:#84827a; --den:#eb6834;
+    --ink:#14140f; --ink-2:#52514e; --ink-3:#84827a; --den:#eb6834; --good:#1c7a4d; --bad:#b3261e;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
       color-scheme: dark;
       --bg:#121211; --surface:#1a1a19; --line:#33322e; --line-soft:#262521;
-      --ink:#f6f5ef; --ink-2:#c3c2b7; --ink-3:#8b897f; --den:#d95926;
+      --ink:#f6f5ef; --ink-2:#c3c2b7; --ink-3:#8b897f; --den:#d95926; --good:#4fbd85; --bad:#f2685c;
     }
   }
   :root[data-theme="dark"]{
     color-scheme: dark;
     --bg:#121211; --surface:#1a1a19; --line:#33322e; --line-soft:#262521;
-    --ink:#f6f5ef; --ink-2:#c3c2b7; --ink-3:#8b897f; --den:#d95926;
+    --ink:#f6f5ef; --ink-2:#c3c2b7; --ink-3:#8b897f; --den:#d95926; --good:#4fbd85; --bad:#f2685c;
   }
   *{box-sizing:border-box}
   body{margin:0; background:var(--bg); color:var(--ink);
@@ -53,12 +53,22 @@
   .dfn-grid th,.dfn-grid td{padding:3px 6px}
   .dfn-grid th{font-size:9px; letter-spacing:.06em}
   .dfn-grid .yds{font-size:11px; margin-left:2px}
+  .legend{margin:6px 0 14px; padding:10px 14px; background:var(--surface); border:1px solid var(--line); border-radius:3px; font-size:13px; color:var(--ink-2)}
+  .legend p{margin:3px 0}
+  .legend .bd{margin:0 6px 0 0}
   [hidden]{display:none !important}
 </style>
 <div class="wrap" data-inspect-id="rankings-wrap">
   <div class="filter" data-group="top" data-inspect-id="rankings-switch" role="group" aria-label="Rankings view">
     <button type="button" aria-pressed="true" data-view="players" data-inspect-id="rankings-switch-players">Players</button>
     <button type="button" aria-pressed="false" data-view="defenses" data-inspect-id="rankings-switch-defenses">Defenses</button>
+  </div>
+  <div class="legend" data-inspect-id="rankings-legend">
+    <p><strong>Badges are rare by design.</strong> Most players and defenses have none. Each badge has a hover note with the numbers behind it. Badges describe past games and one matchup. They are not picks.</p>
+    <p data-inspect-id="rankings-legend-trend"><span class="bd bd-up">&#9650;</span><span class="bd bd-down">&#9660;</span>Player trend. Production per game, opponents removed, over the last 3 games against the 6 to 12 before. It needs a large change (t of 2 or more, at least 25%) and the same direction in 2 of the 3 games.</p>
+    <p data-inspect-id="rankings-legend-dtrend"><span class="bd bd-d-up">&#9650;</span><span class="bd bd-d-down">&#9660;</span>Defense trend, by category. Up means the defense got tougher (it allows less). Down means it allows more. Same test on its last 3 games against the 8 to 14 before.</p>
+    <p data-inspect-id="rankings-legend-big"><span class="bd bd-big">Big day</span>A top-15% player at his position against one of the 5 defenses that allow the most to that position. Shown on the slate, results and report pages for this week's game.</p>
+    <p data-inspect-id="rankings-legend-caution"><span class="bd bd-caution">Caution</span>A top-15% player against one of the 5 toughest defenses to that position. An average player against a mid or good defense gets no badge.</p>
   </div>
   <div data-view="players" data-inspect-id="rankings-view-players">
   <header data-inspect-id="rankings-header">

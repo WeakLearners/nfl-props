@@ -72,7 +72,8 @@ def main():
         sys.path.insert(0, str(ROOT))
         from nflprops.rating import chip_lookup
         from nflprops.odds import name_key
-        chips = chip_lookup(name_key), name_key
+        from nflprops.badges import get_badges, player_badges
+        chips = chip_lookup(name_key), name_key, get_badges(), player_badges, (int(sea), int(wk))
     if not files:
         print("no reports on disk")
         return 0
@@ -91,6 +92,9 @@ def main():
             for r in rows:
                 rk = chips[0].get((chips[1](r["p"]), r["role"][:2]))
                 r["rk"], r["rkt"] = (rk if rk else (None, None))
+                bdata, pb, (b_sea, b_wk) = chips[2], chips[3], chips[4]
+                r["bd"] = pb(f"{chips[1](r['p'])}|{r['role'][:2]}", r.get("vs"),
+                             b_wk if b_sea == bdata["season"] else None, bdata)
             got = dict(got, data=json.dumps(rows))
         out = render(tpl, got)
 

@@ -285,7 +285,10 @@ def write_chips():
 def render_rankings(season, week, df, defenses_html=""):
     """The full rankings page: one table per position. Plain HTML from templates/rankings.html."""
     import html
+    from .badges import badge_html, load_badges, player_badges
     from .config import ROOT
+    from .odds import name_key
+    bdata = load_badges()
     out = []
     for pos_, label in (("QB", "Quarterbacks"), ("RB", "Running backs"),
                         ("WR", "Wide receivers"), ("TE", "Tight ends")):
@@ -293,7 +296,8 @@ def render_rankings(season, week, df, defenses_html=""):
         n_all = len(d_all)
         d = d_all.sort_values("rank").head(RANK_SHOW)  # display cut only: ranks stay as computed over all n_all
         rows = "".join(
-            f'<tr data-inspect-id="rankings-row"><td class="num">{r["rank"]}</td><td>{html.escape(r["name"])}</td>'
+            f'<tr data-inspect-id="rankings-row"><td class="num">{r["rank"]}</td><td>{html.escape(r["name"])}'
+            f'{badge_html(player_badges(f"{name_key(r["name"])}|{pos_}", data=bdata), "rankings-badge")}</td>'
             f'<td>{html.escape(str(r.team))}</td><td class="num">{r.rating:.1f}</td>'
             f'<td class="num">{int(r.n_games)}</td><td class="num">{r.vol:.1f}</td></tr>'
             for _, r in d.iterrows())
@@ -318,6 +322,12 @@ def write_rankings():
     from .config import ROOT
     season, week, df = current_ratings()
     path = ROOT / "reports" / "rankings.html"
+    try:  # badges.json first: the rankings tables and every other page read it. A failure keeps the last file.
+        from .badges import write_badges
+        write_badges(season, week, df)
+    except Exception as e:  # noqa: BLE001
+        import sys
+        print(f"badges not rebuilt: {e}", file=sys.stderr)
     dfn = ""
     try:  # the Defenses view is embedded in the same page; a failure leaves it empty
         from .defense_rank import current_defense_ranks, render_defenses

@@ -54,8 +54,8 @@ def _val(g, stat):
     return g[num] / g[den].where(g[den] > 0) if den else g[num].astype(float)
 
 
-def rank_defenses(g, season):
-    """32 rows: team, adjusted stats, and one rank per RANK_STAT key (1 = allows the least of that stat)."""
+def adjust_games(g):
+    """Per-game value of every STATS key, opponent-adjusted. Shared by the ranks and the badges."""
     g = g.copy()
     for st in STATS:
         g[st] = _val(g, st)
@@ -63,6 +63,12 @@ def rank_defenses(g, season):
         # (the offense's own average over the window minus the league average).
         off = g.groupby("off")[st].transform("mean")
         g[st] = g[st] - (off - g[st].mean())
+    return g
+
+
+def rank_defenses(g, season):
+    """32 rows: team, adjusted stats, and one rank per RANK_STAT key (1 = allows the least of that stat)."""
+    g = adjust_games(g)
     g = g.sort_values(["defn", "season", "week"], ascending=[True, False, False])
     rk = g.groupby("defn").cumcount().values
     prior = g.season.values < season
@@ -102,7 +108,9 @@ def current_defense_ranks():
 def render_defenses(season, week, df):
     """The Defenses view embedded in reports/rankings.html: Total, Run, Pass and By position tables, all shown at once."""
     import html
+    from .badges import badge_html, defense_badge, load_badges
     from .config import ROOT
+    bdata = load_badges()
     tables = []
 
     def wrap(key, label, head, rows):
@@ -115,7 +123,7 @@ def render_defenses(season, week, df):
         d = df.sort_values(f"{key}_rank")
         rows = "".join(
             f'<tr data-inspect-id="defenses-row-{key}"><td class="num">{r[f"{key}_rank"]}</td>'
-            f'<td>{html.escape(r.team)}</td><td class="num">{r[col]:+.3f}</td>'
+            f'<td>{html.escape(r.team)}{badge_html(defense_badge(r.team, key, bdata), "defenses-badge")}</td><td class="num">{r[col]:+.3f}</td>'
             + "".join(f'<td class="num">{r[c]:.{dp}f}</td>' for c, _, dp in extra)
             + f'<td class="num">{r.pa_pg:.1f}</td></tr>' for _, r in d.iterrows())
         head = (f'<th class="num">Rk</th><th>Team</th><th class="num">{unit}</th>'
@@ -124,7 +132,7 @@ def render_defenses(season, week, df):
     d = df.sort_values("team")
     rows = "".join(
         '<tr data-inspect-id="defenses-row-pos"><td>' + html.escape(r.team) + "</td>"
-        + "".join(f'<td class="num">{r[f"{k}_rank"]} <span class="yds">{r[f"{k}_ypg"]:.1f}</span></td>'
+        + "".join(f'<td class="num">{r[f"{k}_rank"]} <span class="yds">{r[f"{k}_ypg"]:.1f}</span>{badge_html(defense_badge(r.team, k, bdata), "defenses-badge-pos")}</td>'
                   for k, _ in POSITIONS) + "</tr>" for _, r in d.iterrows())
     head = ('<th>Team</th>' + "".join(
         f'<th class="num" data-inspect-id="defenses-col-{k}">vs {n}</th>' for k, n in POSITIONS))
