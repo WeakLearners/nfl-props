@@ -16,7 +16,7 @@ from .config import require, ROOT, save_board
 from .odds import name_key
 from .db import connect
 from .rating import chip_lookup as rating_chips
-from .badges import get_badges, player_badges
+from .badges import card_line, get_badges, player_badges
 
 # scripts/vol_predict.py is not part of the nflprops package (it lives beside
 # it, not inside it) -- same sys.path shim the scripts use.
@@ -234,6 +234,8 @@ def build(season, week, teams, lines, n_picks=6):
             "tm": r.team, "vs": r.opponent, "s": r.stat,
             "mu": round(float(r.proj), 1), "sd": round(float(r.sd_adj), 1),
             "lo": round(float(r.lo), 1), "hi": round(float(r.hi), 1),
+            "dr": (card_line(bdata, r.opponent, r.position)
+                   if season == bdata["season"] and week == bdata["slate_week"] else None),
             "def": None if pd.isna(r.raw_def) else round(float(r.raw_def), 2),
             "app": bool(r.applied),
             "line": None if pd.isna(r.line) else float(r.line),

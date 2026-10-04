@@ -363,11 +363,13 @@
   </details>
 
   <footer data-inspect-id="footer-notes">
-    <p><strong>Reading the matchup figure.</strong> 1.15 means this defence gives up 15%
-    more than league average to that position; 0.85 means 15% less. Where it says
-    <em>context only</em>, the projection deliberately ignores it — applying a defensive
-    adjustment to receiving stats made projections measurably worse in testing, because
-    "yards allowed to receivers" mostly records which receivers a defence happened to face.</p>
+    <p><strong>Reading the matchup line.</strong> It shows where the opponent ranks against
+    that position, from 1st (toughest) to 32nd (softest), by yards allowed per game, adjusted for the offenses
+    each defense faced and weighted toward recent games. It is one rank for the whole position, the same rank
+    the Big day and Caution badges use. The range comes from the model, which uses its own defense number,
+    and the matchup line is the adjusted defense rank.</p>
+    <p>Older reports show a ratio instead: 1.15 means that defense gives up 15% more than league average
+    to that position. Where it says <em>context only</em>, the projection ignores it.</p>
     <p><strong>How wide the curves are.</strong> The spread is widened 10% over the raw
     model estimate. Measured across 2023–2025, real errors ran about 10% larger than the
     model's own estimate of them — the raw figure counts a player's game-to-game variation
@@ -447,6 +449,7 @@ const W=250,H=78,PAD=6;
 const norm=(x,mu,sd)=>Math.exp(-0.5*Math.pow((x-mu)/sd,2));
 // Name markers. Server twin: nflprops/badges.py markers_html(). Same order, same classes.
 const escA=s=>String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+const ord=n=>{const t=n%100;return t>=11&&t<=13?"th":({1:"st",2:"nd",3:"rd"})[n%10]||"th"};
 const TREND=/\bbd-(up|down)\b/, MATCH=/\bbd-(big|caution)\b/;
 // Position rank by recent production. Not the depth chart. id = inspect id of this use.
 const rkChip=(d,id)=>d.rk?'<span class="rk" data-inspect-id="'+id+'" title="'+escA(d.rkt)+'">'+escA(d.rk)+'</span>':'';
@@ -619,7 +622,13 @@ STATS.forEach(([key,label,unit])=>{
       card.style.setProperty("--td-edge", col);
     }
     let match="";
-    if(d.def!=null){
+    if(d.dr){
+      // Same adjusted whole-position rank the Big day / Caution badge is built from.
+      const word=d.dr.t==="tough"?"tougher than most":d.dr.t==="soft"?"softer than most":"about average";
+      match='<div class="matchup'+(d.dr.t==="tough"?' tough':'')+'" data-inspect-id="card-matchup"><span class="dot"></span>'
+        +'<span>vs '+d.vs+' <em>'+d.dr.rk+ord(d.dr.rk)+' of 32</em> vs '+d.role.replace(/[0-9]+$/,"")
+        +', '+word+' <span class="muted-note">· '+d.dr.y.toFixed(1)+' yds/g allowed, adjusted</span></span></div>';
+    } else if(d.def!=null){
       const word=d.def>1.03?"softer than average":d.def<0.97?"tougher than average":"about average";
       match='<div class="matchup'+(d.def<0.97?' tough':'')+'" data-inspect-id="card-matchup"><span class="dot"></span>'
         +'<span>vs '+d.vs+' <em>'+d.def.toFixed(2)+'</em> '+word
@@ -720,7 +729,7 @@ DATA.slice().sort((a,b)=>{
   .forEach(d=>{
   const tr=document.createElement("tr");
   tr.dataset.inspectId="table-row";
-  const m=d.def==null?"—":d.def.toFixed(2)+(d.app?"":" (context only)");
+  const m=d.dr?d.vs+" "+d.dr.rk+ord(d.dr.rk)+" of 32":d.def==null?"—":d.def.toFixed(2)+(d.app?"":" (context only)");
   tr.innerHTML="<td>"+d.p+"</td><td>"+d.tm+mk('<span class="dp">'+d.role+'</span>',d,"table-rank-chip","table-badge")+"</td><td>"
     +d.s.replace(/_/g," ")+"</td><td class='num'>"+fmt(d.mu)+"</td><td class='num'>"
     +fmt(d.lo)+"</td><td class='num'>"+fmt(d.hi)+"</td><td class='num'>±"

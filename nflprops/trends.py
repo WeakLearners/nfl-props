@@ -291,7 +291,6 @@ def build_data(season=None, week=None):
     from .rating import current_ratings, latest_completed_week
     from .shares import player_game_shares
     from .db import connect
-    from .features import defense_vs_position
     if season is None:
         season, week = latest_completed_week()
     pg = player_game_shares(2020)
@@ -302,15 +301,20 @@ def build_data(season=None, week=None):
     frames = entity_frames(pg, rz)
     rates = load_rates()
     nxt = next_games(season)
-    dvp = defense_vs_position(season, week + 1)
+    from .badges import card_line, def_pos_table
+    from .defense_rank import rank_defenses, team_games
+    with connect() as con:
+        dnow = rank_defenses(team_games(con, season, week), season)
+        dprv = rank_defenses(team_games(con, season, week - 1), season)
+    dpos = def_pos_table(dnow)
     sec = {}
     for m in METRICS:
         rows = live_rows(frames[m], m, season, week, rates)
         for r in rows:
             o = nxt.get(r["team"] if r["pos"] != "TEAM" else r["entity"])
             r["next"] = f"{o[1]} {o[0]}" if o else "bye or none"
-            mult = dvp_mult(dvp, o[0], r["pos"], DVP_STAT[m][r["pos"]]) if o and m in DVP_STAT else None
-            r["dvp"] = round(mult, 2) if mult else None
+            cl = card_line({"def_pos": dpos}, o[0], r["pos"]) if o and m in DVP_STAT else None
+            r["dvp"] = cl  # adjusted whole-position rank, the same one the matchup badges use
         sec[m] = rows
     # rank movers, week over week
     _, _, now = current_ratings(pg, season, week)
@@ -324,22 +328,25 @@ def build_data(season=None, week=None):
                         next=("%s %s" % nxt[r.team][1::-1]) if r.team in nxt else "bye or none")
                    for _, r in mv[mv.move != 0].iterrows()]
     sec["rank"].sort(key=lambda r: -abs(r["move"]))
-    # defense versus position, week over week
-    dprev = defense_vs_position(season, week)
-    stat = {"QB": "passing_yards", "RB": "rushing_yards", "WR": "receiving_yards", "TE": "receiving_yards"}
+    # defense versus position: adjusted yds/g allowed and rank, week over week
     sec["dvp"] = {}
-    for pos, st in stat.items():
-        a = dvp[dvp.position == pos].set_index("defteam")
-        b = dprev[dprev.position == pos].set_index("defteam")[st]
+    for pos in ("QB", "RB", "WR", "TE"):
+        k = pos.lower()
+        prev = dprv.set_index("team")[f"{k}_rank"]
         sec["dvp"][pos] = sorted(
-            [dict(team=t, stat=st, now=round(float(a.at[t, st]), 2), prev=round(float(b.get(t, np.nan)), 2),
-                  games=int(a.at[t, "games"])) for t in a.index],
-            key=lambda r: -r["now"])
+            [dict(team=r.team, now=round(float(getattr(r, f"{k}_ypg")), 1), rank=int(getattr(r, f"{k}_rank")),
+                  prev=int(prev.get(r.team, 0)) or None, games=int(r.games)) for r in dnow.itertuples()],
+            key=lambda r: r["rank"])
     # team scoring
     pp = _ppg(season, week)
     sec["scoring"] = {t: dict(last3=round(float(g.pts.iloc[-3:].mean()), 1), season=round(float(g.pts.mean()), 1),
                               games=len(g)) for t, g in pp.groupby("team") if len(g) >= 3}
     return dict(season=season, week=week, sections=sec)
+
+
+def _ordinal(n):
+    from .badges import ordinal
+    return ordinal(n)
 
 
 def _e(x):
@@ -351,7 +358,7 @@ def _row(r, unit, ctx):
     d = f"{sign}{r['delta']:.1f} {unit}" if unit == "pts" else f"{sign}{r['delta']:.2f} per game"
     fm = (lambda x: f"{x:.1f}%") if unit == "pts" else (lambda x: f"{x:.2f}")
     pr = f" · 2025: {fm(r['prior'])}" if r.get("prior") is not None else ""
-    dv = f" · defense factor {r['dvp']:.2f}" if r.get("dvp") else ""
+    dv = f" · next opponent {_ordinal(r['dvp']['rk'])} of 32 vs {r['pos']}" if r.get("dvp") else ""
     return (f'<li class="trow" data-pos="{r["pos"]}" data-inspect-id="trends-row">'
             f'<div class="t1"><span class="nm">{_e(r["name"])}</span> <span class="tm">{_e(r["team"])} {r["pos"]}</span>'
             f'<span class="dl">{d}</span></div>'
@@ -405,14 +412,16 @@ def render(data):
          base_note + " RB: carries inside the 10. WR and TE: targets inside the 10. Apart from yardage.",
          _usage_card(data, "rz10", "inside-10 touches", "rz"))
     dv = []
+    label = {"QB": "passing yds", "RB": "rushing + receiving yds", "WR": "receiving yds", "TE": "receiving yds"}
     for pos, rows in sec["dvp"].items():
-        trs = "".join(f'<tr data-pos="{pos}"><td>{r["team"]}</td><td class="num">{r["now"]:.2f}</td>'
-                      f'<td class="num">{r["prev"]:.2f}</td><td class="num">{r["games"]}</td></tr>' for r in rows[:5] + rows[-5:])
-        dv.append(f'<h4 data-pos="{pos}" data-inspect-id="trends-dvp-{pos.lower()}">{pos}: {rows[0]["stat"].replace("_", " ")} allowed (5 easiest, 5 hardest)</h4>'
-                  f'<div class="tablewrap" data-pos="{pos}"><table><thead><tr><th>Defense</th><th class="num">Now</th>'
+        trs = "".join(f'<tr data-pos="{pos}"><td>{r["team"]}</td><td class="num">{r["rank"]}</td><td class="num">{r["now"]:.1f}</td>'
+                      f'<td class="num">{r["prev"] or "–"}</td><td class="num">{r["games"]}</td></tr>' for r in rows[:5] + rows[-5:])
+        dv.append(f'<h4 data-pos="{pos}" data-inspect-id="trends-dvp-{pos.lower()}">{pos}: {label[pos]} allowed per game (5 toughest, 5 softest)</h4>'
+                  f'<div class="tablewrap" data-pos="{pos}"><table><thead><tr><th>Defense</th><th class="num">Rank</th><th class="num">Yds/g</th>'
                   f'<th class="num">Last wk</th><th class="num">Games</th></tr></thead><tbody>{trs}</tbody></table></div>')
     card("dvp", "5 Defense versus position",
-         "Factor 1.00 = league average. Above 1.00 allows more. Shrunk toward 1.00 for few games. Games = two-season window. "
+         "Rank 1 = toughest of 32. Yards per game allowed to the position, adjusted for the offenses faced and weighted toward recent games. "
+         "Same rank as the Big day and Caution badges. Last wk = rank one week earlier. Games = current season. "
          "Outlook: Watch (no history rate for this type).", "".join(dv))
     tr = [r for r in sec["pass_rate"]]
     sc = sec["scoring"]

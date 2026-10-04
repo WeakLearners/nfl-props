@@ -118,5 +118,46 @@ class Markup(unittest.TestCase):
                          ["1st", "2nd", "3rd", "11th", "21st", "28th", "31st", "32nd"])
 
 
+class CardLineMatchesBadge(unittest.TestCase):
+    """The card's matchup line and its matchup badge read one rank, so they cannot point opposite ways."""
+
+    def test_every_caution_rank_reads_tough_and_every_big_rank_reads_soft(self):
+        for rank in range(1, 33):
+            kind = B.matchup_kind(1, 20, 10, rank)  # a top-ranked player, so only the defense rank decides
+            tone = B.matchup_tone(rank)
+            if kind == "caution":
+                self.assertEqual(tone, "tough", rank)
+            if kind == "big":
+                self.assertEqual(tone, "soft", rank)
+        self.assertEqual(B.matchup_kind(1, 20, 10, 4), "caution")
+        self.assertEqual(B.matchup_kind(1, 20, 10, 29), "big")
+
+    def test_caution_card_never_shows_a_soft_line_and_big_day_never_a_tough_one(self):
+        # Chase Brown rec yds (JAX 4th vs RB) and Zay Flowers rec yds (TEN 28th vs WR), the 2026 week-4 cases.
+        data = {"players": {"c b|RB": {"matchup": {"kind": "caution", "opp": "JAX", "week": 4}},
+                            "z f|WR": {"matchup": {"kind": "big", "opp": "TEN", "week": 4}}},
+                "def_pos": {"JAX": {"RB": {"rank": 4, "ypg": 61.0}}, "TEN": {"WR": {"rank": 28, "ypg": 130.0}}}}
+        self.assertEqual(B.check_consistency(data), 2)
+        self.assertEqual(B.card_line(data, "JAX", "RB")["t"], "tough")
+        self.assertEqual(B.card_line(data, "TEN", "WR")["t"], "soft")
+
+    def test_disagreement_is_caught(self):
+        data = {"players": {"c b|RB": {"matchup": {"kind": "caution", "opp": "JAX", "week": 4}}},
+                "def_pos": {"JAX": {"RB": {"rank": 20, "ypg": 90.0}}}}
+        with self.assertRaises(AssertionError):
+            B.check_consistency(data)
+
+    def test_no_table_no_line(self):
+        self.assertIsNone(B.card_line({}, "JAX", "RB"))
+
+    def test_written_badges_file_is_consistent(self):
+        import json
+        if not B.BADGES_PATH.exists():
+            self.skipTest("no badges.json")
+        data = json.loads(B.BADGES_PATH.read_text())
+        if "def_pos" in data:
+            B.check_consistency(data)
+
+
 if __name__ == "__main__":
     unittest.main()

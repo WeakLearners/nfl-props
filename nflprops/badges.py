@@ -28,6 +28,8 @@ DEF_BASE_MIN, DEF_BASE_MAX = 8, 14
 TIER_SHARE = 0.15        # top share of ranked players at a position
 TIER_MIN_GAMES = 6
 EXTREME_N = 5            # the 5 toughest or the 5 softest defenses vs a position
+TONE_N = 10              # card line: ranks 1-10 read "tougher", 23-32 read "softer". Wider than EXTREME_N on purpose.
+assert TONE_N >= EXTREME_N
 
 POS_STAT = {"QB": "passing_yards", "RB": "rushing_yards", "WR": "receiving_yards", "TE": "receiving_yards"}
 POS_LABEL = {"QB": "passing yds", "RB": "rushing yds", "WR": "receiving yds", "TE": "receiving yds"}
@@ -78,6 +80,48 @@ def matchup_kind(pos_rank, n_pos, n_games, def_rank, n_def=32):
     if def_rank <= EXTREME_N:
         return "caution"
     return None
+
+
+def matchup_tone(rank, n_def=32):
+    """Word class for the card's matchup line: "tough", "soft" or "mid". Every rank that earns a
+    Caution badge is "tough" and every rank that earns a Big day badge is "soft" (TONE_N >= EXTREME_N),
+    so a card line can never point the opposite way from its badge."""
+    if rank <= TONE_N:
+        return "tough"
+    return "soft" if rank > n_def - TONE_N else "mid"
+
+
+def def_pos_table(dranks):
+    """{team: {POS: {"rank": int, "ypg": float}}}: the adjusted whole-position defense rank."""
+    out = {}
+    for r in dranks.itertuples():
+        out[r.team] = {pos: {"rank": int(getattr(r, f"{pos.lower()}_rank")),
+                             "ypg": round(float(getattr(r, f"{pos.lower()}_ypg")), 1)} for pos in POS_STAT}
+    return out
+
+
+def card_line(data, opp, pos):
+    """The card's matchup line: {"rk", "y", "t"} (rank of 32, adjusted yds/g allowed, tone) or None.
+    Reads the same def_pos table the matchup badges were computed from."""
+    e = (data or {}).get("def_pos", {}).get(opp, {}).get(pos)
+    if not e:
+        return None
+    return {"rk": e["rank"], "y": e["ypg"], "t": matchup_tone(e["rank"])}
+
+
+def check_consistency(data):
+    """Raise if any matchup badge points opposite to its card line. Returns the number checked."""
+    n = 0
+    for key, e in data.get("players", {}).items():
+        m = e.get("matchup")
+        if not m:
+            continue
+        line = card_line(data, m["opp"], key.split("|")[1])
+        want = {"big": "soft", "caution": "tough"}[m["kind"]]
+        if line is None or line["t"] != want:
+            raise AssertionError(f"matchup badge {m['kind']} for {key} vs {m['opp']} disagrees with card line {line}")
+        n += 1
+    return n
 
 
 def ordinal(n):
@@ -197,9 +241,11 @@ def compute_badges(season=None, week=None, df=None):
     for k, v in _matchups(season, week, df, dranks).items():
         players.setdefault(k, {}).update(v)
     defs = _defense_trends(season, week)
-    return {"season": season, "through_week": week, "slate_week": week + 1,
-            "ranked": {p: int((df.position == p).sum()) for p in POS_STAT},
-            "players": players, "defenses": defs}
+    out = {"season": season, "through_week": week, "slate_week": week + 1,
+           "ranked": {p: int((df.position == p).sum()) for p in POS_STAT},
+           "players": players, "defenses": defs, "def_pos": def_pos_table(dranks)}
+    check_consistency(out)
+    return out
 
 
 _CACHE = {}
