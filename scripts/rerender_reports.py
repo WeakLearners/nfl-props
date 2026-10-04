@@ -63,6 +63,16 @@ def main():
     write = "--write" in sys.argv
     tpl = TPL.read_text()
     files = sorted(REPORTS.glob("report_*.html"))
+    chips = None
+    if "--week" in sys.argv:
+        # --week 2026:4 limits the run to one week and adds rank chips to its rows.
+        # Past weeks are never touched. The odds board in each file is kept as saved.
+        sea, wk = sys.argv[sys.argv.index("--week") + 1].split(":")
+        files = [f for f in files if f.name.startswith(f"report_{sea}_w{wk}_")]
+        sys.path.insert(0, str(ROOT))
+        from nflprops.rating import chip_lookup
+        from nflprops.odds import name_key
+        chips = chip_lookup(name_key), name_key
     if not files:
         print("no reports on disk")
         return 0
@@ -76,6 +86,12 @@ def main():
             failed += 1
             continue
 
+        if chips:
+            rows = json.loads(got["data"])
+            for r in rows:
+                rk = chips[0].get((chips[1](r["p"]), r["role"][:2]))
+                r["rk"], r["rkt"] = (rk if rk else (None, None))
+            got = dict(got, data=json.dumps(rows))
         out = render(tpl, got)
 
         # The round trip has to be lossless on the three values that carry the

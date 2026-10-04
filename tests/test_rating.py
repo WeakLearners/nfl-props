@@ -49,5 +49,24 @@ class NoLookahead(unittest.TestCase):
         self.assertEqual(len(out), 0)  # 2 prior games < MIN_GAMES
 
 
+class CurrentRatings(unittest.TestCase):
+    def test_floor_ranks_and_through_week(self):
+        pg = synthetic()
+        pg = pg[~((pg.player_id == "p0") & (pg.week > 2))]  # p0: 2 games, below the floor
+        no_dvp = lambda s, w: pd.DataFrame()
+        s, w, df = R.current_ratings(pg, 2024, 8, dvp=no_dvp)
+        self.assertEqual((s, w), (2024, 8))
+        self.assertNotIn("p0", set(df.player_id))
+        self.assertTrue((df.n_games >= R.RANK_MIN_GAMES).all())
+        for _, g in df.groupby("position"):
+            self.assertEqual(sorted(g["rank"]), list(range(1, len(g) + 1)))
+            self.assertTrue(g.sort_values("rank").rating.is_monotonic_decreasing)
+        # games after week 8 do not count: week 9 and 10 changes leave the ranking alone
+        bad = pg.copy()
+        bad.loc[bad.week > 8, "targets"] = 999.0
+        _, _, again = R.current_ratings(bad, 2024, 8, dvp=no_dvp)
+        pd.testing.assert_frame_equal(df[["player_id", "rank"]], again[["player_id", "rank"]])
+
+
 if __name__ == "__main__":
     unittest.main()

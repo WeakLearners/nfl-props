@@ -62,6 +62,9 @@ def main():
     abbr = team_abbr_map()
 
     print(f"{SLATE.upper()}: {len(games)} game(s), {season} W{week}")
+    if not DRY:
+        from nflprops.rating import write_rankings
+        print(f"rankings -> {write_rankings().name}")  # refreshed with every report build
     blocks = [header(f"Production ranges — {season} W{week} · {SLATE.upper()}")]
     made, rem = [], None
     for e in games.itertuples():

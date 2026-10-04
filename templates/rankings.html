@@ -1,0 +1,56 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Player Rankings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#f7f6f3; --surface:#fcfcfb; --line:#e2e0d9; --line-soft:#eceae3;
+    --ink:#14140f; --ink-2:#52514e; --ink-3:#84827a; --den:#eb6834;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --bg:#121211; --surface:#1a1a19; --line:#33322e; --line-soft:#262521;
+      --ink:#f6f5ef; --ink-2:#c3c2b7; --ink-3:#8b897f; --den:#d95926;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#121211; --surface:#1a1a19; --line:#33322e; --line-soft:#262521;
+    --ink:#f6f5ef; --ink-2:#c3c2b7; --ink-3:#8b897f; --den:#d95926;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Public Sans",ui-sans-serif,system-ui,sans-serif; font-size:15px; line-height:1.55}
+  .wrap{max-width:760px; margin:0 auto; padding:32px 16px 64px}
+  a.back{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--ink-3); text-decoration:none}
+  a.back:hover{color:var(--den)}
+  h1{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:34px; margin:14px 0 4px}
+  h2{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:24px; margin:32px 0 8px}
+  .eyebrow{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--ink-3); margin:0}
+  .note{color:var(--ink-2); margin:6px 0}
+  .tablewrap{overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:3px}
+  table{border-collapse:collapse; width:100%; font-size:14px}
+  th,td{padding:6px 10px; text-align:left; border-bottom:1px solid var(--line-soft); white-space:nowrap}
+  th{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--ink-3); font-weight:500}
+  td.num,th.num{text-align:right; font-family:"IBM Plex Mono",monospace}
+  tr:last-child td{border-bottom:0}
+</style>
+<div class="wrap" data-inspect-id="rankings-wrap">
+  <a class="back" href="/" data-inspect-id="rankings-back">&larr; All reports</a>
+  <header data-inspect-id="rankings-header">
+    <h1>Player rankings</h1>
+    <p class="eyebrow" data-inspect-id="rankings-data-through">Data through __WEEK__</p>
+  </header>
+  <p class="note" data-inspect-id="rankings-disclaimer"><strong>Entertainment. A rating describes past production.</strong></p>
+  <p class="note" data-inspect-id="rankings-not-depth">Rank = recent production within the position. It is not the depth chart.</p>
+  <p class="note" data-inspect-id="rankings-floor">Ranked: at least __MINGAMES__ games counted and a regular role (last-5 average of at least __FLOORS__), with a game in the current season. Players below that floor are not listed.</p>
+__TABLES__
+</div>

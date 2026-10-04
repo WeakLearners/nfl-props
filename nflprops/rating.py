@@ -209,3 +209,95 @@ def fit_weights(train_frames, actual):
         sol = sol / np.abs(sol).sum()
         out[pos_] = {c: round(float(v), 4) for c, v in zip(cols, sol)}
     return out
+
+
+# ---- Current rankings (display only) -------------------------------------
+# Sean, 2026-10-04: the rating ranks recent production. It is not a
+# prediction and does not go into the model. It uses every game through the
+# latest completed week, so the 2026 holdout rule does not apply here. No
+# engine evaluation may use this output.
+RANK_MIN_GAMES = 4   # games counted (two-season window); MIN_GAMES is 3 and too thin to rank
+RANK_VOL = {"QB": ("attempts", "Att/g"), "RB": ("carries", "Car/g"),
+            "WR": ("targets", "Tgt/g"), "TE": ("targets", "Tgt/g")}
+
+
+def latest_completed_week():
+    """Latest (season, week) in which every regular-season game has a score."""
+    from .db import connect
+    with connect() as con:
+        s = pd.read_sql_query(
+            "SELECT season, week, COUNT(*) n, SUM(home_score IS NOT NULL) done FROM schedules "
+            "WHERE game_type='REG' GROUP BY season, week", con)
+    s = s[s.n == s.done].sort_values(["season", "week"])
+    return int(s.season.iloc[-1]), int(s.week.iloc[-1])
+
+
+def current_ratings(pg=None, season=None, week=None, weights=None, dvp=defense_vs_position):
+    """Ranked players through (season, week) inclusive. Returns (season, week, df).
+    Ranked = counted games >= RANK_MIN_GAMES, last-5 volume at the market-sized
+    floor (VOLUME), and at least one game in `season`. Others are dropped."""
+    if season is None:
+        season, week = latest_completed_week()
+    pg = _prep(pg if pg is not None else player_game_shares())
+    res = rating_frame(season, week + 1, pg, weights, dvp)
+    if res.empty:
+        return season, week, res
+    played = pg[(pg.season == season) & (pg.week <= week)].player_id.unique()
+    res = res[(res.n_games >= RANK_MIN_GAMES) & _in_pool(res) & res.player_id.isin(played)].copy()
+    res["vol"] = [r[f"last5_{RANK_VOL[r.position][0]}"] for _, r in res.iterrows()]
+    res = res.sort_values(["position", "rating_z"], ascending=[True, False])
+    res["rank"] = res.groupby("position").cumcount() + 1
+    return season, week, res.reset_index(drop=True)
+
+
+_CACHE = {}
+
+
+def chip_lookup(name_key):
+    """{(name_key, position): (chip text, hover title)} for the current ranking.
+    Computed once per process. Players below the floor are absent."""
+    if "chips" not in _CACHE:
+        s, w, df = current_ratings()
+        _CACHE["chips"] = {
+            (name_key(r["name"]), r.position): (
+                f"#{r['rank']} {r.position}",
+                f"Position rank by recent production (not the depth chart). "
+                f"Rating {r.rating:.1f}, {int(r.n_games)} games.")
+            for _, r in df.iterrows()}
+    return _CACHE["chips"]
+
+
+def render_rankings(season, week, df):
+    """The full rankings page: one table per position. Plain HTML from templates/rankings.html."""
+    import html
+    from .config import ROOT
+    out = []
+    for pos_, label in (("QB", "Quarterbacks"), ("RB", "Running backs"),
+                        ("WR", "Wide receivers"), ("TE", "Tight ends")):
+        d = df[df.position == pos_]
+        rows = "".join(
+            f'<tr data-inspect-id="rankings-row"><td class="num">{r["rank"]}</td><td>{html.escape(r["name"])}</td>'
+            f'<td>{html.escape(str(r.team))}</td><td class="num">{r.rating:.1f}</td>'
+            f'<td class="num">{int(r.n_games)}</td><td class="num">{r.vol:.1f}</td></tr>'
+            for _, r in d.iterrows())
+        out.append(
+            f'<h2 data-inspect-id="rankings-heading">{label}</h2>'
+            f'<div class="tablewrap" data-inspect-id="rankings-table-{pos_.lower()}"><table>'
+            f'<thead><tr><th class="num">Rank</th><th>Player</th><th>Team</th><th class="num">Rating</th>'
+            f'<th class="num">Games</th><th class="num">{RANK_VOL[pos_][1]} (last 5)</th></tr></thead>'
+            f'<tbody>{rows}</tbody></table></div>')
+    tpl = (ROOT / "templates" / "rankings.html").read_text()
+    return (tpl.replace("__WEEK__", f"{season} Week {week}")
+               .replace("__MINGAMES__", str(RANK_MIN_GAMES))
+               .replace("__FLOORS__", "QB 10 attempts, RB 5 carries, WR 3 targets, TE 3 targets")
+               .replace("__TABLES__", "\n".join(out)))
+
+
+def write_rankings():
+    """Write reports/rankings.html. Called by every report build, so the page
+    refreshes whenever a weekly report is built."""
+    from .config import ROOT
+    season, week, df = current_ratings()
+    path = ROOT / "reports" / "rankings.html"
+    path.write_text(render_rankings(season, week, df), encoding="utf-8")
+    return path

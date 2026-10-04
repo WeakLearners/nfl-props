@@ -51,6 +51,8 @@ def main():
     out = RP.report_path(SEASON, WEEK, *TEAMS)
     if not dry:
         out.write_text(html)
+        from nflprops.rating import write_rankings
+        write_rankings()
 
     print(f"{e.away_team} @ {e.home_team}")
     print(f"\n{'#':>2}  {'player':<19}{'tm':<5}{'stat':<16}{'line':>7}{'price':>7}{'conf':>8}")
