@@ -1678,6 +1678,9 @@ LAYOUT_CSS = """<style>
   @media (min-width:1700px){ .rk-grid{grid-template-columns:repeat(4,minmax(0,1fr))} }
   .wrap[data-page="rankings"] .rk-grid :is(th,td){padding:6px 6px}
   .wrap[data-page="rankings"] .rk-grid th:last-child{white-space:normal}
+  /* One header height, so the first rows line up across the four tables. */
+  .wrap[data-page="rankings"] .rk-grid thead tr{height:44px}
+  .wrap[data-page="rankings"] .rk-grid thead th{vertical-align:bottom}
   /* One section-heading pattern (see 2.2). */
   .wrap[data-page="rankings"] :is(.rk-pos,.dfn-cat) h2{display:flex; align-items:baseline;
     gap:12px; margin:0 0 8px; padding-bottom:6px; border-bottom:1px solid var(--line);
@@ -1690,6 +1693,10 @@ LAYOUT_CSS = """<style>
   .wrap[data-page="rankings"] .dfn-grid td.num{position:relative; padding-right:calc(6px + 1.1em)}
   .wrap[data-page="rankings"] .dfn-grid td.num .mk{position:absolute; right:2px; top:50%;
     transform:translateY(-50%); margin:0}
+  /* Same columns as the Players view: 1, then 2 + 2, then 4 in a row. */
+  .wrap[data-page="rankings"] .dfn-grid{grid-template-columns:minmax(0,1fr); gap:32px 24px}
+  @media (min-width:900px){ .wrap[data-page="rankings"] .dfn-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @media (min-width:1700px){ .wrap[data-page="rankings"] .dfn-grid{grid-template-columns:repeat(4,minmax(0,1fr))} }
 
   /* Trends: closed cards are an index; an open card takes the full row. */
   .tr-grid{display:grid;
@@ -1697,8 +1704,9 @@ LAYOUT_CSS = """<style>
     gap:12px 16px; align-items:start}
   .tr-grid > .card{margin:0; padding:0 14px}
   .tr-grid > .card[open]{grid-column:1/-1; padding-bottom:12px}
-  .tr-grid > .card[open] ul{columns:3 340px; column-gap:32px}
-  .tr-grid > .card[open] .trow{break-inside:avoid}
+  .tr-grid > .card[open] ul{display:grid; column-gap:32px;
+    grid-template-columns:repeat(auto-fill,minmax(max(340px,calc((100% - 64px)/3)),1fr))}
+  .tr-grid > .card[open] .trow:last-child{border-bottom:1px solid var(--line-soft)}
   .tr-grid > .card[open] .note{max-width:72ch}
 
   /* Results: the top 5 in the key panel; the grading note beside the table. */
@@ -1709,7 +1717,7 @@ LAYOUT_CSS = """<style>
   @media (min-width:1280px){
     .ex-grid{display:grid; grid-template-columns:minmax(0,1fr) minmax(280px,360px);
       column-gap:48px; align-items:start}
-    .ex-grid > footer{margin-top:0; padding-right:0}
+    .wrap[data-page="results"] .ex-grid > footer{margin-top:0; padding-right:0}
   }
 
   /* Report: intro on the left, legend as a key panel on the right. The wrap
@@ -1726,6 +1734,7 @@ LAYOUT_CSS = """<style>
     .wrap[data-page="report"] > .picks{margin-top:24px}
   }
   .wrap[data-page="report"] h2{margin-top:48px}
+  .wrap[data-page="report"] h2.picks-h{margin-top:0}
   .wrap[data-page="report"] .picks{border-radius:3px}
   .wrap[data-page="report"] .card{padding:12px 14px}
   /* The last legend key is a sentence. Let it wrap as text, not as flex items. */
