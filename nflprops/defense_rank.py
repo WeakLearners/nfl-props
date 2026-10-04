@@ -100,19 +100,16 @@ def current_defense_ranks():
 
 
 def render_defenses(season, week, df):
-    """The Defenses view embedded in reports/rankings.html: Total, Run, Pass tables and a By position table, switched by buttons."""
+    """The Defenses view embedded in reports/rankings.html: Total, Run, Pass and By position tables, all shown at once."""
     import html
     from .config import ROOT
-    btns, tables = [], []
+    tables = []
 
-    def button(key, label):
-        btns.append(f'<button type="button" aria-pressed="{str(key == "total").lower()}" data-v="{key}" '
-                    f'data-inspect-id="defenses-btn-{key}">{label}</button>')
-
-    def wrap(key, head, rows):
+    def wrap(key, label, head, rows):
         tables.append(
-            f'<div class="tablewrap" data-v="{key}" data-inspect-id="defenses-table-{key}"{"" if key == "total" else " hidden"}>'
-            f'<table><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div>')
+            f'<section class="dfn-cat"><h2>{label}</h2>'
+            f'<div class="tablewrap" data-inspect-id="defenses-table-{key}">'
+            f'<table><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div></section>')
 
     for key, label, col, unit, extra in VIEWS:
         d = df.sort_values(f"{key}_rank")
@@ -121,19 +118,16 @@ def render_defenses(season, week, df):
             f'<td>{html.escape(r.team)}</td><td class="num">{r[col]:+.3f}</td>'
             + "".join(f'<td class="num">{r[c]:.{dp}f}</td>' for c, _, dp in extra)
             + f'<td class="num">{r.pa_pg:.1f}</td></tr>' for _, r in d.iterrows())
-        head = (f'<th class="num">Rank</th><th>Team</th><th class="num">{unit} allowed</th>'
-                + "".join(f'<th class="num">{n}</th>' for _, n, _ in extra) + '<th class="num">Pts/g allowed</th>')
-        button(key, label)
-        wrap(key, head, rows)
+        head = (f'<th class="num">Rk</th><th>Team</th><th class="num">{unit}</th>'
+                + "".join(f'<th class="num">{n}</th>' for _, n, _ in extra) + '<th class="num">Pts/g</th>')
+        wrap(key, f"{label} · allowed", head, rows)
     d = df.sort_values("team")
     rows = "".join(
         '<tr data-inspect-id="defenses-row-pos"><td>' + html.escape(r.team) + "</td>"
         + "".join(f'<td class="num">{r[f"{k}_rank"]} <span class="yds">{r[f"{k}_ypg"]:.1f}</span></td>'
                   for k, _ in POSITIONS) + "</tr>" for _, r in d.iterrows())
     head = ('<th>Team</th>' + "".join(
-        f'<th class="num" data-inspect-id="defenses-col-{k}">vs {n} rank / yds</th>' for k, n in POSITIONS))
-    button("pos", "By position")
-    wrap("pos", head, rows)
+        f'<th class="num" data-inspect-id="defenses-col-{k}">vs {n}</th>' for k, n in POSITIONS))
+    wrap("pos", "By position · rank, yds/g", head, rows)
     tpl = (ROOT / "templates" / "defenses.html").read_text()
-    return (tpl.replace("__WEEK__", f"{season} Week {week}").replace("__BUTTONS__", "".join(btns))
-               .replace("__TABLES__", "\n".join(tables)))
+    return tpl.replace("__WEEK__", f"{season} Week {week}").replace("__TABLES__", "\n".join(tables))

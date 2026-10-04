@@ -46,6 +46,13 @@
     background:var(--surface); color:var(--ink-2); border-radius:3px; cursor:pointer}
   .filter button[aria-pressed="true"]{border-color:var(--den); color:var(--den)}
   .yds{color:var(--ink-3); font-size:12px; margin-left:4px}
+  /* Defenses: four compact tables side by side. */
+  .dfn-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr)); gap:16px; align-items:start; margin:16px 0}
+  .dfn-cat h2{font-size:18px; margin:0 0 6px}
+  .dfn-grid table{font-size:12.5px}
+  .dfn-grid th,.dfn-grid td{padding:3px 6px}
+  .dfn-grid th{font-size:9px; letter-spacing:.06em}
+  .dfn-grid .yds{font-size:11px; margin-left:2px}
   [hidden]{display:none !important}
 </style>
 <div class="wrap" data-inspect-id="rankings-wrap">
@@ -81,9 +88,5 @@ __DEFENSES__
   });});
   window.addEventListener('hashchange',function(){show(location.hash==='#defenses'?'defenses':'players')});
   show(location.hash==='#defenses'?'defenses':'players');
-  document.querySelectorAll('.filter[data-group="defense"] button').forEach(function(b){b.addEventListener('click',function(){
-    document.querySelectorAll('.filter[data-group="defense"] button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});
-    document.querySelectorAll('.dfn-view .tablewrap[data-v]').forEach(function(e){e.hidden=e.dataset.v!==b.dataset.v});
-  });});
 })();
 </script>

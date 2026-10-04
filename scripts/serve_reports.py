@@ -1632,11 +1632,7 @@ LAYOUT_CSS = """<style>
     column-gap:24px; align-items:start}
   .rk-pos h2{margin-top:28px}
 
-  /* Defenses view (inside Rankings): one table, full width. Rank column fixed, the rest equal. */
-  @media (min-width:561px){
-    .wrap[data-page="rankings"] .dfn-view .tablewrap table{table-layout:fixed}
-    .wrap[data-page="rankings"] .dfn-view th.num:first-child{width:8ch}
-  }
+  /* Defenses view (inside Rankings): four compact tables in a grid, styled in templates/rankings.html. */
 
   /* Trends: the six cards in a grid. */
   .tr-grid{display:grid;

@@ -1226,7 +1226,7 @@
           "kind": "layout",
           "description": "Full-width column (LAYOUT_CSS).",
           "locate": {
-            "path": "templates/rankings.html:51",
+            "path": "templates/rankings.html:58",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-wrap\"' templates/rankings.html"
           }
         },
@@ -1236,7 +1236,7 @@
           "kind": "layout",
           "description": "Grid that holds the four position sections. One column on a phone, more as the width grows.",
           "locate": {
-            "path": "templates/rankings.html:64",
+            "path": "templates/rankings.html:71",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-grid\"' templates/rankings.html"
           }
         },
@@ -1286,7 +1286,7 @@
           "kind": "layout",
           "description": "Title and data-through line.",
           "locate": {
-            "path": "templates/rankings.html:57",
+            "path": "templates/rankings.html:64",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-header\"' templates/rankings.html"
           }
         },
@@ -1296,7 +1296,7 @@
           "kind": "text",
           "description": "Eyebrow above the title: 'Ratings use games through 2026 Week N'.",
           "locate": {
-            "path": "templates/rankings.html:58",
+            "path": "templates/rankings.html:65",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-data-through\"' templates/rankings.html"
           }
         },
@@ -1306,7 +1306,7 @@
           "kind": "text",
           "description": "Entertainment. A rating describes past production.",
           "locate": {
-            "path": "templates/rankings.html:61",
+            "path": "templates/rankings.html:68",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-disclaimer\"' templates/rankings.html"
           }
         },
@@ -1316,7 +1316,7 @@
           "kind": "text",
           "description": "States that rank is recent production, not the depth chart.",
           "locate": {
-            "path": "templates/rankings.html:62",
+            "path": "templates/rankings.html:69",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-not-depth\"' templates/rankings.html"
           }
         },
@@ -1326,7 +1326,7 @@
           "kind": "text",
           "description": "States the minimum-sample floor. Players below it are not listed.",
           "locate": {
-            "path": "templates/rankings.html:63",
+            "path": "templates/rankings.html:70",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-floor\"' templates/rankings.html"
           }
         },
@@ -1426,7 +1426,7 @@
           "kind": "filter",
           "description": "Top-level buttons that switch the page between the Players and Defenses views. /rankings.html#defenses opens Defenses.",
           "locate": {
-            "path": "templates/rankings.html:52",
+            "path": "templates/rankings.html:59",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-switch\"' templates/rankings.html"
           }
         },
@@ -1436,7 +1436,7 @@
           "kind": "button",
           "description": "Shows the position rankings (default view).",
           "locate": {
-            "path": "templates/rankings.html:53",
+            "path": "templates/rankings.html:60",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-switch-players\"' templates/rankings.html"
           }
         },
@@ -1446,7 +1446,7 @@
           "kind": "button",
           "description": "Shows the defense rankings.",
           "locate": {
-            "path": "templates/rankings.html:54",
+            "path": "templates/rankings.html:61",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-switch-defenses\"' templates/rankings.html"
           }
         },
@@ -1456,7 +1456,7 @@
           "kind": "layout",
           "description": "Wrapper for the header, notes and position grid.",
           "locate": {
-            "path": "templates/rankings.html:56",
+            "path": "templates/rankings.html:63",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-view-players\"' templates/rankings.html"
           }
         },
@@ -1466,7 +1466,7 @@
           "kind": "layout",
           "description": "Wrapper that holds the defenses fragment (templates/defenses.html, filled by render_defenses()). Hidden unless selected.",
           "locate": {
-            "path": "templates/rankings.html:68",
+            "path": "templates/rankings.html:75",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-view-defenses\"' templates/rankings.html"
           }
         },
@@ -1521,52 +1521,22 @@
           }
         },
         {
-          "id": "defenses-filter",
-          "label": "View switch",
+          "id": "defenses-grid",
+          "label": "Defense tables grid",
           "kind": "layout",
-          "description": "Row of three buttons that switch the table: Total, Run, Pass.",
+          "description": "Total, Run, Pass and By position tables, all shown at once in a compact grid (auto-fit, 300px minimum per table).",
           "locate": {
             "path": "templates/defenses.html:8",
-            "grep": "grep -n -F -- 'data-inspect-id=\"defenses-filter\"' templates/defenses.html"
-          }
-        },
-        {
-          "id": "defenses-btn-total",
-          "label": "Total button",
-          "kind": "button",
-          "description": "Shows the Total table.",
-          "locate": {
-            "path": "nflprops/defense_rank.py:110",
-            "grep": "grep -n -F -- 'defenses-btn-{key}' nflprops/defense_rank.py"
-          }
-        },
-        {
-          "id": "defenses-btn-run",
-          "label": "Run button",
-          "kind": "button",
-          "description": "Shows the Run table.",
-          "locate": {
-            "path": "nflprops/defense_rank.py:110",
-            "grep": "grep -n -F -- 'defenses-btn-{key}' nflprops/defense_rank.py"
-          }
-        },
-        {
-          "id": "defenses-btn-pass",
-          "label": "Pass button",
-          "kind": "button",
-          "description": "Shows the Pass table.",
-          "locate": {
-            "path": "nflprops/defense_rank.py:110",
-            "grep": "grep -n -F -- 'defenses-btn-{key}' nflprops/defense_rank.py"
+            "grep": "grep -n -F -- 'data-inspect-id=\"defenses-grid\"' templates/defenses.html"
           }
         },
         {
           "id": "defenses-table-total",
           "label": "Total table",
           "kind": "table",
-          "description": "Total rank, team, the ranked EPA number, extra yard columns,, points per game allowed. Written by render_defenses().",
+          "description": "Total rank, team, the ranked EPA number, extra yard columns,, points per game allowed. Shown at once with the other three tables. Written by render_defenses().",
           "locate": {
-            "path": "nflprops/defense_rank.py:114",
+            "path": "nflprops/defense_rank.py:111",
             "grep": "grep -n -F -- 'defenses-table-{key}' nflprops/defense_rank.py"
           }
         },
@@ -1574,9 +1544,9 @@
           "id": "defenses-table-run",
           "label": "Run table",
           "kind": "table",
-          "description": "Run rank, team, the ranked EPA number, extra yard columns,, points per game allowed. Written by render_defenses().",
+          "description": "Run rank, team, the ranked EPA number, extra yard columns,, points per game allowed. Shown at once with the other three tables. Written by render_defenses().",
           "locate": {
-            "path": "nflprops/defense_rank.py:114",
+            "path": "nflprops/defense_rank.py:111",
             "grep": "grep -n -F -- 'defenses-table-{key}' nflprops/defense_rank.py"
           }
         },
@@ -1584,9 +1554,9 @@
           "id": "defenses-table-pass",
           "label": "Pass table",
           "kind": "table",
-          "description": "Pass rank, team, the ranked EPA number, extra yard columns,, points per game allowed. Written by render_defenses().",
+          "description": "Pass rank, team, the ranked EPA number, extra yard columns,, points per game allowed. Shown at once with the other three tables. Written by render_defenses().",
           "locate": {
-            "path": "nflprops/defense_rank.py:114",
+            "path": "nflprops/defense_rank.py:111",
             "grep": "grep -n -F -- 'defenses-table-{key}' nflprops/defense_rank.py"
           }
         },
@@ -1596,7 +1566,7 @@
           "kind": "table-row",
           "description": "One defense in the Total table.",
           "locate": {
-            "path": "nflprops/defense_rank.py:120",
+            "path": "nflprops/defense_rank.py:117",
             "grep": "grep -n -F -- 'defenses-row-{key}' nflprops/defense_rank.py"
           }
         },
@@ -1606,7 +1576,7 @@
           "kind": "table-row",
           "description": "One defense in the Run table.",
           "locate": {
-            "path": "nflprops/defense_rank.py:120",
+            "path": "nflprops/defense_rank.py:117",
             "grep": "grep -n -F -- 'defenses-row-{key}' nflprops/defense_rank.py"
           }
         },
@@ -1616,27 +1586,17 @@
           "kind": "table-row",
           "description": "One defense in the Pass table.",
           "locate": {
-            "path": "nflprops/defense_rank.py:120",
+            "path": "nflprops/defense_rank.py:117",
             "grep": "grep -n -F -- 'defenses-row-{key}' nflprops/defense_rank.py"
-          }
-        },
-        {
-          "id": "defenses-btn-pos",
-          "label": "By position button",
-          "kind": "button",
-          "description": "Shows the By position table.",
-          "locate": {
-            "path": "nflprops/defense_rank.py:110",
-            "grep": "grep -n -F -- 'defenses-btn-{key}' nflprops/defense_rank.py"
           }
         },
         {
           "id": "defenses-table-pos",
           "label": "By position table",
           "kind": "table",
-          "description": "Team, then rank and yards per game allowed to QB, RB, WR and TE. Written by render_defenses().",
+          "description": "Team, then rank and yards per game allowed to QB, RB, WR and TE. Shown at once with the other three tables. Written by render_defenses().",
           "locate": {
-            "path": "nflprops/defense_rank.py:114",
+            "path": "nflprops/defense_rank.py:111",
             "grep": "grep -n -F -- 'defenses-table-{key}' nflprops/defense_rank.py"
           }
         },
@@ -1646,7 +1606,7 @@
           "kind": "table-row",
           "description": "One defense in the By position table.",
           "locate": {
-            "path": "nflprops/defense_rank.py:130",
+            "path": "nflprops/defense_rank.py:126",
             "grep": "grep -n -F -- 'defenses-row-pos' nflprops/defense_rank.py"
           }
         },
@@ -1656,7 +1616,7 @@
           "kind": "table-header",
           "description": "Rank and yards per game allowed to QB.",
           "locate": {
-            "path": "nflprops/defense_rank.py:134",
+            "path": "nflprops/defense_rank.py:130",
             "grep": "grep -n -F -- 'defenses-col-{k}' nflprops/defense_rank.py"
           }
         },
@@ -1666,7 +1626,7 @@
           "kind": "table-header",
           "description": "Rank and yards per game allowed to RB.",
           "locate": {
-            "path": "nflprops/defense_rank.py:134",
+            "path": "nflprops/defense_rank.py:130",
             "grep": "grep -n -F -- 'defenses-col-{k}' nflprops/defense_rank.py"
           }
         },
@@ -1676,7 +1636,7 @@
           "kind": "table-header",
           "description": "Rank and yards per game allowed to WR.",
           "locate": {
-            "path": "nflprops/defense_rank.py:134",
+            "path": "nflprops/defense_rank.py:130",
             "grep": "grep -n -F -- 'defenses-col-{k}' nflprops/defense_rank.py"
           }
         },
@@ -1686,7 +1646,7 @@
           "kind": "table-header",
           "description": "Rank and yards per game allowed to TE.",
           "locate": {
-            "path": "nflprops/defense_rank.py:134",
+            "path": "nflprops/defense_rank.py:130",
             "grep": "grep -n -F -- 'defenses-col-{k}' nflprops/defense_rank.py"
           }
         },
@@ -1696,7 +1656,7 @@
           "kind": "text",
           "description": "Window, adjustment, and the one number behind each rank.",
           "locate": {
-            "path": "templates/defenses.html:10",
+            "path": "templates/defenses.html:11",
             "grep": "grep -n -F -- 'data-inspect-id=\"defenses-method\"' templates/defenses.html"
           }
         }
@@ -2184,7 +2144,7 @@
           "kind": "text",
           "description": "One-line standing disclaimer spliced after every page by with_chrome().",
           "locate": {
-            "path": "scripts/serve_reports.py:1666",
+            "path": "scripts/serve_reports.py:1662",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-footer\"' scripts/serve_reports.py"
           }
         }
