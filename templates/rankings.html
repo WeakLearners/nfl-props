@@ -26,7 +26,7 @@
   *{box-sizing:border-box}
   body{margin:0; background:var(--bg); color:var(--ink);
     font-family:"Public Sans",ui-sans-serif,system-ui,sans-serif; font-size:15px; line-height:1.55}
-  .wrap{max-width:760px; margin:0 auto; padding:32px 16px 64px}
+  /* Page width: LAYOUT_CSS in scripts/serve_reports.py. */
   header{border-bottom:2px solid var(--ink); padding-bottom:18px; margin-bottom:8px}
   h1{font-family:"Barlow Condensed",Impact,sans-serif; font-weight:700; font-size:clamp(34px,6vw,56px);
     line-height:.95; letter-spacing:-.01em; margin:0; text-transform:uppercase}
@@ -50,5 +50,7 @@
   <p class="note" data-inspect-id="rankings-disclaimer"><strong>Entertainment. A rating describes past production.</strong></p>
   <p class="note" data-inspect-id="rankings-not-depth">Rank = recent production within the position. It is not the depth chart.</p>
   <p class="note" data-inspect-id="rankings-floor">Ranked: at least __MINGAMES__ games counted and a regular role (last-5 average of at least __FLOORS__), with a game in the current season. Players below that floor are not listed.</p>
+<div class="rk-grid" data-inspect-id="rankings-grid">
 __TABLES__
+</div>
 </div>

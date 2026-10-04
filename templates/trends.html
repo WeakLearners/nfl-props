@@ -26,7 +26,7 @@
   *{box-sizing:border-box}
   body{margin:0; background:var(--bg); color:var(--ink);
     font-family:"Public Sans",ui-sans-serif,system-ui,sans-serif; font-size:15px; line-height:1.55}
-  .wrap{max-width:760px; margin:0 auto; padding:32px 16px 64px}
+  /* Page width: LAYOUT_CSS in scripts/serve_reports.py. */
   header{border-bottom:2px solid var(--ink); padding-bottom:18px; margin-bottom:8px}
   h1{font-family:"Barlow Condensed",Impact,sans-serif; font-weight:700; font-size:clamp(34px,6vw,56px);
     line-height:.95; letter-spacing:-.01em; margin:0; text-transform:uppercase}
@@ -67,7 +67,9 @@
   <div class="filter" data-inspect-id="trends-filter" role="group" aria-label="Position">
     <button type="button" aria-pressed="true" data-p="ALL">All</button><button type="button" aria-pressed="false" data-p="QB">QB</button><button type="button" aria-pressed="false" data-p="RB">RB</button><button type="button" aria-pressed="false" data-p="WR">WR</button><button type="button" aria-pressed="false" data-p="TE">TE</button>
   </div>
+<div class="tr-grid" data-inspect-id="trends-grid">
 __CARDS__
+</div>
   <p class="note" data-inspect-id="trends-footer">Outlook labels: Likely to hold (60.0% or more of past cases held, 50 or more cases), Likely to fade (40.0% or less), Watch (everything else). A change "held" if at least half of it carried into the next 3 games. Rates use 2021-2025 only.</p>
 </div>
 <script>

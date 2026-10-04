@@ -294,11 +294,12 @@ def render_rankings(season, week, df):
             f'<td class="num">{int(r.n_games)}</td><td class="num">{r.vol:.1f}</td></tr>'
             for _, r in d.iterrows())
         out.append(
+            f'<section class="rk-pos" data-inspect-id="rankings-pos-{pos_.lower()}">'
             f'<h2 data-inspect-id="rankings-heading-{pos_.lower()}">{label}</h2>'
             f'<div class="tablewrap" data-inspect-id="rankings-table-{pos_.lower()}"><table>'
             f'<thead><tr><th class="num">Rank</th><th>Player</th><th>Team</th><th class="num">Rating</th>'
             f'<th class="num">Games</th><th class="num">{RANK_VOL[pos_][1]} (last 5)</th></tr></thead>'
-            f'<tbody>{rows}</tbody></table></div>')
+            f'<tbody>{rows}</tbody></table></div></section>')
     tpl = (ROOT / "templates" / "rankings.html").read_text()
     return (tpl.replace("__WEEK__", f"{season} Week {week}")
                .replace("__MINGAMES__", str(RANK_MIN_GAMES))
