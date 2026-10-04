@@ -150,7 +150,7 @@
       <label for="fdim">Only</label>
       <div class="pair">
         <select id="fdim" data-inspect-id="explore-filter-dim"></select>
-        <select id="fval" data-inspect-id="explore-filter-val" disabled></select>
+        <select id="fval" data-inspect-id="explore-filter-val" disabled hidden></select>
       </div>
     </div>
   </div>
@@ -276,8 +276,8 @@
 
   function fillValues() {
     fval.innerHTML = "";
-    if (!fdim.value) { fval.disabled = true; return; }
-    fval.disabled = false;
+    if (!fdim.value) { fval.disabled = fval.hidden = true; return; }
+    fval.disabled = fval.hidden = false;
     groups(LEGS, fdim.value).forEach(function (g) { opt(fval, g.label, g.label + " (" + g.legs.length + ")"); });
   }
 

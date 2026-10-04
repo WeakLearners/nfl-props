@@ -1730,11 +1730,14 @@ LAYOUT_CSS = """<style>
     .wrap[data-page="report"] > .sub{grid-column:1; margin:16px 0 0}
     .wrap[data-page="report"] > .legend{grid-column:2; grid-row:span 2; align-self:start;
       flex-direction:column; align-items:flex-start; gap:6px; margin:16px 0 0;
-      background:var(--surface); border:1px solid var(--line); border-radius:3px; padding:12px 14px}
+      background:var(--surface); border:1px solid var(--line); border-radius:3px; padding:12px 14px;
+      justify-self:start}
     .wrap[data-page="report"] > .picks{margin-top:24px}
   }
   .wrap[data-page="report"] h2{margin-top:48px}
   .wrap[data-page="report"] h2.picks-h{margin-top:0}
+  /* Player cards: tags and badges on the line under the name, also in older report files. */
+  .wrap[data-page="report"] .card-id{flex-direction:column; align-items:flex-start; row-gap:4px}
   .wrap[data-page="report"] .picks{border-radius:3px}
   .wrap[data-page="report"] .card{padding:12px 14px}
   /* The last legend key is a sentence. Let it wrap as text, not as flex items. */
