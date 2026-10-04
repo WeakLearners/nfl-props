@@ -1215,10 +1215,10 @@
     },
     {
       "id": "rankings-page",
-      "label": "Player rankings",
+      "label": "Rankings (Players and Defenses)",
       "category": "generated-page",
       "file": "templates/rankings.html",
-      "description": "Full position rankings. templates/rankings.html with tables filled by nflprops/rating.py render_rankings(); written to reports/rankings.html by write_rankings() on every report build (scripts/run_reports.py, scripts/make_report.py). Served at /rankings.html. Entertainment: a rating describes past production. Old back links were removed 2026-10-04 (the site nav replaces them). Files on disk built before that may still carry them, hidden by CSS.",
+      "description": "Players and Defenses rankings on one page. templates/rankings.html with the position tables filled by nflprops/rating.py render_rankings() and the Defenses view (fragment templates/defenses.html, filled by nflprops/defense_rank.py render_defenses()) embedded; written to reports/rankings.html by write_rankings() on every report build. Served at /rankings.html (/rankings.html#defenses opens Defenses; /defenses, /defenses/ and /defenses.html redirect there). Players view lists the top 25 per position (heading says 'Top 25 of N'); this is a display cut only, ranks and chips cover every rated player. The Defenses view lists all 32 teams in every table. Entertainment: a rating describes past production and a rank describes past play. Old back links were removed 2026-10-04 (the site nav replaces them).",
       "uiElements": [
         {
           "id": "rankings-wrap",
@@ -1226,7 +1226,7 @@
           "kind": "layout",
           "description": "Full-width column (LAYOUT_CSS).",
           "locate": {
-            "path": "templates/rankings.html:45",
+            "path": "templates/rankings.html:51",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-wrap\"' templates/rankings.html"
           }
         },
@@ -1236,7 +1236,7 @@
           "kind": "layout",
           "description": "Grid that holds the four position sections. One column on a phone, more as the width grows.",
           "locate": {
-            "path": "templates/rankings.html:53",
+            "path": "templates/rankings.html:64",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-grid\"' templates/rankings.html"
           }
         },
@@ -1246,7 +1246,7 @@
           "kind": "layout",
           "description": "Section that wraps the QB heading and table, so the grid places them together.",
           "locate": {
-            "path": "nflprops/rating.py:297",
+            "path": "nflprops/rating.py:301",
             "grep": "grep -n -F -- 'rankings-pos-{pos_.lower()}' nflprops/rating.py"
           }
         },
@@ -1256,7 +1256,7 @@
           "kind": "layout",
           "description": "Section that wraps the RB heading and table, so the grid places them together.",
           "locate": {
-            "path": "nflprops/rating.py:297",
+            "path": "nflprops/rating.py:301",
             "grep": "grep -n -F -- 'rankings-pos-{pos_.lower()}' nflprops/rating.py"
           }
         },
@@ -1266,7 +1266,7 @@
           "kind": "layout",
           "description": "Section that wraps the WR heading and table, so the grid places them together.",
           "locate": {
-            "path": "nflprops/rating.py:297",
+            "path": "nflprops/rating.py:301",
             "grep": "grep -n -F -- 'rankings-pos-{pos_.lower()}' nflprops/rating.py"
           }
         },
@@ -1276,7 +1276,7 @@
           "kind": "layout",
           "description": "Section that wraps the TE heading and table, so the grid places them together.",
           "locate": {
-            "path": "nflprops/rating.py:297",
+            "path": "nflprops/rating.py:301",
             "grep": "grep -n -F -- 'rankings-pos-{pos_.lower()}' nflprops/rating.py"
           }
         },
@@ -1286,7 +1286,7 @@
           "kind": "layout",
           "description": "Title and data-through line.",
           "locate": {
-            "path": "templates/rankings.html:46",
+            "path": "templates/rankings.html:57",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-header\"' templates/rankings.html"
           }
         },
@@ -1296,7 +1296,7 @@
           "kind": "text",
           "description": "Eyebrow above the title: 'Ratings use games through 2026 Week N'.",
           "locate": {
-            "path": "templates/rankings.html:47",
+            "path": "templates/rankings.html:58",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-data-through\"' templates/rankings.html"
           }
         },
@@ -1306,7 +1306,7 @@
           "kind": "text",
           "description": "Entertainment. A rating describes past production.",
           "locate": {
-            "path": "templates/rankings.html:50",
+            "path": "templates/rankings.html:61",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-disclaimer\"' templates/rankings.html"
           }
         },
@@ -1316,7 +1316,7 @@
           "kind": "text",
           "description": "States that rank is recent production, not the depth chart.",
           "locate": {
-            "path": "templates/rankings.html:51",
+            "path": "templates/rankings.html:62",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-not-depth\"' templates/rankings.html"
           }
         },
@@ -1326,7 +1326,7 @@
           "kind": "text",
           "description": "States the minimum-sample floor. Players below it are not listed.",
           "locate": {
-            "path": "templates/rankings.html:52",
+            "path": "templates/rankings.html:63",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-floor\"' templates/rankings.html"
           }
         },
@@ -1336,7 +1336,7 @@
           "kind": "heading",
           "description": "Position heading, written by render_rankings().",
           "locate": {
-            "path": "nflprops/rating.py:298",
+            "path": "nflprops/rating.py:302",
             "grep": "grep -n -F -- 'rankings-heading-{pos_.lower()}' nflprops/rating.py"
           }
         },
@@ -1346,7 +1346,7 @@
           "kind": "heading",
           "description": "Position heading, written by render_rankings().",
           "locate": {
-            "path": "nflprops/rating.py:298",
+            "path": "nflprops/rating.py:302",
             "grep": "grep -n -F -- 'rankings-heading-{pos_.lower()}' nflprops/rating.py"
           }
         },
@@ -1356,7 +1356,7 @@
           "kind": "heading",
           "description": "Position heading, written by render_rankings().",
           "locate": {
-            "path": "nflprops/rating.py:298",
+            "path": "nflprops/rating.py:302",
             "grep": "grep -n -F -- 'rankings-heading-{pos_.lower()}' nflprops/rating.py"
           }
         },
@@ -1366,7 +1366,7 @@
           "kind": "heading",
           "description": "Position heading, written by render_rankings().",
           "locate": {
-            "path": "nflprops/rating.py:298",
+            "path": "nflprops/rating.py:302",
             "grep": "grep -n -F -- 'rankings-heading-{pos_.lower()}' nflprops/rating.py"
           }
         },
@@ -1376,7 +1376,7 @@
           "kind": "table",
           "description": "Rank, player, team, rating, games, attempts per game.",
           "locate": {
-            "path": "nflprops/rating.py:299",
+            "path": "nflprops/rating.py:303",
             "grep": "grep -n -F -- 'rankings-table-{pos_.lower()}' nflprops/rating.py"
           }
         },
@@ -1386,7 +1386,7 @@
           "kind": "table",
           "description": "Rank, player, team, rating, games, carries per game.",
           "locate": {
-            "path": "nflprops/rating.py:299",
+            "path": "nflprops/rating.py:303",
             "grep": "grep -n -F -- 'rankings-table-{pos_.lower()}' nflprops/rating.py"
           }
         },
@@ -1396,7 +1396,7 @@
           "kind": "table",
           "description": "Rank, player, team, rating, games, targets per game.",
           "locate": {
-            "path": "nflprops/rating.py:299",
+            "path": "nflprops/rating.py:303",
             "grep": "grep -n -F -- 'rankings-table-{pos_.lower()}' nflprops/rating.py"
           }
         },
@@ -1406,7 +1406,7 @@
           "kind": "table",
           "description": "Rank, player, team, rating, games, targets per game.",
           "locate": {
-            "path": "nflprops/rating.py:299",
+            "path": "nflprops/rating.py:303",
             "grep": "grep -n -F -- 'rankings-table-{pos_.lower()}' nflprops/rating.py"
           }
         },
@@ -1416,26 +1416,67 @@
           "kind": "table-row",
           "description": "One ranked player.",
           "locate": {
-            "path": "nflprops/rating.py:292",
+            "path": "nflprops/rating.py:296",
             "grep": "grep -n -F -- 'data-inspect-id=\"rankings-row\"' nflprops/rating.py"
           }
-        }
-      ]
-    },
-    {
-      "id": "defenses-page",
-      "label": "Defense rankings",
-      "category": "generated-page",
-      "file": "templates/defenses.html",
-      "description": "Total, Run, Pass and By position defense ranks for the 32 teams (rank 1 = toughest; each rank is the order of the number shown). templates/defenses.html filled by nflprops/defense_rank.py render_defenses(); written to reports/defenses.html by write_rankings() on every report build. Served at /defenses.html, under Players in the nav. Entertainment: a rank describes past play.",
-      "uiElements": [
+        },
+        {
+          "id": "rankings-switch",
+          "label": "Players / Defenses switch",
+          "kind": "filter",
+          "description": "Top-level buttons that switch the page between the Players and Defenses views. /rankings.html#defenses opens Defenses.",
+          "locate": {
+            "path": "templates/rankings.html:52",
+            "grep": "grep -n -F -- 'data-inspect-id=\"rankings-switch\"' templates/rankings.html"
+          }
+        },
+        {
+          "id": "rankings-switch-players",
+          "label": "Players button",
+          "kind": "button",
+          "description": "Shows the position rankings (default view).",
+          "locate": {
+            "path": "templates/rankings.html:53",
+            "grep": "grep -n -F -- 'data-inspect-id=\"rankings-switch-players\"' templates/rankings.html"
+          }
+        },
+        {
+          "id": "rankings-switch-defenses",
+          "label": "Defenses button",
+          "kind": "button",
+          "description": "Shows the defense rankings.",
+          "locate": {
+            "path": "templates/rankings.html:54",
+            "grep": "grep -n -F -- 'data-inspect-id=\"rankings-switch-defenses\"' templates/rankings.html"
+          }
+        },
+        {
+          "id": "rankings-view-players",
+          "label": "Players view",
+          "kind": "layout",
+          "description": "Wrapper for the header, notes and position grid.",
+          "locate": {
+            "path": "templates/rankings.html:56",
+            "grep": "grep -n -F -- 'data-inspect-id=\"rankings-view-players\"' templates/rankings.html"
+          }
+        },
+        {
+          "id": "rankings-view-defenses",
+          "label": "Defenses view",
+          "kind": "layout",
+          "description": "Wrapper that holds the defenses fragment (templates/defenses.html, filled by render_defenses()). Hidden unless selected.",
+          "locate": {
+            "path": "templates/rankings.html:68",
+            "grep": "grep -n -F -- 'data-inspect-id=\"rankings-view-defenses\"' templates/rankings.html"
+          }
+        },
         {
           "id": "defenses-wrap",
           "label": "Defenses container",
           "kind": "layout",
           "description": "Full-width column (LAYOUT_CSS).",
           "locate": {
-            "path": "templates/defenses.html:51",
+            "path": "templates/defenses.html:1",
             "grep": "grep -n -F -- 'data-inspect-id=\"defenses-wrap\"' templates/defenses.html"
           }
         },
@@ -1445,7 +1486,7 @@
           "kind": "layout",
           "description": "Title and data-through line.",
           "locate": {
-            "path": "templates/defenses.html:52",
+            "path": "templates/defenses.html:2",
             "grep": "grep -n -F -- 'data-inspect-id=\"defenses-header\"' templates/defenses.html"
           }
         },
@@ -1455,7 +1496,7 @@
           "kind": "text",
           "description": "Eyebrow: 'Data through 2026 Week N'.",
           "locate": {
-            "path": "templates/defenses.html:53",
+            "path": "templates/defenses.html:3",
             "grep": "grep -n -F -- 'data-inspect-id=\"defenses-data-through\"' templates/defenses.html"
           }
         },
@@ -1465,7 +1506,7 @@
           "kind": "text",
           "description": "Entertainment. A rank describes past play.",
           "locate": {
-            "path": "templates/defenses.html:56",
+            "path": "templates/defenses.html:6",
             "grep": "grep -n -F -- 'data-inspect-id=\"defenses-disclaimer\"' templates/defenses.html"
           }
         },
@@ -1475,7 +1516,7 @@
           "kind": "text",
           "description": "Rank 1 = toughest defense (allows the least).",
           "locate": {
-            "path": "templates/defenses.html:57",
+            "path": "templates/defenses.html:7",
             "grep": "grep -n -F -- 'data-inspect-id=\"defenses-direction\"' templates/defenses.html"
           }
         },
@@ -1485,7 +1526,7 @@
           "kind": "layout",
           "description": "Row of three buttons that switch the table: Total, Run, Pass.",
           "locate": {
-            "path": "templates/defenses.html:58",
+            "path": "templates/defenses.html:8",
             "grep": "grep -n -F -- 'data-inspect-id=\"defenses-filter\"' templates/defenses.html"
           }
         },
@@ -1655,7 +1696,7 @@
           "kind": "text",
           "description": "Window, adjustment, and the one number behind each rank.",
           "locate": {
-            "path": "templates/defenses.html:60",
+            "path": "templates/defenses.html:10",
             "grep": "grep -n -F -- 'data-inspect-id=\"defenses-method\"' templates/defenses.html"
           }
         }
@@ -2033,7 +2074,7 @@
           "kind": "layout",
           "description": "Two-row header spliced into every page by with_chrome(): brand and three sections on row 1, the section's pages and the results stamp on row 2. site_nav() takes this id as a parameter.",
           "locate": {
-            "path": "scripts/serve_reports.py:1577",
+            "path": "scripts/serve_reports.py:1576",
             "grep": "grep -n -F -- 'inspect_id=\"site-nav\"' scripts/serve_reports.py"
           }
         },
@@ -2043,7 +2084,7 @@
           "kind": "link",
           "description": "'NFL Props', links to /.",
           "locate": {
-            "path": "scripts/serve_reports.py:1589",
+            "path": "scripts/serve_reports.py:1588",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-nav-brand\"' scripts/serve_reports.py"
           }
         },
@@ -2083,7 +2124,7 @@
           "kind": "layout",
           "description": "Pages of the current section, separated by a dot. Empty for Results.",
           "locate": {
-            "path": "scripts/serve_reports.py:1591",
+            "path": "scripts/serve_reports.py:1590",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-subnav\"' scripts/serve_reports.py"
           }
         },
@@ -2118,22 +2159,12 @@
           }
         },
         {
-          "id": "site-subnav-defenses",
-          "label": "Defenses link",
-          "kind": "link",
-          "description": "Defenses, /defenses.html.",
-          "locate": {
-            "path": "scripts/serve_reports.py:1553",
-            "grep": "grep -n -F -- '\"site-subnav-defenses\"' scripts/serve_reports.py"
-          }
-        },
-        {
           "id": "site-subnav-trends",
           "label": "Trends link",
           "kind": "link",
           "description": "Trends, /trends.html.",
           "locate": {
-            "path": "scripts/serve_reports.py:1554",
+            "path": "scripts/serve_reports.py:1553",
             "grep": "grep -n -F -- '\"site-subnav-trends\"' scripts/serve_reports.py"
           }
         },
@@ -2143,7 +2174,7 @@
           "kind": "text",
           "description": "How far the season's results go, 'Wk 4 · 2/16 final'. From results_stamp(), one read-only query per request. Empty if the query fails.",
           "locate": {
-            "path": "scripts/serve_reports.py:1592",
+            "path": "scripts/serve_reports.py:1591",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-stamp\"' scripts/serve_reports.py"
           }
         },
@@ -2153,7 +2184,7 @@
           "kind": "text",
           "description": "One-line standing disclaimer spliced after every page by with_chrome().",
           "locate": {
-            "path": "scripts/serve_reports.py:1667",
+            "path": "scripts/serve_reports.py:1666",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-footer\"' scripts/serve_reports.py"
           }
         }

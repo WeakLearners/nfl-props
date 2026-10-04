@@ -1,67 +1,11 @@
-<!doctype html>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NFL Props · Defenses</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600&display=swap">
-<style>
-  :root{
-    color-scheme: light;
-    --bg:#f7f6f3; --surface:#fcfcfb; --line:#e2e0d9; --line-soft:#eceae3;
-    --ink:#14140f; --ink-2:#52514e; --ink-3:#84827a; --den:#eb6834;
-  }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      color-scheme: dark;
-      --bg:#121211; --surface:#1a1a19; --line:#33322e; --line-soft:#262521;
-      --ink:#f6f5ef; --ink-2:#c3c2b7; --ink-3:#8b897f; --den:#d95926;
-    }
-  }
-  :root[data-theme="dark"]{
-    color-scheme: dark;
-    --bg:#121211; --surface:#1a1a19; --line:#33322e; --line-soft:#262521;
-    --ink:#f6f5ef; --ink-2:#c3c2b7; --ink-3:#8b897f; --den:#d95926;
-  }
-  *{box-sizing:border-box}
-  body{margin:0; background:var(--bg); color:var(--ink);
-    font-family:"Public Sans",ui-sans-serif,system-ui,sans-serif; font-size:15px; line-height:1.55}
-  /* Page width: LAYOUT_CSS in scripts/serve_reports.py. */
-  header{border-bottom:2px solid var(--ink); padding-bottom:18px; margin-bottom:8px}
-  h1{font-family:"Barlow Condensed",Impact,sans-serif; font-weight:700; font-size:clamp(34px,6vw,56px);
-    line-height:.95; letter-spacing:-.01em; margin:0; text-transform:uppercase}
-  h2{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:24px; margin:32px 0 8px}
-  .eyebrow{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.14em;
-    text-transform:uppercase; color:var(--ink-3); margin:0 0 10px}
-  .note{color:var(--ink-2); margin:6px 0}
-  .tablewrap{overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:3px}
-  table{border-collapse:collapse; width:100%; font-size:14px}
-  th,td{padding:6px 10px; text-align:left; border-bottom:1px solid var(--line-soft); white-space:nowrap}
-  th{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase;
-    color:var(--ink-3); font-weight:500}
-  td.num,th.num{text-align:right; font-family:"IBM Plex Mono",monospace}
-  tr:last-child td{border-bottom:0}
-  .filter{display:flex; gap:8px; margin:14px 0; flex-wrap:wrap}
-  .filter button{font-family:"IBM Plex Mono",monospace; font-size:12px; padding:6px 12px; border:1px solid var(--line);
-    background:var(--surface); color:var(--ink-2); border-radius:3px; cursor:pointer}
-  .filter button[aria-pressed="true"]{border-color:var(--den); color:var(--den)}
-  .yds{color:var(--ink-3); font-size:12px; margin-left:4px}
-  [hidden]{display:none !important}
-</style>
-<div class="wrap" data-inspect-id="defenses-wrap">
+<div class="dfn-view" data-inspect-id="defenses-wrap">
   <header data-inspect-id="defenses-header">
     <p class="eyebrow" data-inspect-id="defenses-data-through">Data through __WEEK__</p>
     <h1>Defense rankings</h1>
   </header>
   <p class="note" data-inspect-id="defenses-disclaimer"><strong>Entertainment. A rank describes past play.</strong></p>
   <p class="note" data-inspect-id="defenses-direction">Rank 1 = toughest defense (allows the least).</p>
-  <div class="filter" data-inspect-id="defenses-filter" role="group" aria-label="Defense view">__BUTTONS__</div>
+  <div class="filter" data-group="defense" data-inspect-id="defenses-filter" role="group" aria-label="Defense view">__BUTTONS__</div>
 __TABLES__
   <p class="note" data-inspect-id="defenses-method">Games from 2025 and 2026, adjusted for the offenses faced, with recent games weighted more. Each rank is the order of the one number it ranks. Total ranks EPA per play allowed. Run ranks EPA per rush allowed. Pass ranks EPA per dropback allowed. Yards per game and yards per carry are shown and are not in any rank. By position ranks yards per game allowed to that position (QB passing yards, RB rushing plus receiving yards, WR receiving yards, TE receiving yards), with the yards next to each rank. Pts/g is the 2026 average, unadjusted.</p>
 </div>
-<script>
-document.querySelectorAll('.filter button').forEach(function(b){b.addEventListener('click',function(){
-  document.querySelectorAll('.filter button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});
-  document.querySelectorAll('.tablewrap[data-v]').forEach(function(e){e.hidden=e.dataset.v!==b.dataset.v});
-});});
-</script>

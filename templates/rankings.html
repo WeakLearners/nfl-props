@@ -41,16 +41,49 @@
     color:var(--ink-3); font-weight:500}
   td.num,th.num{text-align:right; font-family:"IBM Plex Mono",monospace}
   tr:last-child td{border-bottom:0}
+  .filter{display:flex; gap:8px; margin:14px 0; flex-wrap:wrap}
+  .filter button{font-family:"IBM Plex Mono",monospace; font-size:12px; padding:6px 12px; border:1px solid var(--line);
+    background:var(--surface); color:var(--ink-2); border-radius:3px; cursor:pointer}
+  .filter button[aria-pressed="true"]{border-color:var(--den); color:var(--den)}
+  .yds{color:var(--ink-3); font-size:12px; margin-left:4px}
+  [hidden]{display:none !important}
 </style>
 <div class="wrap" data-inspect-id="rankings-wrap">
+  <div class="filter" data-group="top" data-inspect-id="rankings-switch" role="group" aria-label="Rankings view">
+    <button type="button" aria-pressed="true" data-view="players" data-inspect-id="rankings-switch-players">Players</button>
+    <button type="button" aria-pressed="false" data-view="defenses" data-inspect-id="rankings-switch-defenses">Defenses</button>
+  </div>
+  <div data-view="players" data-inspect-id="rankings-view-players">
   <header data-inspect-id="rankings-header">
     <p class="eyebrow" data-inspect-id="rankings-data-through">Ratings use games through __WEEK__</p>
     <h1>Player rankings</h1>
   </header>
   <p class="note" data-inspect-id="rankings-disclaimer"><strong>Entertainment. A rating describes past production.</strong></p>
   <p class="note" data-inspect-id="rankings-not-depth">Rank = recent production within the position. It is not the depth chart.</p>
-  <p class="note" data-inspect-id="rankings-floor">Ranked: at least __MINGAMES__ games counted and a regular role (last-5 average of at least __FLOORS__), with a game in the current season. Players below that floor are not listed.</p>
+  <p class="note" data-inspect-id="rankings-floor">Ranked: at least __MINGAMES__ games counted and a regular role (last-5 average of at least __FLOORS__), with a game in the current season. Players below that floor are not listed. Each table shows the top 25 only. Ranks are over every ranked player.</p>
 <div class="rk-grid" data-inspect-id="rankings-grid">
 __TABLES__
 </div>
+  </div>
+  <div data-view="defenses" data-inspect-id="rankings-view-defenses" hidden>
+__DEFENSES__
+  </div>
 </div>
+<script>
+(function(){
+  var views=document.querySelectorAll('div[data-view]'), tops=document.querySelectorAll('.filter[data-group="top"] button');
+  function show(v){
+    tops.forEach(function(b){b.setAttribute('aria-pressed',b.dataset.view===v)});
+    views.forEach(function(e){e.hidden=e.dataset.view!==v});
+  }
+  tops.forEach(function(b){b.addEventListener('click',function(){
+    show(b.dataset.view); history.replaceState(null,'',b.dataset.view==='defenses'?'#defenses':location.pathname+location.search);
+  });});
+  window.addEventListener('hashchange',function(){show(location.hash==='#defenses'?'defenses':'players')});
+  show(location.hash==='#defenses'?'defenses':'players');
+  document.querySelectorAll('.filter[data-group="defense"] button').forEach(function(b){b.addEventListener('click',function(){
+    document.querySelectorAll('.filter[data-group="defense"] button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});
+    document.querySelectorAll('.dfn-view .tablewrap[data-v]').forEach(function(e){e.hidden=e.dataset.v!==b.dataset.v});
+  });});
+})();
+</script>

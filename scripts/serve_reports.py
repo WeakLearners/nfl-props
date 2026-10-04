@@ -1550,7 +1550,6 @@ SECTIONS = (("week", "Week", "/", "site-nav-week"),
 SUBPAGES = {"week": (("games", "Games", "/", "site-subnav-games"),
                      ("slate", "Slate", "/slate", "site-subnav-slate")),
             "players": (("rankings", "Rankings", "/rankings.html", "site-subnav-rankings"),
-                        ("defenses", "Defenses", "/defenses.html", "site-subnav-defenses"),
                         ("trends", "Trends", "/trends.html", "site-subnav-trends"))}
 
 
@@ -1633,10 +1632,10 @@ LAYOUT_CSS = """<style>
     column-gap:24px; align-items:start}
   .rk-pos h2{margin-top:28px}
 
-  /* Defenses: one table, full width. Rank column fixed, the rest equal. */
+  /* Defenses view (inside Rankings): one table, full width. Rank column fixed, the rest equal. */
   @media (min-width:561px){
-    .wrap[data-page="defenses"] .tablewrap table{table-layout:fixed}
-    .wrap[data-page="defenses"] th.num:first-child{width:8ch}
+    .wrap[data-page="rankings"] .dfn-view .tablewrap table{table-layout:fixed}
+    .wrap[data-page="rankings"] .dfn-view th.num:first-child{width:8ch}
   }
 
   /* Trends: the six cards in a grid. */
@@ -1792,8 +1791,6 @@ class Handler(SimpleHTTPRequestHandler):
 
         if name == "rankings.html":
             html = with_chrome(html, "players", "rankings", "NFL Props \u00b7 Rankings")
-        elif name == "defenses.html":
-            html = with_chrome(html, "players", "defenses", "NFL Props \u00b7 Defenses")
         elif name == "trends.html":
             html = with_chrome(html, "players", "trends", "NFL Props \u00b7 Trends")
         else:
@@ -1823,8 +1820,8 @@ class Handler(SimpleHTTPRequestHandler):
         if path in ("/rankings", "/rankings/"):
             self._redirect("/rankings.html")
             return
-        if path in ("/defenses", "/defenses/"):
-            self._redirect("/defenses.html")
+        if path in ("/defenses", "/defenses/", "/defenses.html"):
+            self._redirect("/rankings.html#defenses")
             return
         if path in ("/trends", "/trends/"):
             self._redirect("/trends.html")

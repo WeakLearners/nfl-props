@@ -250,6 +250,8 @@ def current_ratings(pg=None, season=None, week=None, weights=None, dvp=defense_v
     return season, week, res.reset_index(drop=True)
 
 
+RANK_SHOW = 25  # players listed per position on the page (chips still cover every rated player)
+
 _CACHE = {}
 
 
@@ -280,14 +282,16 @@ def write_chips():
     return CHIPS_PATH
 
 
-def render_rankings(season, week, df):
+def render_rankings(season, week, df, defenses_html=""):
     """The full rankings page: one table per position. Plain HTML from templates/rankings.html."""
     import html
     from .config import ROOT
     out = []
     for pos_, label in (("QB", "Quarterbacks"), ("RB", "Running backs"),
                         ("WR", "Wide receivers"), ("TE", "Tight ends")):
-        d = df[df.position == pos_]
+        d_all = df[df.position == pos_]
+        n_all = len(d_all)
+        d = d_all.sort_values("rank").head(RANK_SHOW)  # display cut only: ranks stay as computed over all n_all
         rows = "".join(
             f'<tr data-inspect-id="rankings-row"><td class="num">{r["rank"]}</td><td>{html.escape(r["name"])}</td>'
             f'<td>{html.escape(str(r.team))}</td><td class="num">{r.rating:.1f}</td>'
@@ -295,7 +299,7 @@ def render_rankings(season, week, df):
             for _, r in d.iterrows())
         out.append(
             f'<section class="rk-pos" data-inspect-id="rankings-pos-{pos_.lower()}">'
-            f'<h2 data-inspect-id="rankings-heading-{pos_.lower()}">{label}</h2>'
+            f'<h2 data-inspect-id="rankings-heading-{pos_.lower()}">{label} <span class="yds">Top {len(d)} of {n_all}</span></h2>'
             f'<div class="tablewrap" data-inspect-id="rankings-table-{pos_.lower()}"><table>'
             f'<thead><tr><th class="num">Rank</th><th>Player</th><th>Team</th><th class="num">Rating</th>'
             f'<th class="num">Games</th><th class="num">{RANK_VOL[pos_][1]} (last 5)</th></tr></thead>'
@@ -304,23 +308,26 @@ def render_rankings(season, week, df):
     return (tpl.replace("__WEEK__", f"{season} Week {week}")
                .replace("__MINGAMES__", str(RANK_MIN_GAMES))
                .replace("__FLOORS__", "QB 10 attempts, RB 5 carries, WR 3 targets, TE 3 targets")
-               .replace("__TABLES__", "\n".join(out)))
+               .replace("__TABLES__", "\n".join(out))
+               .replace("__DEFENSES__", defenses_html))
 
 
 def write_rankings():
-    """Write reports/rankings.html (and reports/defenses.html, reports/trends.html). Called by every report build, so the pages
+    """Write reports/rankings.html (Players and Defenses views; also reports/trends.html). Called by every report build, so the pages
     refresh whenever a weekly report is built."""
     from .config import ROOT
     season, week, df = current_ratings()
     path = ROOT / "reports" / "rankings.html"
-    path.write_text(render_rankings(season, week, df), encoding="utf-8")
-    write_chips()
-    try:  # the Defenses page refreshes on the same build, same rule as Trends
-        from .defense_rank import write_defenses
-        write_defenses()
+    dfn = ""
+    try:  # the Defenses view is embedded in the same page; a failure leaves it empty
+        from .defense_rank import current_defense_ranks, render_defenses
+        d_season, d_week, d_df = current_defense_ranks()
+        dfn = render_defenses(d_season, d_week, d_df)
     except Exception as e:  # noqa: BLE001
         import sys
-        print(f"defenses page not rebuilt: {e}", file=sys.stderr)
+        print(f"defenses view not built: {e}", file=sys.stderr)
+    path.write_text(render_rankings(season, week, df, dfn), encoding="utf-8")
+    write_chips()
     try:  # the Trends page refreshes on the same build; a failure must not stop a report
         from .trends import write_trends
         write_trends()

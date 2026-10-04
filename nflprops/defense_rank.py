@@ -100,7 +100,7 @@ def current_defense_ranks():
 
 
 def render_defenses(season, week, df):
-    """reports/defenses.html: Total, Run, Pass tables and a By position table, switched by buttons."""
+    """The Defenses view embedded in reports/rankings.html: Total, Run, Pass tables and a By position table, switched by buttons."""
     import html
     from .config import ROOT
     btns, tables = [], []
@@ -137,11 +137,3 @@ def render_defenses(season, week, df):
     tpl = (ROOT / "templates" / "defenses.html").read_text()
     return (tpl.replace("__WEEK__", f"{season} Week {week}").replace("__BUTTONS__", "".join(btns))
                .replace("__TABLES__", "\n".join(tables)))
-
-
-def write_defenses():
-    from .config import ROOT
-    season, week, df = current_defense_ranks()
-    path = ROOT / "reports" / "defenses.html"
-    path.write_text(render_defenses(season, week, df), encoding="utf-8")
-    return path
