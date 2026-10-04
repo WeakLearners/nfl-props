@@ -1554,6 +1554,7 @@ SECTIONS = (("week", "Week", "/", "site-nav-week"),
 SUBPAGES = {"week": (("games", "Games", "/", "site-subnav-games"),
                      ("slate", "Slate", "/slate", "site-subnav-slate")),
             "players": (("rankings", "Rankings", "/rankings.html", "site-subnav-rankings"),
+                        ("defenses", "Defenses", "/defenses.html", "site-subnav-defenses"),
                         ("trends", "Trends", "/trends.html", "site-subnav-trends"))}
 
 
@@ -1720,6 +1721,8 @@ class Handler(SimpleHTTPRequestHandler):
 
         if name == "rankings.html":
             html = with_chrome(html, "players", "rankings", "NFL Props \u00b7 Rankings")
+        elif name == "defenses.html":
+            html = with_chrome(html, "players", "defenses", "NFL Props \u00b7 Defenses")
         elif name == "trends.html":
             html = with_chrome(html, "players", "trends", "NFL Props \u00b7 Trends")
         else:
@@ -1748,6 +1751,9 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if path in ("/rankings", "/rankings/"):
             self._redirect("/rankings.html")
+            return
+        if path in ("/defenses", "/defenses/"):
+            self._redirect("/defenses.html")
             return
         if path in ("/trends", "/trends/"):
             self._redirect("/trends.html")
