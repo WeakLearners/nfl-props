@@ -59,7 +59,7 @@
     font-family:"Public Sans",ui-sans-serif,system-ui,sans-serif;
     font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
   }
-  .wrap{max-width:1120px; margin:0 auto; padding:40px 24px 72px}
+  /* Page width: LAYOUT_CSS in scripts/serve_reports.py. */
   a.back{
     display:inline-block; margin:0 0 18px; text-decoration:none;
     font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px;
@@ -131,7 +131,8 @@
      the whole column rather than beside the name alone -- otherwise the head
      row is as tall as the stack and the name floats above a gap. */
   .card-main{display:flex; flex-direction:column; gap:2px; flex:1; min-width:0}
-  .card-id{display:flex; align-items:baseline; gap:8px; min-width:0}
+  .card-id{display:flex; align-items:center; flex-wrap:wrap; column-gap:6px; row-gap:3px; min-width:0}
+  .card-id .mk{margin-left:0}
   /* The top-right stack: dots first, then whatever badges this player earned.
      stretch rather than flex-end. The dot row and the badges have different
      natural widths, so aligning one edge always left the other ragged. Every
@@ -147,14 +148,6 @@
   .hdot.hit{background:var(--good); box-shadow:none}
   .hdot.miss{background:var(--bad); box-shadow:none}
   .hdot.none{background:var(--ink-3); box-shadow:none}
-  .role{
-    font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
-    letter-spacing:.09em; padding:2px 5px; border-radius:2px; color:var(--surface);
-    /* Baseline alignment leaves the pill hanging below the name by its padding
-       plus the mono font's descent (~3px at line-height 1). Lift it by that. */
-    line-height:1; position:relative; bottom:3px;
-  }
-  .role.a{background:var(--den)} .role.b{background:var(--kc)}
   .name{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:19px;
     letter-spacing:.01em; line-height:1.1; min-width:0; overflow-wrap:break-word}
   .fig{
@@ -184,9 +177,9 @@
     width:14px; flex:none; font-weight:600;
   }
   .pk-name{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:20px;
-    line-height:1; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis;
-    white-space:nowrap}
-  .pk-name .role{margin-left:8px; display:inline-block}
+    line-height:1; flex:1; min-width:0; display:flex; align-items:center; flex-wrap:wrap; column-gap:6px; row-gap:3px}
+  .pk-nm{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .pk-name .mk{margin-left:0}
   /* Fixed slot, text pushed to its right edge. The longest leg on the slate is
      "receiving yards over 59.5" at 25 characters; every shorter one ends flush
      with it, so the line and the pill always touch. */
@@ -227,9 +220,9 @@
      it arrives as a custom property rather than a fixed colour here. */
   .card.td{background:var(--td-tint); border-color:var(--td-edge)}
   .td-badge{
-    font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:600;
+    font-family:"IBM Plex Mono",monospace; font-weight:600;
     letter-spacing:.1em; text-transform:uppercase; color:var(--surface);
-    border-radius:2px; padding:1px 4px; flex:none; text-align:center;
+    flex:none; text-align:center;
     background:var(--td-edge);
   }
   /* The Phase 3 combined number, shown next to the badge above rather than
@@ -260,9 +253,9 @@
     padding:1px 5px; border-radius:2px;
   }
   .pick-badge{
-    font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:600;
+    font-family:"IBM Plex Mono",monospace; font-weight:600;
     letter-spacing:.1em; text-transform:uppercase; color:var(--ink);
-    border:1px solid var(--ink); border-radius:2px; padding:1px 4px; flex:none;
+    border:1px solid var(--ink); flex:none;
     text-align:center;
   }
   .cmp{
@@ -314,7 +307,6 @@
   footer strong{color:var(--ink-2); font-weight:600}
   @media (max-width:560px){
     .pk-models{display:none}
-    .wrap{padding:24px 14px 48px}
     .grid{grid-template-columns:1fr; gap:12px}
     .legend{gap:10px 14px}
   }
@@ -322,7 +314,6 @@
 </style>
 
 <div class="wrap" data-inspect-id="page-wrap">
-  <a class="back" href="/" data-inspect-id="report-back">&larr; All reports</a>
   <header data-inspect-id="page-header">
     <p class="eyebrow" data-inspect-id="eyebrow">Sunday 4:05 PM ET · Week 3 · 2026</p>
     <h1>Minnesota Vikings <span class="at">at</span> Tampa Bay Buccaneers</h1>
@@ -454,6 +445,14 @@ const STATS = [
 ];
 const W=250,H=78,PAD=6;
 const norm=(x,mu,sd)=>Math.exp(-0.5*Math.pow((x-mu)/sd,2));
+// Name markers. Server twin: nflprops/badges.py markers_html(). Same order, same classes.
+const escA=s=>String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+const TREND=/\bbd-(up|down)\b/, MATCH=/\bbd-(big|caution)\b/;
+// Position rank by recent production. Not the depth chart. id = inspect id of this use.
+const rkChip=(d,id)=>d.rk?'<span class="rk" data-inspect-id="'+id+'" title="'+escA(d.rkt)+'">'+escA(d.rk)+'</span>':'';
+// Badges (nflprops/badges.py): d.bd is a list of [class, text, title]. re keeps one kind only.
+const bdBadges=(d,id,re)=>(d.bd||[]).filter(b=>!re||re.test(b[0])).map(b=>'<span class="'+b[0]+'" data-inspect-id="'+id+'" title="'+escA(b[2])+'">'+b[1]+'</span>').join('');
+const mk=(dep,d,rkId,bdId,re)=>{const h=dep+rkChip(d,rkId)+bdBadges(d,bdId,re);return h?'<span class="mk">'+h+'</span>':'';};
 const fmt=v=>Math.abs(v)>=20?Math.round(v):(Math.round(v*10)/10);
 
 function curve(d){
@@ -631,7 +630,7 @@ STATS.forEach(([key,label,unit])=>{
       +'<div class="card-main" data-inspect-id="card-main">'
         +'<div class="card-id" data-inspect-id="card-identity">'
           +'<span class="name" data-inspect-id="card-player-name">'+d.p+'</span>'
-          +'<span class="role '+(d.tm===META.teamA?'a':'b')+'" data-inspect-id="card-role-badge">'+d.role+'</span></div>'
+          +mk('<span class="role '+(d.tm===META.teamA?'a':'b')+'" data-inspect-id="card-role-badge">'+d.role+'</span>',d,"card-rank-chip","card-badge",TREND)+'</div>'
         +'<div class="fig-row"><span class="fig" data-inspect-id="card-expected">'
           +fmt(d.mu)+'</span>'+result(d)+'</div>'
         +'<div class="rng" data-inspect-id="card-range">'+fmt(d.lo)+' – '+fmt(d.hi)+'</div>'+p3Cmp(d,col)+'</div>'
@@ -641,6 +640,7 @@ STATS.forEach(([key,label,unit])=>{
           +Math.round(TD.conf*100)+'%</span>':'')
         +(isTD && TD.phase3?'<span class="td-phase3" data-inspect-id="card-td-phase3">new td '
           +Math.round(TD.phase3.p_combined*100)+'%</span>':'')
+        +bdBadges(d,"card-matchup-badge",MATCH)
         +'</div></div>'
       +'<svg data-inspect-id="card-curve" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+d.p+' '+label
       +': expected '+fmt(d.mu)+', middle range '+fmt(d.lo)+' to '+fmt(d.hi)+'">'
@@ -685,7 +685,7 @@ DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick).forEach(d=>{
   li.dataset.inspectId="pick-row";
   const col=d.tm===META.teamA?"var(--den)":"var(--kc)";
   li.innerHTML='<span class="pk-n">'+d.pick+'</span>'
-    +'<span class="pk-name">'+d.p+'<span class="role '+(d.tm===META.teamA?'a':'b')+'">'+d.role+'</span></span>'
+    +'<span class="pk-name"><span class="pk-nm">'+d.p+'</span>'+mk('<span class="role '+(d.tm===META.teamA?'a':'b')+'">'+d.role+'</span>',d,"pick-rank-chip","pick-badge")+'</span>'
     +'<span class="pk-bet">'+d.s.replace(/_/g," ")+' over <b>'+d.line+'</b></span>'
     +'<span class="pk-models" data-inspect-id="pick-models"><span>old<b style="color:'+col+'">'+fmt(d.mu)+'</b></span>'
       +'<span>new<b style="color:var(--p3)">'+(d.p3==null?'&mdash;':fmt(d.p3))+'</b></span></span>'
@@ -721,7 +721,7 @@ DATA.slice().sort((a,b)=>{
   const tr=document.createElement("tr");
   tr.dataset.inspectId="table-row";
   const m=d.def==null?"—":d.def.toFixed(2)+(d.app?"":" (context only)");
-  tr.innerHTML="<td>"+d.p+"</td><td>"+d.tm+" "+d.role+"</td><td>"
+  tr.innerHTML="<td>"+d.p+"</td><td>"+d.tm+mk('<span class="dp">'+d.role+'</span>',d,"table-rank-chip","table-badge")+"</td><td>"
     +d.s.replace(/_/g," ")+"</td><td class='num'>"+fmt(d.mu)+"</td><td class='num'>"
     +fmt(d.lo)+"</td><td class='num'>"+fmt(d.hi)+"</td><td class='num'>±"
     +fmt(d.sd)+"</td><td class='num'>"+m+"</td>";

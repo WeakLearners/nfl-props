@@ -68,9 +68,9 @@
   tr.legs td:first-child::before{content:none}
   tr.legs .meta{display:block; font-family:"IBM Plex Mono",monospace; font-size:10.5px;
     color:var(--ink-3); font-weight:400}
-  .rk{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:500; line-height:1;
-    padding:1px 4px; border-radius:2px; color:var(--ink-2); box-shadow:inset 0 0 0 1px var(--ink-3);
-    margin-left:6px; white-space:nowrap; display:inline-block}
+  tr.legs .meta{display:flex; flex-wrap:wrap; align-items:center; column-gap:6px; row-gap:2px; min-height:16px}
+  tr.legs .meta .mk{margin-left:0}
+  tr.legs .meta .gm{white-space:nowrap}
   tr.legs a{color:inherit; text-decoration:none}
   tr.legs a:hover{text-decoration:underline}
   col.l-st{width:118px} col.l-pr{width:58px} col.l-ac{width:66px}
@@ -350,7 +350,8 @@
     render();
   }
 
-  // Outline rank chip, same look as the report pages. Absent below the ranking floor.
+  // Name markers. Server twin: nflprops/badges.py markers_html(). Same order, same classes.
+  // Rank chip: position rank by recent production. Absent below the ranking floor.
   function rkChip(l, id) {
     return l.rk ? '<span class="rk" data-inspect-id="' + id + '" title="' + esc(l.rkt) + '">' + esc(l.rk) + '</span>' : "";
   }
@@ -362,12 +363,17 @@
     }).join("");
   }
 
+  function mk(dep, l, rkId, bdId) {
+    var h = dep + rkChip(l, rkId) + bdBadges(l, bdId);
+    return h ? '<span class="mk">' + h + '</span>' : "";
+  }
+
   function legRows(legs) {
     return legs.slice().sort(function (a, b) {
       return b.season - a.season || b.week - a.week || (a.p < b.p ? -1 : 1);
     }).map(function (l) {
       return '<tr data-inspect-id="explore-leg"><td><a href="/' + esc(l.file) + '">' + esc(l.p) + '</a>' +
-        '<span class="meta">' + esc(l.tm + " " + (l.role || "")) + rkChip(l, "explore-rank-chip") + bdBadges(l, "explore-badge") + esc(" · W" + l.week + " " + l.game) + '</span></td>' +
+        '<span class="meta">' + esc(l.tm) + mk('<span class="dp">' + esc(l.role || "") + '</span>', l, "explore-rank-chip", "explore-badge") + '<span class="gm">' + esc("· W" + l.week + " " + l.game) + '</span></span></td>' +
         '<td>' + (l.s === "anytime_td" ? "anytime TD" : 'o' + l.line + ' ' + (SHORT[l.s] || l.s)) + '</td>' +
         '<td>' + (l.price == null ? "—" : (l.price > 0 ? "+" : "") + l.price) + '</td>' +
         '<td><span class="mark ' + (l.hit ? "hit" : "miss") + '">' + l.actual + '</span></td></tr>';

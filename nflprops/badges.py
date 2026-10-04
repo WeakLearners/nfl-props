@@ -259,6 +259,17 @@ def badge_html(items, inspect_id):
         f'title="{html.escape(t, quote=True)}">{html.escape(x)}</span>' for c, x, t in items)
 
 
+def markers_html(depth_html="", chip=None, items=(), chip_id="", badge_id=""):
+    """One name-marker group: depth, rank chip, trend, matchup, in that order.
+    depth_html: markup for the depth number (plain <span class="dp"> or a pill), already safe.
+    chip: (text, title) from chips.json, or None. items: player_badges() / defense_badge() output.
+    Returns "" when there is nothing to show."""
+    chip_html = (f'<span class="rk" data-inspect-id="{chip_id}" '
+                 f'title="{html.escape(chip[1], quote=True)}">{html.escape(chip[0])}</span>') if chip else ""
+    inner = depth_html + chip_html + badge_html(items, badge_id)
+    return f'<span class="mk">{inner}</span>' if inner else ""
+
+
 def defense_badge(team, cat, data=None):
     """[class, text, title] list (0 or 1 item) for a defense category."""
     data = load_badges() if data is None else data
@@ -270,8 +281,23 @@ def defense_badge(team, cat, data=None):
 
 # One stylesheet for every page. Palette tokens only, from each page's :root. Player arrows use good/bad. Defense arrows are neutral because tougher is not good or bad on its own.
 BADGE_CSS = """
-  .bd{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600; line-height:1; padding:2px 5px;
-    border:1px solid currentColor; border-radius:3px; margin-left:5px; vertical-align:middle; white-space:nowrap; cursor:help}
+  /* Name markers. One system for every page: depth, rank chip, trend, matchup,
+     in that order, in one .mk group. Spec: projects/nfl-props/design/name-markers-spec-2026-10-04.md.
+     Depth is filled or plain. Rank is the only outline. Trend is a bare glyph. Matchup is tinted.
+     position/bottom/margin resets override older copies baked into report files on disk. */
+  .mk{display:inline-flex; align-items:center; gap:4px; margin-left:6px;
+    vertical-align:middle; white-space:nowrap; flex:none}
+  .mk .dp{font:inherit; color:inherit}
+  .role,.rk,.bd,.pick-badge,.td-badge{box-sizing:border-box; display:inline-flex; align-items:center;
+    justify-content:center; height:16px; padding:0 5px; border-radius:2px; margin:0;
+    font-family:"IBM Plex Mono",monospace; font-size:10px; line-height:1; white-space:nowrap;
+    position:static; bottom:auto; vertical-align:middle}
+  .role{font-weight:600; letter-spacing:.06em; color:var(--surface)}
+  .role.a{background:var(--den)} .role.b{background:var(--kc)}
+  .rk{font-weight:500; color:var(--ink-2); background:transparent;
+    border:1px solid var(--ink-3); box-shadow:none; cursor:help}
+  .bd{font-weight:600; border:1px solid currentColor; cursor:help}
+  .bd-up,.bd-down,.bd-d-up,.bd-d-down{border:0; background:none; padding:0 1px}
   .bd-up{color:var(--good)} .bd-down{color:var(--bad)}
   .bd-d-up{color:var(--ink)} .bd-d-down{color:var(--ink-3)}
   .bd-big{color:var(--den,var(--accent)); background:color-mix(in srgb, var(--den,var(--accent)) 12%, transparent)}

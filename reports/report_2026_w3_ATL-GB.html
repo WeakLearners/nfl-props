@@ -59,7 +59,7 @@
     font-family:"Public Sans",ui-sans-serif,system-ui,sans-serif;
     font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
   }
-  .wrap{max-width:1120px; margin:0 auto; padding:40px 24px 72px}
+  /* Page width: LAYOUT_CSS in scripts/serve_reports.py. */
   a.back{
     display:inline-block; margin:0 0 18px; text-decoration:none;
     font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px;
@@ -131,7 +131,8 @@
      the whole column rather than beside the name alone -- otherwise the head
      row is as tall as the stack and the name floats above a gap. */
   .card-main{display:flex; flex-direction:column; gap:2px; flex:1; min-width:0}
-  .card-id{display:flex; align-items:baseline; gap:8px; min-width:0}
+  .card-id{display:flex; align-items:center; flex-wrap:wrap; column-gap:6px; row-gap:3px; min-width:0}
+  .card-id .mk{margin-left:0}
   /* The top-right stack: dots first, then whatever badges this player earned.
      stretch rather than flex-end. The dot row and the badges have different
      natural widths, so aligning one edge always left the other ragged. Every
@@ -147,14 +148,6 @@
   .hdot.hit{background:var(--good); box-shadow:none}
   .hdot.miss{background:var(--bad); box-shadow:none}
   .hdot.none{background:var(--ink-3); box-shadow:none}
-  .role{
-    font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
-    letter-spacing:.09em; padding:2px 5px; border-radius:2px; color:var(--surface);
-    /* Baseline alignment leaves the pill hanging below the name by its padding
-       plus the mono font's descent (~3px at line-height 1). Lift it by that. */
-    line-height:1; position:relative; bottom:3px;
-  }
-  .role.a{background:var(--den)} .role.b{background:var(--kc)}
   .name{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:19px;
     letter-spacing:.01em; line-height:1.1; min-width:0; overflow-wrap:break-word}
   .fig{
@@ -184,9 +177,9 @@
     width:14px; flex:none; font-weight:600;
   }
   .pk-name{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:20px;
-    line-height:1; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis;
-    white-space:nowrap}
-  .pk-name .role{margin-left:8px; display:inline-block}
+    line-height:1; flex:1; min-width:0; display:flex; align-items:center; flex-wrap:wrap; column-gap:6px; row-gap:3px}
+  .pk-nm{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .pk-name .mk{margin-left:0}
   /* Fixed slot, text pushed to its right edge. The longest leg on the slate is
      "receiving yards over 59.5" at 25 characters; every shorter one ends flush
      with it, so the line and the pill always touch. */
@@ -227,9 +220,9 @@
      it arrives as a custom property rather than a fixed colour here. */
   .card.td{background:var(--td-tint); border-color:var(--td-edge)}
   .td-badge{
-    font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:600;
+    font-family:"IBM Plex Mono",monospace; font-weight:600;
     letter-spacing:.1em; text-transform:uppercase; color:var(--surface);
-    border-radius:2px; padding:1px 4px; flex:none; text-align:center;
+    flex:none; text-align:center;
     background:var(--td-edge);
   }
   /* The Phase 3 combined number, shown next to the badge above rather than
@@ -260,9 +253,9 @@
     padding:1px 5px; border-radius:2px;
   }
   .pick-badge{
-    font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:600;
+    font-family:"IBM Plex Mono",monospace; font-weight:600;
     letter-spacing:.1em; text-transform:uppercase; color:var(--ink);
-    border:1px solid var(--ink); border-radius:2px; padding:1px 4px; flex:none;
+    border:1px solid var(--ink); flex:none;
     text-align:center;
   }
   .cmp{
@@ -314,7 +307,6 @@
   footer strong{color:var(--ink-2); font-weight:600}
   @media (max-width:560px){
     .pk-models{display:none}
-    .wrap{padding:24px 14px 48px}
     .grid{grid-template-columns:1fr; gap:12px}
     .legend{gap:10px 14px}
   }
@@ -322,7 +314,6 @@
 </style>
 
 <div class="wrap" data-inspect-id="page-wrap">
-  <a class="back" href="/" data-inspect-id="report-back">&larr; All reports</a>
   <header data-inspect-id="page-header">
     <p class="eyebrow" data-inspect-id="eyebrow">Thursday 8:15 PM ET · Week 3 · 2026</p>
     <h1>Atlanta Falcons <span class="at">at</span> Green Bay Packers</h1>
@@ -389,25 +380,26 @@
     <p><strong>What this is not.</strong> These are projections, not edges. Tested against
     real sportsbook lines, this model's point estimates were <em>less</em> accurate than the
     market's. Useful for seeing a player's plausible range; not evidence anyone is mispriced.</p>
-    <p><strong>Two engines, old and new.</strong> Every receiving-yards, rushing-yards, and
-    receptions card carries two forecasts for the same player and stat. They come from two
-    different models, built at different times. There is no new-model number for passing yards
-    &mdash; the data this page's models train on doesn't have a passing-yards column to fit
-    against, so that card only shows the old engine.</p>
+    <p><strong>Two engines, old and new.</strong> Every passing-yards, receiving-yards,
+    rushing-yards, and receptions card carries two forecasts for the same player and stat. They
+    come from two different models, built at different times.</p>
     <p><em>Old engine</em> (built 2026-09-13, <code>nflprops/project.py</code>). It makes the big
     number on every card and the range under it. It starts from the player's own recent games,
-    weighting the latest most. It splits his workload (targets, carries) from what he does with each
-    touch (yards per catch or carry). It forecasts each part on its own, multiplies them back
-    together, then adjusts for how tough the opponent's defense is.</p>
+    weighting the latest most. It splits his workload (targets, carries, pass attempts) from what
+    he does with each touch (yards per catch, carry, or attempt). It forecasts each part on its
+    own, multiplies them back together, then adjusts for how tough the opponent's defense is.</p>
     <p><em>New model</em> (added 2026-09-24, decision #31, also called Phase 3; extended to
-    receptions 2026-09-24, decision #38). It makes the small line under the range, e.g.
-    <code>old engine 60 &middot; new model 52 (&minus;8)</code>. For receiving yards and rushing
-    yards it is a ridge regression: a straight-line fit that is penalized for leaning hard on any
-    one input, so it can't memorize noise, trained on 2019&ndash;2025 over a wider table of inputs.
-    For receptions it's a different route to the same idea &mdash; it predicts how many times a
-    player will be targeted, then multiplies by his own shrunk history of catching the targets he
-    gets. Head-to-head testing found that beat a ridge regression fit directly on receptions, by a
-    hair. Neither engine ever sees the other's number.</p>
+    receptions 2026-09-24, decision #38, and to passing yards 2026-09-24, decision #39). It makes
+    the small line under the range, e.g. <code>old engine 60 &middot; new model 52 (&minus;8)</code>.
+    For passing yards, receiving yards, and rushing yards it is a ridge regression: a straight-line
+    fit that is penalized for leaning hard on any one input, so it can't memorize noise, trained on
+    2019&ndash;2025 over a wider table of inputs (passing yards adds each QB's own attempts,
+    completions, yards per attempt, completion rate, and downfield throw depth, each averaged over
+    his last 4 games, last 8, and career). For receptions it's a different route to the same idea
+    &mdash; it predicts how many times a player will be targeted, then multiplies by his own
+    shrunk history of catching the targets he gets. Head-to-head testing found that beat a ridge
+    regression fit directly on receptions, by a hair. Neither engine ever sees the other's
+    number.</p>
     <p><strong>On the curve.</strong> The curve belongs to the old engine. Its dashed line, in the
     team's colour, marks the old engine's number. The purple dashed line marks the new model's. When
     the two lines sit apart, the engines disagree. The shortlist shows the same pair, in the same colours.</p>
@@ -417,16 +409,20 @@
     either end of its range. Say a card reads 60, range 40&ndash;80: the spread is 20, so a gap of
     10 or more gets shaded. A gap that size is bigger than the old engine's own uncertainty, so the
     card deserves a second look.</p>
-    <p><strong>Which one to trust.</strong> Neither, clearly. Scored on five seasons of real games
-    (2021&ndash;2025, <code>data/vol_head_to_head.csv</code> and
-    <code>data/vol_receptions_compare.csv</code>), all three are close to a tie. On receiving
+    <p><strong>Which one to trust.</strong> Mixed. Scored on five seasons of real games
+    (2021&ndash;2025, <code>data/vol_head_to_head.csv</code>,
+    <code>data/vol_receptions_compare.csv</code>, and <code>data/passing_head_to_head.csv</code>),
+    receiving yards, rushing yards, and receptions are all close to a tie. On receiving
     yards the old engine misses by 22.82 yards on average, the new model by 22.84 (12,040 games). On
     rushing yards it is 21.30 against 21.44 (7,332 games). On receptions it is 1.65 against 1.65
     (12,040 games, sub-hundredth difference). Season by season, the new model won receiving in 3 of
-    5 years, rushing in 2 of 5, and receptions in 3 of 5. The new model is better at the raw counts
-    underneath: how many targets and carries a player gets. This page doesn't show those counts.
-    The old engine keeps the headline on every stat because it hasn't been beaten, not because it
-    clearly won.</p>
+    5 years, rushing in 2 of 5, and receptions in 3 of 5. <strong>Passing yards is not a tie.</strong>
+    The old engine misses by 67.09 yards on average; the new model misses by 62.56 (3,107 games,
+    2021&ndash;2025) &mdash; a 6.8% smaller miss, and the new model came out ahead in every one of
+    the five seasons tested. The old engine still makes the big number on the card, same as every
+    other stat here, because that's this page's fixed convention &mdash; not because it won this
+    one. The new model is also better at the raw counts underneath the other three stats: how many
+    targets and carries a player gets. This page doesn't show those counts.</p>
     <p><strong>Touchdowns work the same way.</strong> The <em>td %</em> badge is the old engine's
     anytime-touchdown number. The smaller <em>new td %</em> under it is the new model's (decision
     #30). In each game, both models name the player most likely to score. Over 2021&ndash;2025 the
@@ -449,6 +445,14 @@ const STATS = [
 ];
 const W=250,H=78,PAD=6;
 const norm=(x,mu,sd)=>Math.exp(-0.5*Math.pow((x-mu)/sd,2));
+// Name markers. Server twin: nflprops/badges.py markers_html(). Same order, same classes.
+const escA=s=>String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+const TREND=/\bbd-(up|down)\b/, MATCH=/\bbd-(big|caution)\b/;
+// Position rank by recent production. Not the depth chart. id = inspect id of this use.
+const rkChip=(d,id)=>d.rk?'<span class="rk" data-inspect-id="'+id+'" title="'+escA(d.rkt)+'">'+escA(d.rk)+'</span>':'';
+// Badges (nflprops/badges.py): d.bd is a list of [class, text, title]. re keeps one kind only.
+const bdBadges=(d,id,re)=>(d.bd||[]).filter(b=>!re||re.test(b[0])).map(b=>'<span class="'+b[0]+'" data-inspect-id="'+id+'" title="'+escA(b[2])+'">'+b[1]+'</span>').join('');
+const mk=(dep,d,rkId,bdId,re)=>{const h=dep+rkChip(d,rkId)+bdBadges(d,bdId,re);return h?'<span class="mk">'+h+'</span>':'';};
 const fmt=v=>Math.abs(v)>=20?Math.round(v):(Math.round(v*10)/10);
 
 function curve(d){
@@ -626,7 +630,7 @@ STATS.forEach(([key,label,unit])=>{
       +'<div class="card-main" data-inspect-id="card-main">'
         +'<div class="card-id" data-inspect-id="card-identity">'
           +'<span class="name" data-inspect-id="card-player-name">'+d.p+'</span>'
-          +'<span class="role '+(d.tm===META.teamA?'a':'b')+'" data-inspect-id="card-role-badge">'+d.role+'</span></div>'
+          +mk('<span class="role '+(d.tm===META.teamA?'a':'b')+'" data-inspect-id="card-role-badge">'+d.role+'</span>',d,"card-rank-chip","card-badge",TREND)+'</div>'
         +'<div class="fig-row"><span class="fig" data-inspect-id="card-expected">'
           +fmt(d.mu)+'</span>'+result(d)+'</div>'
         +'<div class="rng" data-inspect-id="card-range">'+fmt(d.lo)+' – '+fmt(d.hi)+'</div>'+p3Cmp(d,col)+'</div>'
@@ -636,6 +640,7 @@ STATS.forEach(([key,label,unit])=>{
           +Math.round(TD.conf*100)+'%</span>':'')
         +(isTD && TD.phase3?'<span class="td-phase3" data-inspect-id="card-td-phase3">new td '
           +Math.round(TD.phase3.p_combined*100)+'%</span>':'')
+        +bdBadges(d,"card-matchup-badge",MATCH)
         +'</div></div>'
       +'<svg data-inspect-id="card-curve" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+d.p+' '+label
       +': expected '+fmt(d.mu)+', middle range '+fmt(d.lo)+' to '+fmt(d.hi)+'">'
@@ -680,7 +685,7 @@ DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick).forEach(d=>{
   li.dataset.inspectId="pick-row";
   const col=d.tm===META.teamA?"var(--den)":"var(--kc)";
   li.innerHTML='<span class="pk-n">'+d.pick+'</span>'
-    +'<span class="pk-name">'+d.p+'<span class="role '+(d.tm===META.teamA?'a':'b')+'">'+d.role+'</span></span>'
+    +'<span class="pk-name"><span class="pk-nm">'+d.p+'</span>'+mk('<span class="role '+(d.tm===META.teamA?'a':'b')+'">'+d.role+'</span>',d,"pick-rank-chip","pick-badge")+'</span>'
     +'<span class="pk-bet">'+d.s.replace(/_/g," ")+' over <b>'+d.line+'</b></span>'
     +'<span class="pk-models" data-inspect-id="pick-models"><span>old<b style="color:'+col+'">'+fmt(d.mu)+'</b></span>'
       +'<span>new<b style="color:var(--p3)">'+(d.p3==null?'&mdash;':fmt(d.p3))+'</b></span></span>'
@@ -716,7 +721,7 @@ DATA.slice().sort((a,b)=>{
   const tr=document.createElement("tr");
   tr.dataset.inspectId="table-row";
   const m=d.def==null?"—":d.def.toFixed(2)+(d.app?"":" (context only)");
-  tr.innerHTML="<td>"+d.p+"</td><td>"+d.tm+" "+d.role+"</td><td>"
+  tr.innerHTML="<td>"+d.p+"</td><td>"+d.tm+mk('<span class="dp">'+d.role+'</span>',d,"table-rank-chip","table-badge")+"</td><td>"
     +d.s.replace(/_/g," ")+"</td><td class='num'>"+fmt(d.mu)+"</td><td class='num'>"
     +fmt(d.lo)+"</td><td class='num'>"+fmt(d.hi)+"</td><td class='num'>±"
     +fmt(d.sd)+"</td><td class='num'>"+m+"</td>";

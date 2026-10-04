@@ -25,7 +25,7 @@ try:
 except Exception as _e:  # noqa: BLE001 — the pages still work ungraded
     sys.stderr.write(f"grading unavailable, name_key did not import: {_e}\n")
     name_key = None
-from nflprops.badges import BADGE_CSS, badge_html, player_badges  # noqa: E402
+from nflprops.badges import BADGE_CSS, markers_html, player_badges  # noqa: E402
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT = os.path.join(BASE, "reports")
@@ -719,24 +719,12 @@ def chip_for(player, role):
     return _CHIPS["data"].get(f'{name_key(player)}|{re.sub(r"[0-9]+$", "", role or "")}')
 
 
-def rk_chip(chip, inspect_id):
-    """The outline chip, same markup as templates/report.html rkChip()."""
-    if not chip:
-        return ""
-    return (f'<span class="rk" data-inspect-id="{inspect_id}" '
-            f'title="{html.escape(chip[1], quote=True)}">{html.escape(chip[0])}</span>')
-
-
 def badges_for(player, role, opp=None, week=None):
     """[class, text, title] badges for a player, from data/ratings/badges.json. A matchup
     badge shows only when opp and week match the game it was computed for."""
     if name_key is None:
         return []
     return player_badges(f'{name_key(player)}|{re.sub(r"[0-9]+$", "", role or "")}', opp, week)
-
-
-def bd_html(player, role, opp, week, inspect_id):
-    return badge_html(badges_for(player, role, opp, week), inspect_id)
 
 
 def leg_rows(legs, graded):
@@ -752,12 +740,14 @@ def leg_rows(legs, graded):
                 f'<span class="mark {"hit" if hit else "miss"}"'
                 f' data-inspect-id="slate-leg-result">'
                 f'{r["actual"]:g}</span>')
+        mk = markers_html(f'<span class="dp">{r["role"]}</span>', chip_for(r["p"], r["role"]),
+                          badges_for(r["p"], r["role"], r.get("vs"), r.get("_wk")),
+                          "slate-rank-chip", "slate-badge")
         out.append(
             f'<tr data-inspect-id="slate-leg">'
             f'<td class="rank">{i}</td>'
             f'<td class="who"><a href="/{r["file"]}">{r["p"]}</a>'
-            f'<span class="meta">{r["tm"]} {r["role"]}'
-            f'{rk_chip(chip_for(r["p"], r["role"]), "slate-rank-chip")}{bd_html(r["p"], r["role"], r.get("vs"), r.get("_wk"), "slate-badge")} &middot; {r["game"]}</span></td>'
+            f'<span class="meta">{r["tm"]}{mk}<span class="gm">&middot; {r["game"]}</span></span></td>'
             f'<td class="stat">o{r["line"]:g} {stat}</td>'
             + (f'<td class="res">{mark}</td>' if graded else "")
             + (
@@ -911,9 +901,10 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
     font-family:"IBM Plex Mono",monospace; font-size:10.5px;
     color:var(--ink-3); letter-spacing:.02em; margin-top:1px; font-weight:400;
   }}
-  .rk{{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:500; line-height:1;
-    padding:1px 4px; border-radius:2px; color:var(--ink-2); box-shadow:inset 0 0 0 1px var(--ink-3);
-    margin-left:6px; white-space:nowrap; display:inline-block}}
+  .who .meta{{display:flex; flex-wrap:wrap; align-items:center; column-gap:6px; row-gap:2px;
+    min-height:16px; white-space:normal; overflow:visible}}
+  .who .meta .mk{{margin-left:0}}
+  .who .meta .gm{{white-space:nowrap}}
   .stat{{
     font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--ink-2);
     white-space:nowrap;
