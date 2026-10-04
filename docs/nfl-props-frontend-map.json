@@ -2284,7 +2284,7 @@
           "kind": "text",
           "description": "One-line standing disclaimer spliced after every page by with_chrome().",
           "locate": {
-            "path": "scripts/serve_reports.py:1749",
+            "path": "scripts/serve_reports.py:1758",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-footer\"' scripts/serve_reports.py"
           }
         }
