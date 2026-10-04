@@ -1,0 +1,38 @@
+{
+ "fit_on": "2021-2023",
+ "method": "NNLS of primary stat z on component z",
+ "weights": {
+  "QB": {
+   "att_pg": 0.6251,
+   "ypa": 0.1393,
+   "cpoe": 0.0,
+   "epa_db": 0.2356,
+   "sack_rate": -0.0,
+   "rush_share": 0.0
+  },
+  "RB": {
+   "car_pg": 0.5957,
+   "tgt_pg": 0.0,
+   "ypc": 0.2101,
+   "rush_epa": 0.0936,
+   "snap_share": 0.0925,
+   "rz10_carry": 0.0081
+  },
+  "WR": {
+   "tgt_pg": 0.5154,
+   "ayshare": 0.047,
+   "ypt": 0.105,
+   "rec_epa": 0.1327,
+   "snap_share": 0.0319,
+   "tgt_share": 0.1681
+  },
+  "TE": {
+   "tgt_pg": 0.5355,
+   "ypt": 0.1382,
+   "rec_epa": 0.0207,
+   "snap_share": 0.1687,
+   "rz10_tgt": 0.0,
+   "ayshare": 0.1368
+  }
+ }
+}
