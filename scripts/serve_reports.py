@@ -78,7 +78,7 @@ HEAD = """<!doctype html><meta charset="utf-8">
     font-family:"Public Sans",ui-sans-serif,system-ui,sans-serif;
     font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
   }}
-  .wrap{{max-width:720px; margin:0 auto; padding:40px 24px 72px}}
+  /* Page width: LAYOUT_CSS in scripts/serve_reports.py. */
   header{{border-bottom:2px solid var(--ink); padding-bottom:18px; margin-bottom:8px}}
   .eyebrow{{
     font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px;
@@ -227,7 +227,6 @@ PAGE = HEAD + """
   footer{{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
     color:var(--ink-3); font-size:12.5px; max-width:68ch}}
   @media (max-width:560px){{
-    .wrap{{padding:24px 14px 48px}}
     a.row{{padding:11px 12px; gap:10px}}
     .g{{font-size:18px}}
   }}
@@ -950,7 +949,6 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
   footer{{margin-top:44px; padding-top:16px; border-top:1px solid var(--line);
     color:var(--ink-3); font-size:12.5px; max-width:68ch}}
   @media (max-width:560px){{
-    .wrap{{padding:24px 14px 48px}}
     .win-h{{font-size:19px}}
   }}
 </style>
@@ -1533,10 +1531,8 @@ CHROME_CSS = """<style>
   .sn-sub a{padding:6px 0}
   .sn-sub .sep{color:var(--ink-3); margin:0 6px}
   .sn-stamp{color:var(--ink-3); font-size:10.5px; font-variant-numeric:tabular-nums}
-  .sf{max-width:720px; margin:0 auto; padding:0 24px 48px; color:var(--ink-3);
-    font-size:12.5px}
-  .sf p{margin:0; padding-top:16px; border-top:1px solid var(--line); max-width:68ch}
-  @media (max-width:560px){.sf{padding:0 14px 40px}}
+  .sf{color:var(--ink-3); font-size:12.5px}
+  .sf p{margin:0; padding-top:16px; border-top:1px solid var(--line); max-width:72ch}
   /* Links the old pages carry for themselves. The nav replaces them. The
      files on disk are never rewritten, so they are hidden here instead. */
   [data-inspect-id="report-back"],[data-inspect-id="report-rankings-link"],
@@ -1596,6 +1592,78 @@ def site_nav(section, page, inspect_id="site-nav"):
             f'<span class="sn-stamp" data-inspect-id="site-stamp">{results_stamp()}</span></div></div>')
 
 
+LAYOUT_CSS = """<style>
+  /* Page shell and wide layouts for every page. The only source of page
+     width on this site. Spliced by with_chrome(), so report files on disk
+     get it without a rebuild. Page rules are keyed by .wrap[data-page]. */
+  :root{--gutter:clamp(16px,4vw,64px)}
+  .wrap[data-page]{max-width:none; margin:0; padding:32px var(--gutter) 64px}
+  .sf{max-width:none; margin:0; padding:0 var(--gutter) 48px}
+  /* Prose keeps a readable line. The page does not. */
+  .wrap[data-page] :is(.sub,.note,.picks-note,.top-note,footer){max-width:72ch}
+  /* A wide row is hard to follow across. Tint the row under the pointer. */
+  .wrap[data-page] .tablewrap tbody tr:hover td{background:var(--line-soft)}
+
+  /* Games: kickoff blocks side by side. :not([hidden]) keeps the week tabs
+     working -- without it this rule beats .panel[hidden]{display:none}. */
+  @media (min-width:1024px){
+    .wrap[data-page="games"] .panel:not([hidden]){display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(420px,1fr));
+      column-gap:40px; align-items:start}
+    .wrap[data-page="games"] .panel > .slot{margin-top:18px}
+  }
+
+  /* Slate: the three rankings of a sitting side by side when 600px each fits. */
+  .wrap[data-page="slate"] .win{display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(min(100%,600px),1fr));
+    column-gap:32px; align-items:start}
+  .wrap[data-page="slate"] .win-h{grid-column:1/-1}
+
+  /* Report: the shortlist in two columns when each column is 680px or more.
+     The rule moves from border-top to border-bottom so that the top of
+     column two has no stray hairline. */
+  .wrap[data-page="report"] #picklist{display:block; columns:2 680px; column-gap:40px}
+  .wrap[data-page="report"] #picklist li{break-inside:avoid; border-top:0;
+    border-bottom:1px solid var(--line-soft)}
+  .wrap[data-page="report"] #picklist li:last-child{border-bottom:0}
+
+  /* Rankings: one column per position. */
+  .rk-grid{display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr));
+    column-gap:24px; align-items:start}
+  .rk-pos h2{margin-top:28px}
+
+  /* Defenses: one table, full width. Rank column fixed, the rest equal. */
+  @media (min-width:561px){
+    .wrap[data-page="defenses"] .tablewrap table{table-layout:fixed}
+    .wrap[data-page="defenses"] th.num:first-child{width:8ch}
+  }
+
+  /* Trends: the six cards in a grid. */
+  .tr-grid{display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr));
+    gap:14px; align-items:start; margin:14px 0}
+  .tr-grid > .card{margin:0}
+
+  /* Results: top 5 and the explainer on the left, the table on the right. */
+  @media (min-width:1280px){
+    .ex-grid{display:grid; grid-template-columns:minmax(320px,400px) minmax(0,1fr);
+      column-gap:48px; align-items:start}
+  }
+
+  @media (max-width:560px){
+    :root{--gutter:16px}
+    .wrap[data-page]{padding:24px var(--gutter) 48px}
+    /* Shortlist row on a phone: the leg text drops to a second line under
+       the name, so the fixed-width parts fit the row. */
+    .wrap[data-page="report"] .picks{padding:16px 14px 14px}
+    .wrap[data-page="report"] #picklist li{flex-wrap:wrap; row-gap:2px}
+    .wrap[data-page="report"] .pk-bet{order:1; flex:1 0 100%; width:auto;
+      text-align:left; padding-left:26px}
+  }
+</style>"""
+
+
 SITE_FOOTER = ('<div class="sf" data-inspect-id="site-footer"><p>Entertainment only. '
                'Projections, not edges. Against real sportsbook lines, this model was '
                'the less accurate of the two.</p></div>')
@@ -1610,8 +1678,11 @@ def with_chrome(html, section, page, title):
     already generated get the nav without a rebuild.
     """
     html = TITLE_TAG.sub(lambda _: f"<title>{title}</title>", html, 1)
-    html = WRAP_OPEN.sub(lambda m: m.group(0) + "\n" + CHROME_CSS + site_nav(section, page),
-                         html, 1)
+    key = page or ("report" if section == "week" else section)
+    html = WRAP_OPEN.sub(
+        lambda m: m.group(0)[:-1] + f' data-page="{key}">' + "\n"
+                  + CHROME_CSS + LAYOUT_CSS + site_nav(section, page),
+        html, 1)
     return html + "\n" + SITE_FOOTER
 
 

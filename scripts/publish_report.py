@@ -41,6 +41,8 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 
+from serve_reports import LAYOUT_CSS
+
 ROOT = Path(__file__).resolve().parent.parent
 REPORTS = ROOT / "reports"
 ENV_FILE = ROOT / ".env"
@@ -61,7 +63,6 @@ INDEX_PAGE = """<!doctype html><meta charset="utf-8">
  *{{box-sizing:border-box}}
  body{{margin:0;background:var(--bg);color:var(--fg);
    font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}}
- .wrap{{max-width:640px;margin:0 auto;padding:32px 16px 56px}}
  h1{{font-size:20px;margin:0 0 4px}}
  p.sub{{color:var(--mut);font-size:14px;margin:0 0 24px}}
  a.row{{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
@@ -69,10 +70,11 @@ INDEX_PAGE = """<!doctype html><meta charset="utf-8">
    border-radius:10px;text-decoration:none;color:inherit}}
  .g{{font-weight:600}} .m{{color:var(--mut);font-size:13px;white-space:nowrap}}
  .empty{{color:var(--mut)}}
+ .pub-rows{{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:8px}} a.row{{margin-bottom:0}}
 </style>
-<div class="wrap"><h1>NFL Props</h1>
+<div class="wrap" data-page="published-index"><h1>NFL Props</h1>
 <p class="sub">Production ranges. Newest first. No edge claim.</p>
-{rows}</div>"""
+<div class="pub-rows">{rows}</div></div>"""
 
 
 def load_env():
@@ -101,7 +103,7 @@ def build_index(html_files):
         )
     if not rows:
         rows = ['<p class="empty">No reports generated yet.</p>']
-    return INDEX_PAGE.format(rows="\n".join(rows))
+    return INDEX_PAGE.format(rows="\n".join(rows)).replace('<div class="wrap"', LAYOUT_CSS + '<div class="wrap"', 1)
 
 
 def main():
