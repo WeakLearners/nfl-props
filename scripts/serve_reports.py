@@ -1562,11 +1562,11 @@ CHROME_CSS = """<style>
 # for it. Only the root id is a parameter of site_nav().
 SECTIONS = (("week", "Week", "/", "site-nav-week"),
             ("players", "Players", "/rankings.html", "site-nav-players"),
+            ("trends", "Trends", "/trends.html", "site-nav-trends"),
             ("results", "Results", "/explore", "site-nav-results"))
 SUBPAGES = {"week": (("games", "Games", "/", "site-subnav-games"),
                      ("slate", "Slate", "/slate", "site-subnav-slate")),
-            "players": (("rankings", "Rankings", "/rankings.html", "site-subnav-rankings"),
-                        ("trends", "Trends", "/trends.html", "site-subnav-trends"))}
+            "players": (("rankings", "Rankings", "/rankings.html", "site-subnav-rankings"),)}
 
 
 def results_stamp():
@@ -1890,7 +1890,7 @@ class Handler(SimpleHTTPRequestHandler):
         if name == "rankings.html":
             html = with_chrome(html, "players", "rankings", "NFL Props \u00b7 Rankings")
         elif name == "trends.html":
-            html = with_chrome(html, "players", "trends", "NFL Props \u00b7 Trends")
+            html = with_chrome(html, "trends", "trends", "NFL Props \u00b7 Trends")
         else:
             title = f"NFL Props \u00b7 {m.group(3)} @ {m.group(4)}" if m else "NFL Props"
             html = with_chrome(html, "week", None, title)
