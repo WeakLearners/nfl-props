@@ -610,7 +610,7 @@
           "kind": "button",
           "description": "Closes the tray. Esc and a click outside the tray also close it.",
           "locate": {
-            "path": "nflprops/tray.py:198",
+            "path": "nflprops/tray.py:200",
             "grep": "grep -n -F -- 'data-inspect-id=\"player-tray-close\"' nflprops/tray.py"
           }
         },
@@ -620,7 +620,7 @@
           "kind": "text",
           "description": "One paragraph about this game: season and last-3 averages, games over the line, trend, defense rank, matchup badge, model range and model vs book chance, and the final when known. Fixed rules in analysis().",
           "locate": {
-            "path": "nflprops/tray.py:204",
+            "path": "nflprops/tray.py:206",
             "grep": "grep -n -F -- 'data-inspect-id=\"player-tray-analysis\"' nflprops/tray.py"
           }
         },
@@ -630,7 +630,7 @@
           "kind": "chart",
           "description": "The card's stat for each game this season through this week. Bars green over the line, red under. Solid rule: FanDuel line. Dashed rule: model expected. This week's bar has an outline.",
           "locate": {
-            "path": "nflprops/tray.py:205",
+            "path": "nflprops/tray.py:207",
             "grep": "grep -n -F -- 'data-inspect-id=\"player-tray-chart\"' nflprops/tray.py"
           }
         },
@@ -640,7 +640,7 @@
           "kind": "table",
           "description": "Season game log. Columns depend on the position (QB, RB, WR/TE). The card's stat column is bold, and this week's row is shaded.",
           "locate": {
-            "path": "nflprops/tray.py:206",
+            "path": "nflprops/tray.py:208",
             "grep": "grep -n -F -- 'data-inspect-id=\"player-tray-log\"' nflprops/tray.py"
           }
         }

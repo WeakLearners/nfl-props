@@ -67,7 +67,7 @@ TRAY_CSS = """
   .ptray-chart .bar.over{fill:var(--good)} .ptray-chart .bar.under{fill:var(--bad)}
   .ptray-chart .bar.now{stroke:var(--ink); stroke-width:2}
   .ptray-chart text{font-family:"IBM Plex Mono",monospace; font-size:10px; fill:var(--ink-3)}
-  .ptray-chart text.v{fill:var(--ink-2)}
+  .ptray-chart text.v{fill:var(--ink); font-weight:600; paint-order:stroke; stroke:var(--bg); stroke-width:4px; stroke-linejoin:round}
   .ptray-chart .ln{stroke:var(--ink); stroke-width:1.5}
   .ptray-chart .mu{stroke:var(--tcol); stroke-width:1.5; stroke-dasharray:4 3}
   .ptray-key{display:flex; gap:16px; font-size:12px; color:var(--ink-2); margin-top:8px; flex-wrap:wrap}
@@ -162,18 +162,20 @@ TRAY_JS = r"""
     var top=Math.max.apply(null,vals.concat([d.line||0,d.mu||0]))*1.12||1;
     var bw=Math.min(36,(W-8)/games.length-6), step=(W-8)/games.length;
     var Y=function(v){return H-B-(v/top)*(H-B-T);};
-    var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(d.p)+' by week">';
+    // Rules first, then bars, then labels: a label always sits on top, with a halo.
+    var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(d.p)+' by week">', lb='';
+    if(d.line!=null) s+='<line class="ln" x1="0" x2="'+W+'" y1="'+Y(d.line).toFixed(1)+'" y2="'+Y(d.line).toFixed(1)+'"></line>';
+    s+='<line class="mu" x1="0" x2="'+W+'" y1="'+Y(d.mu).toFixed(1)+'" y2="'+Y(d.mu).toFixed(1)+'"></line>';
     games.forEach(function(g,i){
       var v=vals[i], x=4+i*step+(step-bw)/2, cls="bar";
       if(d.line!=null) cls+=v>d.line?" over":" under";
       if(g.week===WEEK) cls+=" now";
       s+='<rect class="'+cls+'" x="'+x.toFixed(1)+'" y="'+Y(v).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(1,(H-B)-Y(v)).toFixed(1)+'">'
-        +'<title>Week '+g.week+(g.away?" at ":" vs ")+g.opp+": "+f1(v)+'</title></rect>'
-        +'<text class="v" x="'+(x+bw/2).toFixed(1)+'" y="'+(Y(v)-4).toFixed(1)+'" text-anchor="middle">'+f1(v)+'</text>'
+        +'<title>Week '+g.week+(g.away?" at ":" vs ")+g.opp+": "+f1(v)+'</title></rect>';
+      lb+='<text class="v" x="'+(x+bw/2).toFixed(1)+'" y="'+(Y(v)-4).toFixed(1)+'" text-anchor="middle">'+f1(v)+'</text>'
         +'<text x="'+(x+bw/2).toFixed(1)+'" y="'+(H-6)+'" text-anchor="middle">W'+g.week+'</text>';
     });
-    if(d.line!=null) s+='<line class="ln" x1="0" x2="'+W+'" y1="'+Y(d.line).toFixed(1)+'" y2="'+Y(d.line).toFixed(1)+'"></line>';
-    s+='<line class="mu" x1="0" x2="'+W+'" y1="'+Y(d.mu).toFixed(1)+'" y2="'+Y(d.mu).toFixed(1)+'"></line></svg>';
+    s+=lb+'</svg>';
     return s+'<div class="ptray-key">'+(d.line!=null?'<span><i></i>FanDuel line '+d.line+'</span>':'')
       +'<span><i class="mu"></i>model expected '+f1(d.mu)+'</span>'
       +(d.line!=null?'<span>bars: green over, red under</span>':'')+'</div>';
