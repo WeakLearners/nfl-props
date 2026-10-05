@@ -390,7 +390,9 @@ def page_data(data):
                 c = sc.get(r["team"])
                 d.update(sample="3-game change, small sample", ppg3=c["last3"] if c else None, ppgS=c["season"] if c else None)
             else:
-                d.update(sample=f"3-game change, small sample \u00b7 {r['vol']} {_VCTX[m]} in 3 games",
+                # rz10 has no volume column (vol is 0): count = per-game rate x games.
+                vol = round(r["last3"] * r["games"]) if m == "rz10" else r["vol"]
+                d.update(sample=f"3-game change, small sample \u00b7 {vol} {_VCTX[m]} in 3 games",
                          ppg3=None, ppgS=None)
             rows.append(d)
     for pos in ("QB", "RB", "WR", "TE"):
