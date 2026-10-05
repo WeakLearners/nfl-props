@@ -1129,6 +1129,9 @@ def td_legs(season, week):
         marks = json.loads(open(fname).read())
     except (FileNotFoundError, ValueError):
         return [], 0, 0
+    # Backfilled markers (model only, written after the week started) are not
+    # live picks. They stay on the listing but are never graded or counted.
+    marks = {k: m for k, m in marks.items() if not m.get("backfill")}
     done = outcomes(season, week)[1]
     scored = {}
     if done and name_key is not None:
@@ -1840,7 +1843,8 @@ class Handler(SimpleHTTPRequestHandler):
             # basis, which stay exactly what they always were.
             blob = json.dumps({"player": td["player"], "conf": td["conf"],
                                "basis": td["basis"], "team": td.get("team"),
-                               "phase3": td.get("phase3")})
+                               "phase3": td.get("phase3"),
+                               "backfill": bool(td.get("backfill"))})
             # Before the report's own script, which runs at the end of the body.
             html = html.replace("<meta charset=\"utf-8\">",
                                 "<meta charset=\"utf-8\">\n"

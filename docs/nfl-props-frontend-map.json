@@ -110,7 +110,7 @@
           "kind": "list-item",
           "description": "One leg: rank, player, bet and line, price, confidence percent.",
           "locate": {
-            "path": "templates/report.html:697",
+            "path": "templates/report.html:702",
             "grep": "grep -n -F -- 'dataset.inspectId=\"pick-row\"' templates/report.html"
           }
         },
@@ -170,7 +170,7 @@
           "kind": "heading",
           "description": "Stat name plus its unit, e.g. 'Rushing yards / yards'.",
           "locate": {
-            "path": "templates/report.html:607",
+            "path": "templates/report.html:608",
             "grep": "grep -n -F -- 'dataset.inspectId=\"stat-heading\"' templates/report.html"
           }
         },
@@ -180,7 +180,7 @@
           "kind": "layout",
           "description": "Responsive grid of player cards for one stat, ordered by how close the book's number sits to the curve's peak.",
           "locate": {
-            "path": "templates/report.html:610",
+            "path": "templates/report.html:611",
             "grep": "grep -n -F -- 'dataset.inspectId=\"stat-grid\"' templates/report.html"
           }
         },
@@ -190,7 +190,7 @@
           "kind": "card",
           "description": "One player-stat projection. Gets a heavier border when it is a shortlist pick.",
           "locate": {
-            "path": "templates/report.html:617",
+            "path": "templates/report.html:618",
             "grep": "grep -n -F -- 'dataset.inspectId=\"player-card\"' templates/report.html"
           }
         },
@@ -200,7 +200,7 @@
           "kind": "text",
           "description": "Player name in the card's top row. Wraps onto a second line rather than truncating, so a long name is always shown in full.",
           "locate": {
-            "path": "templates/report.html:645",
+            "path": "templates/report.html:649",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-player-name\"' templates/report.html"
           }
         },
@@ -210,7 +210,7 @@
           "kind": "badge",
           "description": "Team-coloured position pill, e.g. QB1 or WR2. First item of the .mk group.",
           "locate": {
-            "path": "templates/report.html:646",
+            "path": "templates/report.html:650",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-role-badge\"' templates/report.html"
           }
         },
@@ -220,7 +220,7 @@
           "kind": "container",
           "description": "Left column of the card head: name and position, the expected number, and the range under it. Sits beside the flag stack so the two share the head's height.",
           "locate": {
-            "path": "templates/report.html:643",
+            "path": "templates/report.html:647",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-main\"' templates/report.html"
           }
         },
@@ -230,7 +230,7 @@
           "kind": "container",
           "description": "Left half of the card head: the player's name and his position badge.",
           "locate": {
-            "path": "templates/report.html:644",
+            "path": "templates/report.html:648",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-identity\"' templates/report.html"
           }
         },
@@ -240,7 +240,7 @@
           "kind": "container",
           "description": "Top-right column of the card. Holds the five-dot record, then the pick and td badges stacked below it. The old-vs-new engine line no longer lives here; it sat here until 2026-09-24 and its width squeezed the player name.",
           "locate": {
-            "path": "templates/report.html:650",
+            "path": "templates/report.html:654",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-flags\"' templates/report.html"
           }
         },
@@ -270,7 +270,7 @@
           "kind": "badge",
           "description": "Only present when the player is on the shortlist. Shows the pick's rank.",
           "locate": {
-            "path": "templates/report.html:651",
+            "path": "templates/report.html:655",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-pick-badge\"' templates/report.html"
           }
         },
@@ -280,7 +280,7 @@
           "kind": "value",
           "description": "The projection's mu, after calibration.",
           "locate": {
-            "path": "templates/report.html:647",
+            "path": "templates/report.html:651",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-expected\"' templates/report.html"
           }
         },
@@ -290,7 +290,7 @@
           "kind": "value",
           "description": "The middle-68% band, mu plus or minus one sd, with sd already widened 10%.",
           "locate": {
-            "path": "templates/report.html:649",
+            "path": "templates/report.html:653",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-range\"' templates/report.html"
           }
         },
@@ -300,7 +300,7 @@
           "kind": "chart",
           "description": "Inline SVG Gaussian. Built by curve() from mu and sd alone.",
           "locate": {
-            "path": "templates/report.html:657",
+            "path": "templates/report.html:662",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-curve\"' templates/report.html"
           }
         },
@@ -310,7 +310,7 @@
           "kind": "overlay",
           "description": "Transparent rect that catches mousemove and drives the tooltip. The chart has no other pointer handling.",
           "locate": {
-            "path": "templates/report.html:669",
+            "path": "templates/report.html:674",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-curve-hitbox\"' templates/report.html"
           }
         },
@@ -350,7 +350,7 @@
           "kind": "text",
           "description": "Matchup line: the opponent's adjusted rank of 32 against this position and its yds/g allowed (DATA field dr, from badges.json def_pos, the same table the Big day / Caution badge uses, so the two cannot disagree). Reports built before 2026-10-04 show the raw ratio instead.",
           "locate": {
-            "path": "templates/report.html:632",
+            "path": "templates/report.html:636",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-matchup\"' templates/report.html"
           }
         },
@@ -400,7 +400,7 @@
           "kind": "table-row",
           "description": "One player-stat row in the full table.",
           "locate": {
-            "path": "templates/report.html:734",
+            "path": "templates/report.html:739",
             "grep": "grep -n -F -- 'dataset.inspectId=\"table-row\"' templates/report.html"
           }
         },
@@ -420,7 +420,7 @@
           "kind": "card",
           "description": "The likeliest touchdown scorer's player card, washed in that player's team colour so the eye finds them before reading a name. Every card for that player is tinted, one per stat.",
           "locate": {
-            "path": "templates/report.html:624",
+            "path": "templates/report.html:628",
             "grep": "grep -n -F -- 'inspectId = \"td-scorer-card' templates/report.html"
           }
         },
@@ -428,10 +428,20 @@
           "id": "card-td-badge",
           "label": "Card touchdown badge",
           "kind": "badge",
-          "description": "Confidence chip on a tinted card, e.g. 'td 55%'. The lower of the model's number and the book's, the same rule every leg follows.",
+          "description": "Pill reading exactly 'TD Alert', on the scorer's first card only (one per game). Title tooltip 'Backfill: model only, no pre-game odds' when the marker is a backfill. The probability sits beside it (card-td-prob).",
           "locate": {
-            "path": "templates/report.html:652",
+            "path": "templates/report.html:656",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-td-badge\"' templates/report.html"
+          }
+        },
+        {
+          "id": "card-td-prob",
+          "label": "Card touchdown probability",
+          "kind": "text",
+          "description": "Lower of the model's number and the book's, e.g. '55%', next to the TD Alert pill.",
+          "locate": {
+            "path": "templates/report.html:658",
+            "grep": "grep -n -F -- 'data-inspect-id=\"card-td-prob\"' templates/report.html"
           }
         },
         {
@@ -440,7 +450,7 @@
           "kind": "text",
           "description": "'new td X%': the new (Phase 3, decision #30) touchdown model's number, under the old engine's td badge. The old number stays primary: each game's top-ranked scorer hit 45% (old) vs 41% (new) over 2021-2025.",
           "locate": {
-            "path": "templates/report.html:654",
+            "path": "templates/report.html:659",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-td-phase3\"' templates/report.html"
           }
         },
@@ -510,7 +520,7 @@
           "kind": "status",
           "description": "The pill itself on a shortlist row. Same markup as the card pill, under its own id so the inspector can tell the two apart.",
           "locate": {
-            "path": "templates/report.html:691",
+            "path": "templates/report.html:696",
             "grep": "grep -n -F -- 'pick-result-mark' templates/report.html"
           }
         },
@@ -520,7 +530,7 @@
           "kind": "status",
           "description": "The same pill on a shortlist row, sitting directly after the leg it grades rather than at the far end of the row. The slot keeps its width when a game has not finished, so the rows stay a column while results land one game at a time.",
           "locate": {
-            "path": "templates/report.html:690",
+            "path": "templates/report.html:695",
             "grep": "grep -n -F -- 'data-inspect-id=\"pick-result\"' templates/report.html"
           }
         },
@@ -531,7 +541,7 @@
           "description": "'old X · new Y' on each shortlist row: old engine (d.mu, team colour) and new model (d.p3, purple, '—' when none, e.g. receptions). Same colours as the curve lines. Hidden under 560px width.",
           "locate": {
             "grep": "grep -n -F -- 'data-inspect-id=\"pick-models\"' templates/report.html",
-            "path": "templates/report.html:702"
+            "path": "templates/report.html:707"
           }
         },
         {
@@ -540,7 +550,7 @@
           "kind": "badge",
           "description": "Outline chip like '#12 WR': position rank by recent production (nflprops/rating.py chip_lookup, through the latest completed week). Not the depth chart. The filled role pill (WR1) is separate and unchanged. Absent when the player is below the ranking floor. Built by rkChip(d,id). On the player card, beside the role badge.",
           "locate": {
-            "path": "templates/report.html:646",
+            "path": "templates/report.html:650",
             "grep": "grep -n -F -- '\"card-rank-chip\"' templates/report.html"
           }
         },
@@ -550,7 +560,7 @@
           "kind": "badge",
           "description": "Trend arrow (▲/▼) and matchup tag (Big day / Caution), on the line under the player name, last items of the .mk group. From nflprops/badges.py (data/ratings/badges.json). Hover title gives the numbers. Absent for almost everyone. Built by bdBadges(d,id) inside mk(). On the player card.",
           "locate": {
-            "path": "templates/report.html:645",
+            "path": "templates/report.html:649",
             "grep": "grep -n -F -- '\"card-badge\"' templates/report.html"
           }
         },
@@ -560,7 +570,7 @@
           "kind": "badge",
           "description": "Outline chip like '#12 WR': position rank by recent production (nflprops/rating.py chip_lookup, through the latest completed week). Not the depth chart. The filled role pill (WR1) is separate and unchanged. Absent when the player is below the ranking floor. Built by rkChip(d,id). On a shortlist row.",
           "locate": {
-            "path": "templates/report.html:700",
+            "path": "templates/report.html:705",
             "grep": "grep -n -F -- '\"pick-rank-chip\"' templates/report.html"
           }
         },
@@ -570,7 +580,7 @@
           "kind": "badge",
           "description": "Badge from nflprops/badges.py (data/ratings/badges.json): ▲/▼ trend, or Big day / Caution matchup. Sits after the rank chip inside the .mk group, never replaces it. Hover title gives the numbers. Absent for almost everyone. On a shortlist row.",
           "locate": {
-            "path": "templates/report.html:700",
+            "path": "templates/report.html:705",
             "grep": "grep -n -F -- ',\"pick-badge\")' templates/report.html"
           }
         },
@@ -580,7 +590,7 @@
           "kind": "badge",
           "description": "Outline chip like '#12 WR': position rank by recent production (nflprops/rating.py chip_lookup, through the latest completed week). Not the depth chart. The filled role pill (WR1) is separate and unchanged. Absent when the player is below the ranking floor. Built by rkChip(d,id). In the full figures table.",
           "locate": {
-            "path": "templates/report.html:736",
+            "path": "templates/report.html:741",
             "grep": "grep -n -F -- '\"table-rank-chip\"' templates/report.html"
           }
         },
@@ -590,7 +600,7 @@
           "kind": "badge",
           "description": "Badge from nflprops/badges.py (data/ratings/badges.json): ▲/▼ trend, or Big day / Caution matchup. Sits after the rank chip, never replaces it. Hover title gives the numbers. Absent for almost everyone. In the full figures table.",
           "locate": {
-            "path": "templates/report.html:736",
+            "path": "templates/report.html:741",
             "grep": "grep -n -F -- '\"table-badge\"' templates/report.html"
           }
         },
