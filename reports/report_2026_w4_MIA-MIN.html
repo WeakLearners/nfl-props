@@ -28,7 +28,7 @@
     --den:#eb6834; --kc:#2a78d6;
     --den-fill:rgba(235,104,52,.16); --kc-fill:rgba(42,120,214,.16);
     --band:rgba(20,20,15,.055);
-    --good:#1c7a4d; --bad:#b3261e;
+    --good:#12b886; --bad:#e01e1e;
     --p3:#7b52c7;
   }
   @media (prefers-color-scheme: dark){
@@ -39,7 +39,7 @@
       --den:#d95926; --kc:#3987e5;
       --den-fill:rgba(217,89,38,.22); --kc-fill:rgba(57,135,229,.22);
       --band:rgba(255,255,255,.06);
-      --good:#4fbd85; --bad:#f2685c;
+      --good:#3ef0b0; --bad:#ff3b3b;
       --p3:#a98bf0;
     }
   }
@@ -50,7 +50,7 @@
     --den:#d95926; --kc:#3987e5;
     --den-fill:rgba(217,89,38,.22); --kc-fill:rgba(57,135,229,.22);
     --band:rgba(255,255,255,.06);
-    --good:#4fbd85; --bad:#f2685c;
+    --good:#3ef0b0; --bad:#ff3b3b;
     --p3:#a98bf0;
   }
   *{box-sizing:border-box}
@@ -131,7 +131,8 @@
      the whole column rather than beside the name alone -- otherwise the head
      row is as tall as the stack and the name floats above a gap. */
   .card-main{display:flex; flex-direction:column; gap:2px; flex:1; min-width:0}
-  .card-id{display:flex; align-items:center; flex-wrap:wrap; column-gap:6px; row-gap:3px; min-width:0}
+  /* Name on its own line, tags and badges on the line under it, on every card. */
+  .card-id{display:flex; flex-direction:column; align-items:flex-start; row-gap:4px; min-width:0}
   .card-id .mk{margin-left:0}
   /* The top-right stack: dots first, then whatever badges this player earned.
      stretch rather than flex-end. The dot row and the badges have different
@@ -221,9 +222,9 @@
   .card.td{background:var(--td-tint); border-color:var(--td-edge)}
   .td-badge{
     font-family:"IBM Plex Mono",monospace; font-weight:600;
-    letter-spacing:.1em; text-transform:uppercase; color:var(--surface);
+    letter-spacing:.04em; color:var(--surface);
     flex:none; text-align:center;
-    background:var(--td-edge);
+    background:var(--td-edge); border-radius:999px; padding:1px 8px; font-size:10px;
   }
   /* The Phase 3 combined number, shown next to the badge above rather than
      inside it -- two engines' independent reads on the same game, never
@@ -450,7 +451,7 @@ const norm=(x,mu,sd)=>Math.exp(-0.5*Math.pow((x-mu)/sd,2));
 // Name markers. Server twin: nflprops/badges.py markers_html(). Same order, same classes.
 const escA=s=>String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
 const ord=n=>{const t=n%100;return t>=11&&t<=13?"th":({1:"st",2:"nd",3:"rd"})[n%10]||"th"};
-const TREND=/\bbd-(up|down)\b/, MATCH=/\bbd-(big|caution)\b/;
+// d.bd holds trend and matchup badges. The card shows all of them under the name.
 // Position rank by recent production. Not the depth chart. id = inspect id of this use.
 const rkChip=(d,id)=>d.rk?'<span class="rk" data-inspect-id="'+id+'" title="'+escA(d.rkt)+'">'+escA(d.rk)+'</span>':'';
 // Badges (nflprops/badges.py): d.bd is a list of [class, text, title]. re keeps one kind only.
@@ -594,6 +595,7 @@ function compare(d){
 // already on disk should still pick up a marker written later. Absent is the
 // normal case, not an error.
 const TD = (window.__TD__ && window.__TD__.player) ? window.__TD__ : null;
+let tdShown = false;
 
 const sections=document.getElementById("sections");
 STATS.forEach(([key,label,unit])=>{
@@ -614,8 +616,11 @@ STATS.forEach(([key,label,unit])=>{
     const card=document.createElement("div");
     card.className = d.pick ? "card pick" : "card";
     card.dataset.inspectId="player-card";
-    const isTD = TD && d.p === TD.player;
-    if(isTD){
+    // One badge per game: the player may have several stat cards, only the first wears it.
+    const isScorer = TD && d.p === TD.player;
+    const isTD = isScorer && !tdShown;
+    if(isTD) tdShown = true;
+    if(isScorer){
       card.className += " td";
       // Most specific id first: the overlay resolves the first id it knows,
       // so leading with "player-card" here would make the scorer card
@@ -642,17 +647,17 @@ STATS.forEach(([key,label,unit])=>{
       +'<div class="card-main" data-inspect-id="card-main">'
         +'<div class="card-id" data-inspect-id="card-identity">'
           +'<span class="name" data-inspect-id="card-player-name">'+trendMk(d,"card-badge")+d.p+'</span>'
-          +mk('<span class="role '+(d.tm===META.teamA?'a':'b')+'" data-inspect-id="card-role-badge">'+d.role+'</span>',d,"card-rank-chip","card-badge",TREND)+'</div>'
+          +mk('<span class="role '+(d.tm===META.teamA?'a':'b')+'" data-inspect-id="card-role-badge">'+d.role+'</span>',d,"card-rank-chip","card-badge")+'</div>'
         +'<div class="fig-row"><span class="fig" data-inspect-id="card-expected">'
           +fmt(d.mu)+'</span>'+result(d)+'</div>'
         +'<div class="rng" data-inspect-id="card-range">'+fmt(d.lo)+' – '+fmt(d.hi)+'</div>'+p3Cmp(d,col)+'</div>'
       +'<div class="card-flags" data-inspect-id="card-flags">'+history(d)
         +(d.pick?'<span class="pick-badge" data-inspect-id="card-pick-badge">pick '+d.pick+'</span>':'')
-        +(isTD?'<span class="td-badge" data-inspect-id="card-td-badge">td '
-          +Math.round(TD.conf*100)+'%</span>':'')
+        +(isTD?'<span class="td-badge" data-inspect-id="card-td-badge"'
+          +(TD.backfill?' title="Backfill: model only, no pre-game odds"':'')+'>TD Alert</span>'
+          +'<span class="td-phase3" data-inspect-id="card-td-prob">'+Math.round(TD.conf*100)+'%</span>':'')
         +(isTD && TD.phase3?'<span class="td-phase3" data-inspect-id="card-td-phase3">new td '
           +Math.round(TD.phase3.p_combined*100)+'%</span>':'')
-        +bdBadges(d,"card-matchup-badge",MATCH)
         +'</div></div>'
       +'<svg data-inspect-id="card-curve" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+d.p+' '+label
       +': expected '+fmt(d.mu)+', middle range '+fmt(d.lo)+' to '+fmt(d.hi)+'">'
