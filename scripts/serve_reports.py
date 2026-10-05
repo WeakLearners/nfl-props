@@ -406,9 +406,9 @@ def index_html():
             score = ""
             if got:
                 hits, n = got
-                # Green only when at least 5 of 6 landed (Sean, 2026-10-04:
-                # half was too easy to call green). Same share for any n.
-                tone = "good" if hits * 6 >= n * 5 else "bad"
+                # Green only when at least 80% landed (Sean, 2026-10-04:
+                # half was too easy to call green). 5/6, 4/5, 8/10 are green.
+                tone = "good" if hits * 5 >= n * 4 else "bad"
                 score = (f'<span class="score {tone}" data-inspect-id="index-hits"'
                          f' title="{hits} of {n} shortlisted picks hit">'
                          f'{hits}/{n}</span>')
@@ -1019,7 +1019,7 @@ def slate_windows(season, week):
         tally = ""
         if graded:
             hits = sum(1 for r in graded if r["hit"])
-            tone = "good" if hits * 6 >= len(graded) * 5 else "bad"  # 5 of 6 or better, as on Games
+            tone = "good" if hits * 5 >= len(graded) * 4 else "bad"  # 80% or better, as on Games
             tally = (f'<span class="score {tone}" data-inspect-id="slate-window-hits">'
                      f'{hits}/{len(graded)} hit</span>')
 
