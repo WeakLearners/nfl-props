@@ -598,7 +598,7 @@
           "id": "player-tray",
           "label": "Player tray",
           "kind": "container",
-          "description": "Side tray that opens from the left on a click on a player card. Season game log, a chart of the card's stat by week, and one paragraph about this game built by fixed rules from page numbers. Added to every report per request by scripts/serve_reports.py; data from /api/player. Link form: #p=Name|stat_key.",
+          "description": "Side tray that opens from the right on a click on a player card. Season game log, a chart of the card's stat by week, and one paragraph about this game built by fixed rules from page numbers. Added to every report per request by scripts/serve_reports.py; data from /api/player. Link form: #p=Name|stat_key.",
           "locate": {
             "path": "nflprops/tray.py:116",
             "grep": "grep -n -F -- 'inspectId=\"player-tray\"' nflprops/tray.py"

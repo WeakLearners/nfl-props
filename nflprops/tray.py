@@ -1,4 +1,4 @@
-"""Player tray on the report pages. A click on a player card opens it from the left.
+"""Player tray on the report pages. A click on a player card opens it from the right.
 
 It shows the player's games this season, a chart of the card's stat, and one
 paragraph about the game on the report. The paragraph is built by fixed rules
@@ -43,9 +43,9 @@ def player_season(db_path, name, team, season):
 TRAY_CSS = """
   .ptray-bg{position:fixed; inset:0; background:rgba(0,0,0,.45); opacity:0; pointer-events:none;
     transition:opacity .2s; z-index:900}
-  .ptray{position:fixed; top:0; left:0; bottom:0; width:min(560px,100vw); z-index:901;
-    background:var(--bg); color:var(--ink); border-right:2px solid var(--ink);
-    box-shadow:8px 0 32px rgba(0,0,0,.35); transform:translateX(-102%); transition:transform .22s ease-out;
+  .ptray{position:fixed; top:0; right:0; bottom:0; width:min(560px,100vw); z-index:901;
+    background:var(--bg); color:var(--ink); border-left:2px solid var(--ink);
+    box-shadow:-8px 0 32px rgba(0,0,0,.35); transform:translateX(102%); transition:transform .22s ease-out;
     overflow-y:auto; padding:24px 32px 48px; font-family:"Public Sans",ui-sans-serif,system-ui,sans-serif}
   .ptray-open .ptray{transform:none}
   .ptray-open .ptray-bg{opacity:1; pointer-events:auto}
