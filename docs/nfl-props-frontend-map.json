@@ -2254,7 +2254,7 @@
           "kind": "link",
           "description": "Results section, /explore.",
           "locate": {
-            "path": "scripts/serve_reports.py:1565",
+            "path": "scripts/serve_reports.py:1566",
             "grep": "grep -n -F -- '\"site-nav-results\"' scripts/serve_reports.py"
           }
         },
@@ -2274,7 +2274,7 @@
           "kind": "link",
           "description": "Games, / . Current on the home page only.",
           "locate": {
-            "path": "scripts/serve_reports.py:1566",
+            "path": "scripts/serve_reports.py:1567",
             "grep": "grep -n -F -- '\"site-subnav-games\"' scripts/serve_reports.py"
           }
         },
@@ -2284,7 +2284,7 @@
           "kind": "link",
           "description": "Slate, /slate.",
           "locate": {
-            "path": "scripts/serve_reports.py:1567",
+            "path": "scripts/serve_reports.py:1568",
             "grep": "grep -n -F -- '\"site-subnav-slate\"' scripts/serve_reports.py"
           }
         },
@@ -2294,18 +2294,18 @@
           "kind": "link",
           "description": "Rankings, /rankings.html.",
           "locate": {
-            "path": "scripts/serve_reports.py:1568",
+            "path": "scripts/serve_reports.py:1569",
             "grep": "grep -n -F -- '\"site-subnav-rankings\"' scripts/serve_reports.py"
           }
         },
         {
-          "id": "site-subnav-trends",
-          "label": "Trends link",
+          "id": "site-nav-trends",
+          "label": "Trends section link",
           "kind": "link",
-          "description": "Trends, /trends.html.",
+          "description": "Top-bar section Trends, /trends.html. Moved out of the Players row on 2026-10-04.",
           "locate": {
-            "path": "scripts/serve_reports.py:1569",
-            "grep": "grep -n -F -- '\"site-subnav-trends\"' scripts/serve_reports.py"
+            "path": "scripts/serve_reports.py:1565",
+            "grep": "grep -n -F -- '\"site-nav-trends\"' scripts/serve_reports.py"
           }
         },
         {
