@@ -1847,7 +1847,7 @@
       "label": "Trends and insights",
       "category": "generated-page",
       "file": "templates/trends.html",
-      "description": "Trends page. templates/trends.html filled by nflprops/trends.py render(); written to reports/trends.html by write_rankings() on every report build. Served at /trends.html. Entertainment only. Outlook rates: data/trends/holdup_rates.json (2021-2025). Old back links were removed 2026-10-04 (the site nav replaces them). Files on disk built before that may still carry them, hidden by CSS.",
+      "description": "Trends page. templates/trends.html is filled by nflprops/trends.py render(), which embeds page_data() as JSON. The page script draws four dumbbell charts, a By player / By pattern list, a team chart, a defense map and the player tray. Redesigned 2026-10-04 from the old six-card page. Written to reports/trends.html by write_rankings() on every report build. Served at /trends.html. Entertainment only. Outlook rates: data/trends/holdup_rates.json (2021-2025).",
       "uiElements": [
         {
           "id": "trends-wrap",
@@ -1855,27 +1855,17 @@
           "kind": "layout",
           "description": "Page container.",
           "locate": {
-            "path": "templates/trends.html:61",
+            "path": "templates/trends.html:181",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-wrap\"' templates/trends.html"
-          }
-        },
-        {
-          "id": "trends-grid",
-          "label": "Trend card grid",
-          "kind": "layout",
-          "description": "Grid that holds the six trend cards. One column on a phone, more as the width grows.",
-          "locate": {
-            "path": "templates/trends.html:75",
-            "grep": "grep -n -F -- 'data-inspect-id=\"trends-grid\"' templates/trends.html"
           }
         },
         {
           "id": "trends-header",
           "label": "Trends header",
           "kind": "layout",
-          "description": "Title, data-through line and links.",
+          "description": "Eyebrow and title.",
           "locate": {
-            "path": "templates/trends.html:62",
+            "path": "templates/trends.html:182",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-header\"' templates/trends.html"
           }
         },
@@ -1885,7 +1875,7 @@
           "kind": "label",
           "description": "Eyebrow above the title: 'Trends use games through ... built ...'.",
           "locate": {
-            "path": "templates/trends.html:63",
+            "path": "templates/trends.html:183",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-data-through\"' templates/trends.html"
           }
         },
@@ -1893,310 +1883,420 @@
           "id": "trends-disclaimer",
           "label": "Disclaimer",
           "kind": "note",
-          "description": "Entertainment note.",
+          "description": "\"Entertainment. Past data is not a pick.\" Kept from the old page.",
           "locate": {
-            "path": "templates/trends.html:67",
+            "path": "templates/trends.html:187",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-disclaimer\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-footer",
+          "label": "Outlook label definitions",
+          "kind": "note",
+          "description": "Definitions of Likely to hold, Likely to fade and Watch, and the held rule. Kept from the old page.",
+          "locate": {
+            "path": "templates/trends.html:188",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-footer\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-key",
+          "label": "Page key",
+          "kind": "legend",
+          "description": "Intro-row aside: hollow and filled dot, and the three outlook colours.",
+          "locate": {
+            "path": "templates/trends.html:189",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-key\"' templates/trends.html"
           }
         },
         {
           "id": "trends-filter",
           "label": "Position filter",
-          "kind": "control",
-          "description": "One filter for all cards. Hides rows and tables by data-pos. Script at the bottom of the template.",
+          "kind": "filter",
+          "description": "All, QB, RB, WR, TE. Filters the charts, the list and the defense map.",
           "locate": {
-            "path": "templates/trends.html:71",
+            "path": "templates/trends.html:198",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-filter\"' templates/trends.html"
           }
         },
         {
-          "id": "trends-footer",
-          "label": "Label legend",
-          "kind": "note",
-          "description": "Plain rule for the outlook labels.",
+          "id": "trends-charts",
+          "label": "Biggest moves section",
+          "kind": "layout",
+          "description": "Section that holds the four dumbbell charts.",
           "locate": {
-            "path": "templates/trends.html:68",
-            "grep": "grep -n -F -- 'data-inspect-id=\"trends-footer\"' templates/trends.html"
+            "path": "templates/trends.html:203",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-charts\"' templates/trends.html"
           }
         },
         {
-          "id": "trends-card-usage",
-          "label": "Card: Usage risers and fallers",
-          "kind": "card",
-          "description": "Collapsible card, written by render() in nflprops/trends.py.",
+          "id": "trends-chart-usage",
+          "label": "Usage chart",
+          "kind": "chart",
+          "description": "Dumbbell chart of target share (WR, TE) and carry share (RB). Top 10 moves. Dot colour is the outlook.",
           "locate": {
-            "path": "nflprops/trends.py:390",
-            "grep": "grep -n -F -- 'trends-card-{cid}' nflprops/trends.py"
+            "path": "templates/trends.html:267",
+            "grep": "grep -n -F -- 'id:\"trends-chart-usage\"' templates/trends.html"
           }
         },
         {
-          "id": "trends-card-snap",
-          "label": "Card: Snap share movers",
-          "kind": "card",
-          "description": "Collapsible card, written by render() in nflprops/trends.py.",
-          "locate": {
-            "path": "nflprops/trends.py:390",
-            "grep": "grep -n -F -- 'trends-card-{cid}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-card-rank",
-          "label": "Card: Rank movers",
-          "kind": "card",
-          "description": "Collapsible card, written by render() in nflprops/trends.py.",
-          "locate": {
-            "path": "nflprops/trends.py:390",
-            "grep": "grep -n -F -- 'trends-card-{cid}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-card-rz",
-          "label": "Card: Inside-10 role changes",
-          "kind": "card",
-          "description": "Collapsible card, written by render() in nflprops/trends.py.",
-          "locate": {
-            "path": "nflprops/trends.py:390",
-            "grep": "grep -n -F -- 'trends-card-{cid}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-card-dvp",
-          "label": "Card: Defense versus position",
-          "kind": "card",
-          "description": "Collapsible card, written by render() in nflprops/trends.py.",
-          "locate": {
-            "path": "nflprops/trends.py:390",
-            "grep": "grep -n -F -- 'trends-card-{cid}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-card-team",
-          "label": "Card: Team pass rate and scoring",
-          "kind": "card",
-          "description": "Collapsible card, written by render() in nflprops/trends.py.",
-          "locate": {
-            "path": "nflprops/trends.py:390",
-            "grep": "grep -n -F -- 'trends-card-{cid}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-usage-t-wr",
-          "label": "usage-t WR heading",
-          "kind": "heading",
-          "description": "Position heading for a usage card (risers).",
-          "locate": {
-            "path": "nflprops/trends.py:378",
-            "grep": "grep -n -F -- 'trends-{sid}-{pos.lower()}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-usage-t-te",
-          "label": "usage-t TE heading",
-          "kind": "heading",
-          "description": "Position heading for a usage card (risers).",
-          "locate": {
-            "path": "nflprops/trends.py:378",
-            "grep": "grep -n -F -- 'trends-{sid}-{pos.lower()}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-usage-c-rb",
-          "label": "usage-c RB heading",
-          "kind": "heading",
-          "description": "Position heading for a usage card (risers).",
-          "locate": {
-            "path": "nflprops/trends.py:378",
-            "grep": "grep -n -F -- 'trends-{sid}-{pos.lower()}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-snap-rb",
-          "label": "snap RB heading",
-          "kind": "heading",
-          "description": "Position heading for a usage card (risers).",
-          "locate": {
-            "path": "nflprops/trends.py:378",
-            "grep": "grep -n -F -- 'trends-{sid}-{pos.lower()}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-snap-wr",
-          "label": "snap WR heading",
-          "kind": "heading",
-          "description": "Position heading for a usage card (risers).",
-          "locate": {
-            "path": "nflprops/trends.py:378",
-            "grep": "grep -n -F -- 'trends-{sid}-{pos.lower()}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-snap-te",
-          "label": "snap TE heading",
-          "kind": "heading",
-          "description": "Position heading for a usage card (risers).",
-          "locate": {
-            "path": "nflprops/trends.py:378",
-            "grep": "grep -n -F -- 'trends-{sid}-{pos.lower()}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-rz-rb",
-          "label": "rz RB heading",
-          "kind": "heading",
-          "description": "Position heading for a usage card (risers).",
-          "locate": {
-            "path": "nflprops/trends.py:378",
-            "grep": "grep -n -F -- 'trends-{sid}-{pos.lower()}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-rz-wr",
-          "label": "rz WR heading",
-          "kind": "heading",
-          "description": "Position heading for a usage card (risers).",
-          "locate": {
-            "path": "nflprops/trends.py:378",
-            "grep": "grep -n -F -- 'trends-{sid}-{pos.lower()}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-rz-te",
-          "label": "rz TE heading",
-          "kind": "heading",
-          "description": "Position heading for a usage card (risers).",
-          "locate": {
-            "path": "nflprops/trends.py:378",
-            "grep": "grep -n -F -- 'trends-{sid}-{pos.lower()}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-rank-qb",
-          "label": "Rank movers QB heading",
-          "kind": "heading",
-          "description": "Position heading.",
-          "locate": {
-            "path": "nflprops/trends.py:407",
-            "grep": "grep -n -F -- 'trends-rank-{pos.lower()}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-dvp-qb",
-          "label": "Defense table QB heading",
-          "kind": "heading",
-          "description": "Heading above one position table.",
-          "locate": {
-            "path": "nflprops/trends.py:419",
-            "grep": "grep -n -F -- 'trends-dvp-{pos.lower()}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-rank-rb",
-          "label": "Rank movers RB heading",
-          "kind": "heading",
-          "description": "Position heading.",
-          "locate": {
-            "path": "nflprops/trends.py:407",
-            "grep": "grep -n -F -- 'trends-rank-{pos.lower()}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-dvp-rb",
-          "label": "Defense table RB heading",
-          "kind": "heading",
-          "description": "Heading above one position table.",
-          "locate": {
-            "path": "nflprops/trends.py:419",
-            "grep": "grep -n -F -- 'trends-dvp-{pos.lower()}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-rank-wr",
-          "label": "Rank movers WR heading",
-          "kind": "heading",
-          "description": "Position heading.",
-          "locate": {
-            "path": "nflprops/trends.py:407",
-            "grep": "grep -n -F -- 'trends-rank-{pos.lower()}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-dvp-wr",
-          "label": "Defense table WR heading",
-          "kind": "heading",
-          "description": "Heading above one position table.",
-          "locate": {
-            "path": "nflprops/trends.py:419",
-            "grep": "grep -n -F -- 'trends-dvp-{pos.lower()}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-rank-te",
-          "label": "Rank movers TE heading",
-          "kind": "heading",
-          "description": "Position heading.",
-          "locate": {
-            "path": "nflprops/trends.py:407",
-            "grep": "grep -n -F -- 'trends-rank-{pos.lower()}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-dvp-te",
-          "label": "Defense table TE heading",
-          "kind": "heading",
-          "description": "Heading above one position table.",
-          "locate": {
-            "path": "nflprops/trends.py:419",
-            "grep": "grep -n -F -- 'trends-dvp-{pos.lower()}' nflprops/trends.py"
-          }
-        },
-        {
-          "id": "trends-row",
-          "label": "Trend row",
+          "id": "trends-chart-usage-row",
+          "label": "Usage chart row",
           "kind": "list-row",
-          "description": "One player trend: change, sample, outlook, next game.",
+          "description": "One player in the usage chart. A click opens the player tray.",
           "locate": {
-            "path": "nflprops/trends.py:362",
-            "grep": "grep -n -F -- 'data-inspect-id=\"trends-row\"' nflprops/trends.py"
+            "path": "templates/trends.html:267",
+            "grep": "grep -n -F -- 'rowId:\"trends-chart-usage-row\"' templates/trends.html"
           }
         },
         {
-          "id": "trends-outlook",
-          "label": "Outlook line",
-          "kind": "label",
-          "description": "Label with historical rate and n, next opponent and that opponent's adjusted rank of 32 against the position.",
+          "id": "trends-chart-usage-more",
+          "label": "Usage chart show-all button",
+          "kind": "button",
+          "description": "Shows all rows of the usage chart.",
           "locate": {
-            "path": "nflprops/trends.py:367",
-            "grep": "grep -n -F -- 'data-inspect-id=\"trends-outlook\"' nflprops/trends.py"
+            "path": "templates/trends.html:267",
+            "grep": "grep -n -F -- 'moreId:\"trends-chart-usage-more\"' templates/trends.html"
           }
         },
         {
-          "id": "trends-team-outlook",
-          "label": "Team outlook line",
-          "kind": "label",
-          "description": "Outlook line under a team trend row (the other trends-outlook is on player rows).",
+          "id": "trends-chart-snap",
+          "label": "Snap share chart",
+          "kind": "chart",
+          "description": "Dumbbell chart of offense snap share.",
           "locate": {
-            "path": "nflprops/trends.py:437",
-            "grep": "grep -n -F -- 'data-inspect-id=\"trends-team-outlook\"' nflprops/trends.py"
+            "path": "templates/trends.html:268",
+            "grep": "grep -n -F -- 'id:\"trends-chart-snap\"' templates/trends.html"
           }
         },
         {
-          "id": "trends-rank-row",
-          "label": "Rank mover row",
+          "id": "trends-chart-snap-row",
+          "label": "Snap share chart row",
           "kind": "list-row",
-          "description": "One rank mover.",
+          "description": "One player in the snap share chart.",
           "locate": {
-            "path": "nflprops/trends.py:402",
-            "grep": "grep -n -F -- 'data-inspect-id=\"trends-rank-row\"' nflprops/trends.py"
+            "path": "templates/trends.html:268",
+            "grep": "grep -n -F -- 'rowId:\"trends-chart-snap-row\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-chart-snap-more",
+          "label": "Snap share chart show-all button",
+          "kind": "button",
+          "description": "Shows all rows of the snap share chart.",
+          "locate": {
+            "path": "templates/trends.html:268",
+            "grep": "grep -n -F -- 'moreId:\"trends-chart-snap-more\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-chart-rz",
+          "label": "Inside-10 chart",
+          "kind": "chart",
+          "description": "Dumbbell chart of carries and targets inside the 10, per game.",
+          "locate": {
+            "path": "templates/trends.html:269",
+            "grep": "grep -n -F -- 'id:\"trends-chart-rz\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-chart-rz-row",
+          "label": "Inside-10 chart row",
+          "kind": "list-row",
+          "description": "One player in the inside-10 chart.",
+          "locate": {
+            "path": "templates/trends.html:269",
+            "grep": "grep -n -F -- 'rowId:\"trends-chart-rz-row\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-chart-rz-more",
+          "label": "Inside-10 chart show-all button",
+          "kind": "button",
+          "description": "Shows all rows of the inside-10 chart.",
+          "locate": {
+            "path": "templates/trends.html:269",
+            "grep": "grep -n -F -- 'moreId:\"trends-chart-rz-more\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-chart-rank",
+          "label": "Rank movers chart",
+          "kind": "chart",
+          "description": "Dumbbell chart of week-over-week rank moves. Left is better. No history rate.",
+          "locate": {
+            "path": "templates/trends.html:270",
+            "grep": "grep -n -F -- 'id:\"trends-chart-rank\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-chart-rank-row",
+          "label": "Rank movers chart row",
+          "kind": "list-row",
+          "description": "One player in the rank movers chart.",
+          "locate": {
+            "path": "templates/trends.html:270",
+            "grep": "grep -n -F -- 'rowId:\"trends-chart-rank-row\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-chart-rank-more",
+          "label": "Rank movers chart show-all button",
+          "kind": "button",
+          "description": "Shows all rows of the rank movers chart.",
+          "locate": {
+            "path": "templates/trends.html:270",
+            "grep": "grep -n -F -- 'moreId:\"trends-chart-rank-more\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-rankings-link",
+          "label": "Player rankings link",
+          "kind": "link",
+          "description": "Link in the rank movers hint to the full rankings.",
+          "locate": {
+            "path": "templates/trends.html:270",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-rankings-link\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-list",
+          "label": "List section",
+          "kind": "layout",
+          "description": "Section with the By player and By pattern list.",
+          "locate": {
+            "path": "templates/trends.html:207",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-list\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-view-switch",
+          "label": "List view switch",
+          "kind": "control",
+          "description": "Switch between By player and By pattern. The choice is kept in localStorage.",
+          "locate": {
+            "path": "templates/trends.html:210",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-view-switch\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-view-player",
+          "label": "By player button",
+          "kind": "button",
+          "description": "Shows the list with one row for each player.",
+          "locate": {
+            "path": "templates/trends.html:211",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-view-player\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-view-pattern",
+          "label": "By pattern button",
+          "kind": "button",
+          "description": "Shows the hold-rate cards.",
+          "locate": {
+            "path": "templates/trends.html:212",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-view-pattern\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-player-list",
+          "label": "Player list",
+          "kind": "list",
+          "description": "One row for each player, with all signals as chips. Top 12 first.",
+          "locate": {
+            "path": "templates/trends.html:294",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-player-list\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-player-row",
+          "label": "Player row",
+          "kind": "list-row",
+          "description": "One player. A click opens the player tray.",
+          "locate": {
+            "path": "templates/trends.html:297",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-player-row\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-player-more",
+          "label": "Show all players button",
+          "kind": "button",
+          "description": "Shows every player in the list.",
+          "locate": {
+            "path": "templates/trends.html:298",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-player-more\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-lane-hold",
+          "label": "Likely to hold group",
+          "kind": "layout",
+          "description": "Pattern cards with a past hold rate of 60.0% or more. Open by default.",
+          "locate": {
+            "path": "templates/trends.html:304",
+            "grep": "grep -n -F -- 'id:\"trends-lane-hold\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-lane-fade",
+          "label": "Likely to fade group",
+          "kind": "layout",
+          "description": "Pattern cards with a past hold rate of 40.0% or less. Open by default.",
+          "locate": {
+            "path": "templates/trends.html:305",
+            "grep": "grep -n -F -- 'id:\"trends-lane-fade\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-lane-watch",
+          "label": "Watch group",
+          "kind": "layout",
+          "description": "Pattern cards with every other rate. Closed by default.",
+          "locate": {
+            "path": "templates/trends.html:306",
+            "grep": "grep -n -F -- 'id:\"trends-lane-watch\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-lane-watch-toggle",
+          "label": "Watch group toggle",
+          "kind": "button",
+          "description": "Opens and closes the Watch group.",
+          "locate": {
+            "path": "templates/trends.html:306",
+            "grep": "grep -n -F -- 'toggleId:\"trends-lane-watch-toggle\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-pattern-card",
+          "label": "Pattern card",
+          "kind": "card",
+          "description": "One kind of change, such as Snap share, WR risers. Big hold rate, bar, player chips, numbers table.",
+          "locate": {
+            "path": "templates/trends.html:331",
+            "grep": "grep -n -F -- '\"trends-pattern-card\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-pattern-chip",
+          "label": "Pattern card player chip",
+          "kind": "button",
+          "description": "A player and change inside a pattern card. A click opens the player tray.",
+          "locate": {
+            "path": "templates/trends.html:331",
+            "grep": "grep -n -F -- '\"trends-pattern-chip\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-teams",
+          "label": "Teams section",
+          "kind": "layout",
+          "description": "Section with the team pass-share chart.",
+          "locate": {
+            "path": "templates/trends.html:218",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-teams\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-team-chart",
+          "label": "Team pass-share chart",
+          "kind": "chart",
+          "description": "Dumbbell chart of team pass share, last 3 games against the baseline.",
+          "locate": {
+            "path": "templates/trends.html:348",
+            "grep": "grep -n -F -- '\"trends-team-chart\"' templates/trends.html"
           }
         },
         {
           "id": "trends-team-row",
-          "label": "Team row",
+          "label": "Team chart row",
           "kind": "list-row",
-          "description": "One team: pass share change, points per game, outlook.",
+          "description": "One team. A click opens the tray with the team numbers.",
           "locate": {
-            "path": "nflprops/trends.py:433",
-            "grep": "grep -n -F -- 'data-inspect-id=\"trends-team-row\"' nflprops/trends.py"
+            "path": "templates/trends.html:348",
+            "grep": "grep -n -F -- '\"trends-team-row\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-team-numbers",
+          "label": "Team numbers disclosure",
+          "kind": "disclosure",
+          "description": "Closed table with pass share, points per game, outlook and next game for each team.",
+          "locate": {
+            "path": "templates/trends.html:221",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-team-numbers\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-dvp",
+          "label": "Defense versus position section",
+          "kind": "layout",
+          "description": "Section with the defense map and the tables.",
+          "locate": {
+            "path": "templates/trends.html:223",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-dvp\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-dvp-map",
+          "label": "Defense map",
+          "kind": "chart",
+          "description": "32 defenses for each position as coloured cells, toughest first.",
+          "locate": {
+            "path": "templates/trends.html:227",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-dvp-map\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-dvp-cell",
+          "label": "Defense map cell",
+          "kind": "value",
+          "description": "One defense. The tooltip has rank, yards per game, last week rank and games.",
+          "locate": {
+            "path": "templates/trends.html:357",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-dvp-cell\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-dvp-numbers",
+          "label": "Defense numbers disclosure",
+          "kind": "disclosure",
+          "description": "Closed tables with the 5 toughest and 5 softest defenses for each position.",
+          "locate": {
+            "path": "templates/trends.html:228",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-dvp-numbers\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-tray",
+          "label": "Trends player tray",
+          "kind": "overlay",
+          "description": "Tray from the right with every signal for one player or team. Shell and CSS are TRAY_CSS from nflprops/tray.py. Closes with the x, Esc or a click outside.",
+          "locate": {
+            "path": "templates/trends.html:371",
+            "grep": "grep -n -F -- 'dataset.inspectId=\"trends-tray\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-tray-close",
+          "label": "Trends tray close button",
+          "kind": "button",
+          "description": "Closes the tray.",
+          "locate": {
+            "path": "templates/trends.html:396",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-tray-close\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-tray-signal",
+          "label": "Trends tray signal block",
+          "kind": "card",
+          "description": "One signal in the tray: last 3, before, change, sample, outlook bar, n and merged cases.",
+          "locate": {
+            "path": "templates/trends.html:386",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-tray-signal\"' templates/trends.html"
           }
         }
       ]
@@ -2324,7 +2424,7 @@
           "kind": "text",
           "description": "One-line standing disclaimer spliced after every page by with_chrome().",
           "locate": {
-            "path": "scripts/serve_reports.py:1764",
+            "path": "scripts/serve_reports.py:1753",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-footer\"' scripts/serve_reports.py"
           }
         }
