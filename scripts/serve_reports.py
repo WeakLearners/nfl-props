@@ -1701,17 +1701,6 @@ LAYOUT_CSS = """<style>
   @media (min-width:900px){ .wrap[data-page="rankings"] .dfn-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
   @media (min-width:1700px){ .wrap[data-page="rankings"] .dfn-grid{grid-template-columns:repeat(4,minmax(0,1fr))} }
 
-  /* Trends: closed cards are an index; an open card takes the full row. */
-  .tr-grid{display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr));
-    gap:12px 16px; align-items:start}
-  .tr-grid > .card{margin:0; padding:0 14px}
-  .tr-grid > .card[open]{grid-column:1/-1; padding-bottom:12px}
-  .tr-grid > .card[open] ul{display:grid; column-gap:32px;
-    grid-template-columns:repeat(auto-fill,minmax(max(340px,calc((100% - 64px)/3)),1fr))}
-  .tr-grid > .card[open] .trow:last-child{border-bottom:1px solid var(--line-soft)}
-  .tr-grid > .card[open] .note{max-width:72ch}
-
   /* Results: the top 5 in the key panel; the grading note beside the table. */
   .wrap[data-page="results"] .ex-side .top{max-width:640px; background:var(--surface);
     border:1px solid var(--line); border-radius:3px; padding:12px 14px}

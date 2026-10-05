@@ -7,8 +7,8 @@ read for a rate, and nothing here feeds an engine evaluation. Rules for the
 buckets, the "held" test and the label thresholds are fixed in
 projects/nfl-props/trends-insights-plan-2026-10-04.md section 12.1.
 """
-import html
 import json
+import re
 
 import numpy as np
 import pandas as pd
@@ -344,104 +344,74 @@ def build_data(season=None, week=None):
     return dict(season=season, week=week, sections=sec)
 
 
-def _ordinal(n):
-    from .badges import ordinal
-    return ordinal(n)
+_OUT = re.compile(r"\((\d+(?:\.\d+)?)%, n=(\d+)(?:, merged: (.*))?\)$")
+_VCTX = {"target_share": "targets", "carry_share": "carries", "snap_share": "snap pts", "rz10": "inside-10 touches"}
+_SIG = {"target_share": "usage", "carry_share": "usage", "snap_share": "snap", "rz10": "rz", "pass_rate": "team"}
+CAP_PER_SIDE, CAP_RANK, CAP_TEAM = 6, 6, 8   # rows kept per position side, per rank position, and for teams
 
 
-def _e(x):
-    return html.escape(str(x))
+def _outlook(r):
+    """Split a row's label and outlook text into class, rate, n and merged-case text."""
+    m = _OUT.search(r["outlook"])
+    cls = {"Likely to hold": "hold", "Likely to fade": "fade"}.get(r["label"], "watch")
+    if m:
+        return dict(cls=cls, pct=float(m.group(1)), n=int(m.group(2)), merged=m.group(3) or "", thin=False)
+    n = re.search(r"n=(\d+)", r["outlook"])
+    return dict(cls=cls, pct=None, n=int(n.group(1)) if n else 0, merged="", thin=True)
 
 
-def _row(r, unit, ctx):
+def _change(r, sig):
     sign = "+" if r["delta"] > 0 else ""
-    d = f"{sign}{r['delta']:.1f} {unit}" if unit == "pts" else f"{sign}{r['delta']:.2f} per game"
-    fm = (lambda x: f"{x:.1f}%") if unit == "pts" else (lambda x: f"{x:.2f}")
-    pr = f" · 2025: {fm(r['prior'])}" if r.get("prior") is not None else ""
-    dv = f" · next opponent {_ordinal(r['dvp']['rk'])} of 32 vs {r['pos']}" if r.get("dvp") else ""
-    return (f'<li class="trow" data-pos="{r["pos"]}" data-inspect-id="trends-row">'
-            f'<div class="t1"><span class="nm">{_e(r["name"])}</span> <span class="tm">{_e(r["team"])} {r["pos"]}</span>'
-            f'<span class="dl">{d}</span></div>'
-            f'<div class="t2">{fm(r["last3"])} last 3 vs {fm(r["base"])} {r["baseline"]}{pr}</div>'
-            f'<div class="t2">3-game change, small sample · {r["vol"]} {ctx} in 3 games</div>'
-            f'<div class="t2 ol ol-{r["label"].split()[-1].lower()}" data-inspect-id="trends-outlook">'
-            f'Outlook: {_e(r["outlook"])} · next: {_e(r["next"])}{dv}</div></li>')
+    return f"{sign}{r['delta']:.2f} per game" if sig == "rz" else f"{sign}{r['delta']:.1f} pts"
 
 
-def _usage_card(data, metric, ctx, sid):
-    rows = data["sections"][metric]
-    unit = METRICS[metric][3]
-    parts = []
-    for pos in METRICS[metric][0]:
-        pr = [r for r in rows if r["pos"] == pos]
-        up, dn = [r for r in pr if r["delta"] > 0][:6], [r for r in pr if r["delta"] < 0][:6]
-        parts.append(f'<h4 data-pos="{pos}" data-inspect-id="trends-{sid}-{pos.lower()}">{pos}: risers</h4><ul data-pos="{pos}">'
-                     + ("".join(_row(r, unit, ctx) for r in up) or '<li class="none">None at this size.</li>')
-                     + f'</ul><h4 data-pos="{pos}">{pos}: fallers</h4><ul data-pos="{pos}">'
-                     + ("".join(_row(r, unit, ctx) for r in dn) or '<li class="none">None at this size.</li>') + "</ul>")
-    return "".join(parts)
+def page_data(data):
+    """Everything the page script draws, as plain JSON-ready dicts. Same rows the old cards showed."""
+    sec, rows = data["sections"], []
+    sc = sec["scoring"]
+    for m, positions in (("target_share", ("WR", "TE")), ("carry_share", ("RB",)),
+                         ("snap_share", ("RB", "WR", "TE")), ("rz10", ("RB", "WR", "TE")), ("pass_rate", ("TEAM",))):
+        sig = _SIG[m]
+        src = sec[m]
+        if m == "pass_rate":
+            keep = src[:CAP_TEAM]
+        else:
+            keep = []
+            for pos in positions:
+                pr = [r for r in src if r["pos"] == pos]
+                keep += [r for r in pr if r["delta"] > 0][:CAP_PER_SIDE] + [r for r in pr if r["delta"] < 0][:CAP_PER_SIDE]
+        for r in keep:
+            o = _outlook(r)
+            d = dict(sig=sig, pos=r["pos"], nm=r["name"] if m != "pass_rate" else r["team"], team=r["team"],
+                     dir="rise" if r["delta"] > 0 else "fall", delta=r["delta"], dl=_change(r, sig),
+                     now=r["last3"], base=r["base"], bl=r["baseline"], label=r["label"], olText=r["outlook"],
+                     next=r["next"], opp=(r.get("dvp") or {}).get("rk"), **o)
+            if m == "pass_rate":
+                c = sc.get(r["team"])
+                d.update(sample="3-game change, small sample", ppg3=c["last3"] if c else None, ppgS=c["season"] if c else None)
+            else:
+                d.update(sample=f"3-game change, small sample \u00b7 {r['vol']} {_VCTX[m]} in 3 games",
+                         ppg3=None, ppgS=None)
+            rows.append(d)
+    for pos in ("QB", "RB", "WR", "TE"):
+        for r in [x for x in sec["rank"] if x["pos"] == pos][:CAP_RANK]:
+            rows.append(dict(sig="rank", pos=pos, nm=r["name"], team=r["team"], dir="rise" if r["move"] > 0 else "fall",
+                             delta=r["move"], dl=f"{'+' if r['move'] > 0 else ''}{r['move']}", **{"from": r["prev"], "to": r["rank"]},
+                             games=r["games"], next=r["next"], opp=None, bl="", sample=f"{r['games']} games",
+                             label="Watch", olText="Watch (no history rate for rank moves)", cls="none",
+                             pct=None, n=None, merged="", thin=False, ppg3=None, ppgS=None))
+    return dict(rows=rows, dvp=sec["dvp"])
 
 
 def render(data):
-    s, w, sec = data["season"], data["week"], data["sections"]
-    cards = []
-
-    def card(cid, title, note, body):
-        cards.append(f'<details class="card" data-inspect-id="trends-card-{cid}"><summary>{title}</summary>'
-                     f'<p class="note">{note}</p>{body}</details>')
-
-    base_note = ("Change = last 3 games against the baseline shown. Outlook = how often a change of this type and "
-                 "size carried into the next 3 games in 2021-2025.")
-    card("usage", "1 Usage risers and fallers", base_note + " Target share for WR and TE, carry share for RB.",
-         _usage_card(data, "target_share", "targets", "usage-t") + _usage_card(data, "carry_share", "carries", "usage-c"))
-    card("snap", "2 Snap share movers", base_note, _usage_card(data, "snap_share", "snap pts", "snap"))
-    rk = []
-    for pos in ("QB", "RB", "WR", "TE"):
-        pr = [r for r in sec["rank"] if r["pos"] == pos]
-        items = "".join(
-            f'<li class="trow" data-pos="{pos}" data-inspect-id="trends-rank-row"><div class="t1"><span class="nm">{_e(r["name"])}</span> '
-            f'<span class="tm">{_e(r["team"])} {pos}</span><span class="dl">{"+" if r["move"] > 0 else ""}{r["move"]}</span></div>'
-            f'<div class="t2">#{r["prev"]} to #{r["rank"]} · {r["games"]} games · next: {_e(r["next"])}</div>'
-            f'<div class="t2 ol">Outlook: Watch (no history rate for rank moves)</div></li>'
-            for r in (pr[:6] if pr else []))
-        rk.append(f'<h4 data-pos="{pos}" data-inspect-id="trends-rank-{pos.lower()}">{pos}</h4><ul data-pos="{pos}">{items or "<li class=none>No moves.</li>"}</ul>')
-    card("rank", "3 Rank movers",
-         'Week-over-week change in the position rank. Full lists: <a href="/rankings.html" data-inspect-id="trends-rankings-link">Player rankings</a>. '
-         "The rank is recent production. It is not the depth chart.", "".join(rk))
-    card("rz", "4 Inside-10 role changes",
-         base_note + " RB: carries inside the 10. WR and TE: targets inside the 10. Apart from yardage.",
-         _usage_card(data, "rz10", "inside-10 touches", "rz"))
-    dv = []
-    label = {"QB": "passing yds", "RB": "rushing + receiving yds", "WR": "receiving yds", "TE": "receiving yds"}
-    for pos, rows in sec["dvp"].items():
-        trs = "".join(f'<tr data-pos="{pos}"><td>{r["team"]}</td><td class="num">{r["rank"]}</td><td class="num">{r["now"]:.1f}</td>'
-                      f'<td class="num">{r["prev"] or "–"}</td><td class="num">{r["games"]}</td></tr>' for r in rows[:5] + rows[-5:])
-        dv.append(f'<h4 data-pos="{pos}" data-inspect-id="trends-dvp-{pos.lower()}">{pos}: {label[pos]} allowed per game (5 toughest, 5 softest)</h4>'
-                  f'<div class="tablewrap" data-pos="{pos}"><table><thead><tr><th>Defense</th><th class="num">Rank</th><th class="num">Yds/g</th>'
-                  f'<th class="num">Last wk</th><th class="num">Games</th></tr></thead><tbody>{trs}</tbody></table></div>')
-    card("dvp", "5 Defense versus position",
-         "Rank 1 = toughest of 32. Yards per game allowed to the position, adjusted for the offenses faced and weighted toward recent games. "
-         "Same rank as the Big day and Caution badges. Last wk = rank one week earlier. Games = current season. "
-         "Outlook: Watch (no history rate for this type).", "".join(dv))
-    tr = [r for r in sec["pass_rate"]]
-    sc = sec["scoring"]
-    items = []
-    for r in tr[:8]:
-        c = sc.get(r["team"])
-        pts = f" · points per game {c['last3']} last 3 vs {c['season']} season" if c else ""
-        sign = "+" if r["delta"] > 0 else ""
-        items.append(f'<li class="trow" data-inspect-id="trends-team-row"><div class="t1"><span class="nm">{_e(r["team"])}</span>'
-                     f'<span class="dl">{sign}{r["delta"]:.1f} pts</span></div>'
-                     f'<div class="t2">Pass share {r["last3"]:.1f}% last 3 vs {r["base"]:.1f}% {r["baseline"]}{pts}</div>'
-                     f'<div class="t2">3-game change, small sample</div>'
-                     f'<div class="t2 ol ol-{r["label"].split()[-1].lower()}" data-inspect-id="trends-team-outlook">Outlook: {_e(r["outlook"])} · next: {_e(r["next"])}</div></li>')
-    card("team", "6 Team pass rate and scoring",
-         "Pass share = pass attempts divided by attempts plus carries. Points per game is context. It has no history rate.",
-         f'<ul>{"".join(items) or "<li class=none>No team moved 3 points or more.</li>"}</ul>')
+    from .tray import TRAY_CSS
+    s, w = data["season"], data["week"]
+    blob = json.dumps(page_data(data), default=lambda o: o.item() if hasattr(o, "item") else str(o)).replace("</", "<\\/")
     tpl = (ROOT / "templates" / "trends.html").read_text()
     return (tpl.replace("__WEEK__", f"{s} Week {w}")
                .replace("__BUILT__", pd.Timestamp.now().strftime("%a %Y-%m-%d %H:%M"))
-               .replace("__CARDS__", "\n".join(cards)))
+               .replace("__TRAY_CSS__", TRAY_CSS)
+               .replace("__DATA__", blob))
 
 
 def write_trends():

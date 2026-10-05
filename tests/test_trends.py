@@ -59,5 +59,40 @@ class LabelRule(unittest.TestCase):
         self.assertEqual(T.label({"n": 212, "hold_share": .70})[1], "Likely to hold (70.0%, n=212)")
 
 
+class PageData(unittest.TestCase):
+    """The page script draws from page_data(). Guard the numbers it shows."""
+    def data(self):
+        row = dict(entity="e", name="A B", team="AAA", pos="WR", last3=24.0, base=6.0, baseline="2025", prior=6.0,
+                   delta=18.0, games=3, vol=21, label="Likely to hold",
+                   outlook="Likely to hold (62.9%, n=62, merged: rise 5-10 + 10+)", next="vs BBB",
+                   dvp={"rk": 17, "y": 100.0, "t": "mid"})
+        thin = dict(row, name="C D", delta=-5.0, label="Watch", outlook="Watch (history too thin, n=12)", dvp=None)
+        empty = []
+        sec = dict(target_share=[row, thin], carry_share=empty, snap_share=empty, rz10=empty, pass_rate=empty,
+                   rank=[dict(name="E F", team="AAA", pos="QB", rank=21, prev=31, move=10, games=36, next="vs BBB")],
+                   dvp={"QB": [], "RB": [], "WR": [], "TE": []}, scoring={})
+        return dict(season=2026, week=3, sections=sec)
+
+    def test_outlook_numbers_are_kept(self):
+        rows = {r["nm"]: r for r in T.page_data(self.data())["rows"]}
+        a = rows["A B"]
+        self.assertEqual((a["cls"], a["pct"], a["n"], a["merged"], a["opp"]), ("hold", 62.9, 62, "rise 5-10 + 10+", 17))
+        self.assertEqual(a["dl"], "+18.0 pts")
+
+    def test_thin_history_has_no_rate(self):
+        c = {r["nm"]: r for r in T.page_data(self.data())["rows"]}["C D"]
+        self.assertEqual((c["cls"], c["pct"], c["n"], c["thin"]), ("watch", None, 12, True))
+
+    def test_rank_rows_have_no_rate(self):
+        e = {r["nm"]: r for r in T.page_data(self.data())["rows"]}["E F"]
+        self.assertEqual((e["sig"], e["from"], e["to"], e["pct"], e["dl"]), ("rank", 31, 21, None, "+10"))
+
+    def test_page_renders_data_and_tray_css(self):
+        out = T.render(self.data())
+        self.assertIn('"nm":"A B"', out.replace('": "', '":"'))
+        self.assertIn(".ptray-bg", out)
+        self.assertNotIn("__DATA__", out)
+
+
 if __name__ == "__main__":
     unittest.main()

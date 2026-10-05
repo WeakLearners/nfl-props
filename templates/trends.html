@@ -26,38 +26,158 @@
   *{box-sizing:border-box}
   body{margin:0; background:var(--bg); color:var(--ink);
     font-family:"Public Sans",ui-sans-serif,system-ui,sans-serif; font-size:15px; line-height:1.55}
+  button{font:inherit; color:inherit}
   /* Page width: LAYOUT_CSS in scripts/serve_reports.py. */
   header{border-bottom:2px solid var(--ink); padding-bottom:18px; margin-bottom:8px}
   h1{font-family:"Barlow Condensed",Impact,sans-serif; font-weight:700; font-size:clamp(34px,6vw,56px);
     line-height:.95; letter-spacing:-.01em; margin:0; text-transform:uppercase}
-  h2{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:24px; margin:32px 0 8px}
+  h2{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:22px; line-height:1.1; text-transform:uppercase;
+    letter-spacing:.04em; margin:0 0 12px; padding-bottom:6px; border-bottom:1px solid var(--line);
+    display:flex; align-items:baseline; gap:12px}
+  h2 .sub{margin-left:auto; font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.06em;
+    text-transform:none; color:var(--ink-3); font-weight:400; text-align:right}
   .eyebrow{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.14em;
     text-transform:uppercase; color:var(--ink-3); margin:0 0 10px}
   .note{color:var(--ink-2); margin:6px 0}
-  .tablewrap{overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:3px}
-  table{border-collapse:collapse; width:100%; font-size:14px}
-  th,td{padding:6px 10px; text-align:left; border-bottom:1px solid var(--line-soft); white-space:nowrap}
-  th{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase;
-    color:var(--ink-3); font-weight:500}
-  td.num,th.num{text-align:right; font-family:"IBM Plex Mono",monospace}
-  tr:last-child td{border-bottom:0}
-  .filter{display:flex; gap:8px; margin:0; flex-wrap:wrap}
-  .filter button{font-family:"IBM Plex Mono",monospace; font-size:12px; padding:6px 12px; border:1px solid var(--line);
-    background:var(--surface); color:var(--ink-2); border-radius:3px; cursor:pointer}
-  .filter button[aria-pressed="true"]{border-color:var(--den); color:var(--den)}
-  .card{background:var(--surface); border:1px solid var(--line); border-radius:3px; margin:10px 0; padding:0 14px}
-  .card summary{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:22px; padding:12px 0; cursor:pointer}
-  .card h4{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase;
-    color:var(--ink-3); margin:16px 0 6px; font-weight:500}
-  .card ul{list-style:none; margin:0 0 8px; padding:0}
-  .trow{padding:8px 0; border-bottom:1px solid var(--line-soft)}
-  .trow:last-child{border-bottom:0}
-  .t1{display:flex; gap:8px; align-items:baseline; flex-wrap:wrap}
-  .nm{font-weight:600} .tm{color:var(--ink-3); font-size:12px; font-family:"IBM Plex Mono",monospace}
-  .dl{margin-left:auto; font-family:"IBM Plex Mono",monospace; color:var(--den)}
-  .t2{font-size:13px; color:var(--ink-2)} .ol{color:var(--ink)}
-  .none{color:var(--ink-3); font-size:13px}
+  .fine{font-size:13px; color:var(--ink-3); max-width:72ch; margin:0 0 12px}
   [hidden]{display:none !important}
+  .mono{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+  .tm{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-3); letter-spacing:.04em}
+  .up{color:var(--good)} .dn{color:var(--bad)}
+
+  /* Controls */
+  .chips{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+  .chips .lab{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); margin-right:4px}
+  .chips button,.tbtn{font-family:"IBM Plex Mono",monospace; font-size:12px; padding:6px 12px; border:1px solid var(--line);
+    background:var(--surface); color:var(--ink-2); border-radius:3px; cursor:pointer}
+  .chips button[aria-pressed="true"]{border-color:var(--den); color:var(--den)}
+  .tbtn{margin-top:8px; font-size:11.5px; padding:4px 10px}
+  .tbtn:hover{border-color:var(--ink-3); color:var(--ink)}
+
+  /* Outlook marks. --c is the outlook colour. */
+  .ol{--c:var(--ink-3)} .ol.hold{--c:var(--good)} .ol.fade{--c:var(--bad)}
+  .dot{display:inline-block; width:9px; height:9px; border-radius:50%; background:var(--c); flex:none}
+  .ol.watch .dot,.ol.none .dot{background:transparent; border:1.5px solid var(--ink-3)}
+  .pill{display:inline-flex; align-items:center; gap:6px; height:20px; padding:0 8px; border:1px solid var(--c); border-radius:2px;
+    font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; white-space:nowrap; color:var(--ink)}
+  .legend{display:flex; flex-direction:column; gap:8px; font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-2)}
+  .legend .lh{color:var(--ink-3); text-transform:uppercase; letter-spacing:.1em; font-size:10px}
+  .legend span{display:inline-flex; align-items:center; gap:8px}
+
+  /* Charts */
+  .sec{margin-top:48px} .sec:first-child{margin-top:0}
+  .panels{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:40px 48px}
+  @media (max-width:1100px){.panels{grid-template-columns:minmax(0,1fr)}}
+  .ph{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:20px; line-height:1.1; text-transform:uppercase; letter-spacing:.04em; margin:0 0 4px; display:flex; align-items:baseline; gap:12px}
+  .ph .sub{margin-left:auto; font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.06em; text-transform:none; color:var(--ink-3); font-weight:400}
+  .hint a{color:var(--ink-2); text-decoration:underline}
+  .hint{font-size:12.5px; color:var(--ink-3); margin:0 0 8px; max-width:64ch}
+  .dr{display:grid; grid-template-columns:170px minmax(0,1fr) 64px; gap:12px; align-items:center; height:28px; width:100%;
+    background:none; border:0; padding:0 4px; text-align:left; cursor:pointer; border-radius:2px}
+  .dr:hover{background:var(--line-soft)}
+  .dr .nm{display:flex; gap:6px; align-items:baseline; min-width:0; font-size:13.5px; font-weight:500}
+  .dr .nm span:first-child{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .dr .nm .tm{font-size:10px; flex:none}
+  .dr .pl{position:relative; height:100%; background:linear-gradient(var(--line-soft),var(--line-soft)) center/100% 1px no-repeat}
+  .dr .ln{position:absolute; top:50%; height:2px; margin-top:-1px; background:var(--ink-3); opacity:.7}
+  .dr .b{position:absolute; top:50%; width:9px; height:9px; margin:-4.5px 0 0 -4.5px; border-radius:50%; border:1.5px solid var(--ink-3); background:var(--surface)}
+  .dr .a{position:absolute; top:50%; width:13px; height:13px; margin:-6.5px 0 0 -6.5px; border-radius:50%; background:var(--c); border:2px solid var(--surface)}
+  .dr.watch .a,.dr.none .a{background:var(--ink-3)}
+  .dr .v{font-family:"IBM Plex Mono",monospace; font-size:12px; text-align:right}
+  .ax{display:grid; grid-template-columns:170px minmax(0,1fr) 64px; gap:12px; padding:0 4px; margin-top:4px}
+  .ax .scale{display:flex; justify-content:space-between; font-family:"IBM Plex Mono",monospace; font-size:10px; color:var(--ink-3)}
+  .ax .cap{font-family:"IBM Plex Mono",monospace; font-size:10px; color:var(--ink-3); letter-spacing:.06em; text-transform:uppercase}
+  @media (max-width:1500px){.dr,.ax{grid-template-columns:130px minmax(0,1fr) 58px}.dr .nm .tm{display:none}}
+
+  /* List: by player */
+  .sw{display:flex; align-items:center; gap:12px; margin:0 0 12px}
+  .sw .lab{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3)}
+  .pl-list{border-top:1px solid var(--line)}
+  .pr{display:grid; grid-template-columns:36px minmax(220px,1.1fr) minmax(0,3fr) minmax(170px,.9fr); gap:16px; align-items:center;
+    padding:12px 8px; cursor:pointer; width:100%; background:none; border:0; border-bottom:1px solid var(--line-soft); text-align:left}
+  .pr:hover{background:var(--line-soft)}
+  .pr .n{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-3)}
+  .pr .who b{font-weight:600; font-size:16px} .pr .who .tm{margin-left:8px}
+  .chipsr{display:flex; gap:8px; flex-wrap:wrap}
+  .chip{display:inline-flex; align-items:center; gap:7px; height:26px; padding:0 10px; border:1px solid var(--line); border-radius:2px;
+    background:var(--surface); font-size:12.5px; white-space:nowrap}
+  .chip .k{color:var(--ink-3); font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase}
+  .chip b{font-family:"IBM Plex Mono",monospace; font-weight:500}
+  .nx{font-size:13px; color:var(--ink-2)} .nx small{display:block; color:var(--ink-3); font-size:12px}
+  @media (max-width:1300px){.pr{grid-template-columns:30px minmax(170px,1fr) minmax(0,2.4fr)}.pr .nx{display:none}}
+
+  /* List: by pattern */
+  .lane + .lane{margin-top:40px}
+  .lane-h{display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:4px 16px; align-items:baseline; border-bottom:2px solid var(--c); padding-bottom:8px; margin-bottom:16px}
+  .lane-h h3{margin:0; font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:30px; text-transform:uppercase; letter-spacing:.04em; display:flex; align-items:center; gap:10px}
+  .lane-h h3 .dot{width:14px; height:14px}
+  .lane-h p{margin:0; color:var(--ink-2); font-size:13.5px}
+  .cnt{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-3); letter-spacing:.06em; text-transform:uppercase}
+  .wbtn{display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:none; border:0; border-bottom:2px solid var(--ink-3); padding:0 0 8px; cursor:pointer}
+  .wbtn .car{font-size:14px; color:var(--ink-3); transition:transform .15s} .wbtn[aria-expanded="true"] .car{transform:rotate(90deg)}
+  .wbtn h3{margin:0; font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:30px; text-transform:uppercase; letter-spacing:.04em}
+  .wbtn .d{color:var(--ink-2); font-size:13.5px; margin-left:12px}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,400px),1fr)); gap:16px; align-items:start}
+  .pc{border:1px solid var(--line); background:var(--surface); border-radius:3px; padding:16px 16px 12px; display:flex; flex-direction:column; gap:10px; border-top:3px solid var(--c)}
+  .pc-h{display:flex; justify-content:space-between; align-items:baseline; gap:12px}
+  .pc-t{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:20px; text-transform:uppercase; letter-spacing:.03em; line-height:1.1}
+  .pc-t span{color:var(--ink-3); font-weight:500}
+  .pc-p{font-family:"Barlow Condensed",sans-serif; font-size:40px; font-weight:600; line-height:1}
+  .pc-p small{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.06em; color:var(--ink-3); text-transform:uppercase; font-weight:400; margin-left:6px}
+  .gbar{position:relative; height:6px; background:var(--line-soft); border-radius:2px; margin:6px 0 18px}
+  .gbar i{position:absolute; left:0; top:0; bottom:0; background:var(--c); border-radius:2px}
+  .gbar u{position:absolute; top:-3px; bottom:-3px; width:1px; background:var(--ink-3)}
+  .gbar s{position:absolute; top:10px; font-family:"IBM Plex Mono",monospace; font-size:10px; color:var(--ink-3); text-decoration:none; transform:translateX(-50%)}
+  .gbar s:first-of-type{transform:none} .gbar s.r{transform:translateX(-100%)}
+  .ppl{display:flex; flex-wrap:wrap; gap:6px}
+  .pp1{display:inline-flex; align-items:baseline; gap:6px; padding:3px 8px; border:1px solid var(--line); border-radius:2px; font-size:13px; background:var(--bg); cursor:pointer}
+  .pp1:hover{border-color:var(--ink-3)}
+  .pp1 .tm{font-size:10px} .pp1 b{font-family:"IBM Plex Mono",monospace; font-weight:500; font-size:12px}
+  .mg{font-size:12px; color:var(--ink-3)}
+  .pc details,.dtl{border-top:1px solid var(--line-soft); padding-top:8px}
+  .pc summary,.dtl summary{cursor:pointer; font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-2); letter-spacing:.04em; list-style:none}
+  .pc summary::before,.dtl summary::before{content:"\25B8  "; color:var(--ink-3)}
+  .pc details[open] summary::before,.dtl[open] summary::before{content:"\25BE  "}
+  table{border-collapse:collapse; width:100%; font-size:13px}
+  th,td{padding:6px 8px; text-align:left; border-bottom:1px solid var(--line-soft); white-space:nowrap}
+  th{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); font-weight:500}
+  td.num,th.num{text-align:right; font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+  td.w{white-space:normal; color:var(--ink-3); font-size:12px}
+  tr:last-child td{border-bottom:0}
+  .tw{border:1px solid var(--line); background:var(--surface); border-radius:3px; overflow-x:auto}
+
+  /* Teams and defenses */
+  .teamwrap{max-width:820px}
+  .hm{display:grid; grid-template-columns:40px minmax(0,1fr); gap:6px 12px; align-items:center}
+  .hm .pp{font-family:"Barlow Condensed",sans-serif; font-size:22px; font-weight:600}
+  .cells{display:grid; grid-template-columns:repeat(16,minmax(0,1fr)); gap:3px}
+  .cell{height:44px; border-radius:2px; color:var(--ink); background:color-mix(in srgb,var(--den) var(--p),var(--surface)); display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1.15; cursor:default}
+  .cell b{font-family:"IBM Plex Mono",monospace; font-size:11.5px; font-weight:600}
+  .cell small{font-family:"IBM Plex Mono",monospace; font-size:10px; opacity:.8}
+  .hmax{display:flex; justify-content:space-between; font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--ink-3); margin:0 0 8px 52px; letter-spacing:.06em; text-transform:uppercase}
+  @media (max-width:1500px){.cell small{display:none}}
+  .dvp{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:24px; margin-top:12px}
+  @media (max-width:1700px){.dvp{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  .dvp h4{margin:0 0 6px; font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-2); font-weight:500}
+  .dvp .sep td{border-bottom:1px solid var(--ink-3); padding:0; height:0}
+
+  /* Tray content (the shell is TRAY_CSS from nflprops/tray.py) */
+  .ptray .tt-next{font-size:14px; color:var(--ink-2); margin:0 0 8px}
+  .ptray .tt-sig{border-top:1px solid var(--line); margin-top:20px; padding-top:12px}
+  .ptray .tt-sig h3{margin:0 0 8px; border:0; padding:0; display:flex; justify-content:space-between; align-items:baseline; gap:12px; color:var(--ink-2)}
+  .ptray .tt-sig h3 b{font-family:"Barlow Condensed",sans-serif; font-size:30px; font-weight:600; letter-spacing:0}
+  .ptray .kv{display:flex; justify-content:space-between; gap:12px; padding:5px 0; border-bottom:1px solid var(--line-soft); font-size:13.5px}
+  .ptray .kv span:first-child{color:var(--ink-3)}
+  .ptray .kv b{font-family:"IBM Plex Mono",monospace; font-weight:500; text-align:right; white-space:normal}
+  .ptray .gauge{position:relative; height:10px; margin:30px 0 6px; border-radius:2px;
+    background:linear-gradient(90deg,color-mix(in srgb,var(--bad) 45%,transparent) 0 40%,var(--line-soft) 40% 60%,color-mix(in srgb,var(--good) 45%,transparent) 60% 100%)}
+  .ptray .gauge i{position:absolute; top:-6px; width:3px; height:22px; background:var(--ink); margin-left:-1.5px}
+  .ptray .gauge em{position:absolute; top:-24px; font-style:normal; font-family:"IBM Plex Mono",monospace; font-size:11px; transform:translateX(-50%); white-space:nowrap}
+  .ptray .gl{position:relative; height:14px; font-family:"IBM Plex Mono",monospace; font-size:10px; color:var(--ink-3)}
+  .ptray .gl span{position:absolute; transform:translateX(-50%); white-space:nowrap}
+  .ptray .gl span:first-child{transform:none} .ptray .gl span:last-child{transform:translateX(-100%)}
+  .ptray .small{font-size:12.5px; color:var(--ink-3); margin:8px 0 0}
+__TRAY_CSS__
 </style><div class="wrap" data-inspect-id="trends-wrap">
   <header data-inspect-id="trends-header">
     <p class="eyebrow" data-inspect-id="trends-data-through">Trends use games through __WEEK__ &middot; built __BUILT__</p>
@@ -66,20 +186,232 @@
   <div class="pg-intro"><div class="pg-lede">
   <p class="note" data-inspect-id="trends-disclaimer"><strong>Entertainment. Past data is not a pick.</strong> Every outlook is a past rate, not a promise.</p>
   <p class="note" data-inspect-id="trends-footer">Outlook labels: Likely to hold (60.0% or more of past cases held, 50 or more cases), Likely to fade (40.0% or less), Watch (everything else). A change "held" if at least half of it carried into the next 3 games. Rates use 2021-2025 only.</p>
-  </div></div>
+  </div><div class="pg-aside"><div class="legend" data-inspect-id="trends-key">
+    <div class="lh">How to read the page</div>
+    <span><svg width="44" height="14" aria-hidden="true"><line x1="7" y1="7" x2="36" y2="7" stroke="var(--ink-3)" stroke-width="2"/><circle cx="7" cy="7" r="4.5" fill="var(--surface)" stroke="var(--ink-3)" stroke-width="1.5"/><circle cx="36" cy="7" r="6" fill="var(--ink-3)"/></svg>Hollow dot: before. Filled dot: last 3 games.</span>
+    <span class="ol hold"><i class="dot"></i>Likely to hold</span>
+    <span class="ol fade"><i class="dot"></i>Likely to fade</span>
+    <span class="ol watch"><i class="dot"></i>Watch, or no past rate (rank moves)</span>
+    <span class="lh" style="text-transform:none;letter-spacing:.02em">Click any player or team for the numbers.</span>
+  </div></div></div>
   <div class="pg-controls">
-  <div class="filter" data-inspect-id="trends-filter" role="group" aria-label="Position">
+  <div class="chips" data-inspect-id="trends-filter" role="group" aria-label="Position"><span class="lab">Position</span>
     <button type="button" aria-pressed="true" data-p="ALL">All</button><button type="button" aria-pressed="false" data-p="QB">QB</button><button type="button" aria-pressed="false" data-p="RB">RB</button><button type="button" aria-pressed="false" data-p="WR">WR</button><button type="button" aria-pressed="false" data-p="TE">TE</button>
   </div>
   </div>
-<div class="tr-grid pg-content" data-inspect-id="trends-grid">
-__CARDS__
-</div>
+  <div class="pg-content">
+    <section class="sec" data-inspect-id="trends-charts">
+      <h2>Biggest moves <span class="sub">last 3 games vs the baseline &middot; largest changes first</span></h2>
+      <div class="panels" id="panels"></div>
+    </section>
+    <section class="sec" data-inspect-id="trends-list">
+      <h2>Who and what <span class="sub" id="listCount"></span></h2>
+      <div class="sw"><span class="lab">View</span>
+        <div class="chips" data-inspect-id="trends-view-switch" role="group" aria-label="List view">
+          <button type="button" aria-pressed="true" data-v="player" data-inspect-id="trends-view-player">By player</button>
+          <button type="button" aria-pressed="false" data-v="pattern" data-inspect-id="trends-view-pattern">By pattern</button>
+        </div>
+        <span class="fine" style="margin:0" id="viewHint"></span>
+      </div>
+      <div id="list"></div>
+    </section>
+    <section class="sec" data-inspect-id="trends-teams">
+      <h2>Teams: pass share <span class="sub">last 3 games vs the baseline &middot; points per game is context, no past rate</span></h2>
+      <div class="teamwrap" id="teamChart"></div>
+      <details class="dtl" style="margin-top:12px;max-width:820px" data-inspect-id="trends-team-numbers"><summary>Numbers for the teams</summary><div class="tw" id="teamTable" style="margin-top:8px"></div></details>
+    </section>
+    <section class="sec" data-inspect-id="trends-dvp">
+      <h2>Defense versus position <span class="sub">rank 1 = toughest of 32 &middot; no past rate</span></h2>
+      <p class="fine">Yards per game allowed to the position, adjusted for the offenses faced and weighted toward recent games. Same rank as the Big day and Caution badges. Last wk = rank one week earlier. Games = current season. Outlook: Watch (no history rate for this type).</p>
+      <div class="hmax"><span>Toughest (rank 1)</span><span>Softest (rank 32)</span></div>
+      <div class="hm" id="hm" data-inspect-id="trends-dvp-map"></div>
+      <details class="dtl" style="margin-top:16px" data-inspect-id="trends-dvp-numbers"><summary>Numbers for the 5 toughest and 5 softest defenses</summary><div class="dvp" id="dvp"></div></details>
+    </section>
+  </div>
 </div>
 <script>
-document.querySelectorAll('.filter button').forEach(function(b){b.addEventListener('click',function(){
-  var p=b.dataset.p;
-  document.querySelectorAll('.filter button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});
-  document.querySelectorAll('[data-pos]').forEach(function(e){e.hidden=!(p==='ALL'||e.dataset.pos===p)});
-});});
+const D=__DATA__;
+(function(){
+"use strict";
+var ROWS=D.rows, DVP=D.dvp;
+var SIGN={usage:"Usage",snap:"Snap share",rz:"Inside-10",rank:"Rank",team:"Pass rate"};
+function sigFull(r){return {usage:r.pos==="RB"?"Carry share":"Target share",snap:"Offense snap share",rz:r.pos==="RB"?"Carries inside the 10":"Targets inside the 10",rank:"Position rank",team:"Pass share"}[r.sig];}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function ord(n){var t=n%100;return n+(t>=11&&t<=13?"th":({1:"st",2:"nd",3:"rd"})[n%10]||"th");}
+var st={pos:"ALL",view:"player",all:{},watch:false,allPlayers:false};
+try{var sv=localStorage.getItem("nflprops-trends-view"); if(sv==="player"||sv==="pattern") st.view=sv;}catch(e){}
+function colr(r){return r.cls==="hold"?"var(--good)":r.cls==="fade"?"var(--bad)":"var(--ink-3)";}
+function arrow(r){return r.dir==="rise"?'<span class="up">&#9650;</span>':'<span class="dn">&#9660;</span>';}
+function fmtV(r,v){return r.sig==="rz"?v.toFixed(2):v.toFixed(1)+"%";}
+function short(r){return r.dl.replace(" per game","/g").replace(" pts","").replace(/^[+-]/,"");}
+function keyOf(r){return r.nm+"|"+r.team;}
+function inPos(r){return r.pos==="TEAM"||st.pos==="ALL"||r.pos===st.pos;}
+
+/* ---- charts. id and rowId come from the caller, so each chart has its own ids ---- */
+function chart(rows,id,rowId){
+  var isR=rows.length&&rows[0].sig==="rank";
+  var a=function(r){return isR?r.from:r.base}, b=function(r){return isR?r.to:r.now};
+  var mx=Math.max.apply(null,rows.map(function(r){return Math.max(a(r),b(r));}));
+  mx=isR?Math.ceil(mx/10)*10:(mx<=6?Math.ceil(mx):Math.ceil(mx/10)*10);
+  var x=function(v){return (v/mx*100)+"%";};
+  var body=rows.map(function(r){
+    return '<button type="button" class="dr ol '+r.cls+'" data-k="'+esc(keyOf(r))+'" data-inspect-id="'+rowId+'" style="--c:'+colr(r)+'">'+
+      '<span class="nm"><span>'+esc(r.nm)+'</span>'+(r.sig==="team"?"":'<span class="tm">'+r.team+'</span>')+'</span>'+
+      '<span class="pl"><i class="ln" style="left:'+x(Math.min(a(r),b(r)))+';width:'+x(Math.abs(a(r)-b(r)))+'"></i><i class="b" style="left:'+x(a(r))+'"></i><i class="a" style="left:'+x(b(r))+'"></i></span>'+
+      '<span class="v '+(r.dir==="rise"?"up":"dn")+'">'+esc(r.dl.replace(" per game","/g").replace(" pts",""))+'</span></button>';}).join("");
+  var ticks=(isR?[0,mx/2,mx].map(function(v){return "#"+Math.max(1,v);}):[0,mx/2,mx].map(function(v){return v+(rows[0]&&rows[0].sig!=="rz"?"%":"");}));
+  return '<div data-inspect-id="'+id+'">'+body+'<div class="ax"><span class="cap">'+(isR?"better &larr;":"")+'</span><span class="scale">'+ticks.map(function(t){return "<span>"+t+"</span>";}).join("")+'</span><span></span></div></div>';
+}
+var LIM=10;
+var PANELS=[
+ {sig:"usage",title:"Usage",id:"trends-chart-usage",rowId:"trends-chart-usage-row",moreId:"trends-chart-usage-more",hint:"Target share (WR, TE) or carry share (RB), last 3 games vs 2025 or earlier 2026."},
+ {sig:"snap",title:"Snap share",id:"trends-chart-snap",rowId:"trends-chart-snap-row",moreId:"trends-chart-snap-more",hint:"Share of offensive snaps, last 3 games vs the baseline."},
+ {sig:"rz",title:"Inside-10 role",id:"trends-chart-rz",rowId:"trends-chart-rz-row",moreId:"trends-chart-rz-more",hint:"RB carries and WR/TE targets inside the 10, per game. Apart from yardage."},
+ {sig:"rank",title:"Rank movers",id:"trends-chart-rank",rowId:"trends-chart-rank-row",moreId:"trends-chart-rank-more",hint:'Week-over-week change in the position rank. Left is better. Recent production, not the depth chart. Full lists: <a href="/rankings.html" data-inspect-id="trends-rankings-link">Player rankings</a>.'}];
+function renderCharts(){
+  document.getElementById("panels").innerHTML=PANELS.map(function(p){
+    var rs=ROWS.filter(function(r){return r.sig===p.sig&&inPos(r);}).sort(function(u,v){return Math.abs(v.delta)-Math.abs(u.delta);});
+    var tot=rs.length; if(!st.all[p.sig]) rs=rs.slice(0,LIM);
+    var head='<h3 class="ph">'+p.title+(tot?' <span class="sub">'+rs.length+' of '+tot+'</span>':'')+'</h3><p class="hint">'+p.hint+'</p>';
+    if(!tot) return '<div>'+head+'<p class="fine">No '+st.pos+' rows for this signal.</p></div>';
+    return '<div>'+head+chart(rs,p.id,p.rowId)+(tot>LIM?'<button type="button" class="tbtn" data-all="'+p.sig+'" data-inspect-id="'+p.moreId+'">'+(st.all[p.sig]?"Show the top "+LIM:"Show all "+tot)+'</button>':"")+'</div>';}).join("");
+  document.querySelectorAll("[data-all]").forEach(function(b){b.onclick=function(){st.all[b.dataset.all]=!st.all[b.dataset.all]; renderCharts();};});
+}
+
+/* ---- list: by player ---- */
+function olRank(r){return r.cls==="hold"||r.cls==="fade"?0:(r.cls==="watch"?1:2);}
+function players(){
+  var m={}, order=[];
+  ROWS.filter(function(r){return r.sig!=="team"&&inPos(r);}).forEach(function(r){var k=keyOf(r); if(!m[k]){m[k]={nm:r.nm,team:r.team,pos:r.pos,sigs:[]};order.push(k);} m[k].sigs.push(r);});
+  return order.map(function(k){return m[k];}).sort(function(a,b){return b.sigs.length-a.sigs.length||Math.min.apply(null,a.sigs.map(olRank))-Math.min.apply(null,b.sigs.map(olRank))||a.nm.localeCompare(b.nm);});
+}
+function chipHtml(r){return '<span class="chip ol '+r.cls+'"><i class="dot"></i><span class="k">'+SIGN[r.sig]+'</span>'+arrow(r)+'<b>'+(r.sig==="rank"?Math.abs(r.delta):short(r))+'</b></span>';}
+var PL=12;
+function renderPlayers(){
+  var ps=players(), shown=st.allPlayers?ps:ps.slice(0,PL);
+  document.getElementById("listCount").textContent="showing "+shown.length+" of "+ps.length+" players";
+  document.getElementById("list").innerHTML='<div class="legend" style="flex-direction:row;gap:20px;flex-wrap:wrap;margin:0 0 12px"><span class="ol hold"><i class="dot"></i>Likely to hold</span><span class="ol fade"><i class="dot"></i>Likely to fade</span><span class="ol watch"><i class="dot"></i>Watch</span><span class="lh" style="text-transform:none;letter-spacing:.02em">Sorted by how many signals a player has, then by outlook.</span></div>'+
+   '<div class="pl-list" data-inspect-id="trends-player-list">'+shown.map(function(p,i){
+    var s0=p.sigs.filter(function(r){return r.next;})[0]||p.sigs[0];
+    var oppr=p.sigs.filter(function(r){return r.opp;})[0];
+    return '<button type="button" class="pr" data-k="'+esc(p.nm+"|"+p.team)+'" data-inspect-id="trends-player-row"><span class="n">'+(i+1)+'</span><span class="who"><b>'+esc(p.nm)+'</b><span class="tm">'+p.team+' '+p.pos+'</span></span><span class="chipsr">'+p.sigs.map(chipHtml).join("")+'</span><span class="nx">'+esc(s0.next||"")+(oppr?'<small>'+ord(oppr.opp)+' of 32 vs '+p.pos+'</small>':"")+'</span></button>';}).join("")+'</div>'+
+   (ps.length>PL?'<div style="margin-top:16px"><button type="button" class="tbtn" id="morePl" data-inspect-id="trends-player-more">'+(st.allPlayers?"Show the top "+PL+" only":"Show all "+ps.length+" players")+'</button></div>':"");
+  var mb=document.getElementById("morePl"); if(mb) mb.onclick=function(){st.allPlayers=!st.allPlayers; renderList();};
+}
+
+/* ---- list: by pattern. Card ids come from LANES and the card builder's parameters ---- */
+var LANES=[
+ {c:"hold",name:"Likely to hold",def:"60.0% or more of past cases held, with 50 or more cases.",id:"trends-lane-hold"},
+ {c:"fade",name:"Likely to fade",def:"40.0% or less of past cases held.",id:"trends-lane-fade"},
+ {c:"watch",name:"Watch",def:"Everything else. No clear lean either way.",id:"trends-lane-watch",toggleId:"trends-lane-watch-toggle"}];
+function patterns(){
+  var m={}, order=[];
+  ROWS.filter(function(r){return r.sig!=="rank"&&inPos(r);}).forEach(function(r){
+    var k=[r.sig,r.pos,r.dir,r.pct,r.n,r.merged].join("|");
+    if(!m[k]){m[k]={sig:r.sig,pos:r.pos,dir:r.dir,pct:r.pct,n:r.n,merged:r.merged,cls:r.cls,thin:r.thin,rows:[]};order.push(k);} m[k].rows.push(r);});
+  return order.map(function(k){return m[k];});
+}
+function pcard(p,cardId,chipId){
+  var rows=p.rows.slice().sort(function(a,b){return Math.abs(b.delta)-Math.abs(a.delta);});
+  var t=SIGN[p.sig]+' <span>&middot; '+(p.pos==="TEAM"?"teams":p.pos)+' '+(p.dir==="rise"?"risers":"fallers")+'</span>';
+  var big=p.pct==null?'<div class="pc-p" style="font-size:24px">Watch<small>history too thin, n='+p.n+'</small></div>':'<div class="pc-p">'+p.pct+'%<small>held in the next 3 games</small></div>';
+  var bar=p.pct==null?"":'<div class="gbar"><i style="width:'+p.pct+'%"></i><u style="left:40%"></u><u style="left:60%"></u><s>0</s><s style="left:40%">40</s><s style="left:60%">60</s><s class="r" style="left:100%">100</s></div>';
+  var tbl=rows.map(function(r){return '<tr><td><b>'+esc(r.nm)+'</b> '+(r.pos==="TEAM"?"":'<span class="tm">'+r.team+' '+r.pos+'</span>')+'</td><td class="num">'+arrow(r)+' '+esc(r.dl)+'</td><td class="num">'+fmtV(r,r.now)+' <span class="tm">vs</span> '+fmtV(r,r.base)+'</td><td class="tm">'+esc(r.next)+(r.opp?" &middot; "+ord(r.opp)+" of 32 vs "+r.pos:"")+'</td></tr><tr><td class="w" colspan="4">'+esc(r.sample)+(r.ppg3!=null?" &middot; points per game "+r.ppg3+" last 3 vs "+r.ppgS+" season":"")+'</td></tr>';}).join("");
+  return '<div class="pc ol '+p.cls+'" data-inspect-id="'+cardId+'"><div class="pc-h"><div class="pc-t">'+t+'</div><div class="cnt">'+(p.n!=null?"n="+p.n:"")+'</div></div>'+big+bar+
+   '<div class="ppl">'+rows.map(function(r){return '<button type="button" class="pp1" data-k="'+esc(keyOf(r))+'" data-inspect-id="'+chipId+'">'+esc(r.nm)+' '+(r.pos==="TEAM"?"":'<span class="tm">'+r.team+'</span>')+arrow(r)+'<b>'+short(r)+'</b></button>';}).join("")+'</div>'+
+   (p.merged?'<div class="mg">Merged cases: '+esc(p.merged)+'</div>':"")+
+   '<details><summary>Numbers for '+rows.length+' '+(rows.length>1?"players":"player")+'</summary><table><thead><tr><th>'+(p.pos==="TEAM"?"Team":"Player")+'</th><th class="num">Change</th><th class="num">Last 3 vs before</th><th>Next</th></tr></thead><tbody>'+tbl+'</tbody></table></details></div>';
+}
+function renderPatterns(){
+  var ps=patterns(), tp=0;
+  document.getElementById("list").innerHTML=LANES.map(function(l){
+    var L=ps.filter(function(p){return p.cls===l.c;}).sort(function(a,b){return l.c==="fade"?a.pct-b.pct:(b.pct||0)-(a.pct||0);});
+    var np=L.reduce(function(s,p){return s+p.rows.length;},0); tp+=L.length;
+    var cnt=L.length+" patterns &middot; "+np+" players";
+    var cards=L.map(function(p){return pcard(p,"trends-pattern-card","trends-pattern-chip");}).join("");
+    var sty='--c:'+(l.c==="hold"?"var(--good)":l.c==="fade"?"var(--bad)":"var(--ink-3)");
+    if(l.c==="watch") return '<section class="lane ol watch" style="'+sty+'" data-inspect-id="'+l.id+'"><button type="button" class="wbtn" id="wb" aria-expanded="'+st.watch+'" data-inspect-id="'+l.toggleId+'"><span class="car">&#9656;</span><span style="flex:1"><h3 style="display:inline">'+l.name+'</h3><span class="d">'+l.def+'</span></span><span class="cnt">'+cnt+' &middot; '+(st.watch?"click to close":"click to open")+'</span></button>'+(st.watch?'<div class="grid" style="margin-top:16px">'+cards+'</div>':"")+'</section>';
+    return '<section class="lane ol '+l.c+'" style="'+sty+'" data-inspect-id="'+l.id+'"><div class="lane-h"><h3><i class="dot"></i>'+l.name+'</h3><p>'+l.def+'</p><span class="cnt">'+cnt+'</span></div>'+(L.length?'<div class="grid">'+cards+'</div>':'<p class="fine">Nothing in this group for the current filter.</p>')+'</section>';}).join("");
+  document.getElementById("listCount").textContent=tp+" patterns";
+  var wb=document.getElementById("wb"); if(wb) wb.onclick=function(){st.watch=!st.watch; renderList();};
+}
+function renderList(){
+  document.getElementById("viewHint").textContent=st.view==="player"?"One row for each player. All of that player's signals are in the row.":"One card for each kind of change. The big number is how often that kind held in 2021-2025.";
+  document.querySelectorAll("[data-v]").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.v===st.view);});
+  if(st.view==="player") renderPlayers(); else renderPatterns();
+  bindOpen(document.getElementById("list"));
+}
+
+/* ---- teams ---- */
+function renderTeams(){
+  var T=ROWS.filter(function(r){return r.sig==="team";}).sort(function(a,b){return Math.abs(b.delta)-Math.abs(a.delta);});
+  document.getElementById("teamChart").innerHTML=chart(T,"trends-team-chart","trends-team-row");
+  document.getElementById("teamTable").innerHTML='<table><thead><tr><th>Team</th><th class="num">Pass share, last 3</th><th class="num">Before</th><th class="num">Change</th><th class="num">Pts/g, last 3</th><th class="num">Pts/g, season</th><th>Outlook</th><th>Next</th></tr></thead><tbody>'+T.map(function(r){
+    return '<tr><td><b>'+r.nm+'</b></td><td class="num">'+r.now.toFixed(1)+'%</td><td class="num">'+r.base.toFixed(1)+'% <span class="tm">'+esc(r.bl)+'</span></td><td class="num">'+arrow(r)+' '+esc(r.dl)+'</td><td class="num">'+(r.ppg3==null?"–":r.ppg3)+'</td><td class="num">'+(r.ppgS==null?"–":r.ppgS)+'</td><td><span class="pill ol '+r.cls+'"><i class="dot"></i>'+esc(r.label)+'</span> <span class="tm">'+esc(r.olText)+'</span></td><td class="tm">'+esc(r.next)+'</td></tr>';}).join("")+'</tbody></table>';
+  bindOpen(document.getElementById("teamChart"));
+}
+function renderDvp(){
+  var P=st.pos==="ALL"||st.pos==="TEAM"?["QB","RB","WR","TE"]:[st.pos];
+  document.getElementById("hm").innerHTML=P.map(function(p){
+    return '<div class="pp">'+p+'</div><div class="cells">'+DVP[p].map(function(t){
+      return '<div class="cell" data-inspect-id="trends-dvp-cell" title="'+t.team+' vs '+p+': rank '+t.rank+' of 32, '+t.now+' yds/g, last week '+(t.prev||"–")+', '+t.games+' games" style="--p:'+(6+Math.round((t.rank-1)/31*62))+'%"><b>'+t.team+'</b><small>'+t.now+'</small></div>';}).join("")+'</div>';}).join("");
+}
+function renderDvpTables(){
+  var NM={QB:"QB: passing yds allowed per game",RB:"RB: rushing + receiving yds allowed per game",WR:"WR: receiving yds allowed per game",TE:"TE: receiving yds allowed per game"};
+  document.getElementById("dvp").innerHTML=["QB","RB","WR","TE"].map(function(p){
+    var L=DVP[p]; var rows=L.slice(0,5).concat(["sep"],L.slice(-5));
+    return '<div><h4>'+NM[p]+'</h4><div class="tw"><table><thead><tr><th>Defense</th><th class="num">Rank</th><th class="num">Yds/g</th><th class="num">Last wk</th><th class="num">Games</th></tr></thead><tbody>'+rows.map(function(t){
+      return t==="sep"?'<tr class="sep"><td colspan="5"></td></tr>':'<tr><td>'+t.team+'</td><td class="num">'+t.rank+'</td><td class="num">'+t.now.toFixed(1)+'</td><td class="num">'+(t.prev||"–")+'</td><td class="num">'+t.games+'</td></tr>';}).join("")+'</tbody></table></div></div>';}).join("");
+}
+
+/* ---- player tray: the shell and CSS are the report tray's (TRAY_CSS) ---- */
+var bg=document.createElement("div"); bg.className="ptray-bg";
+var tray=document.createElement("aside"); tray.className="ptray";
+tray.setAttribute("role","dialog"); tray.setAttribute("aria-modal","true"); tray.setAttribute("aria-label","Trend numbers");
+tray.dataset.inspectId="trends-tray";
+document.body.appendChild(bg); document.body.appendChild(tray);
+var lastFocus=null;
+function closeTray(){document.documentElement.classList.remove("ptray-open"); if(lastFocus&&lastFocus.focus) lastFocus.focus();}
+bg.addEventListener("click",closeTray);
+document.addEventListener("keydown",function(e){if(e.key==="Escape") closeTray();});
+function kv(k,v){return '<div class="kv"><span>'+k+'</span><b>'+v+'</b></div>';}
+function sigBlock(r){
+  var now=r.sig==="rank"?"#"+r.to:fmtV(r,r.now), base=r.sig==="rank"?"#"+r.from:fmtV(r,r.base);
+  var g="", txt;
+  if(r.pct!=null){
+    g='<div class="gauge"><em style="left:'+Math.min(96,Math.max(4,r.pct))+'%">'+r.pct+'%</em><i style="left:'+r.pct+'%"></i></div><div class="gl"><span style="left:0">0% fade</span><span style="left:40%">40</span><span style="left:60%">60</span><span style="left:100%">100% hold</span></div>';
+    txt="In 2021-2025, "+r.pct+"% of past cases like this held for the next 3 games (n="+r.n+")."+(r.merged?" Merged cases: "+esc(r.merged)+".":"");
+  } else if(r.thin){ txt="History too thin for a rate (n="+r.n+")."; }
+  else { txt="No history rate for rank moves."; }
+  return '<div class="tt-sig ol '+r.cls+'" data-inspect-id="trends-tray-signal"><h3><span>'+esc(sigFull(r))+'</span><b class="'+(r.dir==="rise"?"up":"dn")+'">'+esc(r.dl)+'</b></h3>'+
+    kv("Last 3 games",now)+kv("Before"+(r.bl?" ("+esc(r.bl)+")":" (last week)"),base)+
+    (r.ppg3!=null?kv("Points per game, last 3 vs season",r.ppg3+" vs "+r.ppgS):"")+
+    kv("Sample",esc(r.sig==="rank"?r.games+" games":r.sample))+
+    '<p style="margin:12px 0 0"><span class="pill ol '+r.cls+'"><i class="dot"></i>'+esc(r.label)+'</span></p>'+g+'<p class="small">'+txt+'</p></div>';
+}
+function openTray(k,from){
+  var rs=ROWS.filter(function(r){return keyOf(r)===k;}); if(!rs.length) return;
+  var r0=rs[0], nx=rs.filter(function(r){return r.next;})[0], op=rs.filter(function(r){return r.opp;})[0];
+  var next=nx?'<p class="tt-next">Next game: <b>'+esc(nx.next)+'</b>'+(op?" &middot; opponent is "+ord(op.opp)+" of 32 against "+op.pos+"s":"")+'</p>':"";
+  tray.innerHTML='<button type="button" class="ptray-x" aria-label="Close" data-inspect-id="trends-tray-close">&times;</button><p class="ptray-eb">Trends &middot; '+(r0.pos==="TEAM"?"Team":esc(r0.team)+" "+esc(r0.pos))+' &middot; '+rs.length+' signal'+(rs.length>1?"s":"")+'</p><h2>'+esc(r0.nm)+'</h2>'+next+rs.map(sigBlock).join("");
+  tray.querySelector(".ptray-x").addEventListener("click",closeTray);
+  tray.scrollTop=0; lastFocus=from||null;
+  document.documentElement.classList.add("ptray-open");
+}
+function bindOpen(root){root.querySelectorAll("[data-k]").forEach(function(el){el.addEventListener("click",function(){openTray(el.dataset.k,el);});});}
+
+/* ---- controls and start ---- */
+document.querySelectorAll("[data-p]").forEach(function(b){b.addEventListener("click",function(){
+  st.pos=b.dataset.p; st.allPlayers=false;
+  document.querySelectorAll("[data-p]").forEach(function(x){x.setAttribute("aria-pressed",x===b);});
+  renderCharts(); renderList(); renderDvp();});});
+document.querySelectorAll("[data-v]").forEach(function(b){b.addEventListener("click",function(){
+  st.view=b.dataset.v; try{localStorage.setItem("nflprops-trends-view",st.view);}catch(e){}
+  renderList();});});
+document.getElementById("panels").addEventListener("click",function(e){var b=e.target.closest(".dr"); if(b) openTray(b.dataset.k,b);});
+renderCharts(); renderList(); renderTeams(); renderDvp(); renderDvpTables();
+var vw=location.hash.match(/^#view=(player|pattern)$/); if(vw){st.view=vw[1]; renderList();}
+var hm=location.hash.match(/^#p=(.+)$/);
+if(hm){try{tray.style.transition="none"; bg.style.transition="none"; openTray(decodeURIComponent(hm[1]),null); setTimeout(function(){tray.style.transition=""; bg.style.transition="";},300);}catch(e){}}
+})();
 </script>
