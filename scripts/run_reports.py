@@ -127,6 +127,31 @@ def save_state(st):
     tmp.replace(STATE)
 
 
+MARKERS = pathlib.Path(__file__).resolve().parent / "td" / "write_markers.py"
+
+
+def write_td_markers(season, week, run=None):
+    """Write reports/td_markers_{season}_w{week}.json via scripts/td/write_markers.py.
+
+    Idempotent: the writer overwrites the same week file, and keeps the
+    entries of games that have already started. A failure is logged loudly
+    to stderr (launchd: logs/auto.err) and returned as False. It never
+    raises, so report generation goes on. Returns True on success."""
+    import subprocess
+    run = run or subprocess.run
+    try:
+        r = run([sys.executable, str(MARKERS), str(season), str(week)],
+                capture_output=True, text=True, timeout=600)
+        if r.returncode != 0:
+            raise RuntimeError(f"exit {r.returncode}: {(r.stderr or r.stdout or '').strip()[-500:]}")
+        print((r.stdout or "").strip().splitlines()[0] if r.stdout else "td markers written")
+        return True
+    except Exception as e:  # noqa: BLE001 -- must not break report generation
+        sys.stderr.write(f"!!! TD MARKERS FAILED for {season} W{week}: {e}\n")
+        print(f"!!! TD MARKERS FAILED for {season} W{week}: {e}")
+        return False
+
+
 def auto(N_PICKS, DRY):
     """One scheduled pass. Quiet (and free) when nothing is due."""
     from nflprops import report as RP, schedule as SC
@@ -179,6 +204,13 @@ def auto(N_PICKS, DRY):
             print(f"sitting {key}: {len(ready)}/{len(sit)} ready, waiting")
         if not DRY:
             save_state(st)
+        # Markers go out with the sitting's reports, before kickoff. Once per
+        # sitting; the writer keeps already-started games, so a re-run is safe.
+        if not DRY and not st.setdefault("markers", {}).get(key):
+            wk = next((meta[i][2:] for i in sit.id if i in meta), None)
+            if wk and write_td_markers(*wk):
+                st["markers"][key] = now.isoformat()
+                save_state(st)
     if wrote and not DRY:
         from nflprops.rating import write_rankings
         print(f"rankings -> {write_rankings().name}")

@@ -1,0 +1,256 @@
+{
+ "ARI-NYG": {
+  "backfill": true,
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.437,
+  "model_p": 0.437,
+  "odds": "missing",
+  "phase3": {
+   "p_combined": 0.411,
+   "p_rec": 0.041,
+   "p_rush": 0.386
+  },
+  "player": "Jeremiyah Love",
+  "position": "RB",
+  "team": "ARI"
+ },
+ "ATL-NO": {
+  "basis": "model+book_vig",
+  "book_p": 0.677,
+  "conf": 0.513,
+  "model_p": 0.513,
+  "phase3": {
+   "p_combined": 0.48,
+   "p_rec": 0.154,
+   "p_rush": 0.386
+  },
+  "player": "Bijan Robinson",
+  "position": "RB",
+  "team": "ATL"
+ },
+ "DAL-HOU": {
+  "backfill": true,
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.564,
+  "model_p": 0.564,
+  "odds": "missing",
+  "phase3": {
+   "p_combined": 0.409,
+   "p_rec": 0.037,
+   "p_rush": 0.386
+  },
+  "player": "David Montgomery",
+  "position": "RB",
+  "team": "HOU"
+ },
+ "DEN-SF": {
+  "backfill": true,
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.538,
+  "model_p": 0.538,
+  "odds": "missing",
+  "phase3": {
+   "p_combined": 0.44,
+   "p_rec": 0.132,
+   "p_rush": 0.354
+  },
+  "player": "Christian McCaffrey",
+  "position": "RB",
+  "team": "SF"
+ },
+ "DET-CAR": {
+  "backfill": true,
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.614,
+  "model_p": 0.614,
+  "odds": "missing",
+  "phase3": {
+   "p_combined": 0.468,
+   "p_rec": 0.203,
+   "p_rush": 0.333
+  },
+  "player": "Jahmyr Gibbs",
+  "position": "RB",
+  "team": "DET"
+ },
+ "GB-TB": {
+  "backfill": true,
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.407,
+  "model_p": 0.407,
+  "odds": "missing",
+  "phase3": {
+   "p_combined": 0.4,
+   "p_rec": 0.211,
+   "p_rush": 0.24
+  },
+  "player": "Bucky Irving",
+  "position": "RB",
+  "team": "TB"
+ },
+ "IND-WAS": {
+  "backfill": true,
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.614,
+  "model_p": 0.614,
+  "odds": "missing",
+  "phase3": {
+   "p_combined": 0.432,
+   "p_rec": 0.075,
+   "p_rush": 0.386
+  },
+  "player": "Jonathan Taylor",
+  "position": "RB",
+  "team": "IND"
+ },
+ "JAX-CIN": {
+  "backfill": true,
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.519,
+  "model_p": 0.519,
+  "odds": "missing",
+  "phase3": {
+   "p_combined": 0.398,
+   "p_rec": 0.117,
+   "p_rush": 0.318
+  },
+  "player": "Chase Brown",
+  "position": "RB",
+  "team": "CIN"
+ },
+ "KC-LV": {
+  "backfill": true,
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.563,
+  "model_p": 0.563,
+  "odds": "missing",
+  "phase3": {
+   "p_combined": 0.401,
+   "p_rec": 0.09,
+   "p_rush": 0.342
+  },
+  "player": "Kenneth Walker III",
+  "position": "RB",
+  "team": "KC"
+ },
+ "LA-PHI": {
+  "backfill": true,
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.421,
+  "model_p": 0.421,
+  "odds": "missing",
+  "phase3": {
+   "p_combined": 0.42,
+   "p_rec": 0.062,
+   "p_rush": 0.381
+  },
+  "player": "Kyren Williams",
+  "position": "RB",
+  "team": "LA"
+ },
+ "LAC-SEA": {
+  "backfill": true,
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.422,
+  "model_p": 0.422,
+  "odds": "missing",
+  "phase3": {
+   "p_combined": 0.465,
+   "p_rec": 0.331,
+   "p_rush": 0.201
+  },
+  "player": "Jaxon Smith-Njigba",
+  "position": "WR",
+  "team": "SEA"
+ },
+ "MIA-MIN": {
+  "backfill": true,
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.519,
+  "model_p": 0.519,
+  "odds": "missing",
+  "phase3": {
+   "p_combined": 0.405,
+   "p_rec": 0.102,
+   "p_rush": 0.337
+  },
+  "player": "Aaron Jones",
+  "position": "RB",
+  "team": "MIN"
+ },
+ "NE-BUF": {
+  "backfill": true,
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.567,
+  "model_p": 0.567,
+  "odds": "missing",
+  "phase3": {
+   "p_combined": 0.445,
+   "p_rec": 0.125,
+   "p_rush": 0.366
+  },
+  "player": "James Cook",
+  "position": "RB",
+  "team": "BUF"
+ },
+ "NYJ-CHI": {
+  "backfill": true,
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.488,
+  "model_p": 0.488,
+  "odds": "missing",
+  "phase3": {
+   "p_combined": 0.384,
+   "p_rec": 0.052,
+   "p_rush": 0.35
+  },
+  "player": "D'Andre Swift",
+  "position": "RB",
+  "team": "CHI"
+ },
+ "PIT-CLE": {
+  "backfill": true,
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.361,
+  "model_p": 0.361,
+  "odds": "missing",
+  "phase3": {
+   "p_combined": 0.33,
+   "p_rec": 0.116,
+   "p_rush": 0.242
+  },
+  "player": "Jaylen Warren",
+  "position": "RB",
+  "team": "PIT"
+ },
+ "TEN-BAL": {
+  "backfill": true,
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.653,
+  "model_p": 0.653,
+  "odds": "missing",
+  "phase3": {
+   "p_combined": 0.411,
+   "p_rec": 0.042,
+   "p_rush": 0.386
+  },
+  "player": "Derrick Henry",
+  "position": "RB",
+  "team": "BAL"
+ }
+}

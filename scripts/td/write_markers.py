@@ -83,12 +83,43 @@ def phase3_combined(season, week):
     return out
 
 
+def merge_started(new, path, upcoming):
+    """Idempotent re-run. The scheduled job runs this once per sitting. By the
+    Sunday evening sitting the Thursday and early games are no longer on the
+    book's event list, so a plain rewrite would replace their real pre-game
+    entries with model-only ones. Keep the file's existing entry (backfill flag included) for any
+    game that is not upcoming, when the book was used. A started game with no
+    earlier entry is flagged backfill.
+    Same input gives the same file, so a repeat run is safe."""
+    if not upcoming or not path.exists():
+        return new
+    try:
+        old = json.loads(path.read_text())
+    except ValueError:
+        return new
+    merged = dict(new)
+    for k, v in old.items():
+        if k not in upcoming:
+            merged[k] = v
+    for k, v in merged.items():
+        if k not in upcoming and not v.get("backfill") and k in new and k not in old:
+            # Started game with no earlier entry: its pre-game odds were
+            # never captured. Model only, flagged, never a live pick.
+            v.update({"backfill": True, "odds": "missing", "basis": "model_only"})
+    return merged
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("season", type=int)
     ap.add_argument("week", type=int)
     ap.add_argument("--no-book", action="store_true")
+    ap.add_argument("--backfill", action="store_true",
+                    help="week already started with no pre-game anytime-TD odds on file: "
+                         "model only, every entry flagged backfill, never graded as a live pick")
     args = ap.parse_args()
+    if args.backfill:
+        args.no_book = True  # post-game or current odds would leak; never fetch them
 
     model, n_train = train_through(args.season, args.week)
     f = features(args.season, args.week)
@@ -98,9 +129,12 @@ def main():
     f["player_key"] = f.full_name.map(name_key)
 
     book = pd.DataFrame(columns=["player_key", "book_p", "devigged"])
+    started_games = set()  # games already kicked off: the book no longer shows them
     if not args.no_book:
         ev = upcoming_events()
         abbr = team_abbr_map()
+        upcoming = {f"{abbr.get(e.away_team)}-{abbr.get(e.home_team)}" for e in ev.itertuples()}
+        started_games = upcoming
         frames = []
         for e in ev.itertuples():
             a, h = abbr.get(e.away_team), abbr.get(e.home_team)
@@ -147,6 +181,8 @@ def main():
             "book_p": None if pd.isna(r.book_p) else round(float(r.book_p), 3),
             "basis": r.basis,
         }
+        if args.backfill:
+            entry.update({"backfill": True, "odds": "missing", "basis": "model_only"})
         p_combined = getattr(r, "p_combined", None)
         if p_combined is not None and pd.notna(p_combined):
             entry["phase3"] = {
@@ -157,6 +193,7 @@ def main():
         out[key] = entry
 
     path = ROOT / "reports" / f"td_markers_{args.season}_w{args.week}.json"
+    out = merge_started(out, path, started_games)
     path.write_text(json.dumps(out, indent=1, sort_keys=True))
     print(f"trained on {n_train:,} player-weeks; {len(out)} markers -> {path.name}")
     for k, v in sorted(out.items(), key=lambda kv: -kv[1]["conf"]):
