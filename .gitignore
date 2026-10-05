@@ -32,3 +32,4 @@ data/boards/
 data/shipping/*.pkl
 data/ratings/*.parquet
 data/report_state.json
+.DS_Store
