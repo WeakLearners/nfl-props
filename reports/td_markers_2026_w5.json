@@ -1,0 +1,212 @@
+{
+ "BAL-ATL": {
+  "basis": "model+book_vig",
+  "book_p": 0.697,
+  "conf": 0.502,
+  "model_p": 0.502,
+  "phase3": {
+   "p_combined": 0.463,
+   "p_rec": 0.125,
+   "p_rush": 0.386
+  },
+  "player": "Bijan Robinson",
+  "position": "RB",
+  "team": "ATL"
+ },
+ "BUF-LA": {
+  "basis": "model+book_vig",
+  "book_p": 0.535,
+  "conf": 0.535,
+  "model_p": 0.536,
+  "phase3": {
+   "p_combined": 0.422,
+   "p_rec": 0.132,
+   "p_rush": 0.334
+  },
+  "player": "Josh Allen",
+  "position": "QB",
+  "team": "BUF"
+ },
+ "CHI-GB": {
+  "basis": "model+book_vig",
+  "book_p": 0.556,
+  "conf": 0.525,
+  "model_p": 0.525,
+  "phase3": {
+   "p_combined": 0.312,
+   "p_rec": 0.041,
+   "p_rush": 0.283
+  },
+  "player": "D'Andre Swift",
+  "position": "RB",
+  "team": "CHI"
+ },
+ "CIN-MIA": {
+  "basis": "model+book_vig",
+  "book_p": 0.615,
+  "conf": 0.472,
+  "model_p": 0.472,
+  "phase3": {
+   "p_combined": 0.447,
+   "p_rec": 0.232,
+   "p_rush": 0.28
+  },
+  "player": "Chase Brown",
+  "position": "RB",
+  "team": "CIN"
+ },
+ "CLE-NYJ": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.426,
+  "model_p": 0.426,
+  "phase3": {
+   "p_combined": 0.381,
+   "p_rec": 0.085,
+   "p_rush": 0.324
+  },
+  "player": "Breece Hall",
+  "position": "RB",
+  "team": "NYJ"
+ },
+ "DEN-LAC": {
+  "basis": "model+book_vig",
+  "book_p": 0.408,
+  "conf": 0.408,
+  "model_p": 0.413,
+  "phase3": {
+   "p_combined": 0.397,
+   "p_rec": 0.018,
+   "p_rush": 0.386
+  },
+  "player": "J.K. Dobbins",
+  "position": "RB",
+  "team": "DEN"
+ },
+ "DET-ARI": {
+  "basis": "model+book_vig",
+  "book_p": 0.818,
+  "conf": 0.615,
+  "model_p": 0.615,
+  "phase3": {
+   "p_combined": 0.516,
+   "p_rec": 0.249,
+   "p_rush": 0.356
+  },
+  "player": "Jahmyr Gibbs",
+  "position": "RB",
+  "team": "DET"
+ },
+ "HOU-TEN": {
+  "basis": "model+book_vig",
+  "book_p": 0.455,
+  "conf": 0.455,
+  "model_p": 0.509,
+  "phase3": {
+   "p_combined": 0.368,
+   "p_rec": 0.018,
+   "p_rush": 0.356
+  },
+  "player": "David Montgomery",
+  "position": "RB",
+  "team": "HOU"
+ },
+ "IND-PIT": {
+  "basis": "model+book_vig",
+  "book_p": 0.6,
+  "conf": 0.398,
+  "model_p": 0.398,
+  "phase3": {
+   "p_combined": 0.326,
+   "p_rec": 0.047,
+   "p_rush": 0.292
+  },
+  "player": "Jaylen Warren",
+  "position": "RB",
+  "team": "PIT"
+ },
+ "LV-NE": {
+  "basis": "model+book_vig",
+  "book_p": 0.535,
+  "conf": 0.447,
+  "model_p": 0.447,
+  "phase3": {
+   "p_combined": 0.406,
+   "p_rec": 0.129,
+   "p_rush": 0.318
+  },
+  "player": "Ashton Jeanty",
+  "position": "RB",
+  "team": "LV"
+ },
+ "MIN-NO": {
+  "basis": "model+book_vig",
+  "book_p": 0.545,
+  "conf": 0.44,
+  "model_p": 0.44,
+  "phase3": {
+   "p_combined": 0.301,
+   "p_rec": 0.051,
+   "p_rush": 0.264
+  },
+  "player": "Aaron Jones",
+  "position": "RB",
+  "team": "MIN"
+ },
+ "NYG-WAS": {
+  "basis": "model+book_vig",
+  "book_p": 0.444,
+  "conf": 0.383,
+  "model_p": 0.383,
+  "phase3": {
+   "p_combined": 0.317,
+   "p_rec": 0.131,
+   "p_rush": 0.214
+  },
+  "player": "Cam Skattebo",
+  "position": "RB",
+  "team": "NYG"
+ },
+ "PHI-JAX": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.431,
+  "model_p": 0.431,
+  "phase3": {
+   "p_combined": 0.408,
+   "p_rec": 0.068,
+   "p_rush": 0.365
+  },
+  "player": "Bhayshul Tuten",
+  "position": "RB",
+  "team": "JAX"
+ },
+ "SF-SEA": {
+  "basis": "model+book_vig",
+  "book_p": 0.583,
+  "conf": 0.435,
+  "model_p": 0.435,
+  "phase3": {
+   "p_combined": 0.442,
+   "p_rec": 0.121,
+   "p_rush": 0.365
+  },
+  "player": "Christian McCaffrey",
+  "position": "RB",
+  "team": "SF"
+ },
+ "TB-DAL": {
+  "basis": "model+book_vig",
+  "book_p": 0.688,
+  "conf": 0.55,
+  "model_p": 0.55,
+  "phase3": {
+   "p_combined": 0.505,
+   "p_rec": 0.221,
+   "p_rush": 0.365
+  },
+  "player": "Javonte Williams",
+  "position": "RB",
+  "team": "DAL"
+ }
+}
