@@ -111,11 +111,9 @@ NEW_PRIMARY_STATS = {"passing_yards", "rushing_yards"}
 NEW_PRIMARY_FROM_KICKOFF = "2026-10-11 16:00"
 
 
-# One-time manual override (decision #43, 2026-10-11): Bo Nix's passing_yards card
-# in DEN-LAC stays on the old engine. The new model gave 70.5 because of a
-# train/serve mismatch in snap_share_rank_in_group. Keyed on game and player,
-# not a general rule.
-PINNED_OLD = {("2026_05_DEN_LAC", "Bo Nix", "passing_yards")}
+# One-time override list. Empty: the Nix pin (DEN-LAC, 2026-10-11) was lifted after the
+# serving rank fix (decision #44) gave him 214.4, a sane number. Keyed on game, player, stat.
+PINNED_OLD = set()
 
 
 def new_primary(kickoff, stat):

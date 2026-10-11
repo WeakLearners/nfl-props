@@ -694,7 +694,45 @@ def pregame_features(season, week):
     df = assemble_features(pg_ext, snaps, injuries, schedules, xwalk, depth, stadiums, weather, spine)
 
     out = df[df.player_id.isin(stub.player_id) & df.season.eq(season) & df.week.eq(week)].copy()
-    return out.reset_index(drop=True)
+    out = out.reset_index(drop=True)
+    if SERVING_RANK_FIX:
+        out["snap_share_rank_in_group"] = serving_snap_rank(out)
+    return out
+
+
+# Decision #44 (train/serve parity): in the training table the rank group holds only
+# teammates who have a row for that game, so only players who played. A pregame stub
+# group holds every active teammate, including healthy backups whose last snap share
+# is stale (weeks old), so a starter could rank behind them (Nix, DEN, 2026 W5:
+# rank 3 -> the passing model took -146 yards). Rule: a teammate who missed all of
+# the player's last 4 games (games_missed_last4 >= 4) does not count in anyone
+# else's rank (QB group only, see serving_snap_rank). A player always ranks himself. Out/IR/inactive players are already
+# absent from the stub (_roster splits them off).
+SERVING_RANK_FIX = True
+RANK_GAP_GAMES = 4
+
+
+def serving_snap_rank(out, gap=None):
+    """Start from the rank assemble_features() computed, then subtract the teammates who
+    do not count: ahead of the player by last snap share, and out of the last `gap` games
+    (games_missed_last4 >= gap). Identical to the assembled rank when nobody is dropped."""
+    gap = RANK_GAP_GAMES if gap is None else gap
+    l1 = out["team_snap_share_l1"].to_numpy(float)
+    # QB group only: the 2025 parity check (decision #44) showed the rule lowers agreement
+    # with the training rank for RB/WR/TE, where several teammates play, and raises it for QB.
+    drop = ((out["games_missed_last4"].fillna(0).to_numpy(float) >= gap)
+            & (out["position_group"].to_numpy() == "QB"))
+    base = out["snap_share_rank_in_group"].to_numpy(float)
+    rank = base.copy()
+    groups = {}
+    for i, k in enumerate(zip(out["team"], out["position_group"])):
+        groups.setdefault(k, []).append(i)
+    for idx in groups.values():
+        for i in idx:
+            if np.isnan(l1[i]):
+                continue
+            rank[i] = base[i] - sum(1 for j in idx if j != i and drop[j] and l1[j] > l1[i])
+    return np.where(np.isnan(rank), rank, np.maximum(rank, 1.0))
 
 
 def main():
