@@ -1,13 +1,8 @@
 {
-  "_purpose": "Per-stat official engine for the live report from 2026 week 6, set by decision #42 (2026 holdout, weeks 1-4) and recorded in decision #43. v1.json is the locked engine list for the holdout and is not edited.",
+  "_purpose": "Per-stat official engine for the live report from the 2026 week 5 4pm games (2026-10-11), set by decision #42 (2026 holdout, weeks 1-4) and recorded in decision #43. v1.json is the locked engine list for the holdout and is not edited.",
   "generated_at": "2026-10-11",
   "generated_by": "Finance Desk / CFO, decision #43",
   "supersedes_for_display": "engine/v1.json (v1 still describes the holdout lock)",
-  "effective_from": {
-    "season": 2026,
-    "week": 6,
-    "code": "nflprops/report.py NEW_PRIMARY_FROM, NEW_PRIMARY_STATS"
-  },
   "spread_rule": "The new model has no spread of its own. On a new-primary card the range, z and mp use the new model's mean with the old engine's sd_adj (sd x SD_INFLATE 1.10). Holdout RMSE: passing_yards new 83.50 vs old 83.72, rushing_yards new 26.15 vs old 27.09, so the old spread is not too narrow for the new mean.",
   "engines": {
     "passing_yards": {
@@ -54,5 +49,9 @@
     "data/shipping/receiving_yards.pkl": "1e99a9543dcb54e892b82b9ccf746b1a5b86696c7636c6e1b736acfaafced257",
     "data/shipping/targets.pkl": "3b4ea2bae56538a4b2bca1d4c8b395b3f505402d4afb677961a0a0c4d6fc8c95"
   },
-  "weeks_1_to_5": "Published with the old engine for every stat. Their embedded data is not rewritten."
+  "weeks_1_to_5": "Games that kicked off before 2026-10-11 16:00 ET were published with the old engine for every stat. Their embedded data is not rewritten.",
+  "effective_from": {
+    "kickoff_et": "2026-10-11 16:00",
+    "code": "nflprops/report.py NEW_PRIMARY_FROM_KICKOFF, NEW_PRIMARY_STATS"
+  }
 }

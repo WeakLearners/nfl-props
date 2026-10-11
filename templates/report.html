@@ -422,9 +422,9 @@
     market's. The new model has no such test. Useful for seeing a player's plausible range; not evidence anyone is mispriced.</p>
     <p><strong>Two engines, one per stat (decision #42).</strong> Every passing-yards, receiving-yards,
     rushing-yards, and receptions card carries two forecasts for the same player and stat. The card names
-    which engine makes the big number. From week 6 of 2026, the new model makes the big number for
+    which engine makes the big number. From the 2026 week 5 4pm games (2026-10-11), the new model makes the big number for
     <strong>passing yards and rushing yards</strong>. The old engine makes it for <strong>receiving yards,
-    receptions, and completions</strong>. Reports for weeks 1 to 5 used the old engine for every stat and
+    receptions, and completions</strong>. Games before that kickoff used the old engine for every stat and
     keep those numbers. Anytime touchdowns are unchanged (see below).</p>
     <p><em>Old engine</em> (built 2026-09-13, <code>nflprops/project.py</code>). It starts from the player's own recent games,
     weighting the latest most. It splits his workload (targets, carries, pass attempts) from what
@@ -469,7 +469,7 @@
 <script>
 const DATA = __DATA__;
 // Decision #43: each row names the engine behind its big number (pe) and carries
-// the other engine's number (alt). Reports built before week 6 of 2026 have
+// the other engine's number (alt). Reports built before 2026-10-11 4pm ET have
 // neither: they used the old engine, and their new-model number is p3.
 DATA.forEach(function(d){ if(d.pe==null){ d.pe="old"; d.alt=(d.p3==null?null:d.p3); } });
 const ENGNAME = {old:"old engine", "new":"new model"};

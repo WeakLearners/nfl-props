@@ -102,14 +102,17 @@ def _imp(a):
 
 
 # Decisions #42/#43: the 2026 holdout picked the new model for these stats.
-# Reports from week 6 on use it as the card's number; weeks 1-5 keep the old
+# Games from the 2026 week 5 4pm kickoffs on use it as the card number; earlier games keep the old
 # engine, as published.
 NEW_PRIMARY_STATS = {"passing_yards", "rushing_yards"}
-NEW_PRIMARY_FROM = (2026, 6)
+# Gate by kickoff (naive America/New_York, as stored in schedules): games that
+# kick off at or after this moment use the new model. Weeks 1-5 games before it
+# keep the old engine as published. Every later game is after it.
+NEW_PRIMARY_FROM_KICKOFF = "2026-10-11 16:00"
 
 
-def new_primary(season, week, stat):
-    return stat in NEW_PRIMARY_STATS and (season, week) >= NEW_PRIMARY_FROM
+def new_primary(kickoff, stat):
+    return stat in NEW_PRIMARY_STATS and bool(kickoff) and kickoff >= NEW_PRIMARY_FROM_KICKOFF
 
 
 def build(season, week, teams, lines, n_picks=6):
@@ -158,7 +161,7 @@ def build(season, week, teams, lines, n_picks=6):
 
     # Decision #31 (extended by #38/#39/#40): Phase 3's volume/yardage models.
     # Since decision #42/#43 they are the primary number for passing_yards and
-    # rushing_yards from week 6, and the secondary line for the other stats.
+    # rushing_yards from that kickoff, and the secondary line for the other stats.
     # Never merged into one figure -- see #37.
     try:
         p3 = phase3_vol(season, week)
@@ -198,8 +201,12 @@ def build(season, week, teams, lines, n_picks=6):
     pr["old_proj"] = pr.proj
     pr["new_proj"] = [r[f"p3_{r['stat']}"] if f"p3_{r['stat']}" in r.index else np.nan
                       for _, r in pr.iterrows()]
-    pr["use_new"] = [new_primary(season, week, s) and pd.notna(n)
-                     for s, n in zip(pr.stat, pr.new_proj)]
+    with connect() as con:
+        _ko = pd.read_sql_query("SELECT game_id, gameday, gametime FROM schedules WHERE season=? AND week=?",
+                                con, params=[season, week])
+    ko = {r.game_id: f"{r.gameday} {r.gametime}" for r in _ko.itertuples() if r.gameday and r.gametime}
+    pr["use_new"] = [new_primary(ko.get(g), s) and pd.notna(n)
+                     for g, s, n in zip(pr.game_id, pr.stat, pr.new_proj)]
     pr["proj"] = np.where(pr.use_new, pr.new_proj, pr.old_proj)
     # The old engine's defense multiplier is not applied to a new-primary number.
     pr["applied"] = pr.applied & ~pr.use_new

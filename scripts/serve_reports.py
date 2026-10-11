@@ -968,7 +968,7 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
   <div class="pg-intro"><div class="pg-lede">
   <p class="sub" data-inspect-id="slate-subtitle">Every shortlisted leg in the week,
     pooled by sitting and ranked three ways. Model is this project's own chance the
-    leg lands, from the engine named on the report card (the old engine for weeks 1 to 5; from week 6 the
+    leg lands, from the engine named on the report card (the old engine before the 2026-10-11 4pm games; from those games the
     new model for passing and rushing yards). Book is what FanDuel's price implies. The small figure under Book is
     the difference, and it is the only column that says anything the book doesn't.</p>
   </div></div>
