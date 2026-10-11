@@ -1,7 +1,7 @@
 {
  "BAL-ATL": {
   "basis": "model+book_vig",
-  "book_p": 0.697,
+  "book_p": 0.688,
   "conf": 0.502,
   "model_p": 0.502,
   "phase3": {
@@ -20,7 +20,7 @@
   "model_p": 0.568,
   "phase3": {
    "p_combined": 0.379,
-   "p_rec": 0.107,
+   "p_rec": 0.108,
    "p_rush": 0.304
   },
   "player": "James Cook",
@@ -33,8 +33,8 @@
   "conf": 0.517,
   "model_p": 0.517,
   "phase3": {
-   "p_combined": 0.318,
-   "p_rec": 0.044,
+   "p_combined": 0.32,
+   "p_rec": 0.047,
    "p_rush": 0.287
   },
   "player": "D'Andre Swift",
@@ -47,9 +47,9 @@
   "conf": 0.484,
   "model_p": 0.484,
   "phase3": {
-   "p_combined": 0.449,
-   "p_rec": 0.235,
-   "p_rush": 0.28
+   "p_combined": 0.445,
+   "p_rec": 0.217,
+   "p_rush": 0.292
   },
   "player": "Chase Brown",
   "position": "RB",
@@ -59,11 +59,11 @@
   "basis": "model+book_vig",
   "book_p": 0.37,
   "conf": 0.37,
-  "model_p": 0.401,
+  "model_p": 0.408,
   "phase3": {
-   "p_combined": 0.442,
-   "p_rec": 0.187,
-   "p_rush": 0.314
+   "p_combined": 0.333,
+   "p_rec": 0.132,
+   "p_rush": 0.231
   },
   "player": "Quinshon Judkins",
   "position": "RB",
@@ -99,13 +99,13 @@
  },
  "HOU-TEN": {
   "basis": "model+book_vig",
-  "book_p": 0.444,
-  "conf": 0.444,
+  "book_p": 0.435,
+  "conf": 0.435,
   "model_p": 0.509,
   "phase3": {
-   "p_combined": 0.368,
-   "p_rec": 0.018,
-   "p_rush": 0.356
+   "p_combined": 0.366,
+   "p_rec": 0.017,
+   "p_rush": 0.355
   },
   "player": "David Montgomery",
   "position": "RB",
@@ -113,13 +113,13 @@
  },
  "IND-PIT": {
   "basis": "model+book_vig",
-  "book_p": 0.583,
+  "book_p": 0.565,
   "conf": 0.398,
   "model_p": 0.398,
   "phase3": {
-   "p_combined": 0.324,
-   "p_rec": 0.046,
-   "p_rush": 0.292
+   "p_combined": 0.356,
+   "p_rec": 0.049,
+   "p_rush": 0.323
   },
   "player": "Jaylen Warren",
   "position": "RB",
@@ -131,9 +131,9 @@
   "conf": 0.447,
   "model_p": 0.447,
   "phase3": {
-   "p_combined": 0.406,
-   "p_rec": 0.129,
-   "p_rush": 0.318
+   "p_combined": 0.447,
+   "p_rec": 0.128,
+   "p_rush": 0.366
   },
   "player": "Ashton Jeanty",
   "position": "RB",
@@ -141,7 +141,7 @@
  },
  "MIN-NO": {
   "basis": "model+book_vig",
-  "book_p": 0.524,
+  "book_p": 0.545,
   "conf": 0.445,
   "model_p": 0.445,
   "phase3": {
@@ -159,9 +159,9 @@
   "conf": 0.37,
   "model_p": 0.37,
   "phase3": {
-   "p_combined": 0.317,
-   "p_rec": 0.131,
-   "p_rush": 0.214
+   "p_combined": 0.247,
+   "p_rec": 0.068,
+   "p_rush": 0.192
   },
   "player": "Cam Skattebo",
   "position": "RB",
