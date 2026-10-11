@@ -200,6 +200,7 @@
     font-variant-numeric:tabular-nums}
   /* Each number in a fixed box, right-aligned, so decimals and the labels
      line up down the column whatever the number's length. */
+  .pk-models .prim{text-decoration:underline; text-underline-offset:3px}
   .pk-models b{font-weight:600; display:inline-block; width:5ch; text-align:right; margin-left:4px}
   .pk-px{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-3);
     width:46px; text-align:right; flex:none; font-variant-numeric:tabular-nums}
@@ -344,16 +345,16 @@
     of every three games land. The solid upright rule marks the number FanDuel is pricing
     closest to &minus;300.</p>
   <p class="sub"><strong>Ordered by how close that number sits to the curve's peak.</strong>
-    Cards at the top are where the book and the model agree on the likely outcome. Further
-    down, the gap widens &mdash; a number well left of the peak is one the model thinks clears
-    more often than the price suggests, and vice versa.</p>
+    Cards at the top are where the book and the card's engine agree on the likely outcome. Further
+    down, the gap widens &mdash; a number well left of the peak is one the card's engine thinks clears
+    more often than the price suggests, and vice versa. The engine is named on each card.</p>
 
   <div class="legend" data-inspect-id="legend">
     <span class="key"><span class="swatch" style="background:var(--den)"></span><span id="teamA"></span></span>
     <span class="key"><span class="swatch" style="background:var(--kc)"></span><span id="teamB"></span></span>
     <span class="key"><span class="swatch band-key"></span>middle ~68% of outcomes</span>
-    <span class="key"><span class="swatch" style="background:none;border-top:2px dashed var(--ink-3);height:0"></span>old engine's expected (team colour)</span>
-    <span class="key" data-inspect-id="legend-p3"><span class="swatch" style="background:none;border-top:2px dashed var(--p3);height:0"></span>new model's expected</span>
+    <span class="key"><span class="swatch" style="background:none;border-top:2px dashed var(--ink-3);height:0"></span>expected number on the card (team colour)</span>
+    <span class="key" data-inspect-id="legend-p3"><span class="swatch" style="background:none;border-top:2px dashed var(--p3);height:0"></span>the other engine's expected (purple: new model, grey: old engine)</span>
     <span class="key"><span class="swatch" style="background:none;border-left:2px solid var(--ink);width:0;height:14px"></span>FanDuel's ~&minus;300 number</span>
     <span class="key" data-inspect-id="legend-actual"><span class="swatch" style="background:none;border-left:2px solid var(--good);width:0;height:14px"></span>what he actually did &mdash; <em class="lg-good">green</em> cleared the number, <em class="lg-bad">red</em> did not, grey means none was offered</span>
   </div>
@@ -361,7 +362,7 @@
   <section class="picks" data-inspect-id="picks-section">
     <h2 class="picks-h" data-inspect-id="picks-heading">The shortlist<span class="unit">most confident first</span></h2>
     <p class="picks-note" data-inspect-id="picks-note">Every signal available agrees on these: a real starter's snap
-      share, a long record, no injury tag, no change of team, and the model and the book
+      share, a long record, no injury tag, no change of team, and the card's engine (old engine or new model, named on each leg) and the book
       within a few points of each other. Confidence here means <em>likely to happen</em> —
       not good value. Nothing on this page establishes that any of it is mispriced.</p>
     <ol id="picklist" data-inspect-id="picklist"></ol>
@@ -373,14 +374,18 @@
   </section>
 
   <div class="fbar" id="fbar" data-inspect-id="filter-bar">
-    <div class="fgrp" data-inspect-id="filter-range-model"><span class="fgrp-k">Model</span>
-      <input type="number" class="frng" id="f-model-min" data-inspect-id="filter-model-min" placeholder="min" step="any" aria-label="Model minimum">
+    <div class="fgrp" data-inspect-id="filter-range-model" title="The big number on the card: projected yards or catches."><span class="fgrp-k">Projection</span>
+      <input type="number" class="frng" id="f-model-min" data-inspect-id="filter-model-min" placeholder="e.g. 50" step="any" aria-label="Projection minimum">
       <span class="fdash">&ndash;</span>
-      <input type="number" class="frng" id="f-model-max" data-inspect-id="filter-model-max" placeholder="max" step="any" aria-label="Model maximum"></div>
-    <div class="fgrp" data-inspect-id="filter-range-book"><span class="fgrp-k">Book</span>
-      <input type="number" class="frng" id="f-book-min" data-inspect-id="filter-book-min" placeholder="min" step="any" aria-label="Book line minimum">
+      <input type="number" class="frng" id="f-model-max" data-inspect-id="filter-model-max" placeholder="e.g. 250" step="any" aria-label="Projection maximum"></div>
+    <div class="fgrp" data-inspect-id="filter-range-book" title="The chance the book's price implies (vig included)."><span class="fgrp-k">Book %</span>
+      <input type="number" class="frng" id="f-bookpct-min" data-inspect-id="filter-book-min" placeholder="e.g. 55" step="1" min="0" max="100" aria-label="Book percent minimum">
       <span class="fdash">&ndash;</span>
-      <input type="number" class="frng" id="f-book-max" data-inspect-id="filter-book-max" placeholder="max" step="any" aria-label="Book line maximum"></div>
+      <input type="number" class="frng" id="f-bookpct-max" data-inspect-id="filter-book-max" placeholder="e.g. 75" step="1" min="0" max="100" aria-label="Book percent maximum"></div>
+    <div class="fgrp" data-inspect-id="filter-range-conf" title="The card engine's chance of the over."><span class="fgrp-k">Confidence %</span>
+      <input type="number" class="frng" id="f-conf-min" data-inspect-id="filter-conf-min" placeholder="e.g. 60" step="1" min="0" max="100" aria-label="Confidence minimum percent">
+      <span class="fdash">&ndash;</span>
+      <input type="number" class="frng" id="f-conf-max" data-inspect-id="filter-conf-max" placeholder="e.g. 80" step="1" min="0" max="100" aria-label="Confidence maximum percent"></div>
     <button type="button" class="freset" id="freset" data-inspect-id="filter-reset">Show all</button>
     <span class="fcount" id="fcount" data-inspect-id="filter-count"></span>
   </div>
@@ -400,10 +405,11 @@
     <p><strong>Reading the matchup line.</strong> It shows where the opponent ranks against
     that position, from 1st (toughest) to 32nd (softest), by yards allowed per game, adjusted for the offenses
     each defense faced and weighted toward recent games. It is one rank for the whole position, the same rank
-    the Big day and Caution badges use. The range comes from the model, which uses its own defense number,
+    the Big day and Caution badges use. The old engine uses its own defense number for its range,
     and the matchup line is the adjusted defense rank.</p>
     <p>Older reports show a ratio instead: 1.15 means that defense gives up 15% more than league average
     to that position. Where it says <em>context only</em>, the projection ignores it.</p>
+    <div id="ft-old" data-inspect-id="footer-old-engine" hidden>
     <p><strong>How wide the curves are.</strong> The spread is widened 10% over the raw
     model estimate. Measured across 2023–2025, real errors ran about 10% larger than the
     model's own estimate of them — the raw figure counts a player's game-to-game variation
@@ -459,9 +465,65 @@
     other stat here, because that's this page's fixed convention &mdash; not because it won this
     one. The new model is also better at the raw counts underneath the other three stats: how many
     targets and carries a player gets. This page doesn't show those counts.</p>
+    </div>
+    <div id="ft-new" data-inspect-id="footer-per-stat" hidden>
+    <p><strong>How wide the curves are.</strong> The spread comes from the old engine on every card.
+    It is widened 10% over the old engine's raw estimate. Measured across 2023–2025, real errors ran about 10%
+    larger than the old engine's own estimate of them — the raw figure counts a player's game-to-game variation
+    but not the error in the projection itself. The new model has no spread of its own, so on a card where it
+    makes the big number (decision #43), the curve is the new model's number with the old engine's spread. In the
+    2026 holdout the new model's typical miss (root mean square) was within 4% of the old engine's on those stats
+    (passing yards 83.5 against 83.7, rushing yards 26.2 against 27.1), so this spread fits.</p>
+    <p><strong>Engine vs book.</strong> On each card the percent beside the engine name is the chance the card's
+    curve (old engine or new model, as named on the card) puts on clearing that number. "Book" is what FanDuel's price implies, vig included &mdash; so the book's
+    figure is inflated a few points by its own margin, and a small edge to the engine is not
+    an edge at all. Tested against real lines, the old engine was the less accurate of the two. The new model has
+    not been tested against real lines. Treat a large gap as the engine being wrong, not the book.</p>
+    <p><strong>What this is not.</strong> These are projections, not edges. Tested against
+    real sportsbook lines, the old engine's point estimates were <em>less</em> accurate than the
+    market's. The new model has no such test. Useful for seeing a player's plausible range; not evidence anyone is mispriced.</p>
+    <p><strong>Two engines, one per stat (decision #42).</strong> Every passing-yards, receiving-yards,
+    rushing-yards, and receptions card carries two forecasts for the same player and stat. The card names
+    which engine makes the big number. From the 2026 week 5 4pm games (2026-10-11), the new model makes the big number for
+    <strong>passing yards and rushing yards</strong>. The old engine makes it for <strong>receiving yards,
+    receptions, and completions</strong>. Games before that kickoff used the old engine for every stat and
+    keep those numbers. Anytime touchdowns are unchanged (see below).</p>
+    <p><em>Old engine</em> (built 2026-09-13, <code>nflprops/project.py</code>). It starts from the player's own recent games,
+    weighting the latest most. It splits his workload (targets, carries, pass attempts) from what
+    he does with each touch (yards per catch, carry, or attempt). It forecasts each part on its
+    own, multiplies them back together, then adjusts for how tough the opponent's defense is. It
+    also sets the spread of every curve.</p>
+    <p><em>New model</em> (added 2026-09-24, decision #31, also called Phase 3; extended to
+    receptions in decision #38, to passing yards in decisions #39 and #40). Passing yards is a LightGBM
+    model (decision #40). Rushing yards and receiving yards are ridge regressions: a straight-line
+    fit that is penalized for leaning hard on any one input, so it can't memorize noise. All are trained on
+    2019&ndash;2025 over a wider table of inputs (passing yards adds each QB's own attempts,
+    completions, yards per attempt, completion rate, and downfield throw depth, each averaged over
+    his last 4 games, last 8, and career). Receptions is a different route: it predicts how many times
+    a player will be targeted, then multiplies by his own shrunk history of catching the targets he gets.
+    There is no new-model number for completions. Neither engine ever sees the other's number.</p>
+    <p><strong>On the curve.</strong> The solid number and the team-colour dashed line on the curve are the number on
+    the card, from the engine named on the card. The other dashed line marks the other engine: purple for the
+    new model, grey for the old engine. When the two lines sit apart, the engines disagree. The shortlist shows the
+    same pair.</p>
+    <p><strong>Reading the gap.</strong> The line under the range names both engines, the engine behind the big number
+    first, for example <code>new model 52 &middot; old engine 60 (+8)</code>. The number in brackets is the
+    other engine's number minus the big number. A plus sign means the other engine expects more. The two are never
+    averaged into one figure. The line is shaded when the gap is more than half the card's spread. The spread is the
+    distance from the big number to either end of its range. Say a card reads 60, range 40&ndash;80: the spread is 20,
+    so a gap of 10 or more gets shaded. A gap that size is bigger than the card's own uncertainty, so the card
+    deserves a second look.</p>
+    <p><strong>Why these engines (decision #42).</strong> The 2026 holdout (weeks 1 to 4) scored both engines on the
+    same player-games. The new model replaces the old engine on a stat only if its average miss is smaller by at
+    least that stat's bar. Passing yards: 65.6 against 67.8 yards (3.25% smaller, bar 3%), new model. Rushing yards:
+    20.15 against 21.30 (5.4% smaller, bar 1%), new model. Receiving yards: 24.75 against 24.91 (0.6%, bar 2%),
+    old engine stays. Receptions: 1.70 against 1.73 (1.9%, bar 3%), old engine stays. Four weeks is a small sample,
+    and the passing-yards win clears its bar by a narrow margin.</p>
+    <p><strong>Engines on this report.</strong> <span id="ft-split"></span></p>
+    </div>
     <p><strong>Touchdowns work the same way.</strong> The <em>td %</em> badge is the old engine's
     anytime-touchdown number. The smaller <em>new td %</em> under it is the new model's (decision
-    #30). In each game, both models name the player most likely to score. Over 2021&ndash;2025 the
+    #30). In each game, both engines name the player most likely to score. Over 2021&ndash;2025 the
     old engine's choice scored 45% of the time, the new model's 41%. So the old number stays
     primary.</p>
   </footer>
@@ -470,6 +532,30 @@
 
 <script>
 const DATA = [{"p": "Darren Waller", "role": "TE1", "tm": "CAR", "vs": "CLE", "s": "receptions", "mu": 2.6, "sd": 1.9, "lo": 0.7, "hi": 4.5, "def": 0.95, "app": false, "line": 1.5, "price": -290, "z": -0.58, "mp": 0.719, "bp": 0.744, "pick": null, "p3": 2.4}, {"p": "Darren Waller", "role": "TE1", "tm": "CAR", "vs": "CLE", "s": "receiving_yards", "mu": 27.5, "sd": 23.0, "lo": 4.5, "hi": 50.6, "def": 0.95, "app": false, "line": 9.5, "price": -350, "z": -0.78, "mp": 0.783, "bp": 0.778, "pick": null, "p3": 25.5}, {"p": "AJ Dillon", "role": "RB2", "tm": "CAR", "vs": "CLE", "s": "rushing_yards", "mu": 18.6, "sd": 22.7, "lo": 0.0, "hi": 41.3, "def": 0.98, "app": true, "line": 9.5, "price": -230, "z": -0.4, "mp": 0.655, "bp": 0.697, "pick": null, "p3": 17.8}, {"p": "AJ Dillon", "role": "RB2", "tm": "CAR", "vs": "CLE", "s": "receptions", "mu": 0.3, "sd": 1.2, "lo": 0.0, "hi": 1.5, "def": 0.88, "app": false, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null, "p3": 0.3}, {"p": "AJ Dillon", "role": "RB2", "tm": "CAR", "vs": "CLE", "s": "receiving_yards", "mu": 1.7, "sd": 11.3, "lo": 0.0, "hi": 13.0, "def": 0.81, "app": false, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null, "p3": 0.0}, {"p": "Chuba Hubbard", "role": "RB1", "tm": "CAR", "vs": "CLE", "s": "rushing_yards", "mu": 38.9, "sd": 27.0, "lo": 11.9, "hi": 65.9, "def": 0.98, "app": true, "line": 49.5, "price": -340, "z": 0.39, "mp": 0.348, "bp": 0.773, "pick": null, "p3": 53.8}, {"p": "Chuba Hubbard", "role": "RB1", "tm": "CAR", "vs": "CLE", "s": "receptions", "mu": 1.8, "sd": 1.2, "lo": 0.6, "hi": 3.0, "def": 0.88, "app": false, "line": 1.5, "price": -330, "z": -0.25, "mp": 0.601, "bp": 0.767, "pick": 6, "p3": 2.4}, {"p": "Chuba Hubbard", "role": "RB1", "tm": "CAR", "vs": "CLE", "s": "receiving_yards", "mu": 12.7, "sd": 15.4, "lo": 0.0, "hi": 28.1, "def": 0.81, "app": false, "line": 9.5, "price": -235, "z": -0.21, "mp": 0.581, "bp": 0.701, "pick": null, "p3": 14.8}, {"p": "Bryce Young", "role": "QB1", "tm": "CAR", "vs": "CLE", "s": "passing_yards", "mu": 220.9, "sd": 109.8, "lo": 111.1, "hi": 330.7, "def": 0.92, "app": true, "line": 199.5, "price": -215, "z": -0.19, "mp": 0.577, "bp": 0.683, "pick": null, "p3": 222.8}, {"p": "Bryce Young", "role": "QB1", "tm": "CAR", "vs": "CLE", "s": "completions", "mu": 18.4, "sd": 5.5, "lo": 12.9, "hi": 23.9, "def": 0.89, "app": true, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null, "p3": null}, {"p": "Bryce Young", "role": "QB1", "tm": "CAR", "vs": "CLE", "s": "rushing_yards", "mu": 11.7, "sd": 14.7, "lo": 0.0, "hi": 26.5, "def": null, "app": true, "line": 9.5, "price": -205, "z": -0.15, "mp": 0.56, "bp": 0.672, "pick": null, "p3": 19.2}, {"p": "Xavier Legette", "role": "WR3", "tm": "CAR", "vs": "CLE", "s": "receptions", "mu": 2.0, "sd": 1.8, "lo": 0.2, "hi": 3.8, "def": 0.87, "app": false, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null, "p3": 1.8}, {"p": "Xavier Legette", "role": "WR3", "tm": "CAR", "vs": "CLE", "s": "receiving_yards", "mu": 26.7, "sd": 31.9, "lo": 0.0, "hi": 58.6, "def": 0.93, "app": false, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null, "p3": 24.1}, {"p": "Jalen Coker", "role": "WR2", "tm": "CAR", "vs": "CLE", "s": "receptions", "mu": 4.1, "sd": 2.8, "lo": 1.3, "hi": 6.9, "def": 0.87, "app": false, "line": 3.5, "price": -340, "z": -0.22, "mp": 0.587, "bp": 0.773, "pick": null, "p3": 5.0}, {"p": "Jalen Coker", "role": "WR2", "tm": "CAR", "vs": "CLE", "s": "receiving_yards", "mu": 51.2, "sd": 43.9, "lo": 7.4, "hi": 95.1, "def": 0.93, "app": false, "line": 39.5, "price": -320, "z": -0.27, "mp": 0.606, "bp": 0.762, "pick": null, "p3": 55.2}, {"p": "Tetairoa McMillan", "role": "WR1", "tm": "CAR", "vs": "CLE", "s": "receptions", "mu": 4.2, "sd": 2.1, "lo": 2.0, "hi": 6.3, "def": 0.87, "app": false, "line": 3.5, "price": -310, "z": -0.31, "mp": 0.623, "bp": 0.756, "pick": null, "p3": 4.2}, {"p": "Tetairoa McMillan", "role": "WR1", "tm": "CAR", "vs": "CLE", "s": "receiving_yards", "mu": 58.0, "sd": 35.9, "lo": 22.0, "hi": 93.9, "def": 0.93, "app": false, "line": 39.5, "price": -360, "z": -0.51, "mp": 0.696, "bp": 0.783, "pick": 3, "p3": 63.3}, {"p": "Deshaun Watson", "role": "QB1", "tm": "CLE", "vs": "CAR", "s": "passing_yards", "mu": 189.3, "sd": 62.9, "lo": 126.4, "hi": 252.2, "def": 0.98, "app": true, "line": 149.5, "price": -310, "z": -0.63, "mp": 0.737, "bp": 0.756, "pick": 1, "p3": 196.9}, {"p": "Deshaun Watson", "role": "QB1", "tm": "CLE", "vs": "CAR", "s": "completions", "mu": 18.2, "sd": 5.8, "lo": 12.4, "hi": 24.0, "def": 0.97, "app": true, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null, "p3": null}, {"p": "Deshaun Watson", "role": "QB1", "tm": "CLE", "vs": "CAR", "s": "rushing_yards", "mu": 21.8, "sd": 14.0, "lo": 7.8, "hi": 35.7, "def": null, "app": true, "line": 14.5, "price": -390, "z": -0.52, "mp": 0.699, "bp": 0.796, "pick": null, "p3": 28.4}, {"p": "Jerry Jeudy", "role": "WR1", "tm": "CLE", "vs": "CAR", "s": "receptions", "mu": 2.7, "sd": 2.1, "lo": 0.6, "hi": 4.8, "def": 0.97, "app": false, "line": 1.5, "price": -132, "z": -0.56, "mp": 0.713, "bp": 0.569, "pick": null, "p3": 2.5}, {"p": "Jerry Jeudy", "role": "WR1", "tm": "CLE", "vs": "CAR", "s": "receiving_yards", "mu": 33.4, "sd": 29.0, "lo": 4.4, "hi": 62.5, "def": 0.95, "app": false, "line": 9.5, "price": -275, "z": -0.82, "mp": 0.795, "bp": 0.733, "pick": 2, "p3": 35.6}, {"p": "Jaleel McLaughlin", "role": "RB2", "tm": "CLE", "vs": "CAR", "s": "rushing_yards", "mu": 23.6, "sd": 23.5, "lo": 0.1, "hi": 47.1, "def": 1.34, "app": true, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null, "p3": 9.6}, {"p": "Jaleel McLaughlin", "role": "RB2", "tm": "CLE", "vs": "CAR", "s": "receptions", "mu": 0.7, "sd": 1.0, "lo": 0.0, "hi": 1.7, "def": 1.03, "app": false, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null, "p3": 0.0}, {"p": "Jaleel McLaughlin", "role": "RB2", "tm": "CLE", "vs": "CAR", "s": "receiving_yards", "mu": 3.9, "sd": 8.3, "lo": 0.0, "hi": 12.2, "def": 0.99, "app": false, "line": null, "price": null, "z": null, "mp": null, "bp": null, "pick": null, "p3": 0.0}, {"p": "Harold Fannin Jr.", "role": "TE1", "tm": "CLE", "vs": "CAR", "s": "receptions", "mu": 3.5, "sd": 2.1, "lo": 1.4, "hi": 5.7, "def": 0.95, "app": false, "line": 2.5, "price": -350, "z": -0.49, "mp": 0.689, "bp": 0.778, "pick": 4, "p3": 4.7}, {"p": "Harold Fannin Jr.", "role": "TE1", "tm": "CLE", "vs": "CAR", "s": "receiving_yards", "mu": 36.8, "sd": 25.5, "lo": 11.3, "hi": 62.3, "def": 1.06, "app": false, "line": 24.5, "price": -275, "z": -0.48, "mp": 0.685, "bp": 0.733, "pick": null, "p3": 51.1}, {"p": "Quinshon Judkins", "role": "RB1", "tm": "CLE", "vs": "CAR", "s": "rushing_yards", "mu": 50.8, "sd": 30.1, "lo": 20.7, "hi": 80.9, "def": 1.34, "app": true, "line": 49.5, "price": -215, "z": -0.04, "mp": 0.517, "bp": 0.683, "pick": null, "p3": 62.2}, {"p": "Quinshon Judkins", "role": "RB1", "tm": "CLE", "vs": "CAR", "s": "receptions", "mu": 2.2, "sd": 2.0, "lo": 0.2, "hi": 4.2, "def": 1.03, "app": false, "line": 1.5, "price": -300, "z": -0.36, "mp": 0.641, "bp": 0.75, "pick": 5, "p3": 2.1}, {"p": "Quinshon Judkins", "role": "RB1", "tm": "CLE", "vs": "CAR", "s": "receiving_yards", "mu": 15.2, "sd": 17.7, "lo": 0.0, "hi": 32.8, "def": 0.99, "app": false, "line": 9.5, "price": -210, "z": -0.32, "mp": 0.626, "bp": 0.677, "pick": null, "p3": 15.0}];
+// Decision #43: each row names the engine behind its big number (pe) and carries
+// the other engine's number (alt). Reports built before 2026-10-11 4pm ET have
+// neither: they used the old engine, and their new-model number is p3.
+DATA.forEach(function(d){ if(d.pe==null){ d.pe="old"; d.alt=(d.p3==null?null:d.p3); } });
+const ENGNAME = {old:"old engine", "new":"new model"};
+// Footer: pick the engine text from this report's own data. No row with pe == "new"
+// (weeks 1-5 before the 4pm games, and the 1pm reports) shows the old-engine footer.
+(function(){
+  const per={}; DATA.forEach(function(d){ if(d.pe==="new") per[d.s]="new"; else if(!(d.s in per)) per[d.s]="old"; });
+  const anyNew = DATA.some(function(d){ return d.pe==="new"; });
+  const old=document.getElementById("ft-old"), nw=document.getElementById("ft-new");
+  if(anyNew){
+    nw.hidden=false;
+    const g={old:[],"new":[]};
+    ["passing_yards","rushing_yards","receiving_yards","receptions","completions"].forEach(function(k){
+      if(!(k in per)) return; g[per[k]].push(k.replace(/_/g," "));
+    });
+    const cap=function(a){ const t=a.join(", "); return t.charAt(0).toUpperCase()+t.slice(1); };
+    const parts=[]; if(g["new"].length) parts.push(cap(g["new"])+": new model."); if(g.old.length) parts.push(cap(g.old)+": old engine.");
+    document.getElementById("ft-split").textContent=parts.join(" ");
+  } else old.hidden=false;
+})();
+const engName = d => ENGNAME[d.pe];
+const altName = d => ENGNAME[d.pe==="new"?"old":"new"];
 const META = {"teamA": "CAR", "nameA": "Carolina Panthers", "nameB": "Cleveland Browns", "corrnote": "All of these are same-game legs, so they move together &mdash; a shootout carries them over, a grind carries them under. That makes the true joint chance <em>higher</em> than the naive figure, and it is also why FanDuel will pay less than the straight payout for them as one same-game parlay."};
 const TARGET = -300;
 const STATS = [
@@ -582,27 +668,31 @@ function actualMark(d,c){
     +'<circle cx="'+x.toFixed(1)+'" cy="'+(H-10)+'" r="2.5" fill="'+stroke+'"></circle>';
 }
 
-// Decision #37: both models, labelled, with the gap between them. "old
-// engine" is nflprops/project.py (the first model, 2026-09-13); "new model"
-// is the Phase 3 ridge model added 2026-09-24 (decision #31). Emphasized when the two
-// disagree by more than half this card's own spread (d.sd).
+// Decision #37/#43: both engines, labelled, with the gap between them. "old
+// engine" is nflprops/project.py (the first engine, 2026-09-13); "new model"
+// is the Phase 3 model added 2026-09-24 (decision #31). The engine behind the big
+// number comes first. The gap is the other engine minus the big number. Emphasized
+// when the two disagree by more than half this card's own spread (d.sd).
 function p3Cmp(d,col){
-  if(d.p3==null) return "";
-  const gap = d.p3 - d.mu;
+  if(d.alt==null) return "";
+  const gap = d.alt - d.mu;
   const gapTxt = (gap>=0?"+":"") + fmt(gap);
   const big = Math.abs(gap) >= 0.5*d.sd;
-  return '<span class="p3-vol'+(big?" big":"")+'" data-inspect-id="card-p3-vol">old engine <span class="o" style="color:'+col+'">'
-    + fmt(d.mu) + '</span> &middot; new model <span class="n">' + fmt(d.p3) + '</span> (' + gapTxt + ')</span>';
+  const clr = e => e==="new" ? "var(--p3)" : col;
+  const other = d.pe==="new" ? "old" : "new";
+  return '<span class="p3-vol'+(big?" big":"")+'" data-inspect-id="card-p3-vol">'+engName(d)+' <span class="o" style="color:'+clr(d.pe)+'">'
+    + fmt(d.mu) + '</span> &middot; '+altName(d)+' <span class="n" style="color:'+clr(other)+'">' + fmt(d.alt) + '</span> (' + gapTxt + ')</span>';
 }
 
-// The new model's number on the same curve: a purple dashed rule, the same
-// height as the old engine's. Pinned to the edge (and drawn shorter-dashed) when it
-// falls outside the drawn range, like the actual-result mark.
+// The other engine's number on the same curve: a dashed rule, the same height as
+// the big number's. Purple when it is the new model, grey when it is the old engine.
+// Pinned to the edge (and drawn shorter-dashed) when it falls outside the drawn
+// range, like the actual-result mark.
 function p3Mark(d,c){
-  if(d.p3==null) return "";
-  const raw=c.X(d.p3), x=Math.max(1,Math.min(W-1,raw)), off=raw<1||raw>W-1;
+  if(d.alt==null) return "";
+  const raw=c.X(d.alt), x=Math.max(1,Math.min(W-1,raw)), off=raw<1||raw>W-1;
   return '<line class="meanline" data-inspect-id="card-p3-mark" x1="'+x.toFixed(1)+'" y1="'+(H-10)
-    +'" x2="'+x.toFixed(1)+'" y2="'+c.Y(c.peak).toFixed(1)+'" stroke="var(--p3)"'
+    +'" x2="'+x.toFixed(1)+'" y2="'+c.Y(c.peak).toFixed(1)+'" stroke="'+(d.pe==="new"?"var(--ink-3)":"var(--p3)")+'"'
     +(off?' stroke-dasharray="1 2"':'')+'></line>';
 }
 
@@ -614,7 +704,7 @@ function compare(d){
     + '<span class="cmp-line">'+fmt(d.line)+'<span class="px">'
       +(d.price>0?"+":"")+d.price+'</span></span>'
     + '<span class="cmp-sep"></span>'
-    + '<span class="cmp-p">model <b>'+Math.round(d.mp*100)+'%</b>'
+    + '<span class="cmp-p">'+engName(d)+' <b>'+Math.round(d.mp*100)+'%</b>'
       +' · book <b>'+Math.round(d.bp*100)+'%</b></span>'
     + '</div>'
     + '<div class="cmp-z" data-inspect-id="card-compare-z">peak sits '+Math.abs(d.z).toFixed(2)+' sd '+side+' it'
@@ -649,7 +739,7 @@ STATS.forEach(([key,label,unit])=>{
     const card=document.createElement("div");
     card.className = d.pick ? "card pick" : "card";
     card.dataset.inspectId="player-card";
-    card.dataset.mu=fmt(d.mu); if(d.line!=null) card.dataset.line=d.line; card.dataset.team=d.tm; card.dataset.pos=d.role.replace(/[0-9]+$/,""); card.dataset.stat=d.s;
+    card.dataset.mu=fmt(d.mu); card.dataset.eng=d.pe; if(d.mp!=null) card.dataset.mpct=String(Math.round(d.mp*100)); if(d.bp!=null) card.dataset.bpct=String(Math.round(d.bp*100)); if(d.line!=null) card.dataset.line=d.line; card.dataset.team=d.tm; card.dataset.pos=d.role.replace(/[0-9]+$/,""); card.dataset.stat=d.s;
     // One badge per game: the player may have several stat cards, only the first wears it.
     const isScorer = TD && d.p === TD.player;
     const isTD = isScorer && !tdShown;
@@ -735,13 +825,14 @@ STATS.forEach(([key,label,unit])=>{
   const GROUPS=[["team","Team"],["pos","Position"],["stat","Market"]];
   const label=v=>String(v).replace(/_/g," ");
   const sel={team:new Set(),pos:new Set(),stat:new Set()};
-  // Ranges: Model is the big expected figure on the card (d.mu, as displayed); Book is the line (d.line).
-  const RNG=[["model","mu"],["book","line"]];
+  // Ranges: Projection is the big figure on the card (d.mu, from the engine the card names); Confidence is its chance of the over (d.mp x 100, whole number); Book % is the price's implied chance (d.bp x 100, whole number). Old saved "book" line values use a different key and are ignored; Book is the line (d.line).
+  const RNG=[["model","mu"],["bookpct","bpct"],["conf","mpct"]];
   const rin={}; RNG.forEach(([r])=>{ rin[r]=[document.getElementById("f-"+r+"-min"),document.getElementById("f-"+r+"-max")]; });
   const rng=r=>rin[r].map(i=>i.value===""||isNaN(+i.value)?null:+i.value);
   try{
     const saved=JSON.parse(localStorage.getItem(KEY)||"null");
     if(saved){
+      delete saved.book;   // old book-line range: a different unit, dropped
       GROUPS.forEach(([g])=>(saved[g]||[]).forEach(v=>sel[g].add(v)));
       RNG.forEach(([r])=>(saved[r]||[]).forEach((v,i)=>{ if(i<2&&v!=null&&isFinite(v)) rin[r][i].value=v; }));
     }
@@ -804,8 +895,8 @@ DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick).forEach(d=>{
   li.innerHTML='<span class="pk-n">'+d.pick+'</span>'
     +'<span class="pk-name"><span class="pk-nm">'+trendMk(d,"pick-badge")+d.p+'</span>'+mk('<span class="role '+(d.tm===META.teamA?'a':'b')+'">'+d.role+'</span>',d,"pick-rank-chip","pick-badge")+'</span>'
     +'<span class="pk-bet">'+d.s.replace(/_/g," ")+' over <b>'+d.line+'</b></span>'
-    +'<span class="pk-models" data-inspect-id="pick-models"><span>old<b style="color:'+col+'">'+fmt(d.mu)+'</b></span>'
-      +'<span>new<b style="color:var(--p3)">'+(d.p3==null?'&mdash;':fmt(d.p3))+'</b></span></span>'
+    +'<span class="pk-models" data-inspect-id="pick-models"><span'+(d.pe==="old"?' class="prim" title="old engine makes this leg\'s number"':'')+'>old<b style="color:'+col+'">'+(d.pe==="old"?fmt(d.mu):(d.alt==null?'&mdash;':fmt(d.alt)))+'</b></span>'
+      +'<span'+(d.pe==="new"?' class="prim" title="new model makes this leg\'s number"':'')+'>new<b style="color:var(--p3)">'+(d.pe==="new"?fmt(d.mu):(d.alt==null?'&mdash;':fmt(d.alt)))+'</b></span></span>'
     +pickResult(d)
     +'<span class="pk-px">'+(d.price>0?"+":"")+d.price+'</span>'
     +'<span class="pk-conf" style="color:'+col+'">'+Math.round(Math.min(d.mp,d.bp)*100)+'%</span>';

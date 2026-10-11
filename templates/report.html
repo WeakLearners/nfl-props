@@ -409,6 +409,64 @@
     and the matchup line is the adjusted defense rank.</p>
     <p>Older reports show a ratio instead: 1.15 means that defense gives up 15% more than league average
     to that position. Where it says <em>context only</em>, the projection ignores it.</p>
+    <div id="ft-old" data-inspect-id="footer-old-engine" hidden>
+    <p><strong>How wide the curves are.</strong> The spread is widened 10% over the raw
+    model estimate. Measured across 2023–2025, real errors ran about 10% larger than the
+    model's own estimate of them — the raw figure counts a player's game-to-game variation
+    but not the error in the projection itself.</p>
+    <p><strong>Model vs book.</strong> "Model" is the chance this curve puts on clearing
+    that number. "Book" is what FanDuel's price implies, vig included &mdash; so the book's
+    figure is inflated a few points by its own margin, and a small edge to the model is not
+    an edge at all. Tested against real lines, this model was the less accurate of the two;
+    treat a large gap as the model being wrong, not the book.</p>
+    <p><strong>What this is not.</strong> These are projections, not edges. Tested against
+    real sportsbook lines, this model's point estimates were <em>less</em> accurate than the
+    market's. Useful for seeing a player's plausible range; not evidence anyone is mispriced.</p>
+    <p><strong>Two engines, old and new.</strong> Every passing-yards, receiving-yards,
+    rushing-yards, and receptions card carries two forecasts for the same player and stat. They
+    come from two different models, built at different times.</p>
+    <p><em>Old engine</em> (built 2026-09-13, <code>nflprops/project.py</code>). It makes the big
+    number on every card and the range under it. It starts from the player's own recent games,
+    weighting the latest most. It splits his workload (targets, carries, pass attempts) from what
+    he does with each touch (yards per catch, carry, or attempt). It forecasts each part on its
+    own, multiplies them back together, then adjusts for how tough the opponent's defense is.</p>
+    <p><em>New model</em> (added 2026-09-24, decision #31, also called Phase 3; extended to
+    receptions 2026-09-24, decision #38, and to passing yards 2026-09-24, decision #39). It makes
+    the small line under the range, e.g. <code>old engine 60 &middot; new model 52 (&minus;8)</code>.
+    For passing yards, receiving yards, and rushing yards it is a ridge regression: a straight-line
+    fit that is penalized for leaning hard on any one input, so it can't memorize noise, trained on
+    2019&ndash;2025 over a wider table of inputs (passing yards adds each QB's own attempts,
+    completions, yards per attempt, completion rate, and downfield throw depth, each averaged over
+    his last 4 games, last 8, and career). For receptions it's a different route to the same idea
+    &mdash; it predicts how many times a player will be targeted, then multiplies by his own
+    shrunk history of catching the targets he gets. Head-to-head testing found that beat a ridge
+    regression fit directly on receptions, by a hair. Neither engine ever sees the other's
+    number.</p>
+    <p><strong>On the curve.</strong> The curve belongs to the old engine. Its dashed line, in the
+    team's colour, marks the old engine's number. The purple dashed line marks the new model's. When
+    the two lines sit apart, the engines disagree. The shortlist shows the same pair, in the same colours.</p>
+    <p><strong>Reading the gap.</strong> The number in brackets is new minus old. A minus sign means
+    the new model expects less. The two are never averaged into one figure. The line is shaded when
+    the gap is more than half the card's spread. The spread is the distance from the big number to
+    either end of its range. Say a card reads 60, range 40&ndash;80: the spread is 20, so a gap of
+    10 or more gets shaded. A gap that size is bigger than the old engine's own uncertainty, so the
+    card deserves a second look.</p>
+    <p><strong>Which one to trust.</strong> Mixed. Scored on five seasons of real games
+    (2021&ndash;2025, <code>data/vol_head_to_head.csv</code>,
+    <code>data/vol_receptions_compare.csv</code>, and <code>data/passing_head_to_head.csv</code>),
+    receiving yards, rushing yards, and receptions are all close to a tie. On receiving
+    yards the old engine misses by 22.82 yards on average, the new model by 22.84 (12,040 games). On
+    rushing yards it is 21.30 against 21.44 (7,332 games). On receptions it is 1.65 against 1.65
+    (12,040 games, sub-hundredth difference). Season by season, the new model won receiving in 3 of
+    5 years, rushing in 2 of 5, and receptions in 3 of 5. <strong>Passing yards is not a tie.</strong>
+    The old engine misses by 67.09 yards on average; the new model misses by 62.56 (3,107 games,
+    2021&ndash;2025) &mdash; a 6.8% smaller miss, and the new model came out ahead in every one of
+    the five seasons tested. The old engine still makes the big number on the card, same as every
+    other stat here, because that's this page's fixed convention &mdash; not because it won this
+    one. The new model is also better at the raw counts underneath the other three stats: how many
+    targets and carries a player gets. This page doesn't show those counts.</p>
+    </div>
+    <div id="ft-new" data-inspect-id="footer-per-stat" hidden>
     <p><strong>How wide the curves are.</strong> The spread comes from the old engine on every card.
     It is widened 10% over the old engine's raw estimate. Measured across 2023–2025, real errors ran about 10%
     larger than the old engine's own estimate of them — the raw figure counts a player's game-to-game variation
@@ -461,6 +519,8 @@
     20.15 against 21.30 (5.4% smaller, bar 1%), new model. Receiving yards: 24.75 against 24.91 (0.6%, bar 2%),
     old engine stays. Receptions: 1.70 against 1.73 (1.9%, bar 3%), old engine stays. Four weeks is a small sample,
     and the passing-yards win clears its bar by a narrow margin.</p>
+    <p><strong>Engines on this report.</strong> <span id="ft-split"></span></p>
+    </div>
     <p><strong>Touchdowns work the same way.</strong> The <em>td %</em> badge is the old engine's
     anytime-touchdown number. The smaller <em>new td %</em> under it is the new model's (decision
     #30). In each game, both engines name the player most likely to score. Over 2021&ndash;2025 the
@@ -477,6 +537,23 @@ const DATA = __DATA__;
 // neither: they used the old engine, and their new-model number is p3.
 DATA.forEach(function(d){ if(d.pe==null){ d.pe="old"; d.alt=(d.p3==null?null:d.p3); } });
 const ENGNAME = {old:"old engine", "new":"new model"};
+// Footer: pick the engine text from this report's own data. No row with pe == "new"
+// (weeks 1-5 before the 4pm games, and the 1pm reports) shows the old-engine footer.
+(function(){
+  const per={}; DATA.forEach(function(d){ if(d.pe==="new") per[d.s]="new"; else if(!(d.s in per)) per[d.s]="old"; });
+  const anyNew = DATA.some(function(d){ return d.pe==="new"; });
+  const old=document.getElementById("ft-old"), nw=document.getElementById("ft-new");
+  if(anyNew){
+    nw.hidden=false;
+    const g={old:[],"new":[]};
+    ["passing_yards","rushing_yards","receiving_yards","receptions","completions"].forEach(function(k){
+      if(!(k in per)) return; g[per[k]].push(k.replace(/_/g," "));
+    });
+    const cap=function(a){ const t=a.join(", "); return t.charAt(0).toUpperCase()+t.slice(1); };
+    const parts=[]; if(g["new"].length) parts.push(cap(g["new"])+": new model."); if(g.old.length) parts.push(cap(g.old)+": old engine.");
+    document.getElementById("ft-split").textContent=parts.join(" ");
+  } else old.hidden=false;
+})();
 const engName = d => ENGNAME[d.pe];
 const altName = d => ENGNAME[d.pe==="new"?"old":"new"];
 const META = __META__;
