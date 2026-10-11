@@ -311,6 +311,10 @@
   .freset{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
     color:var(--ink-3); background:none; border:0; padding:2px 4px; cursor:pointer; text-decoration:underline}
   .freset:hover{color:var(--den)}
+  .frng{width:58px; font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink);
+    background:var(--bg); border:1px solid var(--line); border-radius:3px; padding:2px 6px}
+  .frng:focus-visible{outline:2px solid var(--den); outline-offset:2px}
+  .fdash{color:var(--ink-3); font-size:11px}
   .fcount{margin-left:auto; font-size:12.5px; color:var(--ink-3)}
   .card[hidden],h2[hidden],.grid[hidden]{display:none}
   table{border-collapse:collapse; width:100%; font-size:13px}
@@ -369,6 +373,14 @@
   </section>
 
   <div class="fbar" id="fbar" data-inspect-id="filter-bar">
+    <div class="fgrp" data-inspect-id="filter-range-model"><span class="fgrp-k">Model</span>
+      <input type="number" class="frng" id="f-model-min" data-inspect-id="filter-model-min" placeholder="min" step="any" aria-label="Model minimum">
+      <span class="fdash">&ndash;</span>
+      <input type="number" class="frng" id="f-model-max" data-inspect-id="filter-model-max" placeholder="max" step="any" aria-label="Model maximum"></div>
+    <div class="fgrp" data-inspect-id="filter-range-book"><span class="fgrp-k">Book</span>
+      <input type="number" class="frng" id="f-book-min" data-inspect-id="filter-book-min" placeholder="min" step="any" aria-label="Book line minimum">
+      <span class="fdash">&ndash;</span>
+      <input type="number" class="frng" id="f-book-max" data-inspect-id="filter-book-max" placeholder="max" step="any" aria-label="Book line maximum"></div>
     <button type="button" class="freset" id="freset" data-inspect-id="filter-reset">Show all</button>
     <span class="fcount" id="fcount" data-inspect-id="filter-count"></span>
   </div>
@@ -637,7 +649,7 @@ STATS.forEach(([key,label,unit])=>{
     const card=document.createElement("div");
     card.className = d.pick ? "card pick" : "card";
     card.dataset.inspectId="player-card";
-    card.dataset.team=d.tm; card.dataset.pos=d.role.replace(/[0-9]+$/,""); card.dataset.stat=d.s;
+    card.dataset.mu=fmt(d.mu); if(d.line!=null) card.dataset.line=d.line; card.dataset.team=d.tm; card.dataset.pos=d.role.replace(/[0-9]+$/,""); card.dataset.stat=d.s;
     // One badge per game: the player may have several stat cards, only the first wears it.
     const isScorer = TD && d.p === TD.player;
     const isTD = isScorer && !tdShown;
@@ -723,9 +735,16 @@ STATS.forEach(([key,label,unit])=>{
   const GROUPS=[["team","Team"],["pos","Position"],["stat","Market"]];
   const label=v=>String(v).replace(/_/g," ");
   const sel={team:new Set(),pos:new Set(),stat:new Set()};
+  // Ranges: Model is the big expected figure on the card (d.mu, as displayed); Book is the line (d.line).
+  const RNG=[["model","mu"],["book","line"]];
+  const rin={}; RNG.forEach(([r])=>{ rin[r]=[document.getElementById("f-"+r+"-min"),document.getElementById("f-"+r+"-max")]; });
+  const rng=r=>rin[r].map(i=>i.value===""||isNaN(+i.value)?null:+i.value);
   try{
     const saved=JSON.parse(localStorage.getItem(KEY)||"null");
-    if(saved) GROUPS.forEach(([g])=>(saved[g]||[]).forEach(v=>sel[g].add(v)));
+    if(saved){
+      GROUPS.forEach(([g])=>(saved[g]||[]).forEach(v=>sel[g].add(v)));
+      RNG.forEach(([r])=>(saved[r]||[]).forEach((v,i)=>{ if(i<2&&v!=null&&isFinite(v)) rin[r][i].value=v; }));
+    }
   }catch(e){}
   const chips=[];
   GROUPS.forEach(([g,name])=>{
@@ -746,7 +765,12 @@ STATS.forEach(([key,label,unit])=>{
     let shown=0;
     chips.forEach(([g,v,b])=>b.setAttribute("aria-pressed",sel[g].has(v)?"true":"false"));
     cards.forEach(c=>{
-      const ok=GROUPS.every(([g])=>!sel[g].size||sel[g].has(c.dataset[g]));
+      let ok=GROUPS.every(([g])=>!sel[g].size||sel[g].has(c.dataset[g]));
+      RNG.forEach(([r,k])=>{
+        const [lo,hi]=rng(r); if(lo==null&&hi==null) return;
+        const raw=c.dataset[k]; if(raw===undefined){ ok=false; return; }
+        const v=+raw; if((lo!=null&&v<lo)||(hi!=null&&v>hi)) ok=false;
+      });
       c.hidden=!ok; if(ok) shown++;
     });
     sections.querySelectorAll(".grid").forEach(gr=>{
@@ -754,13 +778,16 @@ STATS.forEach(([key,label,unit])=>{
       gr.hidden=!any; if(gr.previousElementSibling) gr.previousElementSibling.hidden=!any;
     });
     count.textContent="Showing "+shown+" of "+cards.length+" cards";
-    reset.hidden=!GROUPS.some(([g])=>sel[g].size);
+    const anyR=RNG.some(([r])=>rng(r).some(x=>x!=null));
+    const any=anyR||GROUPS.some(([g])=>sel[g].size);
+    reset.hidden=!any;
     try{
-      const o={}; GROUPS.forEach(([g])=>o[g]=[...sel[g]]);
-      if(GROUPS.some(([g])=>sel[g].size)) localStorage.setItem(KEY,JSON.stringify(o)); else localStorage.removeItem(KEY);
+      const o={}; GROUPS.forEach(([g])=>o[g]=[...sel[g]]); RNG.forEach(([r])=>o[r]=rng(r));
+      if(any) localStorage.setItem(KEY,JSON.stringify(o)); else localStorage.removeItem(KEY);
     }catch(e){}
   }
-  reset.addEventListener("click",()=>{ GROUPS.forEach(([g])=>sel[g].clear()); apply(); });
+  RNG.forEach(([r])=>rin[r].forEach(i=>i.addEventListener("input",apply)));
+  reset.addEventListener("click",()=>{ GROUPS.forEach(([g])=>sel[g].clear()); RNG.forEach(([r])=>rin[r].forEach(i=>{i.value="";})); apply(); });
   apply();
 })();
 
