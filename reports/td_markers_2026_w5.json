@@ -33,9 +33,9 @@
   "conf": 0.517,
   "model_p": 0.517,
   "phase3": {
-   "p_combined": 0.313,
-   "p_rec": 0.043,
-   "p_rush": 0.283
+   "p_combined": 0.318,
+   "p_rec": 0.044,
+   "p_rush": 0.287
   },
   "player": "D'Andre Swift",
   "position": "RB",
@@ -57,8 +57,8 @@
  },
  "CLE-NYJ": {
   "basis": "model+book_vig",
-  "book_p": 0.377,
-  "conf": 0.377,
+  "book_p": 0.37,
+  "conf": 0.37,
   "model_p": 0.401,
   "phase3": {
    "p_combined": 0.442,
@@ -71,8 +71,8 @@
  },
  "DEN-LAC": {
   "basis": "model+book_vig",
-  "book_p": 0.4,
-  "conf": 0.4,
+  "book_p": 0.408,
+  "conf": 0.408,
   "model_p": 0.413,
   "phase3": {
    "p_combined": 0.397,
@@ -99,8 +99,8 @@
  },
  "HOU-TEN": {
   "basis": "model+book_vig",
-  "book_p": 0.435,
-  "conf": 0.435,
+  "book_p": 0.444,
+  "conf": 0.444,
   "model_p": 0.509,
   "phase3": {
    "p_combined": 0.368,
@@ -142,12 +142,12 @@
  "MIN-NO": {
   "basis": "model+book_vig",
   "book_p": 0.524,
-  "conf": 0.44,
-  "model_p": 0.44,
+  "conf": 0.445,
+  "model_p": 0.445,
   "phase3": {
-   "p_combined": 0.301,
-   "p_rec": 0.051,
-   "p_rush": 0.264
+   "p_combined": 0.287,
+   "p_rec": 0.05,
+   "p_rush": 0.25
   },
   "player": "Aaron Jones",
   "position": "RB",
@@ -184,12 +184,12 @@
  "SF-SEA": {
   "basis": "model+book_vig",
   "book_p": 0.574,
-  "conf": 0.435,
-  "model_p": 0.435,
+  "conf": 0.489,
+  "model_p": 0.489,
   "phase3": {
    "p_combined": 0.442,
    "p_rec": 0.121,
-   "p_rush": 0.365
+   "p_rush": 0.366
   },
   "player": "Christian McCaffrey",
   "position": "RB",
