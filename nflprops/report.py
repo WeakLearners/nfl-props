@@ -111,6 +111,13 @@ NEW_PRIMARY_STATS = {"passing_yards", "rushing_yards"}
 NEW_PRIMARY_FROM_KICKOFF = "2026-10-11 16:00"
 
 
+# One-time manual override (decision #43, 2026-10-11): Bo Nix's passing_yards card
+# in DEN-LAC stays on the old engine. The new model gave 70.5 because of a
+# train/serve mismatch in snap_share_rank_in_group. Keyed on game and player,
+# not a general rule.
+PINNED_OLD = {("2026_05_DEN_LAC", "Bo Nix", "passing_yards")}
+
+
 def new_primary(kickoff, stat):
     return stat in NEW_PRIMARY_STATS and bool(kickoff) and kickoff >= NEW_PRIMARY_FROM_KICKOFF
 
@@ -205,8 +212,8 @@ def build(season, week, teams, lines, n_picks=6):
         _ko = pd.read_sql_query("SELECT game_id, gameday, gametime FROM schedules WHERE season=? AND week=?",
                                 con, params=[season, week])
     ko = {r.game_id: f"{r.gameday} {r.gametime}" for r in _ko.itertuples() if r.gameday and r.gametime}
-    pr["use_new"] = [new_primary(ko.get(g), s) and pd.notna(n)
-                     for g, s, n in zip(pr.game_id, pr.stat, pr.new_proj)]
+    pr["use_new"] = [new_primary(ko.get(g), s) and pd.notna(n) and (g, pl, s) not in PINNED_OLD
+                     for g, pl, s, n in zip(pr.game_id, pr.player, pr.stat, pr.new_proj)]
     pr["proj"] = np.where(pr.use_new, pr.new_proj, pr.old_proj)
     # The old engine's defense multiplier is not applied to a new-primary number.
     pr["applied"] = pr.applied & ~pr.use_new
