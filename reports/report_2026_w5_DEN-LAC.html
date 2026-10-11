@@ -374,14 +374,18 @@
   </section>
 
   <div class="fbar" id="fbar" data-inspect-id="filter-bar">
-    <div class="fgrp" data-inspect-id="filter-range-model"><span class="fgrp-k">Expected</span>
-      <input type="number" class="frng" id="f-model-min" data-inspect-id="filter-model-min" placeholder="min" step="any" aria-label="Expected minimum">
+    <div class="fgrp" data-inspect-id="filter-range-model" title="The big number on the card: projected yards or catches."><span class="fgrp-k">Projection</span>
+      <input type="number" class="frng" id="f-model-min" data-inspect-id="filter-model-min" placeholder="e.g. 50" step="any" aria-label="Projection minimum">
       <span class="fdash">&ndash;</span>
-      <input type="number" class="frng" id="f-model-max" data-inspect-id="filter-model-max" placeholder="max" step="any" aria-label="Expected maximum"></div>
-    <div class="fgrp" data-inspect-id="filter-range-book"><span class="fgrp-k">Book</span>
-      <input type="number" class="frng" id="f-book-min" data-inspect-id="filter-book-min" placeholder="min" step="any" aria-label="Book line minimum">
+      <input type="number" class="frng" id="f-model-max" data-inspect-id="filter-model-max" placeholder="e.g. 250" step="any" aria-label="Projection maximum"></div>
+    <div class="fgrp" data-inspect-id="filter-range-book" title="The book line."><span class="fgrp-k">Book</span>
+      <input type="number" class="frng" id="f-book-min" data-inspect-id="filter-book-min" placeholder="e.g. 40.5" step="any" aria-label="Book line minimum">
       <span class="fdash">&ndash;</span>
-      <input type="number" class="frng" id="f-book-max" data-inspect-id="filter-book-max" placeholder="max" step="any" aria-label="Book line maximum"></div>
+      <input type="number" class="frng" id="f-book-max" data-inspect-id="filter-book-max" placeholder="e.g. 220.5" step="any" aria-label="Book line maximum"></div>
+    <div class="fgrp" data-inspect-id="filter-range-conf" title="The card engine's chance of the over."><span class="fgrp-k">Confidence %</span>
+      <input type="number" class="frng" id="f-conf-min" data-inspect-id="filter-conf-min" placeholder="e.g. 60" step="any" aria-label="Confidence minimum percent">
+      <span class="fdash">&ndash;</span>
+      <input type="number" class="frng" id="f-conf-max" data-inspect-id="filter-conf-max" placeholder="e.g. 80" step="any" aria-label="Confidence maximum percent"></div>
     <button type="button" class="freset" id="freset" data-inspect-id="filter-reset">Show all</button>
     <span class="fcount" id="fcount" data-inspect-id="filter-count"></span>
   </div>
@@ -658,7 +662,7 @@ STATS.forEach(([key,label,unit])=>{
     const card=document.createElement("div");
     card.className = d.pick ? "card pick" : "card";
     card.dataset.inspectId="player-card";
-    card.dataset.mu=fmt(d.mu); card.dataset.eng=d.pe; if(d.line!=null) card.dataset.line=d.line; card.dataset.team=d.tm; card.dataset.pos=d.role.replace(/[0-9]+$/,""); card.dataset.stat=d.s;
+    card.dataset.mu=fmt(d.mu); card.dataset.eng=d.pe; if(d.mp!=null) card.dataset.mpct=(d.mp*100).toFixed(1); if(d.line!=null) card.dataset.line=d.line; card.dataset.team=d.tm; card.dataset.pos=d.role.replace(/[0-9]+$/,""); card.dataset.stat=d.s;
     // One badge per game: the player may have several stat cards, only the first wears it.
     const isScorer = TD && d.p === TD.player;
     const isTD = isScorer && !tdShown;
@@ -744,8 +748,8 @@ STATS.forEach(([key,label,unit])=>{
   const GROUPS=[["team","Team"],["pos","Position"],["stat","Market"]];
   const label=v=>String(v).replace(/_/g," ");
   const sel={team:new Set(),pos:new Set(),stat:new Set()};
-  // Ranges: Expected is the big figure on the card (d.mu, from the engine the card names); Book is the line (d.line).
-  const RNG=[["model","mu"],["book","line"]];
+  // Ranges: Projection is the big figure on the card (d.mu, from the engine the card names); Confidence is its chance of the over (d.mp x 100); Book is the line (d.line).
+  const RNG=[["model","mu"],["book","line"],["conf","mpct"]];
   const rin={}; RNG.forEach(([r])=>{ rin[r]=[document.getElementById("f-"+r+"-min"),document.getElementById("f-"+r+"-max")]; });
   const rng=r=>rin[r].map(i=>i.value===""||isNaN(+i.value)?null:+i.value);
   try{
