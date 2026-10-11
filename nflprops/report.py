@@ -101,6 +101,17 @@ def _imp(a):
     return (-a) / ((-a) + 100) if a < 0 else 100 / (a + 100)
 
 
+# Decisions #42/#43: the 2026 holdout picked the new model for these stats.
+# Reports from week 6 on use it as the card's number; weeks 1-5 keep the old
+# engine, as published.
+NEW_PRIMARY_STATS = {"passing_yards", "rushing_yards"}
+NEW_PRIMARY_FROM = (2026, 6)
+
+
+def new_primary(season, week, stat):
+    return stat in NEW_PRIMARY_STATS and (season, week) >= NEW_PRIMARY_FROM
+
+
 def build(season, week, teams, lines, n_picks=6):
     """Return (rows, shortlist, qb_notes) for one game. `lines` comes from
     event_lines. `qb_notes` is the list of decision #36 QB1-override strings
@@ -145,11 +156,10 @@ def build(season, week, teams, lines, n_picks=6):
         return [], pr, qb_notes
     rank = {r.player_key: int(r["rank"]) for _, r in pool.iterrows()}
 
-    # Decision #31 (extended by #38, and by #39 for passing_yards): Phase 3's
-    # ridge volume/yardage models, shown additively next to this engine's own
-    # number for receiving_yards, rushing_yards, receptions, and now
-    # passing_yards. Never merged into one figure, never claimed as better --
-    # see #37.
+    # Decision #31 (extended by #38/#39/#40): Phase 3's volume/yardage models.
+    # Since decision #42/#43 they are the primary number for passing_yards and
+    # rushing_yards from week 6, and the secondary line for the other stats.
+    # Never merged into one figure -- see #37.
     try:
         p3 = phase3_vol(season, week)
     except Exception as e:
@@ -180,6 +190,19 @@ def build(season, week, teams, lines, n_picks=6):
 
     pr["raw_def"] = pr.apply(raw_mult, axis=1)
     pr["applied"] = pr.stat.map(lambda s: DEF_WEIGHT.get(s, 1.0) > 0)
+    # Decisions #42/#43: per-stat primary engine. On the switched stats the new
+    # model's number replaces the old engine's as the card's number (mu, range,
+    # curve, mp, z, conf, shortlist all follow). The new model has no spread of
+    # its own, so the old engine's sd_adj is kept around the new mean. The old
+    # engine's number moves to the secondary comparison line.
+    pr["old_proj"] = pr.proj
+    pr["new_proj"] = [r[f"p3_{r['stat']}"] if f"p3_{r['stat']}" in r.index else np.nan
+                      for _, r in pr.iterrows()]
+    pr["use_new"] = [new_primary(season, week, s) and pd.notna(n)
+                     for s, n in zip(pr.stat, pr.new_proj)]
+    pr["proj"] = np.where(pr.use_new, pr.new_proj, pr.old_proj)
+    # The old engine's defense multiplier is not applied to a new-primary number.
+    pr["applied"] = pr.applied & ~pr.use_new
     pr["sd_adj"] = pr.sd * SD_INFLATE
     pr["lo"] = (pr.proj - pr.sd_adj).clip(lower=0)
     pr["hi"] = pr.proj + pr.sd_adj
@@ -249,15 +272,12 @@ def build(season, week, teams, lines, n_picks=6):
             "mp": None if pd.isna(r.mp) else round(float(r.mp), 3),
             "bp": None if pd.isna(r.bp) else round(float(r.bp), 3),
             "pick": None if r.pick is None else int(r.pick),
-            "p3": (round(float(r.p3_receiving_yards), 1) if r.stat == "receiving_yards"
-                                                           and pd.notna(r.p3_receiving_yards)
-                   else round(float(r.p3_rushing_yards), 1) if r.stat == "rushing_yards"
-                                                              and pd.notna(r.p3_rushing_yards)
-                   else round(float(r.p3_receptions), 1) if r.stat == "receptions"
-                                                          and pd.notna(r.p3_receptions)
-                   else round(float(r.p3_passing_yards), 1) if r.stat == "passing_yards"
-                                                             and pd.notna(r.p3_passing_yards)
-                   else None),
+            # pe: the engine behind mu ("new" = Phase 3 model, "old" = project.py).
+            # alt: the OTHER engine's number, for the small comparison line.
+            "pe": "new" if r.use_new else "old",
+            "alt": (None if (r.old_proj is None or pd.isna(r.old_proj)) else round(float(r.old_proj), 1))
+                   if r.use_new
+                   else (None if pd.isna(r.new_proj) else round(float(r.new_proj), 1)),
         })
     return rows, pr.loc[short.index], qb_notes
 

@@ -145,11 +145,12 @@ TRAY_JS = r"""
       if(/\bbd-big\b/.test(b[0])) out.push("This is a Big day matchup: a top-15% "+pos+" against one of the 5 defenses that allow the most to the position.");
       if(/\bbd-caution\b/.test(b[0])) out.push("This is a Caution matchup: a top-15% "+pos+" against one of the 5 toughest defenses to the position.");
     });
-    out.push("The model puts the middle of the range at "+f1(d.mu)+" "+unit+", with most games between "+f1(d.lo)+" and "+f1(d.hi)+".");
+    var eng=(d.pe==="new"?"new model":"old engine");
+    out.push("The "+eng+" puts the middle of the range at "+f1(d.mu)+" "+unit+", with most games between "+f1(d.lo)+" and "+f1(d.hi)+".");
     if(d.line!=null&&d.mp!=null&&d.bp!=null){
       var mp=Math.round(d.mp*100), bp=Math.round(d.bp*100);
       out.push("It clears "+d.line+" in "+mp+"% of outcomes, against "+bp+"% implied by the "+(d.price>0?"+":"")+d.price+" price.");
-      out.push(mp-bp>=5?"The model is more confident than the book.":bp-mp>=5?"The book is more confident than the model.":"The model and the book agree within 5 points.");
+      out.push(mp-bp>=5?"The "+eng+" is more confident than the book.":bp-mp>=5?"The book is more confident than the "+eng+".":"The "+eng+" and the book agree within 5 points.");
     } else out.push("FanDuel offered no number near −300 for "+label.toLowerCase()+".");
     var a=(window.__ACTUALS__||{})[d.p+"|"+d.s];
     if(a!=null) out.push("Final: "+f1(a)+" "+unit+(d.line!=null?(a>d.line?", over the "+d.line+" line.":", under the "+d.line+" line."):"."));
@@ -177,7 +178,7 @@ TRAY_JS = r"""
     });
     s+=lb+'</svg>';
     return s+'<div class="ptray-key">'+(d.line!=null?'<span><i></i>FanDuel line '+d.line+'</span>':'')
-      +'<span><i class="mu"></i>model expected '+f1(d.mu)+'</span>'
+      +'<span><i class="mu"></i>'+(d.pe==="new"?"new model":"old engine")+' expected '+f1(d.mu)+'</span>'
       +(d.line!=null?'<span>bars: green over, red under</span>':'')+'</div>';
   }
 

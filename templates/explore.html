@@ -121,9 +121,12 @@
     <div class="pg-lede">
   <p class="sub" data-inspect-id="explore-subtitle">Every shortlisted leg from a finished
     game, cut the way you choose. <b>All legs</b> adds the ones a book priced that the
-    model didn't pick; <b>Shortlist</b> narrows to the picks. <b>Needed</b> is the hit rate at which $100 on each leg
+    report didn't pick; <b>Shortlist</b> narrows to the picks. <b>Needed</b> is the hit rate at which $100 on each leg
     breaks even. A group only paid if its hit rate beat it.
-    <b>$100 each</b> is what a flat $100 on every leg in the group would have returned.</p>
+    <b>$100 each</b> is what a flat $100 on every leg in the group would have returned.
+    <b>Card-engine confidence</b> and <b>Card engine vs book</b> use the number on the report card: the old engine for
+    every leg in weeks 1 to 5, and from week 6 the new model for passing yards and rushing yards (decision #42).
+    Weeks 1 to 5 keep the figures they showed.</p>
     </div>
     <div class="pg-aside ex-side" data-inspect-id="explore-side">
   <details class="top" id="topbox" open data-inspect-id="explore-top5">
@@ -165,7 +168,7 @@
     rushing or receiving touchdown; passing TDs don't count. TD picks without a book price
     count toward hit rate only. Rows under ten graded legs
     are greyed out &mdash; at that size a hit rate is mostly luck. Prices are what the report
-    held when it was generated. <b>Opponent defense</b> only groups legs the model actually used
+    held when it was generated. <b>Opponent defense</b> only groups legs the old engine actually used
     that number for &mdash; passing yards, completions, and rushing yards (rushing at half
     weight). It's never applied to receiving yards or receptions, so those legs sit outside
     this grouping rather than being counted against a number that didn't shape them.</footer>
@@ -174,11 +177,11 @@
 <script>
 (function () {
   var D = window.__EXPLORE__ || {legs: [], pending: {}, void: {}};
-  // Shortlist legs and TD picks are different products: a different model,
+  // Shortlist legs and TD picks are different products: a different engine,
   // one TD pick per game, and only the shortlist feeds the parlays. Pooling
   // them made a headline that described nothing actually bet, so the page
   // shows one kind at a time and never both. "All" is every leg a book
-  // priced; the shortlist is the subset the model picked.
+  // priced; the shortlist is the subset the report picked.
   var kind = document.getElementById("kind"), LEGS;
   function scope() {
     var k = kind.value;
@@ -225,20 +228,20 @@
       if (l.price > 0) return ["Plus money", -1];
       return band(-l.price, [200, 250, 300, 400],
         ["-199 to -101", "-200 to -249", "-250 to -299", "-300 to -399", "-400 or shorter"]); }],
-    ["conf", "Model confidence", function (l) {
+    ["conf", "Card-engine confidence", function (l) {
       return band(l.mp * 100, [65, 70, 75, 80],
         ["Under 65%", "65–70%", "70–75%", "75–80%", "80%+"]); }],
-    ["edge", "Model vs book", function (l) {
+    ["edge", "Card engine vs book", function (l) {
       if (l.bp == null) return null;
       return band((l.mp - l.bp) * 100, [0, 3, 6],
-        ["Model below book", "0–3 pts above", "3–6 pts above", "6+ pts above"]); }],
+        ["Engine below book", "0–3 pts above", "3–6 pts above", "6+ pts above"]); }],
     // report.py only feeds this multiplier into the projection for passing
     // yards, completions, and rushing yards (rushing at half weight) -- it
     // cost 12% of MAE for receiving yards/receptions in backtesting and was
     // turned off there. l.app carries that same applied/not flag through
-    // unchanged, so a leg the model never used the number for is left out
+    // unchanged, so a leg the old engine never used the number for is left out
     // of this grouping rather than mixed in with the ones it did shape.
-    ["def", "Opponent defense (model-used)", function (l) {
+    ["def", "Opponent defense (old-engine-used)", function (l) {
       if (l.def == null || !l.app) return null;
       return band(l.def, [0.9, 1.1],
         ["Tough (under 0.9)", "Average (0.9–1.1)", "Soft (over 1.1)"]); }],

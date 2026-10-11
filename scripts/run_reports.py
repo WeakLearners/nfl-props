@@ -101,10 +101,10 @@ def digest_blocks(items, title, rem):
             divider(),
         ]
     blocks.append(section(
-        "_Confidence is the lower of the model's and FanDuel's own number, so it is never "
+        "_Confidence is the lower of the card engine's and FanDuel's own number, so it is never "
         "the more optimistic of the two. It measures how likely a leg is to *happen* — not "
-        "that it is mispriced. Tested against real lines, this model was the less accurate "
-        "of the two._"))
+        "that it is mispriced. Tested against real lines, the old engine was the less accurate "
+        "of the two. The new model has not been tested against lines._"))
     blocks.append(section(f"_{len(items)} report(s) written to `reports/`. "
                           f"Credits remaining: {rem}._"))
     return blocks

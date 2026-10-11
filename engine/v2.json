@@ -1,0 +1,58 @@
+{
+  "_purpose": "Per-stat official engine for the live report from 2026 week 6, set by decision #42 (2026 holdout, weeks 1-4) and recorded in decision #43. v1.json is the locked engine list for the holdout and is not edited.",
+  "generated_at": "2026-10-11",
+  "generated_by": "Finance Desk / CFO, decision #43",
+  "supersedes_for_display": "engine/v1.json (v1 still describes the holdout lock)",
+  "effective_from": {
+    "season": 2026,
+    "week": 6,
+    "code": "nflprops/report.py NEW_PRIMARY_FROM, NEW_PRIMARY_STATS"
+  },
+  "spread_rule": "The new model has no spread of its own. On a new-primary card the range, z and mp use the new model's mean with the old engine's sd_adj (sd x SD_INFLATE 1.10). Holdout RMSE: passing_yards new 83.50 vs old 83.72, rushing_yards new 26.15 vs old 27.09, so the old spread is not too narrow for the new mean.",
+  "engines": {
+    "passing_yards": {
+      "official_engine": "new model: LightGBM, data/shipping/passing_yards.pkl via scripts/vol_predict.py phase3_vol",
+      "secondary_engine": "old engine: nflprops/project.py",
+      "reason": "#42 holdout: MAE 65.64 vs 67.84, lift 3.25%, bar 3%"
+    },
+    "rushing_yards": {
+      "official_engine": "new model: ridge, data/shipping/rushing_yards.pkl via scripts/vol_predict.py phase3_vol",
+      "secondary_engine": "old engine: nflprops/project.py",
+      "reason": "#42 holdout: MAE 20.15 vs 21.30, lift 5.38%, bar 1%"
+    },
+    "receiving_yards": {
+      "official_engine": "old engine: nflprops/project.py",
+      "secondary_engine": "new model: ridge, data/shipping/receiving_yards.pkl",
+      "reason": "#42 holdout: lift 0.64%, bar 2%, old engine stays"
+    },
+    "receptions": {
+      "official_engine": "old engine: nflprops/project.py",
+      "secondary_engine": "new model: data/shipping/targets.pkl x catch_rate_career",
+      "reason": "#42 holdout: lift 1.85%, bar 3%, old engine stays"
+    },
+    "completions": {
+      "official_engine": "old engine: nflprops/project.py",
+      "secondary_engine": "none (no new-model number)",
+      "reason": "no head-to-head; unchanged"
+    },
+    "anytime_td": {
+      "official_engine": "old model: nflprops/tdmodel.py + scripts/td/predict.py",
+      "secondary_engine": "new TD models (informational)",
+      "reason": "unchanged (#30, #33)"
+    }
+  },
+  "code_sha256": {
+    "nflprops/project.py": "f999cf836bebcee3a090c91342b3059c66ab07b8ca59c5d99fd555598de13f32",
+    "scripts/vol_predict.py": "9d91d5a5b1f79ea17321a122be0654ceee558ca941fc73323b0c119b0441587e",
+    "nflprops/report.py": "24d345564c347f4296aa250532ba62f4e8bc553e46886902a6f5abefd163e7c8",
+    "nflprops/tdmodel.py": "6d3334d4c8b43249c075bd80eb10254fb4a78122201d72baa9137a0172fd0fff",
+    "scripts/td/predict.py": "cbfc393a7e7c606f9ab5a4664f58baf14a8ef14be7e2e7dac63ad29972e7a98e"
+  },
+  "artifact_sha256": {
+    "data/shipping/passing_yards.pkl": "94f82c72cba944f9745c90af7d7e868ff7cda5e846e0a9d258fcc09ce01ea1bf",
+    "data/shipping/rushing_yards.pkl": "c87c4bdbf8d5a4ee3c7e73264d7c40c5c839b0367663ee8f5a9cbdce8df82f98",
+    "data/shipping/receiving_yards.pkl": "1e99a9543dcb54e892b82b9ccf746b1a5b86696c7636c6e1b736acfaafced257",
+    "data/shipping/targets.pkl": "3b4ea2bae56538a4b2bca1d4c8b395b3f505402d4afb677961a0a0c4d6fc8c95"
+  },
+  "weeks_1_to_5": "Published with the old engine for every stat. Their embedded data is not rewritten."
+}
