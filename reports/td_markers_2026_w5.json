@@ -15,26 +15,26 @@
  },
  "BUF-LA": {
   "basis": "model+book_vig",
-  "book_p": 0.535,
-  "conf": 0.535,
-  "model_p": 0.536,
+  "book_p": 0.545,
+  "conf": 0.545,
+  "model_p": 0.568,
   "phase3": {
-   "p_combined": 0.422,
-   "p_rec": 0.132,
-   "p_rush": 0.334
+   "p_combined": 0.379,
+   "p_rec": 0.107,
+   "p_rush": 0.304
   },
-  "player": "Josh Allen",
-  "position": "QB",
+  "player": "James Cook",
+  "position": "RB",
   "team": "BUF"
  },
  "CHI-GB": {
   "basis": "model+book_vig",
-  "book_p": 0.556,
-  "conf": 0.525,
-  "model_p": 0.525,
+  "book_p": 0.63,
+  "conf": 0.517,
+  "model_p": 0.517,
   "phase3": {
-   "p_combined": 0.312,
-   "p_rec": 0.041,
+   "p_combined": 0.313,
+   "p_rec": 0.043,
    "p_rush": 0.283
   },
   "player": "D'Andre Swift",
@@ -43,12 +43,12 @@
  },
  "CIN-MIA": {
   "basis": "model+book_vig",
-  "book_p": 0.615,
-  "conf": 0.472,
-  "model_p": 0.472,
+  "book_p": 0.592,
+  "conf": 0.484,
+  "model_p": 0.484,
   "phase3": {
-   "p_combined": 0.447,
-   "p_rec": 0.232,
+   "p_combined": 0.449,
+   "p_rec": 0.235,
    "p_rush": 0.28
   },
   "player": "Chase Brown",
@@ -56,23 +56,23 @@
   "team": "CIN"
  },
  "CLE-NYJ": {
-  "basis": "model_only",
-  "book_p": null,
-  "conf": 0.426,
-  "model_p": 0.426,
+  "basis": "model+book_vig",
+  "book_p": 0.377,
+  "conf": 0.377,
+  "model_p": 0.401,
   "phase3": {
-   "p_combined": 0.381,
-   "p_rec": 0.085,
-   "p_rush": 0.324
+   "p_combined": 0.442,
+   "p_rec": 0.187,
+   "p_rush": 0.314
   },
-  "player": "Breece Hall",
+  "player": "Quinshon Judkins",
   "position": "RB",
-  "team": "NYJ"
+  "team": "CLE"
  },
  "DEN-LAC": {
   "basis": "model+book_vig",
-  "book_p": 0.408,
-  "conf": 0.408,
+  "book_p": 0.4,
+  "conf": 0.4,
   "model_p": 0.413,
   "phase3": {
    "p_combined": 0.397,
@@ -85,7 +85,7 @@
  },
  "DET-ARI": {
   "basis": "model+book_vig",
-  "book_p": 0.818,
+  "book_p": 0.81,
   "conf": 0.615,
   "model_p": 0.615,
   "phase3": {
@@ -99,8 +99,8 @@
  },
  "HOU-TEN": {
   "basis": "model+book_vig",
-  "book_p": 0.455,
-  "conf": 0.455,
+  "book_p": 0.435,
+  "conf": 0.435,
   "model_p": 0.509,
   "phase3": {
    "p_combined": 0.368,
@@ -113,12 +113,12 @@
  },
  "IND-PIT": {
   "basis": "model+book_vig",
-  "book_p": 0.6,
+  "book_p": 0.583,
   "conf": 0.398,
   "model_p": 0.398,
   "phase3": {
-   "p_combined": 0.326,
-   "p_rec": 0.047,
+   "p_combined": 0.324,
+   "p_rec": 0.046,
    "p_rush": 0.292
   },
   "player": "Jaylen Warren",
@@ -127,7 +127,7 @@
  },
  "LV-NE": {
   "basis": "model+book_vig",
-  "book_p": 0.535,
+  "book_p": 0.5,
   "conf": 0.447,
   "model_p": 0.447,
   "phase3": {
@@ -141,7 +141,7 @@
  },
  "MIN-NO": {
   "basis": "model+book_vig",
-  "book_p": 0.545,
+  "book_p": 0.524,
   "conf": 0.44,
   "model_p": 0.44,
   "phase3": {
@@ -155,9 +155,9 @@
  },
  "NYG-WAS": {
   "basis": "model+book_vig",
-  "book_p": 0.444,
-  "conf": 0.383,
-  "model_p": 0.383,
+  "book_p": 0.435,
+  "conf": 0.37,
+  "model_p": 0.37,
   "phase3": {
    "p_combined": 0.317,
    "p_rec": 0.131,
@@ -168,14 +168,14 @@
   "team": "NYG"
  },
  "PHI-JAX": {
-  "basis": "model_only",
-  "book_p": null,
+  "basis": "model+book_vig",
+  "book_p": 0.512,
   "conf": 0.431,
   "model_p": 0.431,
   "phase3": {
-   "p_combined": 0.408,
+   "p_combined": 0.379,
    "p_rec": 0.068,
-   "p_rush": 0.365
+   "p_rush": 0.334
   },
   "player": "Bhayshul Tuten",
   "position": "RB",
@@ -183,7 +183,7 @@
  },
  "SF-SEA": {
   "basis": "model+book_vig",
-  "book_p": 0.583,
+  "book_p": 0.574,
   "conf": 0.435,
   "model_p": 0.435,
   "phase3": {
