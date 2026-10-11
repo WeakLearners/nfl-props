@@ -378,14 +378,14 @@
       <input type="number" class="frng" id="f-model-min" data-inspect-id="filter-model-min" placeholder="e.g. 50" step="any" aria-label="Projection minimum">
       <span class="fdash">&ndash;</span>
       <input type="number" class="frng" id="f-model-max" data-inspect-id="filter-model-max" placeholder="e.g. 250" step="any" aria-label="Projection maximum"></div>
-    <div class="fgrp" data-inspect-id="filter-range-book" title="The book line."><span class="fgrp-k">Book</span>
-      <input type="number" class="frng" id="f-book-min" data-inspect-id="filter-book-min" placeholder="e.g. 40.5" step="any" aria-label="Book line minimum">
+    <div class="fgrp" data-inspect-id="filter-range-book" title="The chance the book's price implies (vig included)."><span class="fgrp-k">Book %</span>
+      <input type="number" class="frng" id="f-bookpct-min" data-inspect-id="filter-book-min" placeholder="e.g. 55" step="1" min="0" max="100" aria-label="Book percent minimum">
       <span class="fdash">&ndash;</span>
-      <input type="number" class="frng" id="f-book-max" data-inspect-id="filter-book-max" placeholder="e.g. 220.5" step="any" aria-label="Book line maximum"></div>
+      <input type="number" class="frng" id="f-bookpct-max" data-inspect-id="filter-book-max" placeholder="e.g. 75" step="1" min="0" max="100" aria-label="Book percent maximum"></div>
     <div class="fgrp" data-inspect-id="filter-range-conf" title="The card engine's chance of the over."><span class="fgrp-k">Confidence %</span>
-      <input type="number" class="frng" id="f-conf-min" data-inspect-id="filter-conf-min" placeholder="e.g. 60" step="any" aria-label="Confidence minimum percent">
+      <input type="number" class="frng" id="f-conf-min" data-inspect-id="filter-conf-min" placeholder="e.g. 60" step="1" min="0" max="100" aria-label="Confidence minimum percent">
       <span class="fdash">&ndash;</span>
-      <input type="number" class="frng" id="f-conf-max" data-inspect-id="filter-conf-max" placeholder="e.g. 80" step="any" aria-label="Confidence maximum percent"></div>
+      <input type="number" class="frng" id="f-conf-max" data-inspect-id="filter-conf-max" placeholder="e.g. 80" step="1" min="0" max="100" aria-label="Confidence maximum percent"></div>
     <button type="button" class="freset" id="freset" data-inspect-id="filter-reset">Show all</button>
     <span class="fcount" id="fcount" data-inspect-id="filter-count"></span>
   </div>
@@ -662,7 +662,7 @@ STATS.forEach(([key,label,unit])=>{
     const card=document.createElement("div");
     card.className = d.pick ? "card pick" : "card";
     card.dataset.inspectId="player-card";
-    card.dataset.mu=fmt(d.mu); card.dataset.eng=d.pe; if(d.mp!=null) card.dataset.mpct=(d.mp*100).toFixed(1); if(d.line!=null) card.dataset.line=d.line; card.dataset.team=d.tm; card.dataset.pos=d.role.replace(/[0-9]+$/,""); card.dataset.stat=d.s;
+    card.dataset.mu=fmt(d.mu); card.dataset.eng=d.pe; if(d.mp!=null) card.dataset.mpct=String(Math.round(d.mp*100)); if(d.bp!=null) card.dataset.bpct=String(Math.round(d.bp*100)); if(d.line!=null) card.dataset.line=d.line; card.dataset.team=d.tm; card.dataset.pos=d.role.replace(/[0-9]+$/,""); card.dataset.stat=d.s;
     // One badge per game: the player may have several stat cards, only the first wears it.
     const isScorer = TD && d.p === TD.player;
     const isTD = isScorer && !tdShown;
@@ -748,13 +748,14 @@ STATS.forEach(([key,label,unit])=>{
   const GROUPS=[["team","Team"],["pos","Position"],["stat","Market"]];
   const label=v=>String(v).replace(/_/g," ");
   const sel={team:new Set(),pos:new Set(),stat:new Set()};
-  // Ranges: Projection is the big figure on the card (d.mu, from the engine the card names); Confidence is its chance of the over (d.mp x 100); Book is the line (d.line).
-  const RNG=[["model","mu"],["book","line"],["conf","mpct"]];
+  // Ranges: Projection is the big figure on the card (d.mu, from the engine the card names); Confidence is its chance of the over (d.mp x 100, whole number); Book % is the price's implied chance (d.bp x 100, whole number). Old saved "book" line values use a different key and are ignored; Book is the line (d.line).
+  const RNG=[["model","mu"],["bookpct","bpct"],["conf","mpct"]];
   const rin={}; RNG.forEach(([r])=>{ rin[r]=[document.getElementById("f-"+r+"-min"),document.getElementById("f-"+r+"-max")]; });
   const rng=r=>rin[r].map(i=>i.value===""||isNaN(+i.value)?null:+i.value);
   try{
     const saved=JSON.parse(localStorage.getItem(KEY)||"null");
     if(saved){
+      delete saved.book;   // old book-line range: a different unit, dropped
       GROUPS.forEach(([g])=>(saved[g]||[]).forEach(v=>sel[g].add(v)));
       RNG.forEach(([r])=>(saved[r]||[]).forEach((v,i)=>{ if(i<2&&v!=null&&isFinite(v)) rin[r][i].value=v; }));
     }

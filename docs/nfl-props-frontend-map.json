@@ -80,7 +80,7 @@
           "kind": "control",
           "description": "One attribute group in the filter bar (Team, Position or Market). Built at runtime. A group with only one value is left out.",
           "locate": {
-            "path": "templates/report.html:767",
+            "path": "templates/report.html:768",
             "grep": "grep -n -F -- 'dataset.inspectId=\"filter-group\"' templates/report.html"
           }
         },
@@ -90,7 +90,7 @@
           "kind": "control",
           "description": "Toggle button for one value of an attribute. Dark fill means selected. Built at runtime.",
           "locate": {
-            "path": "templates/report.html:771",
+            "path": "templates/report.html:772",
             "grep": "grep -n -F -- 'dataset.inspectId=\"filter-chip\"' templates/report.html"
           }
         },
@@ -146,9 +146,9 @@
         },
         {
           "id": "filter-range-book",
-          "label": "Book range filter",
+          "label": "Book % range filter",
           "kind": "control",
-          "description": "Min and max inputs for the book line (d.line). A set limit hides cards that have no book line.",
+          "description": "Min and max inputs for the book's implied chance, in whole percent (d.bp x 100, rounded; vig included). Cards with no book price hide when a limit is set. Saved values from the old book-line range are dropped on load.",
           "locate": {
             "path": "templates/report.html:381",
             "grep": "grep -n -F -- 'data-inspect-id=\"filter-range-book\"' templates/report.html"
@@ -156,9 +156,9 @@
         },
         {
           "id": "filter-book-min",
-          "label": "Book minimum input",
+          "label": "Book % minimum input",
           "kind": "control",
-          "description": "Lower limit for the book line.",
+          "description": "Lower limit for the book percent (whole number, 0 to 100).",
           "locate": {
             "path": "templates/report.html:382",
             "grep": "grep -n -F -- 'data-inspect-id=\"filter-book-min\"' templates/report.html"
@@ -166,9 +166,9 @@
         },
         {
           "id": "filter-book-max",
-          "label": "Book maximum input",
+          "label": "Book % maximum input",
           "kind": "control",
-          "description": "Upper limit for the book line.",
+          "description": "Upper limit for the book percent (whole number, 0 to 100).",
           "locate": {
             "path": "templates/report.html:384",
             "grep": "grep -n -F -- 'data-inspect-id=\"filter-book-max\"' templates/report.html"
@@ -178,7 +178,7 @@
           "id": "filter-range-conf",
           "label": "Confidence range filter",
           "kind": "control",
-          "description": "Min and max inputs for the card engine's chance of the over, in percent (d.mp x 100). Cards with no chance (no line offered) hide when a limit is set.",
+          "description": "Min and max inputs for the card engine's chance of the over, in whole percent (d.mp x 100, rounded). Cards with no chance (no line offered) hide when a limit is set.",
           "locate": {
             "path": "templates/report.html:385",
             "grep": "grep -n -F -- 'data-inspect-id=\"filter-range-conf\"' templates/report.html"
@@ -250,7 +250,7 @@
           "kind": "list-item",
           "description": "One leg: rank, player, bet and line, price, confidence percent.",
           "locate": {
-            "path": "templates/report.html:815",
+            "path": "templates/report.html:816",
             "grep": "grep -n -F -- 'dataset.inspectId=\"pick-row\"' templates/report.html"
           }
         },
@@ -540,7 +540,7 @@
           "kind": "table-row",
           "description": "One player-stat row in the full table.",
           "locate": {
-            "path": "templates/report.html:852",
+            "path": "templates/report.html:853",
             "grep": "grep -n -F -- 'dataset.inspectId=\"table-row\"' templates/report.html"
           }
         },
@@ -660,7 +660,7 @@
           "kind": "status",
           "description": "The pill itself on a shortlist row. Same markup as the card pill, under its own id so the inspector can tell the two apart.",
           "locate": {
-            "path": "templates/report.html:809",
+            "path": "templates/report.html:810",
             "grep": "grep -n -F -- 'pick-result-mark' templates/report.html"
           }
         },
@@ -670,7 +670,7 @@
           "kind": "status",
           "description": "The same pill on a shortlist row, sitting directly after the leg it grades rather than at the far end of the row. The slot keeps its width when a game has not finished, so the rows stay a column while results land one game at a time.",
           "locate": {
-            "path": "templates/report.html:808",
+            "path": "templates/report.html:809",
             "grep": "grep -n -F -- 'data-inspect-id=\"pick-result\"' templates/report.html"
           }
         },
@@ -681,7 +681,7 @@
           "description": "'old X · new Y' on each shortlist row. Old engine value in team colour, new model value in purple ('—' when none). The engine that makes the leg's number (d.pe) is underlined. Hidden under 560px width.",
           "locate": {
             "grep": "grep -n -F -- 'data-inspect-id=\"pick-models\"' templates/report.html",
-            "path": "templates/report.html:820"
+            "path": "templates/report.html:821"
           }
         },
         {
@@ -710,7 +710,7 @@
           "kind": "badge",
           "description": "Outline chip like '#12 WR': position rank by recent production (nflprops/rating.py chip_lookup, through the latest completed week). Not the depth chart. The filled role pill (WR1) is separate and unchanged. Absent when the player is below the ranking floor. Built by rkChip(d,id). On a shortlist row.",
           "locate": {
-            "path": "templates/report.html:818",
+            "path": "templates/report.html:819",
             "grep": "grep -n -F -- '\"pick-rank-chip\"' templates/report.html"
           }
         },
@@ -720,7 +720,7 @@
           "kind": "badge",
           "description": "Badge from nflprops/badges.py (data/ratings/badges.json): ▲/▼ trend, or Big day / Caution matchup. Sits after the rank chip inside the .mk group, never replaces it. Hover title gives the numbers. Absent for almost everyone. On a shortlist row.",
           "locate": {
-            "path": "templates/report.html:818",
+            "path": "templates/report.html:819",
             "grep": "grep -n -F -- ',\"pick-badge\")' templates/report.html"
           }
         },
@@ -730,7 +730,7 @@
           "kind": "badge",
           "description": "Outline chip like '#12 WR': position rank by recent production (nflprops/rating.py chip_lookup, through the latest completed week). Not the depth chart. The filled role pill (WR1) is separate and unchanged. Absent when the player is below the ranking floor. Built by rkChip(d,id). In the full figures table.",
           "locate": {
-            "path": "templates/report.html:854",
+            "path": "templates/report.html:855",
             "grep": "grep -n -F -- '\"table-rank-chip\"' templates/report.html"
           }
         },
@@ -740,7 +740,7 @@
           "kind": "badge",
           "description": "Badge from nflprops/badges.py (data/ratings/badges.json): ▲/▼ trend, or Big day / Caution matchup. Sits after the rank chip, never replaces it. Hover title gives the numbers. Absent for almost everyone. In the full figures table.",
           "locate": {
-            "path": "templates/report.html:854",
+            "path": "templates/report.html:855",
             "grep": "grep -n -F -- '\"table-badge\"' templates/report.html"
           }
         },
