@@ -297,6 +297,22 @@
     text-transform:uppercase; letter-spacing:.04em; font-size:17px}
   summary:focus-visible{outline:2px solid var(--kc); outline-offset:3px}
   .tablewrap{overflow-x:auto; margin-top:14px}
+  /* Card filter. Client-side only: it hides cards, it never changes DATA. */
+  .fbar{display:flex; flex-wrap:wrap; align-items:center; gap:8px 22px; margin:26px 0 0;
+    padding:10px 14px; background:var(--surface); border:1px solid var(--line); border-radius:3px}
+  .fgrp{display:flex; flex-wrap:wrap; align-items:center; gap:6px}
+  .fgrp-k{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--ink-3); margin-right:2px}
+  .fchip{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.04em; color:var(--ink-2);
+    background:none; border:1px solid var(--line); border-radius:3px; padding:2px 8px; cursor:pointer}
+  .fchip:hover{border-color:var(--ink-3)}
+  .fchip[aria-pressed="true"]{background:var(--ink); border-color:var(--ink); color:var(--bg)}
+  .fchip:focus-visible,.freset:focus-visible{outline:2px solid var(--den); outline-offset:2px}
+  .freset{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--ink-3); background:none; border:0; padding:2px 4px; cursor:pointer; text-decoration:underline}
+  .freset:hover{color:var(--den)}
+  .fcount{margin-left:auto; font-size:12.5px; color:var(--ink-3)}
+  .card[hidden],h2[hidden],.grid[hidden]{display:none}
   table{border-collapse:collapse; width:100%; font-size:13px}
   th,td{text-align:right; padding:6px 10px; border-bottom:1px solid var(--line-soft); white-space:nowrap}
   th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}
@@ -351,6 +367,11 @@
       <div class="pf-wide" id="corrnote" data-inspect-id="corr-note"></div>
     </div>
   </section>
+
+  <div class="fbar" id="fbar" data-inspect-id="filter-bar">
+    <button type="button" class="freset" id="freset" data-inspect-id="filter-reset">Show all</button>
+    <span class="fcount" id="fcount" data-inspect-id="filter-count"></span>
+  </div>
 
   <div id="sections" data-inspect-id="stat-sections"></div>
 
@@ -616,6 +637,7 @@ STATS.forEach(([key,label,unit])=>{
     const card=document.createElement("div");
     card.className = d.pick ? "card pick" : "card";
     card.dataset.inspectId="player-card";
+    card.dataset.team=d.tm; card.dataset.pos=d.role.replace(/[0-9]+$/,""); card.dataset.stat=d.s;
     // One badge per game: the player may have several stat cards, only the first wears it.
     const isScorer = TD && d.p === TD.player;
     const isTD = isScorer && !tdShown;
@@ -690,6 +712,57 @@ STATS.forEach(([key,label,unit])=>{
   });
   sections.appendChild(grid);
 });
+
+// Card filter. AND across groups (team, position, market), OR within one group.
+// Selection is remembered per report in localStorage; every access is guarded
+// because storage can be missing or blocked, and the page must work without it.
+(function(){
+  const bar=document.getElementById("fbar"), reset=document.getElementById("freset"), count=document.getElementById("fcount");
+  const cards=[...sections.querySelectorAll(".card")];
+  const KEY="nflprops-filter:"+location.pathname;
+  const GROUPS=[["team","Team"],["pos","Position"],["stat","Market"]];
+  const label=v=>String(v).replace(/_/g," ");
+  const sel={team:new Set(),pos:new Set(),stat:new Set()};
+  try{
+    const saved=JSON.parse(localStorage.getItem(KEY)||"null");
+    if(saved) GROUPS.forEach(([g])=>(saved[g]||[]).forEach(v=>sel[g].add(v)));
+  }catch(e){}
+  const chips=[];
+  GROUPS.forEach(([g,name])=>{
+    const vals=[...new Set(cards.map(c=>c.dataset[g]))];
+    [...sel[g]].forEach(v=>{ if(!vals.includes(v)||vals.length<2) sel[g].delete(v); });
+    if(vals.length<2) return;
+    const grp=document.createElement("div"); grp.className="fgrp"; grp.dataset.inspectId="filter-group";
+    grp.innerHTML='<span class="fgrp-k">'+name+'</span>';
+    vals.forEach(v=>{
+      const b=document.createElement("button"); b.type="button"; b.className="fchip";
+      b.dataset.inspectId="filter-chip"; b.textContent=label(v);
+      b.addEventListener("click",()=>{ sel[g].has(v)?sel[g].delete(v):sel[g].add(v); apply(); });
+      chips.push([g,v,b]); grp.appendChild(b);
+    });
+    bar.insertBefore(grp,reset);
+  });
+  function apply(){
+    let shown=0;
+    chips.forEach(([g,v,b])=>b.setAttribute("aria-pressed",sel[g].has(v)?"true":"false"));
+    cards.forEach(c=>{
+      const ok=GROUPS.every(([g])=>!sel[g].size||sel[g].has(c.dataset[g]));
+      c.hidden=!ok; if(ok) shown++;
+    });
+    sections.querySelectorAll(".grid").forEach(gr=>{
+      const any=!!gr.querySelector(".card:not([hidden])");
+      gr.hidden=!any; if(gr.previousElementSibling) gr.previousElementSibling.hidden=!any;
+    });
+    count.textContent="Showing "+shown+" of "+cards.length+" cards";
+    reset.hidden=!GROUPS.some(([g])=>sel[g].size);
+    try{
+      const o={}; GROUPS.forEach(([g])=>o[g]=[...sel[g]]);
+      if(GROUPS.some(([g])=>sel[g].size)) localStorage.setItem(KEY,JSON.stringify(o)); else localStorage.removeItem(KEY);
+    }catch(e){}
+  }
+  reset.addEventListener("click",()=>{ GROUPS.forEach(([g])=>sel[g].clear()); apply(); });
+  apply();
+})();
 
 function pickResult(d){
   return '<span class="pk-res" data-inspect-id="pick-result">'
