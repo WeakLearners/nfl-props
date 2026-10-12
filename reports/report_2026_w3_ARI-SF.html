@@ -219,6 +219,12 @@
     font-variant-numeric:tabular-nums; white-space:nowrap; min-width:0;
     overflow:hidden; text-overflow:ellipsis}
   .pk-slot.none{color:var(--ink-3)}
+  .pk-pct{font-weight:600}
+  .pk-pct.hi{color:var(--good)} .pk-pct.mid{color:var(--ink)} .pk-pct.lo{color:var(--bad)}
+  /* Trend triangles before a shortlist name: set so the
+     18px group centre is on the centre of the 14px capitals (7px over the baseline). The
+     animation only changes background-size, so it cannot move the group. */
+  .pk-nm .tr-lead{vertical-align:7px}
   .pk-mcell{display:grid; grid-template-columns:136px 46px; column-gap:12px; justify-content:start; align-items:center; min-width:0}
   .pk-c{display:grid; grid-template-columns:46px 34px; column-gap:12px; justify-content:end; align-items:baseline}
   .pk-conf{
@@ -940,7 +946,10 @@ function pickSlotMk(d){
   const S=window.__PICKSLOT__;
   if(!S) return '<span class="pk-slotcell"></span>';
   const c=S[d.role+"|"+d.pick], none=!c||!c.n;
-  const t=none?"no graded history":d.role+" #"+d.pick+" slot: "+Math.round(100*c.h/c.n)+"% ("+c.h+"/"+c.n+")";
+  // Colour the percent only. No hit-rate scale exists elsewhere (Results compares a rate to
+  // break-even, which a slot has no price for), so: 70%+ good, 55-69% neutral, under 55% bad.
+  const pc=none?0:Math.round(100*c.h/c.n), pcls=pc>=70?"hi":pc>=55?"mid":"lo";
+  const t=none?"no graded history":d.role+" #"+d.pick+' slot: <span class="pk-pct '+pcls+'">'+pc+"%</span> ("+c.h+"/"+c.n+")";
   return '<span class="pk-slotcell"><span class="pk-slot'+(none?' none':'')+'" data-inspect-id="pick-slot-rate" title="Graded shortlist legs only. TD picks are not counted.">'+t+'</span></span>';
 }
 const STAT_ABBR={passing_yards:"pass yds",rushing_yards:"rush yds",receiving_yards:"rec yds",receptions:"rec",completions:"comp"};
