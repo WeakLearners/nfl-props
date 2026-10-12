@@ -959,7 +959,7 @@ DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick).forEach(d=>{
   const li=document.createElement("li");
   li.dataset.inspectId="pick-row";
   const col=d.tm===META.teamA?"var(--den)":"var(--kc)";
-  li.innerHTML='<span class="pk-name"><span class="pk-n">'+d.pick+'</span><span class="pk-nm">'+trendMk(d,"pick-badge")+d.p+'</span>'+mk('<span class="role '+(d.tm===META.teamA?'a':'b')+'">'+d.role+'</span>',d,"pick-rank-chip","pick-badge")
+  li.innerHTML='<span class="pk-name"><span class="pk-n">'+d.pick+'</span><span class="pk-nm" data-p="'+escA(d.p)+'" data-s="'+escA(d.s)+'">'+trendMk(d,"pick-badge")+d.p+'</span>'+mk('<span class="role '+(d.tm===META.teamA?'a':'b')+'">'+d.role+'</span>',d,"pick-rank-chip","pick-badge")
     +'</span>'
     +'<span class="pk-bet" data-inspect-id="pick-bet">'+(STAT_ABBR[d.s]||d.s.replace(/_/g," "))+' over <b>'+d.line+'</b></span>'
     +pickSlotMk(d)

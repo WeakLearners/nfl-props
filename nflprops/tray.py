@@ -41,6 +41,9 @@ def player_season(db_path, name, team, season):
 
 
 TRAY_CSS = """
+  /* Shortlist names open the tray; only here, because the tray exists only on served pages. */
+  #picklist .pk-nm[data-p]{cursor:pointer}
+  #picklist .pk-nm[data-p]:hover{text-decoration:underline; text-decoration-color:currentColor; text-underline-offset:3px}
   .ptray-bg{position:fixed; inset:0; background:rgba(0,0,0,.45); opacity:0; pointer-events:none;
     transition:opacity .2s; z-index:900}
   .ptray{position:fixed; top:0; right:0; bottom:0; width:min(560px,100vw); z-index:901;
@@ -220,7 +223,23 @@ TRAY_JS = r"""
       });
   }
 
+  // Shortlist names: the tray shows the stat of that shortlist leg.
+  var PK="#picklist .pk-nm[data-p]";
+  function pickOpen(el){
+    var p=el.getAttribute("data-p"), st=el.getAttribute("data-s");
+    var d=DATA.filter(function(x){return x.p===p&&x.s===st;})[0];
+    if(d) open(d,el);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(PK),function(el){
+    el.setAttribute("role","button"); el.setAttribute("tabindex","0");
+  });
+  document.addEventListener("keydown",function(e){
+    var el=e.target.matches&&e.target.matches(PK)?e.target:null;
+    if(el&&(e.key==="Enter"||e.key===" ")){e.preventDefault(); pickOpen(el);}
+  });
   document.addEventListener("click",function(e){
+    var nm=e.target.closest&&e.target.closest(PK);
+    if(nm){pickOpen(nm); return;}
     var card=e.target.closest&&e.target.closest(".card");
     if(!card||e.target.closest("a,button,summary")) return;
     var grid=card.closest(".grid"), h=grid&&grid.previousElementSibling;
