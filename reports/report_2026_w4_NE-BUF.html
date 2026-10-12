@@ -189,33 +189,40 @@
   .picks-note{color:var(--ink-2); font-size:13.5px; margin:0 0 16px; max-width:72ch}
   .picks-note em{font-style:normal; font-weight:600; color:var(--ink)}
   #picklist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0}
-  #picklist li{
-    display:flex; align-items:baseline; gap:12px; padding:9px 0;
-    border-top:1px solid var(--line-soft);
+  /* One grid for the header and every row, so the four columns line up:
+     NAME | INFO | MODELS | CONFIDENCE. */
+  #picklist, .pk-head{--pk-cols:minmax(0,1fr) 196px 214px 112px}
+  #picklist li, .pk-head{
+    display:grid; grid-template-columns:var(--pk-cols); column-gap:14px; align-items:center;
   }
+  #picklist li{padding:9px 0; border-top:1px solid var(--line-soft)}
   #picklist li:first-child{border-top:none}
+  .pk-head{
+    font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--ink-3); padding:0 0 6px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .pk-head > span:last-child{text-align:right}
   .pk-n{
     font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-3);
     width:14px; flex:none; font-weight:600;
   }
   .pk-name{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:20px;
-    line-height:1; flex:1; min-width:0; display:flex; align-items:center; flex-wrap:wrap; column-gap:6px; row-gap:3px}
-  .pk-nm{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+    line-height:1; min-width:0; display:flex; align-items:center; gap:8px; white-space:nowrap}
   .pk-name .mk{margin-left:0}
-  /* History line under the name: a full-width item, so it wraps onto its own line. */
-  .pk-slot{flex:0 0 100%; font-family:"IBM Plex Mono",monospace; font-weight:400; font-size:11px;
-    line-height:1.2; color:var(--ink-3); font-variant-numeric:tabular-nums; white-space:nowrap;
+  .pk-nm{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:0 1 auto}
+  .pk-bet{color:var(--ink-2); font-family:"IBM Plex Mono",monospace; font-weight:400;
+    font-size:12px; flex:none; white-space:nowrap; margin-left:4px}
+  .pk-bet b{color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums}
+  .pk-slot{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-2);
+    font-variant-numeric:tabular-nums; white-space:nowrap; min-width:0;
     overflow:hidden; text-overflow:ellipsis}
-  /* Fixed slot, text pushed to its right edge. The longest leg on the slate is
-     "receiving yards over 59.5" at 25 characters; every shorter one ends flush
-     with it, so the line and the pill always touch. */
-  .pk-bet{color:var(--ink-2); font-size:13.5px; flex:none; width:158px;
-    text-align:right; white-space:nowrap}
-  .pk-bet b{color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums;
-    font-family:"IBM Plex Mono",monospace; font-size:12.5px}
+  .pk-slot.none{color:var(--ink-3)}
+  .pk-mcell{display:flex; align-items:center; gap:10px; min-width:0}
+  .pk-c{display:flex; align-items:baseline; justify-content:flex-end; gap:12px}
   .pk-conf{
     font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
-    font-size:17px; font-weight:600; flex:none;
+    font-size:17px; font-weight:600; flex:none; width:3.2ch; text-align:right;
   }
   /* Both engines' numbers for this leg: old (team colour, the card's big
      number) and new (purple, the Phase 3 model). Same colours as the lines
@@ -353,7 +360,8 @@
     color:var(--ink-3); font-size:12.5px; max-width:68ch}
   footer strong{color:var(--ink-2); font-weight:600}
   @media (max-width:560px){
-    .pk-models{display:none}
+    #picklist, .pk-head{--pk-cols:minmax(0,1fr) 112px}
+    .pk-mcell, .pk-slotcell, .pk-head .h-info, .pk-head .h-models{display:none}
     .grid{grid-template-columns:1fr; gap:12px}
     .legend{gap:10px 14px}
   }
@@ -390,6 +398,7 @@
       share, a long record, no injury tag, no change of team, and the card's engine (old engine or new model, named on each leg) and the book
       within a few points of each other. Confidence here means <em>likely to happen</em> —
       not good value. Nothing on this page establishes that any of it is mispriced.</p>
+    <div class="pk-head" data-inspect-id="picklist-head"><span>Name</span><span class="h-info">Info</span><span class="h-models">Models</span><span>Confidence</span></div>
     <ol id="picklist" data-inspect-id="picklist"></ol>
     <div class="picks-foot" data-inspect-id="picks-foot">
       <div><span class="pf-k">Straight <span id="nlegs"></span>-leg payout</span><span class="pf-v" id="pay" data-inspect-id="payout-value"></span></div>
@@ -917,25 +926,26 @@ function pickResult(d){
 // none, so the line is left out.
 function pickSlotMk(d){
   const S=window.__PICKSLOT__;
-  if(!S) return "";
-  const c=S[d.role+"|"+d.pick], lead=d.role+" in #"+d.pick+" slot: ";
-  const t=!c||!c.n?lead+"no graded history":lead+(100*c.h/c.n).toFixed(2)+"% hit ("+c.h+"/"+c.n+")";
-  return '<span class="pk-slot" data-inspect-id="pick-slot-rate" title="Graded shortlist legs only. TD picks are not counted.">'+t+'</span>';
+  if(!S) return '<span class="pk-slotcell"></span>';
+  const c=S[d.role+"|"+d.pick], none=!c||!c.n;
+  const t=none?"no graded history":d.role+" #"+d.pick+" slot: "+(100*c.h/c.n).toFixed(2)+"% ("+c.h+"/"+c.n+")";
+  return '<span class="pk-slotcell"><span class="pk-slot'+(none?' none':'')+'" data-inspect-id="pick-slot-rate" title="Graded shortlist legs only. TD picks are not counted.">'+t+'</span></span>';
 }
+const STAT_ABBR={passing_yards:"pass yds",rushing_yards:"rush yds",receiving_yards:"rec yds",receptions:"rec",completions:"comp"};
 
 const pl=document.getElementById("picklist");
 DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick).forEach(d=>{
   const li=document.createElement("li");
   li.dataset.inspectId="pick-row";
   const col=d.tm===META.teamA?"var(--den)":"var(--kc)";
-  li.innerHTML='<span class="pk-n">'+d.pick+'</span>'
-    +'<span class="pk-name"><span class="pk-nm">'+trendMk(d,"pick-badge")+d.p+'</span>'+mk('<span class="role '+(d.tm===META.teamA?'a':'b')+'">'+d.role+'</span>',d,"pick-rank-chip","pick-badge")+pickSlotMk(d)+'</span>'
-    +'<span class="pk-bet">'+d.s.replace(/_/g," ")+' over <b>'+d.line+'</b></span>'
-    +'<span class="pk-models" data-inspect-id="pick-models"><span'+(d.pe==="old"?' class="prim" title="old engine makes this leg\'s number"':'')+'>old<b style="color:'+col+'">'+(d.pe==="old"?fmt(d.mu):(d.alt==null?'&mdash;':fmt(d.alt)))+'</b></span>'
+  li.innerHTML='<span class="pk-name"><span class="pk-n">'+d.pick+'</span><span class="pk-nm">'+trendMk(d,"pick-badge")+d.p+'</span>'+mk('<span class="role '+(d.tm===META.teamA?'a':'b')+'">'+d.role+'</span>',d,"pick-rank-chip","pick-badge")
+    +'<span class="pk-bet">'+(STAT_ABBR[d.s]||d.s.replace(/_/g," "))+' over <b>'+d.line+'</b></span></span>'
+    +pickSlotMk(d)
+    +'<span class="pk-mcell"><span class="pk-models" data-inspect-id="pick-models"><span'+(d.pe==="old"?' class="prim" title="old engine makes this leg\'s number"':'')+'>old<b style="color:'+col+'">'+(d.pe==="old"?fmt(d.mu):(d.alt==null?'&mdash;':fmt(d.alt)))+'</b></span>'
       +'<span'+(d.pe==="new"?' class="prim" title="new model makes this leg\'s number"':'')+'>new<b style="color:var(--p3)">'+(d.pe==="new"?fmt(d.mu):(d.alt==null?'&mdash;':fmt(d.alt)))+'</b></span></span>'
-    +pickResult(d)
-    +'<span class="pk-px">'+(d.price>0?"+":"")+d.price+'</span>'
-    +'<span class="pk-conf" style="color:'+col+'">'+Math.round(Math.min(d.mp,d.bp)*100)+'%</span>';
+      +pickResult(d)+'</span>'
+    +'<span class="pk-c"><span class="pk-px">'+(d.price>0?"+":"")+d.price+'</span>'
+    +'<span class="pk-conf" style="color:'+col+'">'+Math.round(Math.min(d.mp,d.bp)*100)+'%</span></span>';
   pl.appendChild(li);
 });
 
