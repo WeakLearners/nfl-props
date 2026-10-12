@@ -107,7 +107,21 @@
     margin:0; text-wrap:balance; text-transform:uppercase;
   }
   h1 .at{color:var(--ink-3); font-weight:500}
-  h1 .rk{margin:0 .5em 0 .4em; text-transform:none; letter-spacing:.04em; vertical-align:middle}
+  /* Team rank badge in the headline: as tall as the team name's font (1em of the
+     h1), two lines -- rank, then hit rate -- sized in em so it follows the headline.
+     Colours follow the role badges: away = white with team colour text and edge,
+     home = team colour fill with white text. --away/--home come from team_css,
+     defaulting to --den/--kc. vertical-align puts its centre on the capital height. */
+  h1 .trk{display:inline-flex; flex-direction:column; align-items:center; justify-content:center;
+    box-sizing:border-box; height:1em; padding:0 .22em; border-radius:.08em; cursor:help;
+    margin:-.1em .45em -.1em .4em; vertical-align:-.15em; text-transform:none;
+    font-family:"IBM Plex Mono",monospace; letter-spacing:0; white-space:nowrap}
+  h1 .trk b{font-size:.36em; font-weight:600; line-height:1.1}
+  h1 .trk i{font-size:.27em; font-style:normal; font-weight:500; line-height:1.1; opacity:.9}
+  h1 .trk.a{background:#fff; color:var(--away,var(--den)); border:1px solid var(--away,var(--den))}
+  h1 .trk.b{background:var(--home,var(--kc)); color:#fff}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) h1 .trk.b{box-shadow:inset 0 0 0 1px rgba(255,255,255,.28)}}
+  :root[data-theme="dark"] h1 .trk.b{box-shadow:inset 0 0 0 1px rgba(255,255,255,.28)}
   .sub{color:var(--ink-2); margin:14px 0 0; max-width:64ch}
   .legend{display:flex; flex-wrap:wrap; gap:18px; align-items:center; margin:22px 0 30px}
   .key{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-2)}
@@ -912,15 +926,15 @@ document.getElementById("teamB").textContent = META.nameB;
 (function(){
   const R=window.__TEAMRANK__, h=document.querySelector("header h1");
   if(!R||!h) return;
-  const mkRank=(t,id)=>{
+  const mkRank=(t,id,side)=>{
     if(!t) return null;
     const b=document.createElement("span");
-    b.className="rk"; b.setAttribute("data-inspect-id",id);
-    b.textContent="#"+t.rank;
+    b.className="trk "+side; b.setAttribute("data-inspect-id",id);
+    b.innerHTML="<b>#"+t.rank+"</b><i>"+(t.rate*100).toFixed(1)+"%</i>";
     b.title="Hit rate rank "+t.rank+" of "+t.of+": "+(t.rate*100).toFixed(1)+"% ("+t.h+"/"+t.n+"), all legs";
     return b;
   };
-  const away=mkRank(R.away,"header-rank-away"), home=mkRank(R.home,"header-rank-home"), at=h.querySelector(".at");
+  const away=mkRank(R.away,"header-rank-away","a"), home=mkRank(R.home,"header-rank-home","b"), at=h.querySelector(".at");
   if(away&&at) h.insertBefore(away,at);
   if(home) h.appendChild(home);
 })();
