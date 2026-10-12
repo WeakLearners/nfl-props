@@ -455,8 +455,7 @@
       ' graded legs yet.</p>'; return; }
     top.innerHTML = boxRows(picked.map(function (c) {
       return {by: c.d[0], lbl: c.d[1] + " \u00B7 " + c.g.label, s: c.s};
-    }), "Group", "explore-top5-row") + '<p class="top-note">Picked from ' + cand.length + ' qualifying groups (of ' + tried +
-      '). The best of many will look good partly by luck, so expect these to drift toward the average.</p>';
+    }), "Group", "explore-top5-row");
   }
   // Teams get their own box: best and worst five by hit rate. A team needs
   // TOP_MIN graded legs. With fewer than ten teams the two lists split what

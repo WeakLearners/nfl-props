@@ -1417,7 +1417,7 @@
           "kind": "row",
           "description": "Click switches Group by to Team, the same as a Top 5 row. It does not set the Only filter. Built by boxRows() through teamRows().",
           "locate": {
-            "path": "templates/explore.html:466",
+            "path": "templates/explore.html:465",
             "grep": "grep -n -F -- '\"explore-teams-row\"' templates/explore.html"
           }
         },
@@ -1437,7 +1437,7 @@
           "kind": "table",
           "description": "One row per group: legs, hits, hit rate with a bar (tick = needed), needed, $100 each. Built at runtime. Every header is a sort button (see explore-sort-header) -- 1st click sorts the rows descending by that column's raw number (A-Z for the label column), 2nd click ascending, 3rd click back to the category's own default order; nulls (a group with no priced legs, shown as — for Needed/$100 each) always sort last. Re-sorting collapses any expanded group. The active sort resets when Group by or Picks changes and otherwise persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:534",
+            "path": "templates/explore.html:533",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-groups\"' templates/explore.html"
           }
         },
@@ -1447,7 +1447,7 @@
           "kind": "button",
           "description": "One shared id for all six header buttons (group label, Legs, Hits, Hit rate, Needed, $100 each) -- the anchor is the template string that builds all six, not a single element. Keyboard-operable (a real <button>); aria-sort lives on the parent <th>, not the button. Shows a trailing ▼/▲ on the active column only; inactive headers show no arrow. Styled to inherit the th's mono/10px/uppercase look with no browser button chrome.",
           "locate": {
-            "path": "templates/explore.html:532",
+            "path": "templates/explore.html:531",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-sort-header\"' templates/explore.html"
           }
         },
@@ -1457,7 +1457,7 @@
           "kind": "row",
           "description": "Click or Enter expands the legs in that group. Greyed (tr.thin) under 10 legs. Row order is the active column sort when one is set (see explore-sort-header), otherwise the category's default: team/opponent/player/depth role by size, the rest natural band order.",
           "locate": {
-            "path": "templates/explore.html:516",
+            "path": "templates/explore.html:515",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-group-row\"' templates/explore.html"
           }
         },
@@ -1467,7 +1467,7 @@
           "kind": "row",
           "description": "Inserted under a group row by toggle(); lists each leg newest week first.",
           "locate": {
-            "path": "templates/explore.html:547",
+            "path": "templates/explore.html:546",
             "grep": "grep -n -F -- '\"explore-group-legs\"' templates/explore.html"
           }
         },
