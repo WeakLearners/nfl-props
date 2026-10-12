@@ -28,7 +28,7 @@ except Exception as _e:  # noqa: BLE001 — the pages still work ungraded
     name_key = None
 from nflprops.badges import BADGE_CSS, markers_html, player_badges, trend_html  # noqa: E402
 from nflprops.teams import team_css  # noqa: E402
-from nflprops.tray import TRAY_HTML, player_season  # noqa: E402
+from nflprops.tray import TRAY_HTML, opp_role_log, player_season  # noqa: E402
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT = os.path.join(BASE, "reports")
@@ -2008,6 +2008,18 @@ class Handler(SimpleHTTPRequestHandler):
                 sys.stderr.write(f"api/player: {e}\n")
                 games = []
             self._send(json.dumps(games).encode(), "application/json; charset=utf-8")
+            return
+        if path == "/api/opp-role":
+            # Opponent vs a depth role, game by game, for the player tray. Read-only.
+            q = urllib.parse.parse_qs(_query)
+            try:
+                rows = opp_role_log(DB, q.get("opp", [""])[0], q.get("role", [""])[0],
+                                    q.get("stat", [""])[0], int(q.get("season", ["0"])[0]),
+                                    int(q.get("week", ["0"])[0]))
+            except (ValueError, sqlite3.Error) as e:
+                sys.stderr.write(f"api/opp-role: {e}\n")
+                rows = []
+            self._send(json.dumps(rows).encode(), "application/json; charset=utf-8")
             return
         if path == "/_frontend-map.json":
             self._send(open(MAP, "rb").read(), "application/json; charset=utf-8")

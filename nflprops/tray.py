@@ -40,6 +40,63 @@ def player_season(db_path, name, team, season):
              **{c: r[6 + i] for i, c in enumerate(COLS)}} for r in rows if r[0] == pid]
 
 
+_POOLS = {}
+
+
+def _pool(season, week):
+    """star_pool for one week, kept in memory: the report's own depth-role source."""
+    if (season, week) not in _POOLS:
+        from .reliability import star_pool
+        _POOLS[(season, week)] = star_pool(season, week)
+    return _POOLS[(season, week)]
+
+
+def opp_role_log(db_path, opp, role, stat, season, week):
+    """What one team's defense faced at one depth role, game by game, before `week`.
+
+    Role holder = the same rule as the report's role tag: reliability.star_pool
+    for that game's week (usage rank on the roster). If that player has no stat
+    line in the game, the nth-highest carries/targets/attempts at the
+    position that day stands in, and the row says so (sub=True).
+    Returns [{week, team, away, player, value, sub}], oldest first. [] when
+    opp, role or stat is unknown. Read-only; no odds call.
+    """
+    import re
+    m = re.fullmatch(r"(QB|RB|WR|TE)([0-9]+)", role or "")
+    if not m or stat not in COLS or not opp:
+        return []
+    pos, n = m.group(1), int(m.group(2))
+    use = {"QB": "attempts", "RB": "carries", "WR": "targets", "TE": "targets"}[pos]
+    db = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+    try:
+        games = db.execute(
+            "SELECT DISTINCT p.week, p.team, s.away_team FROM player_games p "
+            "LEFT JOIN schedules s ON s.game_id = p.game_id "
+            "WHERE p.season=? AND p.season_type='REG' AND p.opponent_team=? AND p.week<? "
+            "ORDER BY p.week", (season, opp, week)).fetchall()
+        out = []
+        for wk, vs, away in games:
+            rows = db.execute(
+                "SELECT player_display_name, " + stat + ", " + use + " FROM player_games "
+                "WHERE season=? AND season_type='REG' AND week=? AND team=? AND position=?",
+                (season, wk, vs, pos)).fetchall()
+            pool = _pool(season, wk)
+            pool = pool[(pool.team == vs) & (pool.position == pos) & (pool["rank"] == n)]
+            holder = pool.iloc[0].player_key if len(pool) else None
+            hit = [r for r in rows if holder and name_key(r[0]) == holder]
+            sub = False
+            if not hit:
+                rows = sorted((r for r in rows if r[2] is not None), key=lambda r: -r[2])
+                if len(rows) < n:
+                    continue
+                hit, sub = [rows[n - 1]], True
+            out.append({"week": wk, "team": vs, "away": away == opp, "player": hit[0][0],
+                        "value": hit[0][1] or 0, "sub": sub})
+        return out
+    finally:
+        db.close()
+
+
 TRAY_CSS = """
   /* Shortlist names open the tray; only here, because the tray exists only on served pages. */
   #picklist .pk-nm[data-p]{cursor:pointer}
@@ -122,7 +179,7 @@ TRAY_JS = r"""
   tray.setAttribute("role","dialog"); tray.setAttribute("aria-modal","true"); tray.setAttribute("aria-label","Player history");
   tray.dataset.inspectId="player-tray";
   document.body.appendChild(bg); document.body.appendChild(tray);
-  var last=null;
+  var last=null, seq=0;
   function close(){document.documentElement.classList.remove("ptray-open"); if(last) last.focus&&last.focus();}
   bg.addEventListener("click",close);
   document.addEventListener("keydown",function(e){if(e.key==="Escape") close();});
@@ -216,8 +273,43 @@ TRAY_JS = r"""
     return h+'</tbody></table>';
   }
 
+
+  // Opponent against the same depth role: bars coloured against THIS report's line, mark at that line.
+  function oppChart(d,rows){
+    var W=496,H=170,T=18,B=22,vals=rows.map(function(r){return r.value;});
+    var top=Math.max.apply(null,vals.concat([d.line||0]))*1.12||1;
+    var bw=Math.min(36,(W-8)/rows.length-6), step=(W-8)/rows.length;
+    var Y=function(v){return H-B-(v/top)*(H-B-T);};
+    var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(d.vs)+' against '+esc(d.role)+' by week">', lb='';
+    rows.forEach(function(r,i){
+      var x=4+i*step+(step-bw)/2, cls="bar"+(d.line==null?"":r.value>d.line?" over":" under");
+      s+='<rect class="'+cls+'" x="'+x.toFixed(1)+'" y="'+Y(r.value).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(1,(H-B)-Y(r.value)).toFixed(1)+'">'
+        +'<title>Week '+r.week+(r.away?" at ":" vs ")+r.team+": "+esc(r.player)+" "+f1(r.value)+'</title></rect>'
+        +(d.line==null?'':'<line class="ln" x1="'+(x-3).toFixed(1)+'" x2="'+(x+bw+3).toFixed(1)+'" y1="'+Y(d.line).toFixed(1)+'" y2="'+Y(d.line).toFixed(1)+'"></line>');
+      lb+='<text class="v" x="'+(x+bw/2).toFixed(1)+'" y="'+(Y(r.value)-4).toFixed(1)+'" text-anchor="middle">'+f1(r.value)+'</text>'
+        +'<text x="'+(x+bw/2).toFixed(1)+'" y="'+(H-6)+'" text-anchor="middle">W'+r.week+'</text>';
+    });
+    return s+lb+'</svg>';
+  }
+  function oppTable(d,rows){
+    var h='<table><thead><tr><th>Wk</th><th>Opp</th><th>Player</th><th class="hl">'+esc((STATS.filter(function(x){return x[0]===d.s;})[0]||[0,d.s])[1])+'</th></tr></thead><tbody>';
+    rows.forEach(function(r){
+      h+='<tr><td>'+r.week+'</td><td>'+(r.away?"@ ":"vs ")+esc(r.team)+'</td><td>'+esc(r.player)+(r.sub?' <span class="ptray-dim" title="The usual role holder had no stat line this game. The player with the same usage rank at the position that day stands in.">(sub)</span>':'')+'</td><td class="hl">'+f1(r.value)+'</td></tr>';
+    });
+    return h+'</tbody></table>';
+  }
+  function oppSection(d,rows){
+    var sum="";
+    if(d.line!=null){
+      var k=rows.filter(function(r){return r.value>d.line;}).length;
+      sum='<p class="ptray-an" data-inspect-id="player-tray-opp-summary">'+esc(d.role)+'s cleared '+d.line+' in '+k+' of '+rows.length+' game'+(rows.length>1?'s':'')+' against '+esc(d.vs)+'.</p>';
+    }
+    return '<h3>'+esc(d.vs)+' vs '+esc(d.role)+'</h3>'+sum
+      +'<div class="ptray-chart">'+oppChart(d,rows)+'</div>'+oppTable(d,rows);
+  }
+
   function open(d,from){
-    last=from;
+    last=from; var tok=++seq;
     var st=STATS.filter(function(x){return x[0]===d.s;})[0]||[d.s,d.s,""];
     var a=d.tm===META.teamA;
     tray.style.setProperty("--tcol",a?"var(--den)":"var(--kc)");
@@ -229,7 +321,8 @@ TRAY_JS = r"""
       +'<span class="dp" style="font-family:IBM Plex Mono,monospace;font-size:12px;color:var(--ink-3)">'+esc(d.tm)+'</span></div>'
       +'<h3>This game</h3><p class="ptray-an" data-inspect-id="player-tray-analysis">Loading games…</p>'
       +'<h3>'+esc(st[1])+' by week</h3><div class="ptray-chart" data-inspect-id="player-tray-chart"></div>'
-      +'<h3>Game log</h3><div data-inspect-id="player-tray-log"></div>';
+      +'<h3>Game log</h3><div data-inspect-id="player-tray-log"></div>'
+      +'<div data-inspect-id="player-tray-opp" hidden></div>';
     tray.querySelector(".ptray-x").addEventListener("click",close);
     document.documentElement.classList.add("ptray-open");
     tray.querySelector(".ptray-x").focus();
@@ -240,6 +333,15 @@ TRAY_JS = r"""
         tray.querySelector(".ptray-an").textContent=analysis(d,pre,st[2],st[1]);
         tray.querySelector(".ptray-chart").innerHTML=chart(d,games);
         tray.querySelector("[data-inspect-id=player-tray-log]").innerHTML=table(d,games);
+      });
+    // Opponent against the same role. Hidden unless it has rows: no empty box.
+    if(d.vs&&d.role) fetch("/api/opp-role?opp="+encodeURIComponent(d.vs)+"&role="+encodeURIComponent(d.role)
+        +"&stat="+encodeURIComponent(d.s)+"&season="+SEASON+"&week="+WEEK)
+      .then(function(r){return r.ok?r.json():[];}).catch(function(){return [];})
+      .then(function(rows){
+        var box=tray.querySelector("[data-inspect-id=player-tray-opp]");
+        if(!box||tok!==seq||!rows.length) return;
+        box.innerHTML=oppSection(d,rows); box.hidden=false;
       });
   }
 
