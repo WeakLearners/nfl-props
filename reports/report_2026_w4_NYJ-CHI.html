@@ -107,17 +107,19 @@
     margin:0; text-wrap:balance; text-transform:uppercase;
   }
   h1 .at{color:var(--ink-3); font-weight:500}
-  /* Team rank badge in the headline: as tall as the team name's font (1em of the
-     h1), two lines -- rank, then hit rate -- sized in em so it follows the headline.
-     Colours follow the role badges: away = white with team colour text and edge,
-     home = team colour fill with white text. --away/--home come from team_css,
-     defaulting to --den/--kc. vertical-align puts its centre on the capital height. */
-  h1 .trk{display:inline-flex; flex-direction:column; align-items:center; justify-content:center;
-    box-sizing:border-box; height:1em; padding:0 .22em; border-radius:.08em; cursor:help;
-    margin:-.1em .45em -.1em .4em; vertical-align:-.15em; text-transform:none;
+  /* Team rank badge in the headline, left of each team name. Its box spans the
+     capital height: .74em is about the cap height of Barlow Condensed 700, and
+     overflow:hidden makes an inline-block's baseline its bottom edge, so the bottom
+     sits on the text baseline and the top on the cap line. Two lines -- rank, then
+     hit rate -- sized in em so it follows the headline. Colours follow the role
+     badges: away = white with team colour text and edge, home = team colour fill
+     with white text. --away/--home come from team_css, defaulting to --den/--kc. */
+  h1 .trk{display:inline-block; overflow:hidden; box-sizing:border-box; height:.74em;
+    padding:.06em .2em 0; margin-right:.22em; border-radius:.06em; cursor:help;
+    vertical-align:baseline; text-align:center; text-transform:none;
     font-family:"IBM Plex Mono",monospace; letter-spacing:0; white-space:nowrap}
-  h1 .trk b{font-size:.36em; font-weight:600; line-height:1.1}
-  h1 .trk i{font-size:.27em; font-style:normal; font-weight:500; line-height:1.1; opacity:.9}
+  h1 .trk b{display:block; font-size:.34em; font-weight:600; line-height:1.15}
+  h1 .trk i{display:block; font-size:.25em; font-style:normal; font-weight:500; line-height:1.15; opacity:.9}
   h1 .trk.a{background:#fff; color:var(--away,var(--den)); border:1px solid var(--away,var(--den))}
   h1 .trk.b{background:var(--home,var(--kc)); color:#fff}
   @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) h1 .trk.b{box-shadow:inset 0 0 0 1px rgba(255,255,255,.28)}}
@@ -920,7 +922,7 @@ DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick).forEach(d=>{
 
 document.getElementById("teamA").textContent = META.nameA;
 document.getElementById("teamB").textContent = META.nameB;
-// Team hit-rate rank, right of each team name in the headline. The server adds
+// Team hit-rate rank, left of each team name in the headline. The server adds
 // window.__TEAMRANK__ per request (same ranking as the Results Teams box); a file
 // opened on its own has none, so no badges. A team under 20 legs has null.
 (function(){
@@ -935,8 +937,12 @@ document.getElementById("teamB").textContent = META.nameB;
     return b;
   };
   const away=mkRank(R.away,"header-rank-away","a"), home=mkRank(R.home,"header-rank-home","b"), at=h.querySelector(".at");
-  if(away&&at) h.insertBefore(away,at);
-  if(home) h.appendChild(home);
+  if(away) h.insertBefore(away,h.firstChild);
+  const tB=at&&at.nextSibling;
+  if(home&&tB&&tB.nodeType===3){
+    tB.textContent=tB.textContent.replace(/^\s+/,"");
+    h.insertBefore(document.createTextNode(" "),tB); h.insertBefore(home,tB);
+  }
 })();
 const picks = DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick);
 document.getElementById("nlegs").textContent = picks.length;
