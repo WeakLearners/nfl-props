@@ -15,16 +15,16 @@
  },
  "BUF-LA": {
   "basis": "model+book_vig",
-  "book_p": 0.545,
-  "conf": 0.545,
-  "model_p": 0.568,
+  "book_p": 0.556,
+  "conf": 0.536,
+  "model_p": 0.536,
   "phase3": {
-   "p_combined": 0.379,
-   "p_rec": 0.108,
-   "p_rush": 0.304
+   "p_combined": 0.422,
+   "p_rec": 0.131,
+   "p_rush": 0.334
   },
-  "player": "James Cook",
-  "position": "RB",
+  "player": "Josh Allen",
+  "position": "QB",
   "team": "BUF"
  },
  "CHI-GB": {
