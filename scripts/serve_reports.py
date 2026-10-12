@@ -1707,6 +1707,16 @@ LAYOUT_CSS = """<style>
   /* Results: the top 5 in the key panel; the grading note beside the table. */
   .wrap[data-page="results"] .ex-side .top{max-width:640px; background:var(--surface);
     border:1px solid var(--line); border-radius:3px; padding:12px 14px}
+  .wrap[data-page="results"] .ex-side .top + .top{margin-top:16px}
+  /* From 1280px the intro row gives the aside the room: Top 5 groups and the
+     Teams box sit side by side. Below that they stack. */
+  @media (min-width:1280px){
+    .wrap[data-page="results"] .pg-intro{grid-template-columns:minmax(0,44ch) minmax(0,1fr)}
+    .wrap[data-page="results"] .ex-side{display:grid; align-items:start; column-gap:20px;
+      grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}
+    .wrap[data-page="results"] .ex-side .top{max-width:none}
+    .wrap[data-page="results"] .ex-side .top + .top{margin-top:0}
+  }
   .wrap[data-page="results"] .top-lbl{flex:1 1 8ch}
   .wrap[data-page="results"] .summary{max-width:72ch}
   @media (min-width:1280px){
