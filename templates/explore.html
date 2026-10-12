@@ -106,8 +106,10 @@
     text-transform:uppercase; color:var(--ink-3); margin:8px 0 0}
   /* Teams box: team, hit rate, hits/legs, needed -- one grid line per row,
      the same four columns under a header, so the rows read like a table. */
-  #teamsbox .top-row,#teamsbox .tm-head{display:grid; grid-template-columns:38px 52px 52px 52px;
-    column-gap:8px; justify-content:start; align-items:baseline; white-space:nowrap}
+  #teamsbox .top-row,#teamsbox .tm-head{display:grid; grid-template-columns:minmax(38px,1fr) 52px 52px 52px;
+    column-gap:8px; align-items:baseline; white-space:nowrap}
+  #teamsbox .tm-lists{display:grid; grid-template-columns:repeat(auto-fit,minmax(218px,1fr));
+    column-gap:20px}
   #teamsbox .tm-head{padding:4px 0 2px; border-bottom:1px solid var(--line);
     font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.08em;
     text-transform:uppercase; color:var(--ink-3)}
@@ -130,16 +132,6 @@
     <h1 data-inspect-id="explore-title">Results</h1>
   </header>
   <div class="pg-intro">
-    <div class="pg-lede">
-  <p class="sub" data-inspect-id="explore-subtitle">Every shortlisted leg from a finished
-    game, cut the way you choose. <b>All legs</b> adds the ones a book priced that the
-    report didn't pick; <b>Shortlist</b> narrows to the picks. <b>Needed</b> is the hit rate at which $100 on each leg
-    breaks even. A group only paid if its hit rate beat it.
-    <b>$100 each</b> is what a flat $100 on every leg in the group would have returned.
-    <b>Card-engine confidence</b> and <b>Card engine vs book</b> use the number on the report card: the old engine for
-    every leg before then, and from the 2026 week 5 4pm games (2026-10-11) the new model for passing yards and rushing yards (decision #42).
-    Earlier legs keep the figures they showed.</p>
-    </div>
     <div class="pg-aside ex-side" data-inspect-id="explore-side">
   <details class="top" id="topbox" open data-inspect-id="explore-top5">
     <summary class="top-h">Top 5 groups by hit rate &middot; 20+ legs</summary>
@@ -147,10 +139,16 @@
   </details>
   <details class="top" id="teamsbox" open data-inspect-id="explore-teams">
     <summary class="top-h">Teams &middot; 20+ legs</summary>
-    <p class="top-sub">Top 5</p>
-    <div id="teams-top" data-inspect-id="explore-teams-top"></div>
-    <p class="top-sub">Bottom 5</p>
-    <div id="teams-bottom" data-inspect-id="explore-teams-bottom"></div>
+    <div class="tm-lists">
+      <div class="tm-col">
+        <p class="top-sub">Top 5</p>
+        <div id="teams-top" data-inspect-id="explore-teams-top"></div>
+      </div>
+      <div class="tm-col">
+        <p class="top-sub">Bottom 5</p>
+        <div id="teams-bottom" data-inspect-id="explore-teams-bottom"></div>
+      </div>
+    </div>
   </details>
     </div>
   </div>
