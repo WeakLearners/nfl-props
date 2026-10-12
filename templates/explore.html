@@ -104,25 +104,26 @@
   .top-rate{width:60px} .top-n{width:62px; color:var(--ink-2)} .top-be{width:92px; color:var(--ink-3)}
   .top-sub{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.14em;
     text-transform:uppercase; color:var(--ink-3); margin:8px 0 0}
-  /* Teams box: team, hit rate, hits/legs, needed -- one grid line per row,
-     the same four columns under a header, so the rows read like a table. */
-  #teamsbox .top-row,#teamsbox .tm-head{display:grid; grid-template-columns:minmax(38px,1fr) 52px 52px 52px;
-    column-gap:8px; align-items:baseline; white-space:nowrap}
-  #teamsbox .tm-lists{display:grid; grid-template-columns:repeat(auto-fit,minmax(218px,1fr));
-    column-gap:20px}
-  #teamsbox .tm-head{padding:4px 0 2px; border-bottom:1px solid var(--line);
-    font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.08em;
+  /* The three boxes (Top 5 groups, Top 5 teams, Bottom 5 teams) share one
+     structure so rows line up across them: same title line, same header row,
+     same row height, label | Hit | Legs | Needs. */
+  .top-h{display:block; height:18px; line-height:18px; margin:0 0 6px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .top .top-row,.top .tm-head{display:grid; grid-template-columns:minmax(0,1fr) 52px 56px 52px;
+    column-gap:6px; align-items:center; white-space:nowrap}
+  .top .top-row{height:34px; padding:0}
+  .top .tm-head{height:22px; border-bottom:1px solid var(--line);
+    font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.06em;
     text-transform:uppercase; color:var(--ink-3)}
-  #teamsbox .tm-head span:nth-child(n+2){text-align:right}
-  #teamsbox .top-row .top-lbl{flex:none}
-  #teamsbox .top-row .top-num{width:auto; display:block}
+  .top .tm-head span:nth-child(n+2){text-align:right}
+  .top .top-row .top-lbl{display:block; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .top .top-row .top-num{width:auto; display:block}
   .top-note{font-size:12.5px; color:var(--ink-3); margin:6px 0 0; max-width:72ch}
   footer{margin-top:44px; padding-top:16px; border-top:1px solid var(--line);
     color:var(--ink-3); font-size:12.5px; max-width:68ch}
   @media (max-width:560px){
     col.c-pl{width:0} th:nth-child(6), td.pl{display:none}
     col.c-be{width:62px} col.c-r{width:62px}
-    .top-dim{width:88px} .top-be{display:none}
     td:first-child{font-size:16px}
   }
 </style>
@@ -134,21 +135,16 @@
   <div class="pg-intro">
     <div class="pg-aside ex-side" data-inspect-id="explore-side">
   <details class="top" id="topbox" open data-inspect-id="explore-top5">
-    <summary class="top-h">Top 5 groups by hit rate &middot; 20+ legs</summary>
+    <summary class="top-h">Top 5 groups &middot; 20+ legs</summary>
     <div id="top"></div>
   </details>
-  <details class="top" id="teamsbox" open data-inspect-id="explore-teams">
-    <summary class="top-h">Teams &middot; 20+ legs</summary>
-    <div class="tm-lists">
-      <div class="tm-col">
-        <p class="top-sub">Top 5</p>
-        <div id="teams-top" data-inspect-id="explore-teams-top"></div>
-      </div>
-      <div class="tm-col">
-        <p class="top-sub">Bottom 5</p>
-        <div id="teams-bottom" data-inspect-id="explore-teams-bottom"></div>
-      </div>
-    </div>
+  <details class="top" id="teamstopbox" open data-inspect-id="explore-teams-top">
+    <summary class="top-h">Top 5 teams &middot; 20+ legs</summary>
+    <div id="teams-top"></div>
+  </details>
+  <details class="top" id="teamsbottombox" open data-inspect-id="explore-teams-bottom">
+    <summary class="top-h">Bottom 5 teams &middot; 20+ legs</summary>
+    <div id="teams-bottom"></div>
   </details>
     </div>
   </div>
@@ -416,7 +412,21 @@
   // current set (Position = WR while filtered to WR) says nothing, so skip it.
   var TOP_MIN = 20, top = document.getElementById("top"), topbox = document.getElementById("topbox");
   var teamsTop = document.getElementById("teams-top"), teamsBottom = document.getElementById("teams-bottom"),
-      teamsbox = document.getElementById("teamsbox");
+      teamsTopBox = document.getElementById("teamstopbox"),
+      teamsBottomBox = document.getElementById("teamsbottombox");
+  // One row shape for all three boxes: label | Hit | Legs | Needs (number only).
+  function boxRows(list, head, id) {
+    return '<div class="tm-head"><span>' + head + '</span><span>Hit</span><span>Legs</span><span>Needs</span></div><ol>' +
+      list.map(function (c) {
+        var cls = c.s.be == null ? "" : c.s.rate > c.s.be ? "up" : "down";
+        return '<li><button type="button" class="top-row" data-by="' + c.by + '" data-inspect-id="' + id + '">' +
+          '<span class="top-lbl" title="' + esc(c.lbl) + '">' + esc(c.lbl) + '</span>' +
+          '<span class="top-num top-rate ' + cls + '">' + pct(c.s.rate) + '</span>' +
+          '<span class="top-num top-n">' + c.s.h + '/' + c.s.n + '</span>' +
+          '<span class="top-num top-be">' + (c.s.be == null ? "" : pct(c.s.be)) + '</span>' +
+          '</button></li>';
+      }).join("") + '</ol>';
+  }
   function renderTop(legs) {
     var cand = [], tried = 0;
     DIMS.forEach(function (d) {
@@ -443,32 +453,17 @@
     });
     if (!cand.length) { top.innerHTML = '<p class="top-note">No group has ' + TOP_MIN +
       ' graded legs yet.</p>'; return; }
-    top.innerHTML = '<ol>' + picked.map(function (c) {
-      var cls = c.s.be == null ? "" : c.s.rate > c.s.be ? "up" : "down";
-      return '<li><button type="button" class="top-row" data-by="' + c.d[0] + '">' +
-        '<span class="top-dim">' + esc(c.d[1]) + '</span>' +
-        '<span class="top-lbl" title="' + esc(c.g.label) + '">' + esc(c.g.label) + '</span>' +
-        '<span class="top-num top-rate ' + cls + '">' + pct(c.s.rate) + '</span>' +
-        '<span class="top-num top-n">' + c.s.h + '/' + c.s.n + '</span>' +
-        '<span class="top-num top-be">' + (c.s.be == null ? "" : "needs " + pct(c.s.be)) + '</span>' +
-        '</button></li>';
-    }).join("") + '</ol><p class="top-note">Picked from ' + cand.length + ' qualifying groups (of ' + tried +
+    top.innerHTML = boxRows(picked.map(function (c) {
+      return {by: c.d[0], lbl: c.d[1] + " \u00B7 " + c.g.label, s: c.s};
+    }), "Group", "explore-top5-row") + '<p class="top-note">Picked from ' + cand.length + ' qualifying groups (of ' + tried +
       '). The best of many will look good partly by luck, so expect these to drift toward the average.</p>';
   }
   // Teams get their own box: best and worst five by hit rate. A team needs
   // TOP_MIN graded legs. With fewer than ten teams the two lists split what
   // qualifies, so no team shows twice.
   function teamRows(list) {
-    if (!list.length) return '<p class="top-note">None.</p>';
-    return '<div class="tm-head"><span>Team</span><span>Hit</span><span>Legs</span><span>Needs</span></div><ol>' + list.map(function (c) {
-      var cls = c.s.be == null ? "" : c.s.rate > c.s.be ? "up" : "down";
-      return '<li><button type="button" class="top-row" data-by="team" data-inspect-id="explore-teams-row">' +
-        '<span class="top-lbl" title="' + esc(c.g.label) + '">' + esc(c.g.label) + '</span>' +
-        '<span class="top-num top-rate ' + cls + '">' + pct(c.s.rate) + '</span>' +
-        '<span class="top-num top-n">' + c.s.h + '/' + c.s.n + '</span>' +
-        '<span class="top-num top-be">' + (c.s.be == null ? "" : pct(c.s.be)) + '</span>' +
-        '</button></li>';
-    }).join("") + '</ol>';
+    return boxRows(list.map(function (c) { return {by: "team", lbl: c.g.label, s: c.s}; }),
+      "Team", "explore-teams-row");
   }
   function renderTeams(legs) {
     var q = groups(legs, "team").map(function (g) { return {g: g, s: stats(g.legs)}; })
@@ -480,11 +475,13 @@
     }
     var nt = Math.min(5, Math.ceil(q.length / 2)), nb = Math.min(5, Math.floor(q.length / 2));
     teamsTop.innerHTML = teamRows(q.slice(0, nt));
-    teamsBottom.innerHTML = teamRows(q.slice(q.length - nb).reverse());
+    teamsBottom.innerHTML = nb ? teamRows(q.slice(q.length - nb).reverse()) : '<p class="top-note">None.</p>';
   }
-  teamsbox.addEventListener("click", function (e) {
-    var b = e.target.closest(".top-row"); if (!b) return;
-    by.value = "team"; sortState = null; save(); render();
+  [teamsTopBox, teamsBottomBox].forEach(function (bx) {
+    bx.addEventListener("click", function (e) {
+      var b = e.target.closest(".top-row"); if (!b) return;
+      by.value = "team"; sortState = null; save(); render();
+    });
   });
   top.addEventListener("click", function (e) {
     var b = e.target.closest(".top-row"); if (!b) return;
@@ -571,7 +568,7 @@
       localStorage.setItem("nflprops-explore", JSON.stringify({
         k: kind.value, by: by.value, fd: fdim.value, fv: fval.value,
         sc: sortState ? sortState.col : null, sd: sortState ? sortState.dir : null,
-        t: topbox.open, tt: teamsbox.open,
+        t: topbox.open, tt: teamsTopBox.open, tb: teamsBottomBox.open,
       }));
     } catch (e) {}
   }
@@ -591,9 +588,12 @@
     }
   } catch (e) {}
   if (st && st.t === false) topbox.open = false;
-  if (st && st.tt === false) teamsbox.open = false;
+  // "tt" was the combined Teams box before the split; it seeds both team boxes once.
+  if (st && st.tt === false) teamsTopBox.open = false;
+  if (st && (st.tb === false || (st.tb === undefined && st.tt === false))) teamsBottomBox.open = false;
   topbox.addEventListener("toggle", save);
-  teamsbox.addEventListener("toggle", save);
+  teamsTopBox.addEventListener("toggle", save);
+  teamsBottomBox.addEventListener("toggle", save);
   kind.addEventListener("change", function () {
     scope(); fillValues(); sortState = null; save(); render(); });
   by.addEventListener("change", function () { sortState = null; save(); render(); });

@@ -1706,22 +1706,16 @@ LAYOUT_CSS = """<style>
 
   /* Results: the top 5 in the key panel; the grading note beside the table. */
   .wrap[data-page="results"] .ex-side .top{max-width:640px; background:var(--surface);
-    border:1px solid var(--line); border-radius:3px; padding:12px 14px}
-  .wrap[data-page="results"] .ex-side .top + .top{margin-top:16px}
-  /* No lede on Results: the intro row holds only the lists. From 1440px it is
-     three equal columns -- Top 5 groups, then the Teams box across two columns
-     (Top 5 and Bottom 5 side by side). A column needs about 430px for the
-     group name, hit rate, hits/legs and needed on one line; 3 x 430 + 2 x 16
-     = 1322px fits the 1325px of content at 1440. Narrower, the boxes stack. */
+    border:1px solid var(--line); border-radius:3px; padding:12px}
+  /* Results: three boxes in one row from 900px (Top 5 groups, Top 5 teams,
+     Bottom 5 teams). Below 900px they stack. 12px box padding keeps the label
+     column about 61px wide at 900px. */
   .wrap[data-page="results"] .pg-intro{grid-template-columns:minmax(0,1fr)}
-  @media (min-width:1440px){
-    .wrap[data-page="results"] .pg-intro{grid-template-columns:repeat(3,minmax(0,1fr));
+  .wrap[data-page="results"] .ex-side{display:grid; grid-template-columns:minmax(0,1fr); gap:16px}
+  .wrap[data-page="results"] .ex-side .top{max-width:none; margin:0}
+  @media (min-width:900px){
+    .wrap[data-page="results"] .ex-side{grid-template-columns:repeat(3,minmax(0,1fr));
       column-gap:16px; align-items:start}
-    .wrap[data-page="results"] .ex-side{display:contents}
-    .wrap[data-page="results"] .ex-side .top{max-width:none; margin:0}
-    .wrap[data-page="results"] #teamsbox{grid-column:span 2}
-    .wrap[data-page="results"] .ex-side .top-dim{width:100px}
-    .wrap[data-page="results"] .ex-side .top-be{width:88px}
   }
   .wrap[data-page="results"] .top-lbl{flex:1 1 8ch}
   .wrap[data-page="results"] .summary{max-width:72ch}

@@ -1257,7 +1257,7 @@
           "kind": "layout",
           "description": "Full-width column (LAYOUT_CSS) holding the whole explore page.",
           "locate": {
-            "path": "templates/explore.html:129",
+            "path": "templates/explore.html:130",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-wrap\"' templates/explore.html"
           }
         },
@@ -1267,7 +1267,7 @@
           "kind": "layout",
           "description": "Table and grading note. From 1280px wide the table is on the left and the grading note is a side column on the right. One column below that.",
           "locate": {
-            "path": "templates/explore.html:178",
+            "path": "templates/explore.html:174",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-grid\"' templates/explore.html"
           }
         },
@@ -1275,9 +1275,9 @@
           "id": "explore-side",
           "label": "Results side panel",
           "kind": "layout",
-          "description": "Holds the top 5 box and the Teams box. From 1440px wide they share one row as three equal columns (the Teams box spans two, with its two lists side by side). Below that they stack. It is the whole intro row: the page has no intro paragraph.",
+          "description": "Holds the three list boxes: Top 5 groups, Top 5 teams, Bottom 5 teams. From 900px wide they share one row as three equal columns. Below that they stack. It is the whole intro row: the page has no intro paragraph.",
           "locate": {
-            "path": "templates/explore.html:135",
+            "path": "templates/explore.html:136",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-side\"' templates/explore.html"
           }
         },
@@ -1287,7 +1287,7 @@
           "kind": "layout",
           "description": "Holds the summary, the controls and the table.",
           "locate": {
-            "path": "templates/explore.html:179",
+            "path": "templates/explore.html:175",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-main\"' templates/explore.html"
           }
         },
@@ -1297,7 +1297,7 @@
           "kind": "text",
           "description": "'Graded picks' kicker above the title.",
           "locate": {
-            "path": "templates/explore.html:131",
+            "path": "templates/explore.html:132",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-eyebrow\"' templates/explore.html"
           }
         },
@@ -1307,7 +1307,7 @@
           "kind": "heading",
           "description": "'Results'.",
           "locate": {
-            "path": "templates/explore.html:132",
+            "path": "templates/explore.html:133",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-title\"' templates/explore.html"
           }
         },
@@ -1317,7 +1317,7 @@
           "kind": "layout",
           "description": "Holds the Group by select and the Only filter pair. Sits just above the results table, below the summary line.",
           "locate": {
-            "path": "templates/explore.html:156",
+            "path": "templates/explore.html:152",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-controls\"' templates/explore.html"
           }
         },
@@ -1327,7 +1327,7 @@
           "kind": "input",
           "description": "Scopes the whole page: all legs with a book line (default; picked or not, graded by the same rule), the shortlist subset the model actually picked, or anytime-TD picks. TD picks are never pooled with the others - a different model, one per game. Pending counts are per option. Persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:159",
+            "path": "templates/explore.html:155",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-kind\"' templates/explore.html"
           }
         },
@@ -1337,7 +1337,7 @@
           "kind": "input",
           "description": "Chooses the category the graded legs are cut by: stat, position, depth role, week, kickoff window, price band, model confidence band, model vs book, opponent defense (model-used) (the report's def multiplier: 1.0 = league average for that position; only covers passing yards, completions and rushing yards -- rushing at half weight -- since DEF_WEIGHT is 0 for receiving yards and receptions, and those legs are left out of this grouping), shortlist rank, team, opponent, player. The choice persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:167",
+            "path": "templates/explore.html:163",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-group-by\"' templates/explore.html"
           }
         },
@@ -1347,7 +1347,7 @@
           "kind": "input",
           "description": "'Only' - picks a category to filter by, or All legs. Filling it enables the value select.",
           "locate": {
-            "path": "templates/explore.html:172",
+            "path": "templates/explore.html:168",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-filter-dim\"' templates/explore.html"
           }
         },
@@ -1357,7 +1357,7 @@
           "kind": "input",
           "description": "The value of the filter category to keep, with its leg count.",
           "locate": {
-            "path": "templates/explore.html:173",
+            "path": "templates/explore.html:169",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-filter-val\"' templates/explore.html"
           }
         },
@@ -1367,7 +1367,7 @@
           "kind": "text",
           "description": "Hits/graded, hit rate vs needed, and flat $100 return for the current filter; plus how many legs are still waiting on a final score -- that count is season-wide, not scoped to the current Picks/Group by/Only selection. Also counts void legs (game final but the player has no stat line - he didn't play, a book would void it), also season-wide.",
           "locate": {
-            "path": "templates/explore.html:180",
+            "path": "templates/explore.html:176",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-summary\"' templates/explore.html"
           }
         },
@@ -1375,50 +1375,50 @@
           "id": "explore-top5",
           "label": "Top 5 groups",
           "kind": "list",
-          "description": "The five best hit rates across every Group by option at once (Player, Team and Opponent excluded, because those list teams; the Teams box covers them), for the current Picks/Only selection. A group needs 20+ graded legs; a group equal to the whole current set is skipped, and so is one with the exact same legs as a group already listed (Position QB vs Depth role QB1). Clicking a row switches Group by to that option. Sits in the intro row as a <details> box, left of the Teams box (first of three equal columns); clicking its heading collapses it, and the open/closed state is saved with the rest of the view.",
+          "description": "The five best hit rates across every Group by option at once (Player, Team and Opponent excluded, because those list teams; the two team boxes cover them), for the current Picks/Only selection. A group needs 20+ graded legs; a group equal to the whole current set is skipped, and so is one with the exact same legs as a group already listed (Position QB vs Depth role QB1). Clicking a row switches Group by to that option. Sits in the intro row as a <details> box, first of three equal columns, left of the two team boxes; clicking its heading collapses it, and the open/closed state is saved with the rest of the view.",
           "locate": {
-            "path": "templates/explore.html:136",
+            "path": "templates/explore.html:137",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-top5\"' templates/explore.html"
           }
         },
         {
-          "id": "explore-teams",
-          "label": "Teams box",
-          "kind": "list",
-          "description": "Best and worst five teams by hit rate, grouped by the player's team, for the current Picks/Only selection. A team needs 20+ graded legs. Same columns as the top 5 rows. With fewer than ten qualifying teams the two lists split what qualifies, with no overlap. A details box right of the Top 5 box; its open/closed state is saved with the rest of the view.",
-          "locate": {
-            "path": "templates/explore.html:140",
-            "grep": "grep -n -F -- 'data-inspect-id=\"explore-teams\"' templates/explore.html"
-          }
-        },
-        {
           "id": "explore-teams-top",
-          "label": "Teams top list",
+          "label": "Top 5 teams",
           "kind": "list",
-          "description": "The best teams by hit rate, highest first. Up to 5.",
+          "description": "The five teams with the best hit rate, grouped by the player's team, for the current Picks/Only selection. A team needs 20+ graded legs. Same box, header row and row shape as Top 5 groups. With fewer than ten qualifying teams it takes the larger half, so no team shows in both team boxes. Its open/closed state is saved with the view.",
           "locate": {
-            "path": "templates/explore.html:145",
+            "path": "templates/explore.html:141",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-teams-top\"' templates/explore.html"
           }
         },
         {
           "id": "explore-teams-bottom",
-          "label": "Teams bottom list",
+          "label": "Bottom 5 teams",
           "kind": "list",
-          "description": "The worst teams by hit rate, lowest first. Up to 5.",
+          "description": "The five teams with the lowest hit rate, lowest first. Same rules and shape as Top 5 teams. Open/closed state saved with the view.",
           "locate": {
-            "path": "templates/explore.html:149",
+            "path": "templates/explore.html:145",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-teams-bottom\"' templates/explore.html"
+          }
+        },
+        {
+          "id": "explore-top5-row",
+          "label": "Top 5 group row",
+          "kind": "row",
+          "description": "Label is the Group by name and the group, for example Stat - Receptions. It shortens with an ellipsis; the title tooltip shows the full text. Click switches Group by to that option. Built by boxRows() in the page script.",
+          "locate": {
+            "path": "templates/explore.html:458",
+            "grep": "grep -n -F -- '\"explore-top5-row\"' templates/explore.html"
           }
         },
         {
           "id": "explore-teams-row",
           "label": "Team row",
           "kind": "row",
-          "description": "Click switches Group by to Team, the same as a Top 5 row. It does not set the Only filter. Built by teamRows() in the page script.",
+          "description": "Click switches Group by to Team, the same as a Top 5 row. It does not set the Only filter. Built by boxRows() through teamRows().",
           "locate": {
-            "path": "templates/explore.html:465",
-            "grep": "grep -n -F -- 'data-inspect-id=\"explore-teams-row\"' templates/explore.html"
+            "path": "templates/explore.html:466",
+            "grep": "grep -n -F -- '\"explore-teams-row\"' templates/explore.html"
           }
         },
         {
@@ -1427,7 +1427,7 @@
           "kind": "layout",
           "description": "Receives the grouped table, rendered by render() in the page script.",
           "locate": {
-            "path": "templates/explore.html:181",
+            "path": "templates/explore.html:177",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-table\"' templates/explore.html"
           }
         },
@@ -1437,7 +1437,7 @@
           "kind": "table",
           "description": "One row per group: legs, hits, hit rate with a bar (tick = needed), needed, $100 each. Built at runtime. Every header is a sort button (see explore-sort-header) -- 1st click sorts the rows descending by that column's raw number (A-Z for the label column), 2nd click ascending, 3rd click back to the category's own default order; nulls (a group with no priced legs, shown as — for Needed/$100 each) always sort last. Re-sorting collapses any expanded group. The active sort resets when Group by or Picks changes and otherwise persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:537",
+            "path": "templates/explore.html:534",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-groups\"' templates/explore.html"
           }
         },
@@ -1447,7 +1447,7 @@
           "kind": "button",
           "description": "One shared id for all six header buttons (group label, Legs, Hits, Hit rate, Needed, $100 each) -- the anchor is the template string that builds all six, not a single element. Keyboard-operable (a real <button>); aria-sort lives on the parent <th>, not the button. Shows a trailing ▼/▲ on the active column only; inactive headers show no arrow. Styled to inherit the th's mono/10px/uppercase look with no browser button chrome.",
           "locate": {
-            "path": "templates/explore.html:535",
+            "path": "templates/explore.html:532",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-sort-header\"' templates/explore.html"
           }
         },
@@ -1457,7 +1457,7 @@
           "kind": "row",
           "description": "Click or Enter expands the legs in that group. Greyed (tr.thin) under 10 legs. Row order is the active column sort when one is set (see explore-sort-header), otherwise the category's default: team/opponent/player/depth role by size, the rest natural band order.",
           "locate": {
-            "path": "templates/explore.html:519",
+            "path": "templates/explore.html:516",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-group-row\"' templates/explore.html"
           }
         },
@@ -1467,7 +1467,7 @@
           "kind": "row",
           "description": "Inserted under a group row by toggle(); lists each leg newest week first.",
           "locate": {
-            "path": "templates/explore.html:550",
+            "path": "templates/explore.html:547",
             "grep": "grep -n -F -- '\"explore-group-legs\"' templates/explore.html"
           }
         },
@@ -1477,7 +1477,7 @@
           "kind": "row",
           "description": "Player (links to its report), team role, week and game; the line, price, and the actual number as a HIT/MISS pill.",
           "locate": {
-            "path": "templates/explore.html:406",
+            "path": "templates/explore.html:402",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-leg\"' templates/explore.html"
           }
         },
@@ -1487,7 +1487,7 @@
           "kind": "badge",
           "description": "Outline chip like #12 WR after the depth role, inside the .mk group in the leg meta line. Built by mk() / rkChip(l,id) from the rk and rkt fields serve_reports adds to each leg. Absent below the floor.",
           "locate": {
-            "path": "templates/explore.html:407",
+            "path": "templates/explore.html:403",
             "grep": "grep -n -F -- '\"explore-rank-chip\"' templates/explore.html"
           }
         },
@@ -1497,7 +1497,7 @@
           "kind": "badge",
           "description": "Badge from nflprops/badges.py (data/ratings/badges.json): ▲/▼ trend, or Big day / Caution matchup. Sits after the rank chip, never replaces it. Hover title gives the numbers. Absent for almost everyone. Built by bdBadges(l,id) from the bd field serve_reports adds to each leg. Matchup badge only on legs from the badge week.",
           "locate": {
-            "path": "templates/explore.html:406",
+            "path": "templates/explore.html:402",
             "grep": "grep -n -F -- '\"explore-badge\"' templates/explore.html"
           }
         },
@@ -1507,7 +1507,7 @@
           "kind": "text",
           "description": "Grading rule (same as the listing: actual beats the line, final games only), the under-ten caveat, and which stats the opponent-defense grouping covers.",
           "locate": {
-            "path": "templates/explore.html:183",
+            "path": "templates/explore.html:179",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-footer\"' templates/explore.html"
           }
         }
@@ -2624,7 +2624,7 @@
           "kind": "text",
           "description": "One-line standing disclaimer spliced after every page by with_chrome().",
           "locate": {
-            "path": "scripts/serve_reports.py:1772",
+            "path": "scripts/serve_reports.py:1766",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-footer\"' scripts/serve_reports.py"
           }
         }
