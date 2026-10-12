@@ -940,7 +940,7 @@ function pickSlotMk(d){
   const S=window.__PICKSLOT__;
   if(!S) return '<span class="pk-slotcell"></span>';
   const c=S[d.role+"|"+d.pick], none=!c||!c.n;
-  const t=none?"no graded history":d.role+" #"+d.pick+" slot: "+(100*c.h/c.n).toFixed(2)+"% ("+c.h+"/"+c.n+")";
+  const t=none?"no graded history":d.role+" #"+d.pick+" slot: "+Math.round(100*c.h/c.n)+"% ("+c.h+"/"+c.n+")";
   return '<span class="pk-slotcell"><span class="pk-slot'+(none?' none':'')+'" data-inspect-id="pick-slot-rate" title="Graded shortlist legs only. TD picks are not counted.">'+t+'</span></span>';
 }
 const STAT_ABBR={passing_yards:"pass yds",rushing_yards:"rush yds",receiving_yards:"rec yds",receptions:"rec",completions:"comp"};
