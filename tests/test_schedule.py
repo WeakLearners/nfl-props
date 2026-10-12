@@ -59,10 +59,26 @@ class SelectionTests(unittest.TestCase):
         ev = events("2026-10-12 19:15", "2026-10-12 20:15")
         self.assertEqual(due_ids(ev, "2026-10-12 16:20"), [["g0", "g1"]])
 
-    def test_sunday_late_window_one_sitting(self):
-        ev = events("2026-10-04 13:00", "2026-10-04 16:05", "2026-10-04 16:25")
-        s = SC.sittings(ev)
-        self.assertEqual([len(x) for x in s], [1, 2])
+    def test_sunday_afternoon_is_one_sitting(self):
+        # 1 PM and 4 PM share a sitting; London 9:30 AM and SNF stay apart.
+        ev = events("2026-10-04 09:30", "2026-10-04 13:00", "2026-10-04 16:05",
+                    "2026-10-04 16:25", "2026-10-04 20:20")
+        self.assertEqual([len(x) for x in SC.sittings(ev)], [1, 3, 1])
+
+    def test_sunday_1pm_and_4pm_due_together_at_1005(self):
+        ev = events("2026-10-04 13:00", "2026-10-04 16:05", "2026-10-04 16:25", "2026-10-04 20:20")
+        self.assertEqual(due_ids(ev, "2026-10-04 09:55"), [])
+        self.assertEqual(due_ids(ev, "2026-10-04 10:05"), [["g0", "g1", "g2"]])  # SNF not yet
+
+    def test_non_sunday_afternoon_gap_rule_unchanged(self):
+        ev = events("2026-10-05 13:00", "2026-10-05 16:05")  # a Monday
+        self.assertEqual([len(x) for x in SC.sittings(ev)], [1, 1])
+
+    def test_posted_sitting_still_builds_a_game_with_no_report(self):
+        ev = events("2026-10-04 13:00", "2026-10-04 16:05")
+        key = SC.sitting_key(SC.sittings(ev)[0])
+        self.assertEqual(due_ids(ev, "2026-10-04 12:00", posted=[key], handled=["g0"]), [["g1"]])
+        self.assertEqual(due_ids(ev, "2026-10-04 12:00", posted=[key], handled=["g0", "g1"]), [])
 
     def test_already_reported_game_skipped(self):
         ev = events("2026-10-04 16:05", "2026-10-04 16:25")
@@ -73,7 +89,7 @@ class SelectionTests(unittest.TestCase):
     def test_posted_sitting_not_planned_again(self):
         ev = events("2026-10-04 09:30")
         key = SC.sitting_key(ev)
-        self.assertEqual(SC.plan(ev, at("2026-10-04 07:00"), {key}, set()), [])
+        self.assertEqual(SC.plan(ev, at("2026-10-04 07:00"), {key}, {"g0"}), [])
 
     def test_should_post_rules(self):
         s, n = at("2026-10-04 13:00"), at("2026-10-04 11:00")

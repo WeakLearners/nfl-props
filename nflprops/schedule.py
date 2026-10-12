@@ -9,7 +9,19 @@ import pandas as pd
 
 HORIZON_H = 3.0      # build when the first kickoff of a sitting is <= 3 h away
 SITTING_GAP_MIN = 60  # kickoffs <= 60 min apart share one sitting
+# Sunday 12:00-17:00 ET is one sitting: the 1 PM and the 4 PM games build and
+# post together, three hours before the first of them. Kickoffs outside that
+# window (London 9:30 AM, SNF 8:20 PM) and every other day keep the gap rule.
+SUNDAY_PM_START_H, SUNDAY_PM_END_H = 12, 17
 HOLD_MIN = 45        # post a partial sitting when kickoff is <= 45 min away
+
+
+def _sunday_pm(t):
+    """The ET calendar date if t falls in the Sunday afternoon window, else None."""
+    et = t.tz_convert("America/New_York")
+    if et.weekday() == 6 and SUNDAY_PM_START_H <= et.hour < SUNDAY_PM_END_H:
+        return et.date()
+    return None
 
 
 def sittings(ev):
@@ -19,7 +31,11 @@ def sittings(ev):
     ev = ev.sort_values("ct")
     out, cur, last = [], [], None
     for e in ev.itertuples():
-        if last is not None and (e.ct - last) > pd.Timedelta(minutes=SITTING_GAP_MIN):
+        joined = last is not None and (e.ct - last) <= pd.Timedelta(minutes=SITTING_GAP_MIN)
+        if last is not None and not joined:
+            d = _sunday_pm(last)
+            joined = d is not None and d == _sunday_pm(e.ct)
+        if last is not None and not joined:
             out.append(cur)
             cur = []
         cur.append(e.Index)
@@ -40,17 +56,20 @@ def plan(ev, now, posted, handled_ids, horizon_h=HORIZON_H):
     now          pd.Timestamp, tz-aware
     posted       set of sitting keys already posted to Slack
     handled_ids  event ids that already have a report (never refetched)
-    A sitting with no todo games and no post pending still appears only if
-    it is not in `posted`, so the caller can post a built-but-unposted sitting.
+    A sitting not in `posted` appears even with no todo games, so the caller can
+    post a built-but-unposted sitting. A posted sitting appears only while a
+    game of it still has no report.
     """
     due = []
     for s in sittings(ev):
         key = sitting_key(s)
-        if key in posted:
-            continue
         if s.ct.min() - now > pd.Timedelta(hours=horizon_h):
             continue
         todo = s[~s.id.isin(handled_ids)]
+        # A posted sitting is done, unless a game still has no report (its
+        # lines were not up at post time). That game keeps being tried.
+        if key in posted and todo.empty:
+            continue
         due.append((key, s, todo))
     return due
 

@@ -182,6 +182,7 @@ def auto(N_PICKS, DRY):
         print("auto: nothing due"); return
     rem, wrote = None, False
     for key, sit, todo in due:
+        fresh = []
         for e in todo.itertuples():
             if e.id not in meta:
                 continue
@@ -189,7 +190,19 @@ def auto(N_PICKS, DRY):
             item, rem = build_game(RP, e, season, week, a, h, N_PICKS, DRY)
             if item:
                 st["games"][e.id] = item
+                fresh.append(item)
                 wrote = True
+        if key in st["posted"]:
+            # Sitting already posted without these games (lines came late).
+            # Post only the new ones; the sitting key stays as it is.
+            if fresh and not DRY:
+                season, week = next((meta[i][2:] for i in sit.id if i in meta), (None, None))
+                title = f"Production ranges (late) — {season} W{week} · {sit.et.min():%a %-I:%M %p} ET".upper()
+                print(post(blocks=digest_blocks(fresh, title, rem),
+                           text=f"Production ranges — W{week} {key} late"))
+            if wrote and not DRY:
+                save_state(st)
+            continue
         ready = [st["games"][i] for i in sit.id if i in st["games"]]
         if SC.should_post(len(sit), len(ready), sit.ct.min(), now):
             season, week = next((meta[i][2:] for i in sit.id if i in meta), (None, None))
