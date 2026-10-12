@@ -1722,14 +1722,6 @@ LAYOUT_CSS = """<style>
   .wrap[data-page="slate"] .panel > .win:first-child{margin-top:24px}
   .wrap[data-page="slate"] .win-h{border-bottom:1px solid var(--line); padding-bottom:6px}
 
-  /* Report: the shortlist in two columns when each column is 680px or more.
-     The rule moves from border-top to border-bottom so that the top of
-     column two has no stray hairline. */
-  .wrap[data-page="report"] #picklist{display:block; columns:2 680px; column-gap:40px}
-  .wrap[data-page="report"] #picklist li{break-inside:avoid; border-top:0;
-    border-bottom:1px solid var(--line-soft)}
-  .wrap[data-page="report"] #picklist li:last-child{border-bottom:0}
-
   /* Rankings: 4 positions in one row on wide screens, 2 + 2 in the middle. */
   .rk-grid{display:grid; grid-template-columns:minmax(0,1fr); gap:32px 24px; align-items:start}
   @media (min-width:900px){ .rk-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
@@ -1805,12 +1797,7 @@ LAYOUT_CSS = """<style>
   @media (max-width:560px){
     :root{--gutter:16px}
     .wrap[data-page]{padding:24px var(--gutter) 48px}
-    /* Shortlist row on a phone: the leg text drops to a second line under
-       the name, so the fixed-width parts fit the row. */
     .wrap[data-page="report"] .picks{padding:16px 14px 14px}
-    .wrap[data-page="report"] #picklist li{flex-wrap:wrap; row-gap:2px}
-    .wrap[data-page="report"] .pk-bet{order:1; flex:1 0 100%; width:auto;
-      text-align:left; padding-left:26px}
   }
 </style>"""
 

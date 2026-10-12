@@ -191,9 +191,9 @@
   #picklist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0}
   /* One grid for the header and every row, so the four columns line up:
      NAME | INFO | MODELS | CONFIDENCE. */
-  #picklist, .pk-head{--pk-cols:minmax(0,1fr) 196px 214px 112px}
+  #picklist, .pk-head{--pk-cols:minmax(256px,1.3fr) minmax(140px,.7fr) minmax(212px,1.1fr) minmax(196px,1fr) 92px}
   #picklist li, .pk-head{
-    display:grid; grid-template-columns:var(--pk-cols); column-gap:14px; align-items:center;
+    display:grid; grid-template-columns:var(--pk-cols); column-gap:20px; align-items:center;
   }
   #picklist li{padding:9px 0; border-top:1px solid var(--line-soft)}
   #picklist li:first-child{border-top:none}
@@ -202,6 +202,7 @@
     text-transform:uppercase; color:var(--ink-3); padding:0 0 6px;
     border-bottom:1px solid var(--line-soft);
   }
+  .pk-head > span:first-child{grid-column:span 2}
   .pk-head > span:last-child{text-align:right}
   .pk-n{
     font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-3);
@@ -212,23 +213,23 @@
   .pk-name .mk{margin-left:0}
   .pk-nm{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:0 1 auto}
   .pk-bet{color:var(--ink-2); font-family:"IBM Plex Mono",monospace; font-weight:400;
-    font-size:12px; flex:none; white-space:nowrap; margin-left:4px}
+    font-size:12px; white-space:nowrap; min-width:0; overflow:hidden; text-overflow:ellipsis}
   .pk-bet b{color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums}
   .pk-slot{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-2);
     font-variant-numeric:tabular-nums; white-space:nowrap; min-width:0;
     overflow:hidden; text-overflow:ellipsis}
   .pk-slot.none{color:var(--ink-3)}
-  .pk-mcell{display:flex; align-items:center; gap:10px; min-width:0}
-  .pk-c{display:flex; align-items:baseline; justify-content:flex-end; gap:12px}
+  .pk-mcell{display:grid; grid-template-columns:136px 46px; column-gap:12px; justify-content:start; align-items:center; min-width:0}
+  .pk-c{display:grid; grid-template-columns:46px 34px; column-gap:12px; justify-content:end; align-items:baseline}
   .pk-conf{
     font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
-    font-size:17px; font-weight:600; flex:none; width:3.2ch; text-align:right;
+    font-size:17px; font-weight:600; width:auto; text-align:right;
   }
   /* Both engines' numbers for this leg: old (team colour, the card's big
      number) and new (purple, the Phase 3 model). Same colours as the lines
      on the curves. */
   .pk-models{font-family:"IBM Plex Mono",monospace; font-size:12px; flex:none;
-    display:flex; gap:10px; white-space:nowrap; color:var(--ink-3);
+    display:grid; grid-template-columns:62px 62px; column-gap:12px; white-space:nowrap; color:var(--ink-3);
     font-variant-numeric:tabular-nums}
   /* Each number in a fixed box, right-aligned, so decimals and the labels
      line up down the column whatever the number's length. */
@@ -359,9 +360,20 @@
   footer{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
     color:var(--ink-3); font-size:12.5px; max-width:68ch}
   footer strong{color:var(--ink-2); font-weight:600}
+  @media (max-width:1140px){
+    #picklist, .pk-head{--pk-cols:minmax(0,1fr) 196px 92px}
+    .pk-slotcell, .pk-head .h-info{display:none}
+    .pk-head > span:first-child{grid-column:auto}
+    #picklist li{row-gap:2px}
+    .pk-name{grid-column:1; grid-row:1}
+    .pk-bet{grid-column:1; grid-row:2; padding-left:22px}
+    .pk-mcell{grid-column:2; grid-row:1 / span 2}
+    .pk-c{grid-column:3; grid-row:1 / span 2}
+  }
   @media (max-width:560px){
-    #picklist, .pk-head{--pk-cols:minmax(0,1fr) 112px}
-    .pk-mcell, .pk-slotcell, .pk-head .h-info, .pk-head .h-models{display:none}
+    #picklist, .pk-head{--pk-cols:minmax(0,1fr) 92px}
+    .pk-mcell, .pk-head .h-models{display:none}
+    .pk-c{grid-column:2}
     .grid{grid-template-columns:1fr; gap:12px}
     .legend{gap:10px 14px}
   }
@@ -939,7 +951,8 @@ DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick).forEach(d=>{
   li.dataset.inspectId="pick-row";
   const col=d.tm===META.teamA?"var(--den)":"var(--kc)";
   li.innerHTML='<span class="pk-name"><span class="pk-n">'+d.pick+'</span><span class="pk-nm">'+trendMk(d,"pick-badge")+d.p+'</span>'+mk('<span class="role '+(d.tm===META.teamA?'a':'b')+'">'+d.role+'</span>',d,"pick-rank-chip","pick-badge")
-    +'<span class="pk-bet">'+(STAT_ABBR[d.s]||d.s.replace(/_/g," "))+' over <b>'+d.line+'</b></span></span>'
+    +'</span>'
+    +'<span class="pk-bet" data-inspect-id="pick-bet">'+(STAT_ABBR[d.s]||d.s.replace(/_/g," "))+' over <b>'+d.line+'</b></span>'
     +pickSlotMk(d)
     +'<span class="pk-mcell"><span class="pk-models" data-inspect-id="pick-models"><span'+(d.pe==="old"?' class="prim" title="old engine makes this leg\'s number"':'')+'>old<b style="color:'+col+'">'+(d.pe==="old"?fmt(d.mu):(d.alt==null?'&mdash;':fmt(d.alt)))+'</b></span>'
       +'<span'+(d.pe==="new"?' class="prim" title="new model makes this leg\'s number"':'')+'>new<b style="color:var(--p3)">'+(d.pe==="new"?fmt(d.mu):(d.alt==null?'&mdash;':fmt(d.alt)))+'</b></span></span>'
