@@ -107,6 +107,7 @@
     margin:0; text-wrap:balance; text-transform:uppercase;
   }
   h1 .at{color:var(--ink-3); font-weight:500}
+  h1 .rk{margin:0 .5em 0 .4em; text-transform:none; letter-spacing:.04em; vertical-align:middle}
   .sub{color:var(--ink-2); margin:14px 0 0; max-width:64ch}
   .legend{display:flex; flex-wrap:wrap; gap:18px; align-items:center; margin:22px 0 30px}
   .key{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-2)}
@@ -905,6 +906,24 @@ DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick).forEach(d=>{
 
 document.getElementById("teamA").textContent = META.nameA;
 document.getElementById("teamB").textContent = META.nameB;
+// Team hit-rate rank, right of each team name in the headline. The server adds
+// window.__TEAMRANK__ per request (same ranking as the Results Teams box); a file
+// opened on its own has none, so no badges. A team under 20 legs has null.
+(function(){
+  const R=window.__TEAMRANK__, h=document.querySelector("header h1");
+  if(!R||!h) return;
+  const mkRank=(t,id)=>{
+    if(!t) return null;
+    const b=document.createElement("span");
+    b.className="rk"; b.setAttribute("data-inspect-id",id);
+    b.textContent="#"+t.rank;
+    b.title="Hit rate rank "+t.rank+" of "+t.of+": "+(t.rate*100).toFixed(1)+"% ("+t.h+"/"+t.n+"), all legs";
+    return b;
+  };
+  const away=mkRank(R.away,"header-rank-away"), home=mkRank(R.home,"header-rank-home"), at=h.querySelector(".at");
+  if(away&&at) h.insertBefore(away,at);
+  if(home) h.appendChild(home);
+})();
 const picks = DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick);
 document.getElementById("nlegs").textContent = picks.length;
 const payAll = picks.reduce((a,d)=>a*(d.price<0?1+100/(-d.price):1+d.price/100),1);

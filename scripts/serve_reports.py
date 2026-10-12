@@ -1173,7 +1173,7 @@ def td_legs(season, week):
     return legs, waiting, void
 
 
-def explore_html():
+def explore_legs():
     """Every graded leg across every week, handed to a page that groups them.
 
     Grading goes through grade_legs, the same rule as the listing's tallies
@@ -1213,6 +1213,39 @@ def explore_html():
         legs += tds
         pending["td"] += waiting
         void["td"] += tvoid
+    return legs, pending, void
+
+
+TEAM_MIN = 20  # the Teams boxes on Results use the same floor (TOP_MIN in explore.html)
+
+
+def team_ranking(legs=None):
+    """Hit-rate rank of each team: the Results page Teams box, as data.
+
+    Same scope as that box with "All legs with a line" picked: every graded
+    non-TD leg, grouped by the player's team, 20+ legs to qualify. Rank 1 is the
+    best hit rate; ties go to more legs, then the team code, which is the order
+    the page's groups() hands its stable sort. Report pages read this too, so the
+    two can never disagree. Returns {team: {rank, of, rate, h, n}}.
+    """
+    if legs is None:
+        legs = explore_legs()[0]
+    by = {}
+    for l in legs:
+        if l.get("s") != "anytime_td":
+            by.setdefault(l["tm"], []).append(l)
+    q = []
+    for tm, ls in by.items():
+        if len(ls) >= TEAM_MIN:
+            h = sum(1 for l in ls if l["hit"])
+            q.append((tm, h, len(ls)))
+    q.sort(key=lambda t: (-(t[1] / t[2]), -t[2], t[0]))
+    return {tm: {"rank": i + 1, "of": len(q), "rate": h / n, "h": h, "n": n}
+            for i, (tm, h, n) in enumerate(q)}
+
+
+def explore_html():
+    legs, pending, void = explore_legs()
     blob = json.dumps({"legs": legs, "pending": pending, "void": void}).replace("</", "<\\/")
     head = HEAD.replace("NFL Props \u2014 reports", "NFL Props \u00b7 Results").format()
     body = open(EXPLORE_TPL, encoding="utf-8").read()
@@ -1901,6 +1934,17 @@ class Handler(SimpleHTTPRequestHandler):
             if m:
                 html = html.replace('<meta charset="utf-8">',
                                     '<meta charset="utf-8">\n' + team_css(m.group(3), m.group(4)), 1)
+                # Team hit-rate rank for the header badges, computed now so it is
+                # current. Per request: the ranking takes about 0.1s, so no cache
+                # that could go stale. A file opened without the server has no
+                # __TEAMRANK__ and shows no badges.
+                try:
+                    tr = team_ranking()
+                    html = html.replace('<meta charset="utf-8">',
+                        '<meta charset="utf-8">\n<script>window.__TEAMRANK__=' + json.dumps(
+                            {"away": tr.get(m.group(3)), "home": tr.get(m.group(4))}) + ';</script>', 1)
+                except Exception:
+                    pass
                 html += "\n" + TRAY_HTML  # player tray: after the report script, which defines DATA
         body = (with_theme(html) +
                 '\n<script src="/_inspector.js"></script>\n').encode()
