@@ -1244,6 +1244,25 @@ def team_ranking(legs=None):
             for i, (tm, h, n) in enumerate(q)}
 
 
+def pick_slot_rates(legs=None):
+    """Hit rate of each depth role at each shortlist slot, from graded shortlist legs.
+
+    A shortlist leg is one with a pick number. TD picks never carry one, so they
+    are never pooled in. Key is "ROLE|slot" (for example "QB1|1"). Returns
+    {key: {h, n}}. Report pages read this to print the line under a shortlist name.
+    """
+    if legs is None:
+        legs = explore_legs()[0]
+    out = {}
+    for l in legs:
+        if l.get("s") == "anytime_td" or not l.get("pick") or not l.get("role"):
+            continue
+        c = out.setdefault(f"{l['role']}|{l['pick']}", {"h": 0, "n": 0})
+        c["n"] += 1
+        c["h"] += 1 if l["hit"] else 0
+    return out
+
+
 def explore_html():
     legs, pending, void = explore_legs()
     blob = json.dumps({"legs": legs, "pending": pending, "void": void}).replace("</", "<\\/")
@@ -1939,10 +1958,12 @@ class Handler(SimpleHTTPRequestHandler):
                 # that could go stale. A file opened without the server has no
                 # __TEAMRANK__ and shows no badges.
                 try:
-                    tr = team_ranking()
+                    legs = explore_legs()[0]
+                    tr = team_ranking(legs)
                     html = html.replace('<meta charset="utf-8">',
                         '<meta charset="utf-8">\n<script>window.__TEAMRANK__=' + json.dumps(
-                            {"away": tr.get(m.group(3)), "home": tr.get(m.group(4))}) + ';</script>', 1)
+                            {"away": tr.get(m.group(3)), "home": tr.get(m.group(4))})
+                        + ';window.__PICKSLOT__=' + json.dumps(pick_slot_rates(legs)) + ';</script>', 1)
                 except Exception:
                     pass
                 html += "\n" + TRAY_HTML  # player tray: after the report script, which defines DATA

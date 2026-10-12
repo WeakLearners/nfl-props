@@ -202,6 +202,10 @@
     line-height:1; flex:1; min-width:0; display:flex; align-items:center; flex-wrap:wrap; column-gap:6px; row-gap:3px}
   .pk-nm{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
   .pk-name .mk{margin-left:0}
+  /* History line under the name: a full-width item, so it wraps onto its own line. */
+  .pk-slot{flex:0 0 100%; font-family:"IBM Plex Mono",monospace; font-weight:400; font-size:11px;
+    line-height:1.2; color:var(--ink-3); font-variant-numeric:tabular-nums; white-space:nowrap;
+    overflow:hidden; text-overflow:ellipsis}
   /* Fixed slot, text pushed to its right edge. The longest leg on the slate is
      "receiving yards over 59.5" at 25 characters; every shorter one ends flush
      with it, so the line and the pill always touch. */
@@ -908,13 +912,24 @@ function pickResult(d){
     + result(d, "pick-result-mark") + '</span>';
 }
 
+// Hit rate of this depth role in this shortlist slot, all graded shortlist legs.
+// The server adds window.__PICKSLOT__ per request; a file opened on its own has
+// none, so the line is left out.
+function pickSlotMk(d){
+  const S=window.__PICKSLOT__;
+  if(!S) return "";
+  const c=S[d.role+"|"+d.pick], lead=d.role+" in #"+d.pick+" slot: ";
+  const t=!c||!c.n?lead+"no graded history":lead+(100*c.h/c.n).toFixed(2)+"% hit ("+c.h+"/"+c.n+")";
+  return '<span class="pk-slot" data-inspect-id="pick-slot-rate" title="Graded shortlist legs only. TD picks are not counted.">'+t+'</span>';
+}
+
 const pl=document.getElementById("picklist");
 DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick).forEach(d=>{
   const li=document.createElement("li");
   li.dataset.inspectId="pick-row";
   const col=d.tm===META.teamA?"var(--den)":"var(--kc)";
   li.innerHTML='<span class="pk-n">'+d.pick+'</span>'
-    +'<span class="pk-name"><span class="pk-nm">'+trendMk(d,"pick-badge")+d.p+'</span>'+mk('<span class="role '+(d.tm===META.teamA?'a':'b')+'">'+d.role+'</span>',d,"pick-rank-chip","pick-badge")+'</span>'
+    +'<span class="pk-name"><span class="pk-nm">'+trendMk(d,"pick-badge")+d.p+'</span>'+mk('<span class="role '+(d.tm===META.teamA?'a':'b')+'">'+d.role+'</span>',d,"pick-rank-chip","pick-badge")+pickSlotMk(d)+'</span>'
     +'<span class="pk-bet">'+d.s.replace(/_/g," ")+' over <b>'+d.line+'</b></span>'
     +'<span class="pk-models" data-inspect-id="pick-models"><span'+(d.pe==="old"?' class="prim" title="old engine makes this leg\'s number"':'')+'>old<b style="color:'+col+'">'+(d.pe==="old"?fmt(d.mu):(d.alt==null?'&mdash;':fmt(d.alt)))+'</b></span>'
       +'<span'+(d.pe==="new"?' class="prim" title="new model makes this leg\'s number"':'')+'>new<b style="color:var(--p3)">'+(d.pe==="new"?fmt(d.mu):(d.alt==null?'&mdash;':fmt(d.alt)))+'</b></span></span>'
