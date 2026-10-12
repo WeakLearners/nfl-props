@@ -820,7 +820,7 @@
           "kind": "container",
           "description": "Side tray that opens from the right on a click on a player card. Season game log, a chart of the card's stat by week, and one paragraph about this game built by fixed rules from page numbers. Added to every report per request by scripts/serve_reports.py; data from /api/player. Link form: #p=Name|stat_key.",
           "locate": {
-            "path": "nflprops/tray.py:180",
+            "path": "nflprops/tray.py:201",
             "grep": "grep -n -F -- 'inspectId=\"player-tray\"' nflprops/tray.py"
           }
         },
@@ -830,7 +830,7 @@
           "kind": "button",
           "description": "Closes the tray. Esc and a click outside the tray also close it.",
           "locate": {
-            "path": "nflprops/tray.py:316",
+            "path": "nflprops/tray.py:337",
             "grep": "grep -n -F -- 'data-inspect-id=\"player-tray-close\"' nflprops/tray.py"
           }
         },
@@ -840,7 +840,7 @@
           "kind": "text",
           "description": "One paragraph about this game: season and last-3 averages, games over the line, trend, defense rank, matchup badge, model range and model vs book chance, and the final when known. Fixed rules in analysis().",
           "locate": {
-            "path": "nflprops/tray.py:322",
+            "path": "nflprops/tray.py:343",
             "grep": "grep -n -F -- 'data-inspect-id=\"player-tray-analysis\"' nflprops/tray.py"
           }
         },
@@ -850,7 +850,7 @@
           "kind": "chart",
           "description": "The card's stat for each game this season through this week. Bars green over the line, red under. Solid rule: FanDuel line. Dashed rule: model expected. This week's bar has an outline.",
           "locate": {
-            "path": "nflprops/tray.py:323",
+            "path": "nflprops/tray.py:344",
             "grep": "grep -n -F -- 'data-inspect-id=\"player-tray-chart\"' nflprops/tray.py"
           }
         },
@@ -860,7 +860,7 @@
           "kind": "table",
           "description": "Season game log. Columns depend on the position (QB, RB, WR/TE). The card's stat column is bold, and this week's row is shaded.",
           "locate": {
-            "path": "nflprops/tray.py:324",
+            "path": "nflprops/tray.py:345",
             "grep": "grep -n -F -- 'data-inspect-id=\"player-tray-log\"' nflprops/tray.py"
           }
         },
@@ -870,7 +870,7 @@
           "kind": "container",
           "description": "Section below the game log, headed '<OPP> vs <ROLE>' (for example SEA vs RB1). One row per game the opponent played before this week: the team they played, the player who held the same depth role for that team, and his value for the tray's stat. Bars are coloured against this report's line, with a mark at the line. Hidden when there are no rows. Data from /api/opp-role (opp_role_log in tray.py). Role holder comes from reliability.star_pool for that week. If he has no stat line, the player of the same usage rank that day stands in, marked (sub).",
           "locate": {
-            "path": "nflprops/tray.py:325",
+            "path": "nflprops/tray.py:346",
             "grep": "grep -n -F -- 'data-inspect-id=\"player-tray-opp\" hidden' nflprops/tray.py"
           }
         },
@@ -880,7 +880,7 @@
           "kind": "text",
           "description": "One line in the opponent section: '<ROLE>s cleared <line> in X of Y games against <OPP>.' A game counts when the role holder's value is above the report's line. Absent when the leg has no line.",
           "locate": {
-            "path": "nflprops/tray.py:305",
+            "path": "nflprops/tray.py:326",
             "grep": "grep -n -F -- 'data-inspect-id=\"player-tray-opp-summary\"' nflprops/tray.py"
           }
         }

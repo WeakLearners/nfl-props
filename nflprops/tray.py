@@ -51,6 +51,26 @@ def _pool(season, week):
     return _POOLS[(season, week)]
 
 
+_RANKS = {}
+
+
+def _ranks(season, week):
+    """{(name_key, position): "#11 QB"} as of the games BEFORE `week`.
+
+    Same ranking and same chip text as the shortlist tag (rating.chip_lookup),
+    but chip_lookup only does the latest completed week. This calls the same
+    rating.current_ratings(season, week) it is built on, with week - 1, so a
+    game in week 5 uses games through week 4. Players below the ranking floor
+    are absent, and so is every player in week 1 (nothing played yet).
+    """
+    if (season, week) not in _RANKS:
+        from .rating import current_ratings
+        df = current_ratings(season=season, week=week - 1)[2]
+        _RANKS[(season, week)] = {(name_key(r["name"]), r.position): f"#{r['rank']} {r.position}"
+                                  for _, r in df.iterrows()}
+    return _RANKS[(season, week)]
+
+
 def opp_role_log(db_path, opp, role, stat, season, week):
     """What one team's defense faced at one depth role, game by game, before `week`.
 
@@ -58,7 +78,7 @@ def opp_role_log(db_path, opp, role, stat, season, week):
     for that game's week (usage rank on the roster). If that player has no stat
     line in the game, the nth-highest carries/targets/attempts at the
     position that day stands in, and the row says so (sub=True).
-    Returns [{week, team, away, player, value, sub}], oldest first. [] when
+    Returns [{week, team, away, player, value, sub, rank}], oldest first. [] when
     opp, role or stat is unknown. Read-only; no odds call.
     """
     import re
@@ -91,7 +111,8 @@ def opp_role_log(db_path, opp, role, stat, season, week):
                     continue
                 hit, sub = [rows[n - 1]], True
             out.append({"week": wk, "team": vs, "away": away == opp, "player": hit[0][0],
-                        "value": hit[0][1] or 0, "sub": sub})
+                        "value": hit[0][1] or 0, "sub": sub,
+                        "rank": _ranks(season, wk).get((name_key(hit[0][0]), pos))})
         return out
     finally:
         db.close()
@@ -294,7 +315,7 @@ TRAY_JS = r"""
   function oppTable(d,rows){
     var h='<table><thead><tr><th>Wk</th><th>Opp</th><th>Player</th><th class="hl">'+esc((STATS.filter(function(x){return x[0]===d.s;})[0]||[0,d.s])[1])+'</th></tr></thead><tbody>';
     rows.forEach(function(r){
-      h+='<tr><td>'+r.week+'</td><td>'+(r.away?"@ ":"vs ")+esc(r.team)+'</td><td>'+esc(r.player)+(r.sub?' <span class="ptray-dim" title="The usual role holder had no stat line this game. The player with the same usage rank at the position that day stands in.">(sub)</span>':'')+'</td><td class="hl">'+f1(r.value)+'</td></tr>';
+      h+='<tr><td>'+r.week+'</td><td>'+(r.away?"@ ":"vs ")+esc(r.team)+'</td><td>'+esc(r.player)+(r.rank?' <span class="rk" style="margin-left:6px" title="Position rank by recent production before this game (not the depth chart).">'+esc(r.rank)+'</span>':'')+(r.sub?' <span class="ptray-dim" title="The usual role holder had no stat line this game. The player with the same usage rank at the position that day stands in.">(sub)</span>':'')+'</td><td class="hl">'+f1(r.value)+'</td></tr>';
     });
     return h+'</tbody></table>';
   }
