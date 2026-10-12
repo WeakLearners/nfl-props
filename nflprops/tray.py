@@ -66,12 +66,14 @@ TRAY_CSS = """
     text-transform:uppercase; color:var(--ink-3); margin:24px 0 8px; padding-bottom:4px; border-bottom:1px solid var(--line)}
   .ptray-an{font-size:15px; line-height:1.6; color:var(--ink); margin:0}
   .ptray-chart svg{display:block; width:100%; height:auto}
-  .ptray-chart .bar{fill:var(--tcol)}
+  .ptray-chart .bar{fill:var(--ink-3)}
   .ptray-chart .bar.over{fill:var(--good)} .ptray-chart .bar.under{fill:var(--bad)}
   .ptray-chart .bar.now{stroke:var(--ink); stroke-width:2}
   .ptray-chart text{font-family:"IBM Plex Mono",monospace; font-size:10px; fill:var(--ink-3)}
   .ptray-chart text.v{fill:var(--ink); font-weight:600; paint-order:stroke; stroke:var(--bg); stroke-width:4px; stroke-linejoin:round}
-  .ptray-chart .ln{stroke:var(--ink); stroke-width:1.5}
+  .ptray-chart .ln{stroke:var(--ink); stroke-width:2}
+  .ptray .ptray-dim{color:var(--ink-3); font-weight:400}
+  .ptray b.rs{font-weight:600} .ptray b.rs.hit{color:var(--good)} .ptray b.rs.miss{color:var(--bad)}
   .ptray-chart .mu{stroke:var(--tcol); stroke-width:1.5; stroke-dasharray:4 3}
   .ptray-key{display:flex; gap:16px; font-size:12px; color:var(--ink-2); margin-top:8px; flex-wrap:wrap}
   .ptray-key i{display:inline-block; width:14px; vertical-align:middle; margin-right:6px; border-top:1.5px solid var(--ink)}
@@ -110,6 +112,8 @@ TRAY_JS = r"""
     if(k==="_share") return g.target_share==null?"—":Math.round(g.target_share*100)+"%";
     return g[k]==null?0:g[k];
   };
+  // This game's own line and result for the leg's stat: [line, hit] or null. hit is null until final.
+  var gl=function(g,stat){var l=g.lines&&g.lines[stat];return l?{line:l[0],hit:l[1]}:null;};
   var SUFFIX=/^(jr|sr|ii|iii|iv|v)\.?$/i;
   var lastName=function(p){var w=p.split(" ").filter(function(x){return !SUFFIX.test(x);});return w[w.length-1]||p;};
 
@@ -129,9 +133,17 @@ TRAY_JS = r"""
     if(!n) out.push(d.p+" has no "+SEASON+" games before week "+WEEK+".");
     else if(n>=4) out.push(d.p+" averages "+f1(avg(v.slice(-3)))+" "+unit+" over the last 3 games, against "+f1(avg(v))+" over "+n+" games this season.");
     else out.push(d.p+" averages "+f1(avg(v))+" "+unit+" over "+n+" game"+(n>1?"s":"")+" this season.");
-    if(n&&d.line!=null){
-      var k=v.filter(function(x){return x>d.line;}).length;
-      out.push(nm+" went over "+d.line+" in "+k+" of "+n+" game"+(n>1?"s":"")+".");
+    // Each past week is judged against its own line. A week with no line of its own
+    // is judged against this week's line, as before.
+    var wl=pre.filter(function(g){var x=gl(g,d.s);return x&&x.hit!=null;});
+    if(wl.length){
+      var kh=wl.filter(function(g){return gl(g,d.s).hit;}).length;
+      out.push(nm+" cleared his line in "+kh+" of "+wl.length+" game"+(wl.length>1?"s":"")+" with a line.");
+    }
+    var nl=pre.filter(function(g){var x=gl(g,d.s);return !x||x.hit==null;});
+    if(nl.length&&d.line!=null){
+      var k=nl.filter(function(g){return cell(g,d.s)>d.line;}).length;
+      out.push(nm+" went over "+d.line+" in "+k+" of "+nl.length+" game"+(nl.length>1?"s":"")+" with no line of his own.");
     }
     (d.bd||[]).forEach(function(b){
       if(/\bbd-up\b/.test(b[0])) out.push("The trend marker is up. Production per game over the last 3 games is well above the games before, with opponents removed.");
@@ -163,35 +175,43 @@ TRAY_JS = r"""
   function chart(d,games){
     if(!games.length) return '<p class="ptray-none">No games to chart.</p>';
     var W=496,H=170,T=18,B=22,vals=games.map(function(g){return cell(g,d.s);});
-    var top=Math.max.apply(null,vals.concat([d.line||0,d.mu||0]))*1.12||1;
+    var lns=games.map(function(g){var x=gl(g,d.s);return x?x.line:0;});
+    var top=Math.max.apply(null,vals.concat(lns,[d.mu||0]))*1.12||1;
     var bw=Math.min(36,(W-8)/games.length-6), step=(W-8)/games.length;
     var Y=function(v){return H-B-(v/top)*(H-B-T);};
     // Rules first, then bars, then labels: a label always sits on top, with a halo.
     var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(d.p)+' by week">', lb='';
-    if(d.line!=null) s+='<line class="ln" x1="0" x2="'+W+'" y1="'+Y(d.line).toFixed(1)+'" y2="'+Y(d.line).toFixed(1)+'"></line>';
     s+='<line class="mu" x1="0" x2="'+W+'" y1="'+Y(d.mu).toFixed(1)+'" y2="'+Y(d.mu).toFixed(1)+'"></line>';
     games.forEach(function(g,i){
-      var v=vals[i], x=4+i*step+(step-bw)/2, cls="bar";
-      if(d.line!=null) cls+=v>d.line?" over":" under";
+      var v=vals[i], x=4+i*step+(step-bw)/2, cls="bar", w=gl(g,d.s);
+      if(w&&w.hit!=null) cls+=w.hit?" over":" under";
       if(g.week===WEEK) cls+=" now";
       s+='<rect class="'+cls+'" x="'+x.toFixed(1)+'" y="'+Y(v).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(1,(H-B)-Y(v)).toFixed(1)+'">'
-        +'<title>Week '+g.week+(g.away?" at ":" vs ")+g.opp+": "+f1(v)+'</title></rect>';
+        +'<title>Week '+g.week+(g.away?" at ":" vs ")+g.opp+": "+f1(v)+(w?", line "+w.line+(w.hit==null?"":w.hit?" HIT":" MISS"):", no line")+'</title></rect>'
+        +(w?'<line class="ln" data-inspect-id="player-tray-tick" x1="'+(x-3).toFixed(1)+'" x2="'+(x+bw+3).toFixed(1)+'" y1="'+Y(w.line).toFixed(1)+'" y2="'+Y(w.line).toFixed(1)+'"></line>':'');
       lb+='<text class="v" x="'+(x+bw/2).toFixed(1)+'" y="'+(Y(v)-4).toFixed(1)+'" text-anchor="middle">'+f1(v)+'</text>'
         +'<text x="'+(x+bw/2).toFixed(1)+'" y="'+(H-6)+'" text-anchor="middle">W'+g.week+'</text>';
     });
     s+=lb+'</svg>';
-    return s+'<div class="ptray-key">'+(d.line!=null?'<span><i></i>FanDuel line '+d.line+'</span>':'')
+    return s+'<div class="ptray-key">'+(games.some(function(g){return gl(g,d.s);})?'<span><i></i>tick: that week\'s FanDuel line</span>':'')
       +'<span><i class="mu"></i>'+(d.pe==="new"?"new model":"old engine")+' expected '+f1(d.mu)+'</span>'
-      +(d.line!=null?'<span>bars: green over, red under</span>':'')+'</div>';
+      +(games.some(function(g){return gl(g,d.s);})?'<span>bars: green hit, red miss, grey no line</span>':'')+'</div>';
   }
 
   function table(d,games){
     if(!games.length) return '<p class="ptray-none">No '+SEASON+' games yet.</p>';
     var cols=COLS[d.role.replace(/[0-9]+$/,"")]||COLS.WR;
-    var h='<table><thead><tr><th>Wk</th><th>Opp</th>'+cols.map(function(c){return '<th'+(c[1]===d.s?' class="hl"':'')+'>'+c[0]+'</th>';}).join("")+'</tr></thead><tbody>';
+    // Line and Result go right after the leg's stat column (at the end if the stat is not a column).
+    var at=cols.map(function(c){return c[1];}).indexOf(d.s);
+    var extraH='<th>Line</th><th>Result</th>';
+    var extra=function(g){
+      var x=gl(g,d.s), dash='<span class="ptray-dim">—</span>';
+      return '<td>'+(x?x.line:dash)+'</td><td>'+(!x||x.hit==null?dash:x.hit?'<b class="rs hit">HIT</b>':'<b class="rs miss">MISS</b>')+'</td>';
+    };
+    var h='<table><thead><tr><th>Wk</th><th>Opp</th>'+cols.map(function(c,i){return '<th'+(c[1]===d.s?' class="hl"':'')+'>'+c[0]+'</th>'+(i===at?extraH:'');}).join("")+(at<0?extraH:'')+'</tr></thead><tbody>';
     games.forEach(function(g){
       h+='<tr'+(g.week===WEEK?' class="now"':'')+'><td>'+g.week+'</td><td>'+(g.away?"@ ":"vs ")+g.opp+'</td>'
-        +cols.map(function(c){return '<td'+(c[1]===d.s?' class="hl"':'')+'>'+cell(g,c[1])+'</td>';}).join("")+'</tr>';
+        +cols.map(function(c,i){return '<td'+(c[1]===d.s?' class="hl"':'')+'>'+cell(g,c[1])+'</td>'+(i===at?extra(g):'');}).join("")+(at<0?extra(g):'')+'</tr>';
     });
     return h+'</tbody></table>';
   }

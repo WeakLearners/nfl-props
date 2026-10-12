@@ -820,7 +820,7 @@
           "kind": "container",
           "description": "Side tray that opens from the right on a click on a player card. Season game log, a chart of the card's stat by week, and one paragraph about this game built by fixed rules from page numbers. Added to every report per request by scripts/serve_reports.py; data from /api/player. Link form: #p=Name|stat_key.",
           "locate": {
-            "path": "nflprops/tray.py:119",
+            "path": "nflprops/tray.py:123",
             "grep": "grep -n -F -- 'inspectId=\"player-tray\"' nflprops/tray.py"
           }
         },
@@ -830,7 +830,7 @@
           "kind": "button",
           "description": "Closes the tray. Esc and a click outside the tray also close it.",
           "locate": {
-            "path": "nflprops/tray.py:204",
+            "path": "nflprops/tray.py:224",
             "grep": "grep -n -F -- 'data-inspect-id=\"player-tray-close\"' nflprops/tray.py"
           }
         },
@@ -840,7 +840,7 @@
           "kind": "text",
           "description": "One paragraph about this game: season and last-3 averages, games over the line, trend, defense rank, matchup badge, model range and model vs book chance, and the final when known. Fixed rules in analysis().",
           "locate": {
-            "path": "nflprops/tray.py:210",
+            "path": "nflprops/tray.py:230",
             "grep": "grep -n -F -- 'data-inspect-id=\"player-tray-analysis\"' nflprops/tray.py"
           }
         },
@@ -850,7 +850,7 @@
           "kind": "chart",
           "description": "The card's stat for each game this season through this week. Bars green over the line, red under. Solid rule: FanDuel line. Dashed rule: model expected. This week's bar has an outline.",
           "locate": {
-            "path": "nflprops/tray.py:211",
+            "path": "nflprops/tray.py:231",
             "grep": "grep -n -F -- 'data-inspect-id=\"player-tray-chart\"' nflprops/tray.py"
           }
         },
@@ -860,7 +860,7 @@
           "kind": "table",
           "description": "Season game log. Columns depend on the position (QB, RB, WR/TE). The card's stat column is bold, and this week's row is shaded.",
           "locate": {
-            "path": "nflprops/tray.py:212",
+            "path": "nflprops/tray.py:232",
             "grep": "grep -n -F -- 'data-inspect-id=\"player-tray-log\"' nflprops/tray.py"
           }
         }
@@ -2564,7 +2564,7 @@
           "kind": "layout",
           "description": "Two-row header spliced into every page by with_chrome(): brand and three sections on row 1, the section's pages and the results stamp on row 2. site_nav() takes this id as a parameter.",
           "locate": {
-            "path": "scripts/serve_reports.py:1647",
+            "path": "scripts/serve_reports.py:1668",
             "grep": "grep -n -F -- 'inspect_id=\"site-nav\"' scripts/serve_reports.py"
           }
         },
@@ -2574,7 +2574,7 @@
           "kind": "link",
           "description": "'NFL Props', links to /.",
           "locate": {
-            "path": "scripts/serve_reports.py:1659",
+            "path": "scripts/serve_reports.py:1680",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-nav-brand\"' scripts/serve_reports.py"
           }
         },
@@ -2584,7 +2584,7 @@
           "kind": "link",
           "description": "Week section (Games and Slate). Active on /, /slate and every report.",
           "locate": {
-            "path": "scripts/serve_reports.py:1618",
+            "path": "scripts/serve_reports.py:1639",
             "grep": "grep -n -F -- '\"site-nav-week\"' scripts/serve_reports.py"
           }
         },
@@ -2594,7 +2594,7 @@
           "kind": "link",
           "description": "Players section (Rankings and Trends).",
           "locate": {
-            "path": "scripts/serve_reports.py:1619",
+            "path": "scripts/serve_reports.py:1640",
             "grep": "grep -n -F -- '\"site-nav-players\"' scripts/serve_reports.py"
           }
         },
@@ -2604,7 +2604,7 @@
           "kind": "link",
           "description": "Results section, /explore.",
           "locate": {
-            "path": "scripts/serve_reports.py:1621",
+            "path": "scripts/serve_reports.py:1642",
             "grep": "grep -n -F -- '\"site-nav-results\"' scripts/serve_reports.py"
           }
         },
@@ -2614,7 +2614,7 @@
           "kind": "layout",
           "description": "Pages of the current section, separated by a dot. Empty for Results.",
           "locate": {
-            "path": "scripts/serve_reports.py:1661",
+            "path": "scripts/serve_reports.py:1682",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-subnav\"' scripts/serve_reports.py"
           }
         },
@@ -2624,7 +2624,7 @@
           "kind": "link",
           "description": "Games, / . Current on the home page only.",
           "locate": {
-            "path": "scripts/serve_reports.py:1622",
+            "path": "scripts/serve_reports.py:1643",
             "grep": "grep -n -F -- '\"site-subnav-games\"' scripts/serve_reports.py"
           }
         },
@@ -2634,7 +2634,7 @@
           "kind": "link",
           "description": "Slate, /slate.",
           "locate": {
-            "path": "scripts/serve_reports.py:1623",
+            "path": "scripts/serve_reports.py:1644",
             "grep": "grep -n -F -- '\"site-subnav-slate\"' scripts/serve_reports.py"
           }
         },
@@ -2644,7 +2644,7 @@
           "kind": "link",
           "description": "Rankings, /rankings.html.",
           "locate": {
-            "path": "scripts/serve_reports.py:1624",
+            "path": "scripts/serve_reports.py:1645",
             "grep": "grep -n -F -- '\"site-subnav-rankings\"' scripts/serve_reports.py"
           }
         },
@@ -2654,7 +2654,7 @@
           "kind": "link",
           "description": "Top-bar section Trends, /trends.html. Moved out of the Players row on 2026-10-04.",
           "locate": {
-            "path": "scripts/serve_reports.py:1620",
+            "path": "scripts/serve_reports.py:1641",
             "grep": "grep -n -F -- '\"site-nav-trends\"' scripts/serve_reports.py"
           }
         },
@@ -2664,7 +2664,7 @@
           "kind": "text",
           "description": "How far the season's results go, 'Wk 4 · 2/16 final'. From results_stamp(), one read-only query per request. Empty if the query fails.",
           "locate": {
-            "path": "scripts/serve_reports.py:1662",
+            "path": "scripts/serve_reports.py:1683",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-stamp\"' scripts/serve_reports.py"
           }
         },
@@ -2674,7 +2674,7 @@
           "kind": "text",
           "description": "One-line standing disclaimer spliced after every page by with_chrome().",
           "locate": {
-            "path": "scripts/serve_reports.py:1805",
+            "path": "scripts/serve_reports.py:1826",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-footer\"' scripts/serve_reports.py"
           }
         }

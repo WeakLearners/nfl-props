@@ -1263,6 +1263,27 @@ def pick_slot_rates(legs=None):
     return out
 
 
+def player_lines(season, name, team, weeks):
+    """Each week's own book line and result for one player: {week: {stat: [line, hit]}}.
+
+    Read from the reports already on disk (the card line, closest to -300, that
+    the report held at the time) and graded by grade_legs, the same rule as the
+    listing: the real number must beat the line, so there is no push. hit is
+    None while the game is not final. A week with no report or no line for a
+    stat has no entry. No odds call is made.
+    """
+    key = name_key(name) if name_key else None
+    out = {}
+    if not key:
+        return out
+    for wk in weeks:
+        mine = [dict(x) for x in lined(season, wk)
+                if x.get("tm") == team and name_key(x["p"]) == key and x.get("line") is not None]
+        for r in grade_legs(season, wk, mine):
+            out.setdefault(wk, {})[r["s"]] = [r["line"], r["hit"]]
+    return out
+
+
 def explore_html():
     legs, pending, void = explore_legs()
     blob = json.dumps({"legs": legs, "pending": pending, "void": void}).replace("</", "<\\/")
@@ -1978,6 +1999,11 @@ class Handler(SimpleHTTPRequestHandler):
             try:
                 games = player_season(DB, q.get("name", [""])[0], q.get("team", [""])[0],
                                       int(q.get("season", ["0"])[0]))
+                # Each week's own line and result, so the tray never reuses this week's line.
+                pl = player_lines(int(q.get("season", ["0"])[0]), q.get("name", [""])[0],
+                                  q.get("team", [""])[0], sorted({g["week"] for g in games}))
+                for g in games:
+                    g["lines"] = pl.get(g["week"], {})
             except (ValueError, sqlite3.Error) as e:
                 sys.stderr.write(f"api/player: {e}\n")
                 games = []
