@@ -91,6 +91,17 @@ class SelectionTests(unittest.TestCase):
         key = SC.sitting_key(ev)
         self.assertEqual(SC.plan(ev, at("2026-10-04 07:00"), {key}, {"g0"}), [])
 
+    def test_moved_kickoff_keeps_the_sitting_posted(self):
+        # The API moves the kickoff 5 min near the start: the key changes, the ids do not.
+        ev = events("2026-10-11 09:30")
+        key = SC.sitting_key(SC.sittings(ev)[0])
+        moved = events("2026-10-11 09:35")
+        self.assertNotEqual(SC.sitting_key(SC.sittings(moved)[0]), key)
+        now = at("2026-10-11 09:20")
+        self.assertEqual(len(SC.plan(moved, now, {key}, {"g0"})), 1)   # key alone: posted again
+        self.assertEqual(SC.plan(moved, now, {key}, {"g0"}, posted_ids={"g0": key}), [])
+        self.assertEqual(SC.posted_key(SC.sittings(moved)[0], {key}, {"g0": key}), key)
+
     def test_should_post_rules(self):
         s, n = at("2026-10-04 13:00"), at("2026-10-04 11:00")
         self.assertTrue(SC.should_post(2, 2, s, n))
@@ -128,6 +139,32 @@ class AutoRunTests(unittest.TestCase):
             report_file.unlink()          # even with the file gone, the posted sitting stays closed
             run_reports.main()
             self.assertEqual(post.call_count, 1)
+
+    def test_moved_kickoff_does_not_repost(self):
+        tmp = pathlib.Path(tempfile.mkdtemp())
+        kick = pd.Timestamp.now(tz="UTC") + pd.Timedelta(hours=2)
+        def board(k):
+            ev = pd.DataFrame([{"id": "e1", "away_team": "Away Team", "home_team": "Home Team", "ct": k}])
+            ev["et"] = ev.ct.dt.tz_convert(ET)
+            return ev
+        lines = pd.DataFrame([{"player_key": "x", "stat": "receptions", "line": 3.5, "price": -300}])
+        short = pd.DataFrame([{"player": "P", "stat": "receptions", "line": 3.5, "price": -300, "conf": 0.8}])
+        state = tmp / "state.json"
+        with mock.patch.object(run_reports, "STATE", state), \
+             mock.patch.object(sys, "argv", ["run_reports.py", "auto"]), \
+             mock.patch("nflprops.db.team_abbr_map", return_value={"Away Team": "AW", "Home Team": "HM"}), \
+             mock.patch.object(run_reports, "game_week", return_value=(2026, 4)), \
+             mock.patch.object(RP, "upcoming_events", side_effect=[board(kick), board(kick + pd.Timedelta(minutes=5))]), \
+             mock.patch.object(RP, "event_lines", return_value=(lines, "100")), \
+             mock.patch.object(RP, "build", return_value=([{"x": 1}], short, [])), \
+             mock.patch.object(RP, "render", return_value="<html></html>"), \
+             mock.patch.object(RP, "report_path", return_value=tmp / "r.html"), \
+             mock.patch("nflprops.rating.write_rankings", return_value=tmp / "rk.html"), \
+             mock.patch("nflprops.slack.post", return_value="ok") as post:
+            run_reports.main()
+            run_reports.main()           # same game, kickoff now 5 min later
+            self.assertEqual(post.call_count, 1)
+            self.assertEqual(len(run_reports.load_state()["posted"]), 1)
 
 
 if __name__ == "__main__":
