@@ -1110,7 +1110,7 @@ EXPLORE_TPL = os.path.join(BASE, "templates", "explore.html")
 # "app" is report.py's own DEF_WEIGHT(stat) > 0 flag -- whether the opponent
 # defense number actually fed that leg's projection. Carried through rather
 # than re-derived, so DEF_WEIGHT lives in exactly one place.
-EXPLORE_FIELDS = ("p", "tm", "vs", "role", "s", "line", "price", "mp", "bp",
+EXPLORE_FIELDS = ("p", "tm", "vs", "role", "s", "line", "price", "mp", "mp_raw", "bp",
                   "def", "app", "pick", "game", "kick", "hit", "actual", "file")
 
 

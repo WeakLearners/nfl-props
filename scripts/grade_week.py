@@ -225,77 +225,18 @@ def render(season, week, df, acc, season_rows):
     return "\n".join(L)
 
 
-# --- Shrink test, pre-registered 2026-10-18 -------------------------------
-# Rule, fraction, fit/test split and decision rule are fixed in the vault file
-# projects/nfl-props/auto/shrink-test-preregistration.md. Measurement only:
-# nothing here changes a probability any report or page shows.
-SHRINK_W = 0.5        # fixed; never changes during the test
-SHRINK_TEST_FROM = 6  # weeks 1-5 are the fit set and never enter a test row
-_CLIP = 1e-4
-
-
-def shrink_legs(season):
-    """Graded yardage/reception/completion legs, as the backtest read them."""
-    import serve_reports as S
-    return [l for l in S.explore_legs()[0]
-            if l.get("season") == season and l["s"] != "anytime_td"
-            and l.get("mp") is not None and l.get("bp") is not None
-            and l["hit"] is not None]
-
-
-def shrink_scores(rows):
-    """{'model'|'shrunk'|'book': (brier, logloss)} and the 80%+ band, or None."""
-    import math
-    if not rows:
-        return None
-    fs = {"model": lambda l: l["mp"],
-          "shrunk": lambda l: l["mp"] + SHRINK_W * (l["bp"] - l["mp"]),
-          "book": lambda l: l["bp"]}
-    clip = lambda p: min(1 - _CLIP, max(_CLIP, p))
-    out = {}
-    for k, f in fs.items():
-        br = sum((f(l) - l["hit"]) ** 2 for l in rows) / len(rows)
-        ll = -sum(math.log(clip(f(l)) if l["hit"] else 1 - clip(f(l)))
-                  for l in rows) / len(rows)
-        out[k] = (br, ll)
-    hi = [l for l in rows if l["mp"] >= 0.80]
-    band = (len(hi), sum(l["hit"] for l in hi) / len(hi),
-            sum(l["mp"] for l in hi) / len(hi)) if hi else None
-    return out, band
-
-
-def _shrink_block(label, rows):
-    r = shrink_scores(rows)
+def adjustment_section(write=True):
+    """Refit the weekly fraction (decision #46) and report it in three lines."""
+    from nflprops import calibration as CAL
+    r = CAL.fit(write=write)
     if r is None:
-        return [f"**{label}:** no test weeks graded yet.\n"]
-    sc, band = r
-    L = [f"**{label}:** {len(rows)} legs.\n", "| Row | Brier | Log loss |", "|---|---|---|"]
-    for k, nm in (("model", "Model"), ("shrunk", "Shrunk (0.5 to book)"), ("book", "Book only")):
-        L.append(f"| {nm} | {sc[k][0]:.4f} | {sc[k][1]:.4f} |")
-    L.append("")
-    L.append("80%+ model band: " + (f"{band[0]} legs, hit {band[1]*100:.1f}% against "
-             f"claimed {band[2]*100:.1f}%.\n" if band else "no legs.\n"))
-    return L
-
-
-def shrink_section(season, week):
-    legs_ = shrink_legs(season)
-    test = [l for l in legs_ if l["week"] >= SHRINK_TEST_FROM]
-    wk = [l for l in test if l["week"] == week]
-    nweeks = len({l["week"] for l in test})
-    L = ["## Shrink test (pre-registered 2026-10-18)\n",
-         "Measurement only. No probability shown anywhere changes. Rule: "
-         "shrunk = model + 0.5 x (book - model). Test set is weeks 6 and later. "
-         "Pass rule: at least 4 test weeks and 1,000 test legs, and shrunk Brier "
-         "below model Brier. Passing only puts a decision in front of Sean.\n"]
-    if week >= SHRINK_TEST_FROM:
-        L += _shrink_block(f"This week (week {week})", wk)
-    else:
-        L.append(f"**This week (week {week}):** fit-set week, not a test week.\n")
-    L += _shrink_block("Test set to date (weeks 6 and later)", test)
-    L.append(f"Test weeks with graded legs: {nweeks} of 4 needed. "
-             f"Test legs: {len(test)} of 1,000 needed.\n")
-    return "\n".join(L)
+        return "## Weekly adjustment\n\nNo graded legs yet. Fraction stays 0.\n"
+    prev = r["previous_fraction"]
+    return ("## Weekly adjustment\n\n"
+            f"New fraction: {r['fraction']:.1f} (last week: "
+            f"{'none' if prev is None else f'{prev:.1f}'}). Model moves that share of the way to the book.\n\n"
+            f"Brier on {r['legs']} legs to date: {r['brier_before']:.4f} before, "
+            f"{r['brier_after']:.4f} after.\n")
 
 
 if __name__ == "__main__":
@@ -303,15 +244,8 @@ if __name__ == "__main__":
     ap.add_argument("--season", type=int)
     ap.add_argument("--week", type=int)
     ap.add_argument("--no-write", action="store_true")
-    ap.add_argument("--shrink-fit", action="store_true",
-                    help="print the weeks 1-5 fit-set scores only, then exit")
     a = ap.parse_args()
     season = a.season or CURRENT_SEASON
-
-    if a.shrink_fit:
-        fit = [l for l in shrink_legs(season) if l["week"] < SHRINK_TEST_FROM]
-        print("\n".join(_shrink_block("Fit set (weeks 1-5)", fit)))
-        sys.exit(0)
 
     weeks = finished_weeks(season)
     if not weeks:
@@ -329,7 +263,7 @@ if __name__ == "__main__":
 
     df, _ = legs(season, week)
     out = render(season, week, df, accuracy(season, week), season_df)
-    out += "\n" + shrink_section(season, week)
+    out += "\n" + adjustment_section(write=not a.no_write)
     if a.no_write:
         print(out)
     else:

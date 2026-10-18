@@ -17,6 +17,7 @@ from .odds import name_key
 from .db import connect
 from .rating import chip_lookup as rating_chips
 from .badges import card_line, get_badges, player_badges
+from . import calibration as CAL
 
 # scripts/vol_predict.py is not part of the nflprops package (it lives beside
 # it, not inside it) -- same sys.path shim the scripts use.
@@ -229,6 +230,12 @@ def build(season, week, teams, lines, n_picks=6):
     pr["bp"] = pr.price.map(_imp)
     pr["mp"] = [np.nan if pd.isna(l) else 1 - NormalDist(float(m), float(s)).cdf(float(l))
                 for l, m, s in zip(pr.line, pr.proj, pr.sd_adj)]
+    # Decision #46: weekly self-adjustment. The one place the adjustment is
+    # applied. Everything below (conf, shortlist, rows, Slack text) follows.
+    pr["mp_raw"] = pr.mp
+    _f = CAL.fraction()
+    if _f:
+        pr["mp"] = pr.mp + _f * (pr.bp - pr.mp)
     pr["z"] = (pr.line - pr.proj) / pr.sd_adj
     # Never claim more than the more pessimistic of model and market.
     pr["conf"] = pr[["mp", "bp"]].min(axis=1)
@@ -282,6 +289,7 @@ def build(season, week, teams, lines, n_picks=6):
             "price": None if pd.isna(r.price) else int(r.price),
             "z": None if pd.isna(r.z) else round(float(r.z), 2),
             "mp": None if pd.isna(r.mp) else round(float(r.mp), 3),
+            "mp_raw": None if pd.isna(r.mp_raw) else round(float(r.mp_raw), 3),
             "bp": None if pd.isna(r.bp) else round(float(r.bp), 3),
             "pick": None if r.pick is None else int(r.pick),
             # pe: the engine behind mu ("new" = Phase 3 model, "old" = project.py).

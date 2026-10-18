@@ -1,0 +1,9 @@
+{
+ "fraction": 0.6,
+ "fit_through_week": 6,
+ "legs": 1578,
+ "brier_before": 0.2314,
+ "brier_after": 0.225,
+ "previous_fraction": null,
+ "updated": "2026-10-18T08:11:00"
+}
