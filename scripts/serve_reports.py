@@ -415,11 +415,11 @@ def index_html():
             score = ""
             if got:
                 hits, n, all_h, all_n = got
-                # Green only when at least 80% landed (Sean, 2026-10-04:
-                # half was too easy to call green). 5/6, 4/5, 8/10 are green.
+                # Green only when at least 75% landed (Sean, 2026-10-18; was
+                # 80% from 2026-10-04). 3/4, 5/6, 21/28 are green.
                 # Both pills use this one rule (Sean, 2026-10-18).
                 def tone_of(h, total):
-                    return "good" if total and h * 5 >= total * 4 else "bad"
+                    return "good" if total and h * 4 >= total * 3 else "bad"
                 # Row 1: all-predictions pill, right edge, beside the matchup.
                 # Every priced leg on the page, picked or not.
                 score = (f'<span class="score {tone_of(all_h, all_n)}"'
@@ -1054,7 +1054,7 @@ def slate_windows(season, week):
         tally = ""
         if graded:
             hits = sum(1 for r in graded if r["hit"])
-            tone = "good" if hits * 5 >= len(graded) * 4 else "bad"  # 80% or better, as on Games
+            tone = "good" if hits * 4 >= len(graded) * 3 else "bad"  # 75% or better, as on Games
             tally = (f'<span class="score {tone}" data-inspect-id="slate-window-hits">'
                      f'{hits}/{len(graded)} hit</span>')
 
