@@ -185,6 +185,12 @@ PAGE = HEAD + """
   }}
   .score.good{{background:var(--good)}}
   .score.bad{{background:var(--bad)}}
+  /* All-predictions tally: outline only, so it does not read as a verdict.
+     It sits left of the shortlist pill; the pill after it keeps auto margin
+     so it stays on the right edge, and this one takes the auto margin when
+     it is alone. */
+  .score.all{{background:none; color:var(--ink-2); border:1px solid var(--line)}}
+  .score.all + .score{{margin-left:0}}
   /* Each kickoff gets its own labelled block, and the label says the whole
      when: day chip, clock time, date. Quieter than a week tab, louder than a
      card — a thin rule, condensed caps, the same monospace the tabs use. */
@@ -405,13 +411,22 @@ def index_html():
             got = records[(season, week)].get(label)
             score = ""
             if got:
-                hits, n = got
+                hits, n, all_h, all_n = got
                 # Green only when at least 80% landed (Sean, 2026-10-04:
                 # half was too easy to call green). 5/6, 4/5, 8/10 are green.
-                tone = "good" if hits * 5 >= n * 4 else "bad"
-                score = (f'<span class="score {tone}" data-inspect-id="index-hits"'
-                         f' title="{hits} of {n} shortlisted picks hit">'
-                         f'{hits}/{n}</span>')
+                tone = "good" if n and hits * 5 >= n * 4 else "bad"
+                if n:
+                    score = (f'<span class="score {tone}" data-inspect-id="index-hits"'
+                             f' title="{hits} of {n} shortlisted picks hit'
+                             f' ({100 * hits / n:.0f}%)">{hits}/{n}</span>')
+                # Every priced leg on the page, picked or not. Neutral colour:
+                # the 80% rule is for the shortlist and would paint this red.
+                # It comes first so the shortlist pill keeps the right edge.
+                score = (f'<span class="score all" data-inspect-id="index-hits-all"'
+                         f' title="{all_h} of {all_n} predictions hit'
+                         f' ({100 * all_h / all_n:.0f}%), every leg on the page,'
+                         f' shortlisted or not. Anytime TD not counted.">'
+                         f'all {all_h}/{all_n}</span>') + score
             row = (f'<a class="card" data-inspect-id="index-row" href="/{f}">'
                    f'<span class="name" data-inspect-id="index-game-label">{label}</span>'
                    f'{score}</a>')
@@ -669,21 +684,29 @@ def grade_legs(season, week, legs):
 
 
 def game_record(season, week):
-    """Hits and graded legs per game, e.g. {"DEN @ KC": (1, 6)}.
+    """Hits and graded legs per game: {"DEN @ KC": (sh, sn, ah, an)}.
+
+    sh/sn count the shortlisted legs. ah/an count every priced stat leg the
+    report shows, shortlisted or not, so sh/sn is a subset of ah/an. Both use
+    grade_legs, so a push or a missing stat line is skipped the same way in
+    each. Anytime-TD markers are not stat legs and are in neither count.
 
     Cached alongside the parsed legs: the join is cheap, but doing it on every
     card of every page load is still work nobody asked for.
     """
-    key = (season, week, len(shortlist(season, week)),
+    key = (season, week, len(lined(season, week)),
            tuple(sorted(outcomes(season, week)[1])))
     if key in _RESULT_CACHE:
         return _RESULT_CACHE[key]
     rec = {}
-    for r in grade_legs(season, week, shortlist(season, week)):
+    for r in grade_legs(season, week, lined(season, week)):
         if r["hit"] is None:
             continue
-        h, n = rec.get(r["game"], (0, 0))
-        rec[r["game"]] = (h + (1 if r["hit"] else 0), n + 1)
+        sh, sn, ah, an = rec.get(r["game"], (0, 0, 0, 0))
+        h = 1 if r["hit"] else 0
+        if r.get("pick"):
+            sh, sn = sh + h, sn + 1
+        rec[r["game"]] = (sh, sn, ah + h, an + 1)
     _RESULT_CACHE.clear()
     _RESULT_CACHE[key] = rec
     return rec
