@@ -185,12 +185,15 @@ PAGE = HEAD + """
   }}
   .score.good{{background:var(--good)}}
   .score.bad{{background:var(--bad)}}
-  /* All-predictions tally: outline only, so it does not read as a verdict.
-     It sits left of the shortlist pill; the pill after it keeps auto margin
-     so it stays on the right edge, and this one takes the auto margin when
-     it is alone. */
-  .score.all{{background:none; color:var(--ink-2); border:1px solid var(--line)}}
-  .score.all + .score{{margin-left:0}}
+  /* A graded card is a two-column grid: matchup and "Short list" label on the
+     left, the two pills on the right, so the right edges line up. A card with
+     no shortlist legs has only row 1. */
+  .card.graded{{display:grid; grid-template-columns:1fr auto; row-gap:4px; column-gap:6px}}
+  .card.graded .score{{margin-left:0; justify-self:end}}
+  .hits-label{{
+    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10px;
+    letter-spacing:.06em; color:var(--ink-3); line-height:18px;
+  }}
   /* Each kickoff gets its own labelled block, and the label says the whole
      when: day chip, clock time, date. Quieter than a week tab, louder than a
      card — a thin rule, condensed caps, the same monospace the tabs use. */
@@ -414,20 +417,28 @@ def index_html():
                 hits, n, all_h, all_n = got
                 # Green only when at least 80% landed (Sean, 2026-10-04:
                 # half was too easy to call green). 5/6, 4/5, 8/10 are green.
-                tone = "good" if n and hits * 5 >= n * 4 else "bad"
-                if n:
-                    score = (f'<span class="score {tone}" data-inspect-id="index-hits"'
-                             f' title="{hits} of {n} shortlisted picks hit'
-                             f' ({100 * hits / n:.0f}%)">{hits}/{n}</span>')
-                # Every priced leg on the page, picked or not. Neutral colour:
-                # the 80% rule is for the shortlist and would paint this red.
-                # It comes first so the shortlist pill keeps the right edge.
-                score = (f'<span class="score all" data-inspect-id="index-hits-all"'
+                # Both pills use this one rule (Sean, 2026-10-18).
+                def tone_of(h, total):
+                    return "good" if total and h * 5 >= total * 4 else "bad"
+                # Row 1: all-predictions pill, right edge, beside the matchup.
+                # Every priced leg on the page, picked or not.
+                score = (f'<span class="score {tone_of(all_h, all_n)}"'
+                         f' data-inspect-id="index-hits-all"'
                          f' title="{all_h} of {all_n} predictions hit'
                          f' ({100 * all_h / all_n:.0f}%), every leg on the page,'
                          f' shortlisted or not. Anytime TD not counted.">'
-                         f'all {all_h}/{all_n}</span>') + score
-            row = (f'<a class="card" data-inspect-id="index-row" href="/{f}">'
+                         f'{all_h}/{all_n}</span>')
+                # Row 2 (only when the game has shortlist legs): small label
+                # at left, shortlist pill under the all pill.
+                if n:
+                    score += ('<span class="hits-label"'
+                              ' data-inspect-id="index-hits-label">Short list</span>'
+                              f'<span class="score {tone_of(hits, n)}"'
+                              f' data-inspect-id="index-hits"'
+                              f' title="{hits} of {n} shortlisted picks hit'
+                              f' ({100 * hits / n:.0f}%)">{hits}/{n}</span>')
+            cls = "card graded" if score else "card"
+            row = (f'<a class="{cls}" data-inspect-id="index-row" href="/{f}">'
                    f'<span class="name" data-inspect-id="index-game-label">{label}</span>'
                    f'{score}</a>')
         else:

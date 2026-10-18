@@ -1077,19 +1077,29 @@
           "id": "index-hits-all",
           "label": "All-predictions tally badge",
           "kind": "badge",
-          "description": "How every priced leg on the page did, shortlisted or not, once the game finished, like \"all 19/28\". Outline only, no verdict colour. Left of the shortlist tally. Anytime TD not counted. Full wording in its title attribute.",
+          "description": "How every priced leg on the page did, shortlisted or not, once the game finished, like \"19/28\". Same size and style as the shortlist pill, row 1 at the card's right edge. Green at 80% or more, red below. Anytime TD not counted. Full wording in its title attribute.",
           "locate": {
-            "path": "scripts/serve_reports.py:425",
+            "path": "scripts/serve_reports.py:426",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-hits-all\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "index-hits-label",
+          "label": "Short list label",
+          "kind": "text",
+          "description": "Small muted \"Short list\" fine print on row 2 of a graded card, left, under the team names. Names the shortlist pill at the right edge. Omitted when the game has no shortlist legs.",
+          "locate": {
+            "path": "scripts/serve_reports.py:435",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-hits-label\"' scripts/serve_reports.py"
           }
         },
         {
           "id": "index-hits",
           "label": "Hit tally badge",
           "kind": "badge",
-          "description": "How the game's shortlisted picks did once it finished, as a bare fraction like \"5/6\". Sits on the same line as the matchup, pinned to the card's right edge. Green when at least half landed, red when fewer did. The full wording is in its title attribute. Absent while a game is still being played.",
+          "description": "How the game's shortlisted picks did once it finished, as a bare fraction like \"5/6\". Row 2 of a graded card, under the all-predictions pill with right edges aligned. Green at 80% or more, red below. Omitted when the game has no shortlist legs. The full wording is in its title attribute. Absent while a game is still being played.",
           "locate": {
-            "path": "scripts/serve_reports.py:419",
+            "path": "scripts/serve_reports.py:437",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-hits\"' scripts/serve_reports.py"
           }
         }
