@@ -19,9 +19,9 @@
   "conf": 0.481,
   "model_p": 0.481,
   "phase3": {
-   "p_combined": 0.369,
-   "p_rec": 0.024,
-   "p_rush": 0.354
+   "p_combined": 0.383,
+   "p_rec": 0.029,
+   "p_rush": 0.365
   },
   "player": "Derrick Henry",
   "position": "RB",
@@ -47,8 +47,8 @@
   "conf": 0.339,
   "model_p": 0.339,
   "phase3": {
-   "p_combined": 0.384,
-   "p_rec": 0.075,
+   "p_combined": 0.393,
+   "p_rec": 0.089,
    "p_rush": 0.334
   },
   "player": "Chuba Hubbard",
@@ -57,13 +57,13 @@
  },
  "CHI-ATL": {
   "basis": "model+book_vig",
-  "book_p": 0.737,
+  "book_p": 0.756,
   "conf": 0.578,
   "model_p": 0.578,
   "phase3": {
-   "p_combined": 0.469,
-   "p_rec": 0.178,
-   "p_rush": 0.354
+   "p_combined": 0.48,
+   "p_rec": 0.21,
+   "p_rush": 0.342
   },
   "player": "Bijan Robinson",
   "position": "RB",
@@ -113,12 +113,12 @@
  },
  "NO-NYG": {
   "basis": "model+book_vig",
-  "book_p": 0.524,
-  "conf": 0.496,
-  "model_p": 0.496,
+  "book_p": 0.476,
+  "conf": 0.423,
+  "model_p": 0.423,
   "phase3": {
-   "p_combined": 0.408,
-   "p_rec": 0.179,
+   "p_combined": 0.353,
+   "p_rec": 0.103,
    "p_rush": 0.279
   },
   "player": "Cam Skattebo",
@@ -131,8 +131,8 @@
   "conf": 0.396,
   "model_p": 0.396,
   "phase3": {
-   "p_combined": 0.368,
-   "p_rec": 0.089,
+   "p_combined": 0.35,
+   "p_rec": 0.064,
    "p_rush": 0.306
   },
   "player": "Rhamondre Stevenson",
@@ -141,13 +141,13 @@
  },
  "PIT-TB": {
   "basis": "model+book_vig",
-  "book_p": 0.377,
-  "conf": 0.377,
+  "book_p": 0.37,
+  "conf": 0.37,
   "model_p": 0.444,
   "phase3": {
-   "p_combined": 0.328,
-   "p_rec": 0.087,
-   "p_rush": 0.264
+   "p_combined": 0.331,
+   "p_rec": 0.133,
+   "p_rush": 0.228
   },
   "player": "Bucky Irving",
   "position": "RB",
@@ -169,7 +169,7 @@
  },
  "TEN-IND": {
   "basis": "model+book_vig",
-  "book_p": 0.737,
+  "book_p": 0.73,
   "conf": 0.581,
   "model_p": 0.581,
   "phase3": {
