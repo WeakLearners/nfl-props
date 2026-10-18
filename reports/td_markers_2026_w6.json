@@ -1,7 +1,7 @@
 {
  "ARI-LA": {
   "basis": "model+book_vig",
-  "book_p": 0.677,
+  "book_p": 0.649,
   "conf": 0.55,
   "model_p": 0.55,
   "phase3": {
@@ -15,12 +15,12 @@
  },
  "BAL-CLE": {
   "basis": "model+book_vig",
-  "book_p": 0.636,
-  "conf": 0.604,
-  "model_p": 0.604,
+  "book_p": 0.623,
+  "conf": 0.481,
+  "model_p": 0.481,
   "phase3": {
    "p_combined": 0.369,
-   "p_rec": 0.023,
+   "p_rec": 0.024,
    "p_rush": 0.354
   },
   "player": "Derrick Henry",
@@ -29,8 +29,8 @@
  },
  "BUF-LV": {
   "basis": "model+book_vig",
-  "book_p": 0.63,
-  "conf": 0.629,
+  "book_p": 0.623,
+  "conf": 0.623,
   "model_p": 0.629,
   "phase3": {
    "p_combined": 0.439,
@@ -42,13 +42,13 @@
   "team": "BUF"
  },
  "CAR-PHI": {
-  "basis": "model_only",
-  "book_p": null,
-  "conf": 0.355,
-  "model_p": 0.355,
+  "basis": "model+book_vig",
+  "book_p": 0.524,
+  "conf": 0.339,
+  "model_p": 0.339,
   "phase3": {
-   "p_combined": 0.38,
-   "p_rec": 0.07,
+   "p_combined": 0.384,
+   "p_rec": 0.075,
    "p_rush": 0.334
   },
   "player": "Chuba Hubbard",
@@ -57,7 +57,7 @@
  },
  "CHI-ATL": {
   "basis": "model+book_vig",
-  "book_p": 0.73,
+  "book_p": 0.737,
   "conf": 0.578,
   "model_p": 0.578,
   "phase3": {
@@ -71,7 +71,7 @@
  },
  "DAL-GB": {
   "basis": "model+book_vig",
-  "book_p": 0.677,
+  "book_p": 0.688,
   "conf": 0.503,
   "model_p": 0.503,
   "phase3": {
@@ -84,28 +84,28 @@
   "team": "DAL"
  },
  "HOU-JAX": {
-  "basis": "model_only",
-  "book_p": null,
-  "conf": 0.435,
-  "model_p": 0.435,
+  "basis": "model+book_vig",
+  "book_p": 0.4,
+  "conf": 0.352,
+  "model_p": 0.352,
   "phase3": {
-   "p_combined": 0.208,
-   "p_rec": 0.031,
-   "p_rush": 0.182
+   "p_combined": 0.376,
+   "p_rec": 0.077,
+   "p_rush": 0.324
   },
-  "player": "David Montgomery",
+  "player": "Bhayshul Tuten",
   "position": "RB",
-  "team": "HOU"
+  "team": "JAX"
  },
  "LAC-KC": {
   "basis": "model+book_vig",
-  "book_p": 0.643,
-  "conf": 0.568,
-  "model_p": 0.568,
+  "book_p": 0.623,
+  "conf": 0.548,
+  "model_p": 0.548,
   "phase3": {
-   "p_combined": 0.396,
-   "p_rec": 0.049,
-   "p_rush": 0.366
+   "p_combined": 0.395,
+   "p_rec": 0.048,
+   "p_rush": 0.365
   },
   "player": "Kenneth Walker III",
   "position": "RB",
@@ -113,45 +113,45 @@
  },
  "NO-NYG": {
   "basis": "model+book_vig",
-  "book_p": 0.535,
-  "conf": 0.423,
-  "model_p": 0.423,
+  "book_p": 0.524,
+  "conf": 0.496,
+  "model_p": 0.496,
   "phase3": {
-   "p_combined": 0.381,
-   "p_rec": 0.161,
-   "p_rush": 0.263
+   "p_combined": 0.408,
+   "p_rec": 0.179,
+   "p_rush": 0.279
   },
   "player": "Cam Skattebo",
   "position": "RB",
   "team": "NYG"
  },
  "NYJ-NE": {
-  "basis": "model_only",
-  "book_p": null,
-  "conf": 0.452,
-  "model_p": 0.452,
+  "basis": "model+book_vig",
+  "book_p": 0.545,
+  "conf": 0.396,
+  "model_p": 0.396,
   "phase3": {
-   "p_combined": 0.322,
-   "p_rec": 0.07,
-   "p_rush": 0.272
+   "p_combined": 0.368,
+   "p_rec": 0.089,
+   "p_rush": 0.306
   },
-  "player": "Breece Hall",
+  "player": "Rhamondre Stevenson",
   "position": "RB",
-  "team": "NYJ"
+  "team": "NE"
  },
  "PIT-TB": {
   "basis": "model+book_vig",
-  "book_p": 0.476,
-  "conf": 0.36,
-  "model_p": 0.36,
+  "book_p": 0.377,
+  "conf": 0.377,
+  "model_p": 0.444,
   "phase3": {
-   "p_combined": 0.394,
-   "p_rec": 0.151,
-   "p_rush": 0.286
+   "p_combined": 0.328,
+   "p_rec": 0.087,
+   "p_rush": 0.264
   },
-  "player": "Jaylen Warren",
+  "player": "Bucky Irving",
   "position": "RB",
-  "team": "PIT"
+  "team": "TB"
  },
  "SEA-DEN": {
   "basis": "model+book_vig",
@@ -170,11 +170,11 @@
  "TEN-IND": {
   "basis": "model+book_vig",
   "book_p": 0.737,
-  "conf": 0.592,
-  "model_p": 0.592,
+  "conf": 0.581,
+  "model_p": 0.581,
   "phase3": {
-   "p_combined": 0.429,
-   "p_rec": 0.07,
+   "p_combined": 0.428,
+   "p_rec": 0.069,
    "p_rush": 0.386
   },
   "player": "Jonathan Taylor",
@@ -183,7 +183,7 @@
  },
  "WAS-SF": {
   "basis": "model+book_vig",
-  "book_p": 0.756,
+  "book_p": 0.737,
   "conf": 0.523,
   "model_p": 0.523,
   "phase3": {
