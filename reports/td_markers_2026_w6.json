@@ -183,12 +183,12 @@
  },
  "WAS-SF": {
   "basis": "model+book_vig",
-  "book_p": 0.737,
+  "book_p": 0.73,
   "conf": 0.523,
   "model_p": 0.523,
   "phase3": {
-   "p_combined": 0.552,
-   "p_rec": 0.295,
+   "p_combined": 0.528,
+   "p_rec": 0.256,
    "p_rush": 0.366
   },
   "player": "Christian McCaffrey",
