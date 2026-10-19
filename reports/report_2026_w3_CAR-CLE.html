@@ -186,6 +186,12 @@
     background:var(--surface);
   }
   .picks-h{margin:0 0 8px; border-bottom:none; padding-bottom:0}
+  /* Assumed $1 parlay on the whole shortlist, once every leg is graded. Quiet text
+     on the heading line, in the same good/bad ground as the result marks. */
+  .parlay{margin-left:16px; font-weight:600; letter-spacing:0; cursor:help}
+  .parlay.won{color:var(--good)}
+  .parlay.lost{color:var(--bad)}
+  .parlay.push{color:var(--ink-3)}
   .picks-note{color:var(--ink-2); font-size:13.5px; margin:0 0 16px; max-width:72ch}
   .picks-note em{font-style:normal; font-weight:600; color:var(--ink)}
   #picklist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0}
@@ -411,7 +417,7 @@
   </div>
 
   <section class="picks" data-inspect-id="picks-section">
-    <h2 class="picks-h" data-inspect-id="picks-heading">The shortlist<span class="unit">most confident first</span></h2>
+    <h2 class="picks-h" data-inspect-id="picks-heading">The shortlist<span class="unit">most confident first<span class="parlay" id="parlay" data-inspect-id="shortlist-parlay" hidden></span></span></h2>
     <p class="picks-note" data-inspect-id="picks-note">Every signal available agrees on these: a real starter's snap
       share, a long record, no injury tag, no change of team, and the card's engine (old engine or new model, named on each leg) and the book
       within a few points of each other. Confidence here means <em>likely to happen</em> —
@@ -1002,6 +1008,38 @@ const jointAll = picks.reduce((a,d)=>a*Math.min(d.mp,d.bp),1);
 document.getElementById("pay").textContent = payAll.toFixed(2)+"\u00d7";
 document.getElementById("joint").textContent = Math.round(jointAll*100)+"%";
 document.getElementById("corrnote").innerHTML = META.corrnote;
+
+// Assumed $1 parlay on the whole shortlist. Shown only when every leg is graded
+// (final game, stat line found, a number offered), the same gate as the result
+// marks. Entertainment only: no edge is claimed (see retraction.md).
+(function(){
+  const el=document.getElementById("parlay"), A=window.__ACTUALS__;
+  if(!el||!A||!picks.length) return;
+  const rows=[]; let miss=false, prod=1, priced=0, pushes=0;
+  for(const d of picks){
+    const a=A[d.p+"|"+d.s];
+    if(a==null||d.line==null) return;
+    const px=d.price==null?null:(d.price<0?1+100/(-d.price):1+d.price/100);
+    const tag=a>d.line?"hit":a<d.line?"miss":"push";
+    if(tag==="miss") miss=true;
+    if(tag==="push") pushes++;
+    else if(px!=null){ prod*=px; priced++; }
+    rows.push(d.p+" "+(STAT_ABBR[d.s]||d.s)+" o"+d.line+" "+(d.price==null?"no price":(d.price>0?"+":"")+d.price)+" "+tag);
+  }
+  const money=v=>"$"+(Math.round(v*100)/100).toFixed(2);
+  let txt, cls, tail;
+  if(miss){ txt="lost \u2212$1.00"; cls="lost"; tail="A leg missed, so the $1 is lost."; }
+  else if(pushes===picks.length){ txt="push, $1 back"; cls="push"; tail="Every leg pushed."; }
+  else if(!priced) return;
+  else {
+    const ret=Math.round(prod*100)/100;
+    txt="won +"+money(ret-1)+" (returns "+money(ret)+")"; cls="won";
+    tail="Combined decimal odds "+prod.toFixed(2)+"; returns $1 x "+prod.toFixed(2)+".";
+  }
+  const note=(priced+pushes<picks.length?" ("+priced+" legs priced)":"");
+  el.textContent="$1 parlay: "+txt; el.classList.add(cls); el.hidden=false;
+  el.title="Assumed $1 parlay on the shortlist, entertainment only, no edge claimed."+note+"\n"+rows.join("\n")+"\n"+tail+(pushes&&!miss?" Pushed legs count as 1.00.":"");
+})();
 
 function erf(x){
   const s=Math.sign(x); x=Math.abs(x);

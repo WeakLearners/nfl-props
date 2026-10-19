@@ -122,6 +122,15 @@ PAGE = HEAD + """
     font-variant-numeric:tabular-nums;
   }}
   .panel[hidden]{{display:none}}
+  /* Assumed $1 parlay totals: one line for the season above the tabs, one for
+     the week at the top of its panel. Quiet text with the net in a score pill. */
+  .parlays{{
+    display:flex; align-items:center; gap:10px; margin:14px 0 0;
+    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px;
+    letter-spacing:.04em; color:var(--ink-3); cursor:help;
+  }}
+  .parlays .score{{margin-left:0}}
+  .panel > .parlays{{margin:18px 0 0}}
   /* A game card holds one thing: who is playing. The when lives in the
      heading above it, once for the whole block. Keep the frame in step with
      .card in templates/report.html — same border, same radius, same padding. */
@@ -512,6 +521,33 @@ def index_html():
     latest = len(ordered) - 1
     counts = {k: sum(len(r) for _, r in slots) for k, slots in ordered}
 
+    ptallies = {}
+    def parlay_line(label, tallies, per, cid):
+        """One quiet line: $1 parlay record, net in a pill, hover per-item list."""
+        done = sum(t[0] for t in tallies)
+        if not done:
+            return ""
+        total = sum(t[1] for t in tallies)
+        won = sum(t[2] for t in tallies)
+        net = round(sum(t[3] for t in tallies), 2)
+        part = "" if done == total else f" ({done} of {total} games graded)"
+        tone = "good" if net >= 0 else "bad"
+        tip = ("Assumed $1 parlay on every shortlist leg, fully graded games only. "
+               "Entertainment only, no edge claimed.\n" + "\n".join(per))
+        return (f'<div class="parlays" data-inspect-id="{cid}" title="{html.escape(tip)}">'
+                f'<span>{label} $1 parlays: {won} of {done} won{part} (staked ${done})</span>'
+                f'<span class="score {tone}">net {money(net)}</span></div>')
+
+    def week_tallies(season, week):
+        if (season, week) not in ptallies:
+            ptallies[(season, week)] = parlay_tally(season, week)
+        return ptallies[(season, week)]
+
+    def week_parlay(season, week):
+        t = week_tallies(season, week)
+        per = [f"{g}: {r['state']} {money(r['profit'])}" for g, r in sorted(t[4].items())]
+        return parlay_line(f"Week {week}", [t], per, "index-week-parlay")
+
     tabs, panels = [], []
     for n, ((season, week), slots) in enumerate(ordered):
         games = counts[(season, week)]
@@ -527,7 +563,7 @@ def index_html():
             f'  <section class="panel" role="tabpanel" id="panel-{slug}"'
             f' aria-labelledby="tab-{slug}"{"" if on else " hidden"}'
             f' data-inspect-id="index-week-panel">'
-            f'{panel_body(slots)}</section>')
+            f'{week_parlay(season, week)}{panel_body(slots)}</section>')
 
     if not panels:
         tabs = []
@@ -536,7 +572,16 @@ def index_html():
 
     tabstrip = ""
     if tabs:
-        tabstrip = ('  <nav class="tabs" role="tablist" aria-label="Weeks"'
+        cur = max(k[0] for k, _ in ordered)
+        wks = sorted(w for (sn, w), _ in ordered if sn == cur)
+        per = []
+        for w in wks:
+            t = week_tallies(cur, w)
+            if t[0]:
+                per.append(f"Week {w}: {t[2]} of {t[0]} won, net {money(t[3])}")
+        tabstrip = parlay_line("Season", [week_tallies(cur, w) for w in wks], per,
+                               "index-season-parlay")
+        tabstrip += ('  <nav class="tabs" role="tablist" aria-label="Weeks"'
                     ' data-inspect-id="index-tablist">\n'
                     + "\n".join(tabs) + "\n  </nav>")
 
@@ -721,6 +766,55 @@ def game_record(season, week):
     _RESULT_CACHE.clear()
     _RESULT_CACHE[key] = rec
     return rec
+
+
+def parlay_dec(price):
+    """American price to decimal odds."""
+    return 1 + (100 / -price if price < 0 else price / 100)
+
+
+def game_parlays(season, week):
+    """The assumed $1 parlay on each fully graded shortlist, per game.
+
+    {"DEN @ KC": {"state": "won"|"lost"|"push", "profit": float, "ret": float,
+    "legs": int}}. The rule is the one the game page draws in templates/report.html
+    (parlay snippet): every shortlist leg must be graded, a miss loses the $1, a
+    push leg counts as 1.00, the rest multiply. Games with a leg still
+    ungraded are left out. Entertainment only; no edge is claimed.
+    """
+    by = {}
+    for r in grade_legs(season, week, shortlist(season, week)):
+        by.setdefault(r["game"], []).append(r)
+    out = {}
+    for game, legs in by.items():
+        if any(r["hit"] is None or r.get("line") is None for r in legs):
+            continue
+        if any(r["actual"] < r["line"] for r in legs):
+            out[game] = {"state": "lost", "profit": -1.0, "ret": 0.0, "legs": len(legs)}
+        elif all(r["actual"] == r["line"] for r in legs):
+            out[game] = {"state": "push", "profit": 0.0, "ret": 1.0, "legs": len(legs)}
+        else:
+            prod = 1.0
+            for r in legs:
+                if r["actual"] != r["line"]:
+                    prod *= parlay_dec(r["price"])
+            ret = round(prod, 2)
+            out[game] = {"state": "won", "profit": round(ret - 1, 2), "ret": ret,
+                         "legs": len(legs)}
+    return out
+
+
+def parlay_tally(season, week):
+    """Week total: (games graded, games with a shortlist, won, net, per-game)."""
+    gp = game_parlays(season, week)
+    total = len({r["game"] for r in shortlist(season, week)})
+    won = sum(1 for g in gp.values() if g["state"] == "won")
+    net = round(sum(g["profit"] for g in gp.values()), 2)
+    return len(gp), total, won, net, gp
+
+
+def money(v):
+    return ("+" if v > 0 else "\u2212" if v < 0 else "") + f"${abs(v):.2f}"
 
 
 STAT_SHORT = {"receiving_yards": "rec yds", "rushing_yards": "rush yds",
