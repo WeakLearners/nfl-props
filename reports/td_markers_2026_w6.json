@@ -183,13 +183,13 @@
  },
  "WAS-SF": {
   "basis": "model+book_vig",
-  "book_p": 0.73,
-  "conf": 0.523,
-  "model_p": 0.523,
+  "book_p": 0.722,
+  "conf": 0.313,
+  "model_p": 0.313,
   "phase3": {
-   "p_combined": 0.528,
-   "p_rec": 0.256,
-   "p_rush": 0.366
+   "p_combined": 0.399,
+   "p_rec": 0.127,
+   "p_rush": 0.311
   },
   "player": "Christian McCaffrey",
   "position": "RB",
