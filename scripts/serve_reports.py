@@ -1723,6 +1723,9 @@ LAYOUT_CSS = """<style>
     .wrap[data-page] .tab{flex:none; padding:9px 10px 7px; font-size:18px}
   }
 
+  /* Report: the shortlist stops at 1320px on a wide screen. */
+  .wrap[data-page="report"] .picks{max-width:1320px}
+
   /* Games: one row per kickoff. When on the left, games on the right. */
   @media (min-width:1024px){
     .wrap[data-page="games"] .slot{display:grid; grid-template-columns:280px minmax(0,1fr);
