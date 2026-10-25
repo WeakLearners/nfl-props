@@ -33,3 +33,7 @@ data/shipping/*.pkl
 data/ratings/*.parquet
 data/report_state.json
 .DS_Store
+
+# Site-wide recommendation marks (server-side state, per machine)
+data/marks.json
+data/.marks-*.tmp

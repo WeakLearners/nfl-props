@@ -28,6 +28,7 @@ except Exception as _e:  # noqa: BLE001 — the pages still work ungraded
     name_key = None
 from nflprops.badges import BADGE_CSS, markers_html, player_badges, trend_html  # noqa: E402
 from nflprops.teams import team_css  # noqa: E402
+from nflprops import marks as M  # noqa: E402
 from nflprops.tray import TRAY_HTML, opp_role_log, player_season  # noqa: E402
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -35,6 +36,7 @@ ROOT = os.path.join(BASE, "reports")
 DB = os.path.join(BASE, "data", "nflprops.db")
 MAP = os.path.join(BASE, "docs", "nfl-props-frontend-map.json")
 INSPECTOR = os.path.join(BASE, "scripts", "inspector.js")
+MARKS_JS = os.path.join(BASE, "scripts", "marks.js")
 PORT = int(os.environ.get("NFLPROPS_WEB_PORT", "8792"))
 
 # report_2026_w2_DET-BUF.html -> ("2026", "2", "DET @ BUF")
@@ -861,6 +863,7 @@ def badges_for(player, role, opp=None, week=None):
 
 def leg_rows(legs, graded):
     out = []
+    marked = set(M.keys())
     for i, r in enumerate(legs, 1):
         stat = STAT_SHORT.get(r["s"], r["s"].replace("_", " "))
         gap = (r["mp"] - r["bp"]) * 100
@@ -878,7 +881,8 @@ def leg_rows(legs, graded):
         out.append(
             f'<tr data-inspect-id="slate-leg">'
             f'<td class="rank">{i}</td>'
-            f'<td class="who">{trend_html(bd, "slate-badge")}<a href="/{r["file"]}">{r["p"]}</a>'
+            f'<td class="who">{trend_html(bd, "slate-badge")}'
+            f'{M.star_html(M.mark_key(r["_season"], r["_wk"], r["p"], r["s"]), "mark-star-slate", marked)}<a href="/{r["file"]}">{r["p"]}</a>'
             f'<span class="meta">{r["tm"]}{mk}<span class="gm">&middot; {r["game"]}</span></span></td>'
             f'<td class="stat">o{r["line"]:g} {stat}</td>'
             + (f'<td class="res">{mark}</td>' if graded else "")
@@ -1117,6 +1121,7 @@ def slate_windows(season, week):
     wins = {}
     for r in legs:
         r["_wk"] = week
+        r["_season"] = season
         date_s, time_s = r["kick"].split(" ")
         rank, part = daypart(time_s)
         wins.setdefault((date_s, rank, part), []).append(r)
@@ -1964,7 +1969,8 @@ def with_chrome(html, section, page, title):
     Same bargain as with_theme: nothing is written to disk, so the reports
     already generated get the nav without a rebuild.
     """
-    html = TITLE_TAG.sub(lambda _: f"<title>{title}</title>", html, 1)
+    # The marks script goes in the head so window.markStar exists before any page script runs.
+    html = TITLE_TAG.sub(lambda _: f'<title>{title}</title>\n<script src="/_marks.js"></script>', html, 1)
     key = page or ("report" if section == "week" else section)
     html = WRAP_OPEN.sub(
         lambda m: m.group(0)[:-1] + f' data-page="{key}">' + "\n"
@@ -2115,6 +2121,12 @@ class Handler(SimpleHTTPRequestHandler):
             self._send(open(INSPECTOR, "rb").read(),
                        "application/javascript; charset=utf-8")
             return
+        if path == "/_marks.js":
+            self._send(open(MARKS_JS, "rb").read(), "application/javascript; charset=utf-8")
+            return
+        if path == "/api/marks":
+            self._send(json.dumps({"marks": M.keys()}).encode(), "application/json; charset=utf-8")
+            return
         if path == "/_data-version":
             # Polled by every open page. Cheap on purpose: two COUNTs and a
             # directory listing, and never cached anywhere.
@@ -2201,6 +2213,31 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_error(404)
 
     do_HEAD = do_GET
+
+    def do_POST(self):
+        """The one write route: set or clear a mark. Nothing else is writable."""
+        if self.path != "/api/marks":
+            self.send_error(404)
+            return
+        try:
+            n = int(self.headers.get("Content-Length", "-1"))
+        except ValueError:
+            n = -1
+        ctype = (self.headers.get("Content-Type") or "").split(";")[0].strip().lower()
+        if n < 0 or n > M.MAX_BODY or ctype != "application/json":
+            status, payload = 400, {"error": "bad request"}
+            if 0 <= n <= M.MAX_BODY:
+                self.rfile.read(n)
+            self.close_connection = True
+        else:
+            status, payload = M.apply_post(self.rfile.read(n))
+        body = json.dumps(payload).encode()
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(body)
 
     def log_message(self, fmt, *a):
         # On by default. When a phone "just hangs", the first thing worth

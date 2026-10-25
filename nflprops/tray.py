@@ -336,7 +336,7 @@ TRAY_JS = r"""
     tray.style.setProperty("--tcol",a?"var(--den)":"var(--kc)");
     tray.innerHTML='<button class="ptray-x" type="button" aria-label="Close" data-inspect-id="player-tray-close">×</button>'
       +'<p class="ptray-eb">'+SEASON+' season · '+esc(st[1])+' · week '+WEEK+' vs '+esc(d.vs)+'</p>'
-      +'<h2>'+esc(d.p)+'</h2>'
+      +'<h2>'+esc(d.p)+(window.markStar?window.markStar(window.markKey(SEASON,WEEK,d.p,d.s),"mark-star-tray"):"")+'</h2>'
       +'<div class="ptray-mk"><span class="role '+(a?"a":"b")+'">'+esc(d.role)+'</span>'
       +(d.rk?'<span class="rk" title="'+esc(d.rkt||"")+'">'+esc(d.rk)+'</span>':'')
       +'<span class="dp" style="font-family:IBM Plex Mono,monospace;font-size:12px;color:var(--ink-3)">'+esc(d.tm)+'</span></div>'
