@@ -29,7 +29,7 @@
  },
  "DAL-PHI": {
   "basis": "model+book_vig",
-  "book_p": 0.623,
+  "book_p": 0.63,
   "conf": 0.481,
   "model_p": 0.481,
   "phase3": {
@@ -85,13 +85,13 @@
  },
  "KC-SEA": {
   "basis": "model+book_vig",
-  "book_p": 0.545,
+  "book_p": 0.565,
   "conf": 0.402,
   "model_p": 0.402,
   "phase3": {
-   "p_combined": 0.35,
-   "p_rec": 0.058,
-   "p_rush": 0.31
+   "p_combined": 0.34,
+   "p_rec": 0.066,
+   "p_rush": 0.293
   },
   "player": "Kenneth Walker III",
   "position": "RB",
