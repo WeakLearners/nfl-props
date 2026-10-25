@@ -1377,7 +1377,7 @@
           "kind": "layout",
           "description": "Full-width column (LAYOUT_CSS) holding the whole explore page.",
           "locate": {
-            "path": "templates/explore.html:156",
+            "path": "templates/explore.html:157",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-wrap\"' templates/explore.html"
           }
         },
@@ -1387,7 +1387,7 @@
           "kind": "layout",
           "description": "Table and grading note. From 1280px wide the table is on the left and the grading note is a side column on the right. One column below that.",
           "locate": {
-            "path": "templates/explore.html:200",
+            "path": "templates/explore.html:201",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-grid\"' templates/explore.html"
           }
         },
@@ -1397,7 +1397,7 @@
           "kind": "layout",
           "description": "Holds the three list boxes: Top 5 groups, Top 5 teams, Bottom 5 teams. From 900px wide they share one row as three equal columns. Below that they stack. It is the whole intro row: the page has no intro paragraph.",
           "locate": {
-            "path": "templates/explore.html:162",
+            "path": "templates/explore.html:163",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-side\"' templates/explore.html"
           }
         },
@@ -1407,7 +1407,7 @@
           "kind": "layout",
           "description": "Holds the summary, the controls and the table.",
           "locate": {
-            "path": "templates/explore.html:201",
+            "path": "templates/explore.html:202",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-main\"' templates/explore.html"
           }
         },
@@ -1417,7 +1417,7 @@
           "kind": "text",
           "description": "'Graded picks' kicker above the title.",
           "locate": {
-            "path": "templates/explore.html:158",
+            "path": "templates/explore.html:159",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-eyebrow\"' templates/explore.html"
           }
         },
@@ -1427,7 +1427,7 @@
           "kind": "heading",
           "description": "'Results'.",
           "locate": {
-            "path": "templates/explore.html:159",
+            "path": "templates/explore.html:160",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-title\"' templates/explore.html"
           }
         },
@@ -1437,7 +1437,7 @@
           "kind": "layout",
           "description": "Holds the Picks select, the Group by select and the Search input. The chip row sits just under it. The row sits above the results table, below the summary line.",
           "locate": {
-            "path": "templates/explore.html:178",
+            "path": "templates/explore.html:179",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-controls\"' templates/explore.html"
           }
         },
@@ -1447,7 +1447,7 @@
           "kind": "input",
           "description": "Scopes the whole page: all legs with a book line (default; picked or not, graded by the same rule), the shortlist subset the model actually picked, or anytime-TD picks. TD picks are never pooled with the others - a different model, one per game. Pending counts are per option. Persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:181",
+            "path": "templates/explore.html:182",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-kind\"' templates/explore.html"
           }
         },
@@ -1457,7 +1457,7 @@
           "kind": "input",
           "description": "Chooses the category the graded legs are cut by: stat, position, depth role, week, kickoff window, price band, model confidence band, model vs book, opponent defense (model-used) (the report's def multiplier: 1.0 = league average for that position; only covers passing yards, completions and rushing yards -- rushing at half weight -- since DEF_WEIGHT is 0 for receiving yards and receptions, and those legs are left out of this grouping), shortlist rank, team, opponent, player. The choice persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:189",
+            "path": "templates/explore.html:190",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-group-by\"' templates/explore.html"
           }
         },
@@ -1465,9 +1465,9 @@
           "id": "explore-search",
           "label": "Search input",
           "kind": "input",
-          "description": "Type a player, team, stat, week or any other value. Typing a prefix of marked or star offers Marked only: legs with a star, kept live as stars change. Matches the value label (case-insensitive) across every Group by category. Up/Down moves, Enter adds, Esc closes, Backspace on an empty input removes the last chip.",
+          "description": "Type a player, team, stat, week or any other value. Typing a prefix of marked or star offers Marked only: legs with a star, kept live as stars change. Suggestions come from graded legs and this week's legs; a row reads (N) graded plus this week count. The same chips also filter the This week table. Matches the value label (case-insensitive) across every Group by category. Up/Down moves, Enter adds, Esc closes, Backspace on an empty input removes the last chip.",
           "locate": {
-            "path": "templates/explore.html:194",
+            "path": "templates/explore.html:195",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-search\"' templates/explore.html"
           }
         },
@@ -1477,7 +1477,7 @@
           "kind": "list",
           "description": "Dropdown under the search input. At most 8 rows: category, value, and leg count in the current Picks scope. Prefix matches first, then by leg count. Player rows show the team. Values already chosen as chips are left out.",
           "locate": {
-            "path": "templates/explore.html:195",
+            "path": "templates/explore.html:196",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-search-suggest\"' templates/explore.html"
           }
         },
@@ -1487,8 +1487,38 @@
           "kind": "list",
           "description": "One chip per chosen value, plus Clear all. Same category = OR, different categories = AND. A chip that matches no legs stays and shows (0). The x on a chip removes it. Persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:198",
+            "path": "templates/explore.html:199",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-chips\"' templates/explore.html"
+          }
+        },
+        {
+          "id": "explore-upcoming",
+          "label": "This week heading and table",
+          "kind": "table",
+          "description": "Second table under the graded results: this week's legs whose game is not final, plus waiting anytime-TD picks. Driven by the Picks select and the same search chips. Heading reads This week (Week N) and the match count. Sorted by kickoff, shortlist rank, player. No result column. Not part of the summary or Top/Teams boxes.",
+          "locate": {
+            "path": "templates/explore.html:646",
+            "grep": "grep -n -F -- 'data-inspect-id=\"explore-upcoming\"' templates/explore.html"
+          }
+        },
+        {
+          "id": "explore-upcoming-leg",
+          "label": "This week leg row",
+          "kind": "row",
+          "description": "One upcoming leg: star, trend badge, player link, team, role and game, then line and stat, then price.",
+          "locate": {
+            "path": "templates/explore.html:649",
+            "grep": "grep -n -F -- '\"explore-upcoming-leg\"' templates/explore.html"
+          }
+        },
+        {
+          "id": "mark-star-upcoming",
+          "label": "Star on this week leg row",
+          "kind": "button",
+          "description": "Star toggle from scripts/marks.js on an upcoming leg row. Marks are stored on the server. Key season|week|player|stat.",
+          "locate": {
+            "path": "templates/explore.html:649",
+            "grep": "grep -n -F -- '\"mark-star-upcoming\"' templates/explore.html"
           }
         },
         {
@@ -1497,7 +1527,7 @@
           "kind": "text",
           "description": "Hits/graded, hit rate vs needed, and flat $100 return for the current filter; plus how many legs are still waiting on a final score -- that count is season-wide, not scoped to the current Picks/Group by/Only selection. Also counts void legs (game final but the player has no stat line - he didn't play, a book would void it), also season-wide.",
           "locate": {
-            "path": "templates/explore.html:202",
+            "path": "templates/explore.html:203",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-summary\"' templates/explore.html"
           }
         },
@@ -1507,7 +1537,7 @@
           "kind": "list",
           "description": "The five best hit rates across every Group by option at once (Player, Team and Opponent excluded, because those list teams; the two team boxes cover them), for the current Picks/Only selection. A group needs 20+ graded legs; a group equal to the whole current set is skipped, and so is one with the exact same legs as a group already listed (Position QB vs Depth role QB1). Clicking a row switches Group by to that option. Sits in the intro row as a <details> box, first of three equal columns, left of the two team boxes; clicking its heading collapses it, and the open/closed state is saved with the rest of the view.",
           "locate": {
-            "path": "templates/explore.html:163",
+            "path": "templates/explore.html:164",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-top5\"' templates/explore.html"
           }
         },
@@ -1517,7 +1547,7 @@
           "kind": "list",
           "description": "The five teams with the best hit rate, grouped by the player's team, for the current Picks/Only selection. A team needs 20+ graded legs. Same box, header row and row shape as Top 5 groups. With fewer than ten qualifying teams it takes the larger half, so no team shows in both team boxes. Its open/closed state is saved with the view.",
           "locate": {
-            "path": "templates/explore.html:167",
+            "path": "templates/explore.html:168",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-teams-top\"' templates/explore.html"
           }
         },
@@ -1527,7 +1557,7 @@
           "kind": "list",
           "description": "The five teams with the lowest hit rate, lowest first. Same rules and shape as Top 5 teams. Open/closed state saved with the view.",
           "locate": {
-            "path": "templates/explore.html:171",
+            "path": "templates/explore.html:172",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-teams-bottom\"' templates/explore.html"
           }
         },
@@ -1537,7 +1567,7 @@
           "kind": "row",
           "description": "Label is the Group by name and the group, for example Stat - Receptions. It shortens with an ellipsis; the title tooltip shows the full text. Click switches Group by to that option. Built by boxRows() in the page script.",
           "locate": {
-            "path": "templates/explore.html:541",
+            "path": "templates/explore.html:556",
             "grep": "grep -n -F -- '\"explore-top5-row\"' templates/explore.html"
           }
         },
@@ -1547,7 +1577,7 @@
           "kind": "row",
           "description": "Click switches Group by to Team, the same as a Top 5 row. It does not set the Only filter. Built by boxRows() through teamRows().",
           "locate": {
-            "path": "templates/explore.html:548",
+            "path": "templates/explore.html:563",
             "grep": "grep -n -F -- '\"explore-teams-row\"' templates/explore.html"
           }
         },
@@ -1557,7 +1587,7 @@
           "kind": "layout",
           "description": "Receives the grouped table, rendered by render() in the page script.",
           "locate": {
-            "path": "templates/explore.html:203",
+            "path": "templates/explore.html:204",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-table\"' templates/explore.html"
           }
         },
@@ -1567,7 +1597,7 @@
           "kind": "table",
           "description": "One row per group: legs, hits, hit rate with a bar (tick = needed), needed, $100 each. Built at runtime. Every header is a sort button (see explore-sort-header) -- 1st click sorts the rows descending by that column's raw number (A-Z for the label column), 2nd click ascending, 3rd click back to the category's own default order; nulls (a group with no priced legs, shown as — for Needed/$100 each) always sort last. Re-sorting collapses any expanded group. The active sort resets when Group by or Picks changes and otherwise persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:616",
+            "path": "templates/explore.html:631",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-groups\"' templates/explore.html"
           }
         },
@@ -1577,7 +1607,7 @@
           "kind": "button",
           "description": "One shared id for all six header buttons (group label, Legs, Hits, Hit rate, Needed, $100 each) -- the anchor is the template string that builds all six, not a single element. Keyboard-operable (a real <button>); aria-sort lives on the parent <th>, not the button. Shows a trailing ▼/▲ on the active column only; inactive headers show no arrow. Styled to inherit the th's mono/10px/uppercase look with no browser button chrome.",
           "locate": {
-            "path": "templates/explore.html:614",
+            "path": "templates/explore.html:629",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-sort-header\"' templates/explore.html"
           }
         },
@@ -1587,7 +1617,7 @@
           "kind": "row",
           "description": "Click or Enter expands the legs in that group. Greyed (tr.thin) under 10 legs. Row order is the active column sort when one is set (see explore-sort-header), otherwise the category's default: team/opponent/player/depth role by size, the rest natural band order.",
           "locate": {
-            "path": "templates/explore.html:598",
+            "path": "templates/explore.html:613",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-group-row\"' templates/explore.html"
           }
         },
@@ -1597,7 +1627,7 @@
           "kind": "row",
           "description": "Inserted under a group row by toggle(); lists each leg newest week first.",
           "locate": {
-            "path": "templates/explore.html:629",
+            "path": "templates/explore.html:660",
             "grep": "grep -n -F -- '\"explore-group-legs\"' templates/explore.html"
           }
         },
@@ -1607,8 +1637,8 @@
           "kind": "row",
           "description": "Player (links to its report), team role, week and game; the line, price, and the actual number as a HIT/MISS pill.",
           "locate": {
-            "path": "templates/explore.html:485",
-            "grep": "grep -n -F -- 'data-inspect-id=\"explore-leg\"' templates/explore.html"
+            "path": "templates/explore.html:662",
+            "grep": "grep -n -F -- '\"explore-leg\"' templates/explore.html"
           }
         },
         {
@@ -1617,7 +1647,7 @@
           "kind": "badge",
           "description": "Outline chip like #12 WR after the depth role, inside the .mk group in the leg meta line. Built by mk() / rkChip(l,id) from the rk and rkt fields serve_reports adds to each leg. Absent below the floor.",
           "locate": {
-            "path": "templates/explore.html:486",
+            "path": "templates/explore.html:501",
             "grep": "grep -n -F -- '\"explore-rank-chip\"' templates/explore.html"
           }
         },
@@ -1627,7 +1657,7 @@
           "kind": "badge",
           "description": "Badge from nflprops/badges.py (data/ratings/badges.json): ▲/▼ trend, or Big day / Caution matchup. Sits after the rank chip, never replaces it. Hover title gives the numbers. Absent for almost everyone. Built by bdBadges(l,id) from the bd field serve_reports adds to each leg. Matchup badge only on legs from the badge week.",
           "locate": {
-            "path": "templates/explore.html:485",
+            "path": "templates/explore.html:500",
             "grep": "grep -n -F -- '\"explore-badge\"' templates/explore.html"
           }
         },
@@ -1637,7 +1667,7 @@
           "kind": "text",
           "description": "Grading rule (same as the listing: actual beats the line, final games only), the under-ten caveat, and which stats the opponent-defense grouping covers.",
           "locate": {
-            "path": "templates/explore.html:205",
+            "path": "templates/explore.html:207",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-footer\"' templates/explore.html"
           }
         }
@@ -2674,7 +2704,7 @@
           "kind": "button",
           "description": "Star toggle (empty star unmarked, filled star marked) from the shared script scripts/marks.js. Marks are stored on the server (data/marks.json via /api/marks), so every page, origin and machine shows the same set. The key is season|week|player|stat. One per leg row inside an expanded Results group.",
           "locate": {
-            "path": "templates/explore.html:485",
+            "path": "templates/explore.html:662",
             "grep": "grep -n -F -- '\"mark-star-explore\"' templates/explore.html"
           }
         },
@@ -2694,7 +2724,7 @@
           "kind": "layout",
           "description": "Two-row header spliced into every page by with_chrome(): brand and three sections on row 1, the section's pages and the results stamp on row 2. site_nav() takes this id as a parameter.",
           "locate": {
-            "path": "scripts/serve_reports.py:1801",
+            "path": "scripts/serve_reports.py:1847",
             "grep": "grep -n -F -- 'inspect_id=\"site-nav\"' scripts/serve_reports.py"
           }
         },
@@ -2704,7 +2734,7 @@
           "kind": "link",
           "description": "'NFL Props', links to /.",
           "locate": {
-            "path": "scripts/serve_reports.py:1813",
+            "path": "scripts/serve_reports.py:1859",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-nav-brand\"' scripts/serve_reports.py"
           }
         },
@@ -2714,7 +2744,7 @@
           "kind": "link",
           "description": "Week section (Games and Slate). Active on /, /slate and every report.",
           "locate": {
-            "path": "scripts/serve_reports.py:1772",
+            "path": "scripts/serve_reports.py:1818",
             "grep": "grep -n -F -- '\"site-nav-week\"' scripts/serve_reports.py"
           }
         },
@@ -2724,7 +2754,7 @@
           "kind": "link",
           "description": "Players section (Rankings and Trends).",
           "locate": {
-            "path": "scripts/serve_reports.py:1773",
+            "path": "scripts/serve_reports.py:1819",
             "grep": "grep -n -F -- '\"site-nav-players\"' scripts/serve_reports.py"
           }
         },
@@ -2734,7 +2764,7 @@
           "kind": "link",
           "description": "Results section, /explore.",
           "locate": {
-            "path": "scripts/serve_reports.py:1775",
+            "path": "scripts/serve_reports.py:1821",
             "grep": "grep -n -F -- '\"site-nav-results\"' scripts/serve_reports.py"
           }
         },
@@ -2744,7 +2774,7 @@
           "kind": "layout",
           "description": "Pages of the current section, separated by a dot. Empty for Results.",
           "locate": {
-            "path": "scripts/serve_reports.py:1815",
+            "path": "scripts/serve_reports.py:1861",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-subnav\"' scripts/serve_reports.py"
           }
         },
@@ -2754,7 +2784,7 @@
           "kind": "link",
           "description": "Games, / . Current on the home page only.",
           "locate": {
-            "path": "scripts/serve_reports.py:1776",
+            "path": "scripts/serve_reports.py:1822",
             "grep": "grep -n -F -- '\"site-subnav-games\"' scripts/serve_reports.py"
           }
         },
@@ -2764,7 +2794,7 @@
           "kind": "link",
           "description": "Slate, /slate.",
           "locate": {
-            "path": "scripts/serve_reports.py:1777",
+            "path": "scripts/serve_reports.py:1823",
             "grep": "grep -n -F -- '\"site-subnav-slate\"' scripts/serve_reports.py"
           }
         },
@@ -2774,7 +2804,7 @@
           "kind": "link",
           "description": "Rankings, /rankings.html.",
           "locate": {
-            "path": "scripts/serve_reports.py:1778",
+            "path": "scripts/serve_reports.py:1824",
             "grep": "grep -n -F -- '\"site-subnav-rankings\"' scripts/serve_reports.py"
           }
         },
@@ -2784,7 +2814,7 @@
           "kind": "link",
           "description": "Top-bar section Trends, /trends.html. Moved out of the Players row on 2026-10-04.",
           "locate": {
-            "path": "scripts/serve_reports.py:1774",
+            "path": "scripts/serve_reports.py:1820",
             "grep": "grep -n -F -- '\"site-nav-trends\"' scripts/serve_reports.py"
           }
         },
@@ -2794,7 +2824,7 @@
           "kind": "text",
           "description": "How far the season's results go, 'Wk 4 · 2/16 final'. From results_stamp(), one read-only query per request. Empty if the query fails.",
           "locate": {
-            "path": "scripts/serve_reports.py:1816",
+            "path": "scripts/serve_reports.py:1862",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-stamp\"' scripts/serve_reports.py"
           }
         },
@@ -2804,7 +2834,7 @@
           "kind": "text",
           "description": "One-line standing disclaimer spliced after every page by with_chrome().",
           "locate": {
-            "path": "scripts/serve_reports.py:1959",
+            "path": "scripts/serve_reports.py:2005",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-footer\"' scripts/serve_reports.py"
           }
         }
