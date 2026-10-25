@@ -1465,7 +1465,7 @@
           "id": "explore-search",
           "label": "Search input",
           "kind": "input",
-          "description": "Type a player, team, stat, week or any other value. Matches the value label (case-insensitive) across every Group by category. Up/Down moves, Enter adds, Esc closes, Backspace on an empty input removes the last chip.",
+          "description": "Type a player, team, stat, week or any other value. Typing a prefix of marked or star offers Marked only: legs with a star, kept live as stars change. Matches the value label (case-insensitive) across every Group by category. Up/Down moves, Enter adds, Esc closes, Backspace on an empty input removes the last chip.",
           "locate": {
             "path": "templates/explore.html:194",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-search\"' templates/explore.html"
@@ -1537,7 +1537,7 @@
           "kind": "row",
           "description": "Label is the Group by name and the group, for example Stat - Receptions. It shortens with an ellipsis; the title tooltip shows the full text. Click switches Group by to that option. Built by boxRows() in the page script.",
           "locate": {
-            "path": "templates/explore.html:535",
+            "path": "templates/explore.html:541",
             "grep": "grep -n -F -- '\"explore-top5-row\"' templates/explore.html"
           }
         },
@@ -1547,7 +1547,7 @@
           "kind": "row",
           "description": "Click switches Group by to Team, the same as a Top 5 row. It does not set the Only filter. Built by boxRows() through teamRows().",
           "locate": {
-            "path": "templates/explore.html:542",
+            "path": "templates/explore.html:548",
             "grep": "grep -n -F -- '\"explore-teams-row\"' templates/explore.html"
           }
         },
@@ -1567,7 +1567,7 @@
           "kind": "table",
           "description": "One row per group: legs, hits, hit rate with a bar (tick = needed), needed, $100 each. Built at runtime. Every header is a sort button (see explore-sort-header) -- 1st click sorts the rows descending by that column's raw number (A-Z for the label column), 2nd click ascending, 3rd click back to the category's own default order; nulls (a group with no priced legs, shown as — for Needed/$100 each) always sort last. Re-sorting collapses any expanded group. The active sort resets when Group by or Picks changes and otherwise persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:610",
+            "path": "templates/explore.html:616",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-groups\"' templates/explore.html"
           }
         },
@@ -1577,7 +1577,7 @@
           "kind": "button",
           "description": "One shared id for all six header buttons (group label, Legs, Hits, Hit rate, Needed, $100 each) -- the anchor is the template string that builds all six, not a single element. Keyboard-operable (a real <button>); aria-sort lives on the parent <th>, not the button. Shows a trailing ▼/▲ on the active column only; inactive headers show no arrow. Styled to inherit the th's mono/10px/uppercase look with no browser button chrome.",
           "locate": {
-            "path": "templates/explore.html:608",
+            "path": "templates/explore.html:614",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-sort-header\"' templates/explore.html"
           }
         },
@@ -1587,7 +1587,7 @@
           "kind": "row",
           "description": "Click or Enter expands the legs in that group. Greyed (tr.thin) under 10 legs. Row order is the active column sort when one is set (see explore-sort-header), otherwise the category's default: team/opponent/player/depth role by size, the rest natural band order.",
           "locate": {
-            "path": "templates/explore.html:592",
+            "path": "templates/explore.html:598",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-group-row\"' templates/explore.html"
           }
         },
@@ -1597,7 +1597,7 @@
           "kind": "row",
           "description": "Inserted under a group row by toggle(); lists each leg newest week first.",
           "locate": {
-            "path": "templates/explore.html:623",
+            "path": "templates/explore.html:629",
             "grep": "grep -n -F -- '\"explore-group-legs\"' templates/explore.html"
           }
         },
@@ -1607,7 +1607,7 @@
           "kind": "row",
           "description": "Player (links to its report), team role, week and game; the line, price, and the actual number as a HIT/MISS pill.",
           "locate": {
-            "path": "templates/explore.html:479",
+            "path": "templates/explore.html:485",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-leg\"' templates/explore.html"
           }
         },
@@ -1617,7 +1617,7 @@
           "kind": "badge",
           "description": "Outline chip like #12 WR after the depth role, inside the .mk group in the leg meta line. Built by mk() / rkChip(l,id) from the rk and rkt fields serve_reports adds to each leg. Absent below the floor.",
           "locate": {
-            "path": "templates/explore.html:480",
+            "path": "templates/explore.html:486",
             "grep": "grep -n -F -- '\"explore-rank-chip\"' templates/explore.html"
           }
         },
@@ -1627,7 +1627,7 @@
           "kind": "badge",
           "description": "Badge from nflprops/badges.py (data/ratings/badges.json): ▲/▼ trend, or Big day / Caution matchup. Sits after the rank chip, never replaces it. Hover title gives the numbers. Absent for almost everyone. Built by bdBadges(l,id) from the bd field serve_reports adds to each leg. Matchup badge only on legs from the badge week.",
           "locate": {
-            "path": "templates/explore.html:479",
+            "path": "templates/explore.html:485",
             "grep": "grep -n -F -- '\"explore-badge\"' templates/explore.html"
           }
         },
@@ -2644,7 +2644,7 @@
           "kind": "button",
           "description": "Star toggle (empty star unmarked, filled star marked) from the shared script scripts/marks.js. Marks are stored on the server (data/marks.json via /api/marks), so every page, origin and machine shows the same set. The key is season|week|player|stat. Added to each stat card by marks.js decorateReport(), so old reports on disk get it too.",
           "locate": {
-            "path": "scripts/marks.js:70",
+            "path": "scripts/marks.js:74",
             "grep": "grep -n -F -- '\"mark-star-card\"' scripts/marks.js"
           }
         },
@@ -2654,7 +2654,7 @@
           "kind": "button",
           "description": "Star toggle (empty star unmarked, filled star marked) from the shared script scripts/marks.js. Marks are stored on the server (data/marks.json via /api/marks), so every page, origin and machine shows the same set. The key is season|week|player|stat. Added to each shortlist row by marks.js decorateReport().",
           "locate": {
-            "path": "scripts/marks.js:75",
+            "path": "scripts/marks.js:79",
             "grep": "grep -n -F -- '\"mark-star-pick\"' scripts/marks.js"
           }
         },
@@ -2674,7 +2674,7 @@
           "kind": "button",
           "description": "Star toggle (empty star unmarked, filled star marked) from the shared script scripts/marks.js. Marks are stored on the server (data/marks.json via /api/marks), so every page, origin and machine shows the same set. The key is season|week|player|stat. One per leg row inside an expanded Results group.",
           "locate": {
-            "path": "templates/explore.html:479",
+            "path": "templates/explore.html:485",
             "grep": "grep -n -F -- '\"mark-star-explore\"' templates/explore.html"
           }
         },
