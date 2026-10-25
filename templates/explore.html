@@ -291,6 +291,10 @@
   ];
   var BYKEY = {};
   DIMS.forEach(function (d) { BYKEY[d[0]] = d; });
+  // "Marked" is a search-only dimension: in BYKEY for the chips, not in DIMS, so it is
+  // never a Group by option. Marks come from the shared script (marks.js).
+  BYKEY.marked = ["marked", "Marked", function (l) {
+    return window.markHas && markHas(markKey(l.season, l.week, l.p, l.s)) ? ["Marked only", 0] : null; }];
   // Categories with many small groups sort by size; the rest keep their order.
   var BY_SIZE = {team: 1, opp: 1, player: 1, role: 1};
 
@@ -341,11 +345,13 @@
     chips.forEach(function (c) { if (!by[c.d]) { by[c.d] = []; order.push(c.d); } by[c.d].push(chipLabel(c)); });
     return esc(order.map(function (k) {
       var v = by[k].join(" or ");
-      return k === "stat" || k === "player" ? v : dname(BYKEY[k]) + " " + v;
+      return k === "stat" || k === "player" || k === "marked" ? v : dname(BYKEY[k]) + " " + v;
     }).join(" · ")) + " — ";
   }
   function search() {
     var t = q.value.trim().toLowerCase(), r = [];
+    if (t && ("marked".indexOf(t) === 0 || "star".indexOf(t) === 0) && !chipOn({d: "marked", v: "Marked only"}))
+      r.push({d: "marked", v: "Marked only", n: chipCount({d: "marked", v: "Marked only"}), pre: true, t: ""});
     if (t) DIMS.forEach(function (d) {
       groups(LEGS, d[0]).forEach(function (g) {
         var i = g.label.toLowerCase().indexOf(t), c = {d: d[0], v: g.label};
@@ -673,6 +679,9 @@
   kind.addEventListener("change", function () {
     scope(); sortState = null; drawChips(); search(); closeSugg(); save(); render(); });
   by.addEventListener("change", function () { sortState = null; save(); render(); });
+  document.addEventListener("marks-changed", function () {
+    if (chips.some(function (c) { return c.d === "marked"; })) { drawChips(); render(); }
+  });
   q.addEventListener("input", search);
   q.addEventListener("focus", search);
   q.addEventListener("blur", closeSugg);

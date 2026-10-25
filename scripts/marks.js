@@ -40,15 +40,19 @@
       b.textContent = on ? "★" : "☆";
     });
   }
+  window.markHas = function (k) { return !!marked[k]; };
+  // A change (a toggle, a revert, or the first load) also tells the page, so a view
+  // filtered to marked legs can redraw. No second fetch: the page reads markHas().
+  function changed() { sync(); document.dispatchEvent(new Event("marks-changed")); }
   function put(b, on) {
     var k = b.getAttribute("data-mark-key"), was = !!marked[k];
     if (on) marked[k] = 1; else delete marked[k];
-    sync();
+    changed();
     fetch("/api/marks", {method: "POST", headers: {"Content-Type": "application/json"},
       body: JSON.stringify({key: k, on: on})})
       .then(function (r) { if (!r.ok) throw 0; return r.json(); })
-      .then(function (j) { marked = {}; j.marks.forEach(function (x) { marked[x] = 1; }); sync(); })
-      .catch(function () { if (was) marked[k] = 1; else delete marked[k]; sync(); });
+      .then(function (j) { marked = {}; j.marks.forEach(function (x) { marked[x] = 1; }); changed(); })
+      .catch(function () { if (was) marked[k] = 1; else delete marked[k]; changed(); });
   }
   // Capture phase: a star inside a clickable row must not also open the row.
   document.addEventListener("click", function (e) {
@@ -82,7 +86,7 @@
       if (loaded && ms.some(function (m) { return m.addedNodes.length; })) sync();
     }).observe(document.body, {childList: true, subtree: true});
     fetch("/api/marks", {cache: "no-store"}).then(function (r) { return r.json(); })
-      .then(function (j) { j.marks.forEach(function (x) { marked[x] = 1; }); loaded = true; sync(); })
+      .then(function (j) { j.marks.forEach(function (x) { marked[x] = 1; }); loaded = true; changed(); })
       .catch(function () { loaded = true; });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
