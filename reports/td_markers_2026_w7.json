@@ -1,13 +1,13 @@
 {
  "CIN-BAL": {
   "basis": "model+book_vig",
-  "book_p": 0.688,
-  "conf": 0.65,
-  "model_p": 0.65,
+  "book_p": 0.649,
+  "conf": 0.509,
+  "model_p": 0.509,
   "phase3": {
-   "p_combined": 0.403,
+   "p_combined": 0.407,
    "p_rec": 0.027,
-   "p_rush": 0.386
+   "p_rush": 0.391
   },
   "player": "Derrick Henry",
   "position": "RB",
@@ -15,12 +15,12 @@
  },
  "CLE-TEN": {
   "basis": "model+book_vig",
-  "book_p": 0.465,
+  "book_p": 0.435,
   "conf": 0.39,
   "model_p": 0.39,
   "phase3": {
-   "p_combined": 0.311,
-   "p_rec": 0.037,
+   "p_combined": 0.307,
+   "p_rec": 0.031,
    "p_rush": 0.285
   },
   "player": "Tony Pollard",
@@ -33,9 +33,9 @@
   "conf": 0.481,
   "model_p": 0.481,
   "phase3": {
-   "p_combined": 0.363,
-   "p_rec": 0.099,
-   "p_rush": 0.293
+   "p_combined": 0.346,
+   "p_rec": 0.096,
+   "p_rush": 0.277
   },
   "player": "Javonte Williams",
   "position": "RB",
@@ -57,13 +57,13 @@
  },
  "GB-DET": {
   "basis": "model+book_vig",
-  "book_p": 0.778,
-  "conf": 0.583,
-  "model_p": 0.583,
+  "book_p": 0.796,
+  "conf": 0.57,
+  "model_p": 0.57,
   "phase3": {
-   "p_combined": 0.495,
-   "p_rec": 0.183,
-   "p_rush": 0.381
+   "p_combined": 0.489,
+   "p_rec": 0.169,
+   "p_rush": 0.386
   },
   "player": "Jahmyr Gibbs",
   "position": "RB",
@@ -71,8 +71,8 @@
  },
  "IND-MIN": {
   "basis": "model+book_vig",
-  "book_p": 0.417,
-  "conf": 0.417,
+  "book_p": 0.435,
+  "conf": 0.435,
   "model_p": 0.516,
   "phase3": {
    "p_combined": 0.393,
@@ -85,7 +85,7 @@
  },
  "KC-SEA": {
   "basis": "model+book_vig",
-  "book_p": 0.565,
+  "book_p": 0.545,
   "conf": 0.402,
   "model_p": 0.402,
   "phase3": {
@@ -100,11 +100,11 @@
  "LA-LV": {
   "basis": "model+book_vig",
   "book_p": 0.6,
-  "conf": 0.504,
-  "model_p": 0.504,
+  "conf": 0.498,
+  "model_p": 0.498,
   "phase3": {
-   "p_combined": 0.479,
-   "p_rec": 0.179,
+   "p_combined": 0.476,
+   "p_rec": 0.175,
    "p_rush": 0.366
   },
   "player": "Kyren Williams",
@@ -113,7 +113,7 @@
  },
  "MIA-NYJ": {
   "basis": "model+book_vig",
-  "book_p": 0.545,
+  "book_p": 0.512,
   "conf": 0.419,
   "model_p": 0.419,
   "phase3": {
@@ -140,28 +140,28 @@
   "team": "CHI"
  },
  "NYG-HOU": {
-  "basis": "model_only",
-  "book_p": null,
-  "conf": 0.431,
-  "model_p": 0.431,
+  "basis": "model+book_vig",
+  "book_p": 0.545,
+  "conf": 0.421,
+  "model_p": 0.421,
   "phase3": {
-   "p_combined": 0.323,
-   "p_rec": 0.038,
-   "p_rush": 0.296
+   "p_combined": 0.375,
+   "p_rec": 0.117,
+   "p_rush": 0.292
   },
-  "player": "David Montgomery",
+  "player": "Woody Marks",
   "position": "RB",
   "team": "HOU"
  },
  "PIT-NO": {
   "basis": "model+book_vig",
-  "book_p": 0.545,
-  "conf": 0.451,
-  "model_p": 0.451,
+  "book_p": 0.5,
+  "conf": 0.405,
+  "model_p": 0.405,
   "phase3": {
-   "p_combined": 0.445,
-   "p_rec": 0.178,
-   "p_rush": 0.324
+   "p_combined": 0.436,
+   "p_rec": 0.17,
+   "p_rush": 0.32
   },
   "player": "Jaylen Warren",
   "position": "RB",
@@ -169,21 +169,21 @@
  },
  "SF-ATL": {
   "basis": "model+book_vig",
-  "book_p": 0.714,
-  "conf": 0.532,
-  "model_p": 0.532,
+  "book_p": 0.756,
+  "conf": 0.563,
+  "model_p": 0.563,
   "phase3": {
-   "p_combined": 0.532,
-   "p_rec": 0.263,
+   "p_combined": 0.43,
+   "p_rec": 0.102,
    "p_rush": 0.366
   },
-  "player": "Christian McCaffrey",
+  "player": "Bijan Robinson",
   "position": "RB",
-  "team": "SF"
+  "team": "ATL"
  },
  "TB-CAR": {
   "basis": "model+book_vig",
-  "book_p": 0.556,
+  "book_p": 0.545,
   "conf": 0.467,
   "model_p": 0.467,
   "phase3": {
