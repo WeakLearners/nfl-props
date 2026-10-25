@@ -12,7 +12,33 @@
   .ctl{display:flex; flex-direction:column; gap:5px; min-width:0}
   .ctl label{font-family:"IBM Plex Mono",monospace; font-size:10px;
     letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3)}
-  .ctl .pair{display:flex; gap:6px}
+  .ctl.srch{position:relative; width:340px; max-width:100%}
+  .srch input{box-sizing:border-box; width:100%; background:var(--surface); color:var(--ink);
+    border:1px solid var(--line); border-radius:3px; padding:6px 10px;
+    font:500 14px/1.2 "Public Sans",sans-serif}
+  .srch input:hover{border-color:var(--ink-3)}
+  .srch input:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .sugg{position:absolute; top:100%; left:0; right:0; z-index:5; margin-top:2px;
+    background:var(--surface); border:1px solid var(--line); border-radius:3px}
+  .sugg[hidden]{display:none}
+  .sg-row{display:flex; align-items:baseline; gap:10px; padding:6px 10px; cursor:pointer;
+    font-size:14px; border-bottom:1px solid var(--line-soft)}
+  .sg-row:last-child{border-bottom:0}
+  .sg-row.on,.sg-row:hover{background:var(--line-soft)}
+  .sg-dim{font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--ink-3);
+    width:96px; flex:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .sg-val{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .sg-n{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-2)}
+  .chips{display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px; margin-top:10px}
+  .chips:empty{display:none}
+  .chip{all:unset; box-sizing:border-box; cursor:pointer; display:inline-flex; gap:6px;
+    align-items:center; padding:3px 9px; border:1px solid var(--line); border-radius:3px;
+    background:var(--surface); font:500 13px/1.2 "Public Sans",sans-serif; color:var(--ink)}
+  .chip:hover{border-color:var(--ink-3)}
+  .chip:focus-visible,.chip-clear:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .chip i{font-style:normal; color:var(--ink-3)}
+  .chip-clear{all:unset; cursor:pointer; font-size:12.5px; color:var(--ink-3); text-decoration:underline}
+  .chip-clear:hover{color:var(--ink)}
   select{appearance:none; -webkit-appearance:none; cursor:pointer;
     background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2384827a' stroke-width='1.4'/%3E%3C/svg%3E") no-repeat right 9px center;
     color:var(--ink); border:1px solid var(--line); border-radius:3px;
@@ -162,14 +188,14 @@
       <label for="by">Group by</label>
       <select id="by" data-inspect-id="explore-group-by"></select>
     </div>
-    <div class="ctl">
-      <label for="fdim">Only</label>
-      <div class="pair">
-        <select id="fdim" data-inspect-id="explore-filter-dim"></select>
-        <select id="fval" data-inspect-id="explore-filter-val" disabled hidden></select>
-      </div>
+    <div class="ctl srch">
+      <label for="q">Search</label>
+      <input id="q" type="text" autocomplete="off" placeholder="Player, team, stat, week…"
+        role="combobox" aria-expanded="false" aria-controls="sugg" data-inspect-id="explore-search">
+      <div class="sugg" id="sugg" role="listbox" hidden data-inspect-id="explore-search-suggest"></div>
     </div>
   </div>
+  <div class="chips" id="chips" data-inspect-id="explore-chips"></div>
   </div>
   <div class="ex-grid pg-content" data-inspect-id="explore-grid">
     <div class="ex-main" data-inspect-id="explore-main">
@@ -268,14 +294,12 @@
   // Categories with many small groups sort by size; the rest keep their order.
   var BY_SIZE = {team: 1, opp: 1, player: 1, role: 1};
 
-  var by = document.getElementById("by"), fdim = document.getElementById("fdim"),
-      fval = document.getElementById("fval"), out = document.getElementById("out"),
+  var by = document.getElementById("by"), q = document.getElementById("q"),
+      sugg = document.getElementById("sugg"), chipsEl = document.getElementById("chips"), out = document.getElementById("out"),
       summary = document.getElementById("summary");
 
   function opt(sel, v, t) { var o = document.createElement("option"); o.value = v; o.textContent = t; sel.appendChild(o); }
   DIMS.forEach(function (d) { opt(by, d[0], d[1]); });
-  opt(fdim, "", "All legs");
-  DIMS.forEach(function (d) { opt(fdim, d[0], d[1]); });
 
   function groups(legs, key) {
     var f = BYKEY[key][2], m = {};
@@ -290,17 +314,70 @@
     return arr;
   }
 
-  function fillValues() {
-    fval.innerHTML = "";
-    if (!fdim.value) { fval.disabled = fval.hidden = true; return; }
-    fval.disabled = fval.hidden = false;
-    groups(LEGS, fdim.value).forEach(function (g) { opt(fval, g.label, g.label + " (" + g.legs.length + ")"); });
+  // Search chips. Same dimension = OR, different dimensions = AND.
+  var chips = [], hits = [], hi = 0;
+  function dname(d) { return d[1].split(" (")[0]; }
+  function chipOn(c) { return chips.some(function (x) { return x.d === c.d && x.v === c.v; }); }
+  function chipCount(c) {
+    var f = BYKEY[c.d][2];
+    return LEGS.filter(function (l) { var g = f(l); return g && g[0] === c.v; }).length;
   }
-
   function filtered() {
-    if (!fdim.value || !fval.value) return LEGS;
-    var f = BYKEY[fdim.value][2];
-    return LEGS.filter(function (l) { var g = f(l); return g && g[0] === fval.value; });
+    if (!chips.length) return LEGS;
+    var by = {};
+    chips.forEach(function (c) { (by[c.d] = by[c.d] || []).push(c.v); });
+    var keys = Object.keys(by);
+    return LEGS.filter(function (l) {
+      return keys.every(function (k) { var g = BYKEY[k][2](l); return g && by[k].indexOf(g[0]) >= 0; });
+    });
+  }
+  function chipLabel(c) {
+    if (c.d === "stat") for (var k in STAT) if (STAT[k] === c.v) return SHORT[k].replace(/^./, function (m) { return m.toUpperCase(); });
+    return c.v;
+  }
+  function chipPrefix() {
+    if (!chips.length) return "";
+    var by = {}, order = [];
+    chips.forEach(function (c) { if (!by[c.d]) { by[c.d] = []; order.push(c.d); } by[c.d].push(chipLabel(c)); });
+    return esc(order.map(function (k) {
+      var v = by[k].join(" or ");
+      return k === "stat" || k === "player" ? v : dname(BYKEY[k]) + " " + v;
+    }).join(" · ")) + " — ";
+  }
+  function search() {
+    var t = q.value.trim().toLowerCase(), r = [];
+    if (t) DIMS.forEach(function (d) {
+      groups(LEGS, d[0]).forEach(function (g) {
+        var i = g.label.toLowerCase().indexOf(t), c = {d: d[0], v: g.label};
+        if (i < 0 || chipOn(c)) return;
+        c.n = g.legs.length; c.pre = i === 0;
+        c.t = d[0] === "player" ? g.legs[0].tm : "";
+        r.push(c);
+      });
+    });
+    r.sort(function (a, b) { return (b.pre - a.pre) || (b.n - a.n); });
+    hits = r.slice(0, 8); hi = 0; drawSugg();
+  }
+  function drawSugg() {
+    sugg.hidden = !hits.length; q.setAttribute("aria-expanded", String(hits.length > 0));
+    sugg.innerHTML = hits.map(function (c, i) {
+      return '<div class="sg-row' + (i === hi ? " on" : "") + '" role="option" data-i="' + i + '">' +
+        '<span class="sg-dim">' + esc(dname(BYKEY[c.d])) + '</span><span class="sg-val">' +
+        esc(c.v + (c.t ? " (" + c.t + ")" : "")) + '</span><span class="sg-n">' + c.n + '</span></div>';
+    }).join("");
+  }
+  function closeSugg() { hits = []; drawSugg(); }
+  function drawChips() {
+    chipsEl.innerHTML = !chips.length ? "" : chips.map(function (c, i) {
+      var n = chipCount(c);
+      return '<button type="button" class="chip" data-i="' + i + '" aria-label="Remove ' + esc(c.v) + '">' +
+        esc(dname(BYKEY[c.d]) + ": " + c.v) + (n ? "" : " (0)") + ' <i>×</i></button>';
+    }).join("") + '<button type="button" class="chip-clear">Clear all</button>';
+  }
+  function chipsChanged() { drawChips(); sortState = null; save(); render(); }
+  function addChip(c) {
+    if (!c || chipOn(c)) return;
+    chips.push({d: c.d, v: c.v}); q.value = ""; closeSugg(); chipsChanged();
   }
 
   function stats(legs) {
@@ -489,7 +566,7 @@
 
   function render() {
     var legs = filtered(), all = stats(legs), gs = groups(legs, by.value);
-    summary.innerHTML = "<b>" + all.h + "/" + all.n + "</b> hit (" + pct(all.rate) + ")" +
+    summary.innerHTML = chipPrefix() + "<b>" + all.h + "/" + all.n + "</b> hit (" + pct(all.rate) + ")" +
       (all.np ? " against <b>" + pct(all.be) + "</b> needed · $100 each: <b>" + money(all.pl) + "</b>" : "") +
       (all.np && all.np < all.n ? " · " + (all.n - all.np) + " unpriced legs left out of those two" : "") +
       (D.pending[kind.value] ? " · " + D.pending[kind.value] + " still waiting on a final score, " +
@@ -565,7 +642,7 @@
   function save() {
     try {
       localStorage.setItem("nflprops-explore", JSON.stringify({
-        k: kind.value, by: by.value, fd: fdim.value, fv: fval.value,
+        k: kind.value, by: by.value, ch: chips.map(function (c) { return [c.d, c.v]; }),
         sc: sortState ? sortState.col : null, sd: sortState ? sortState.dir : null,
         t: topbox.open, tt: teamsTopBox.open, tb: teamsBottomBox.open,
       }));
@@ -578,8 +655,8 @@
   try {
     if (st) {
       if (BYKEY[st.by]) by.value = st.by;
-      if (st.fd && BYKEY[st.fd]) { fdim.value = st.fd; fillValues(); fval.value = st.fv;
-        if (fval.selectedIndex < 0) fval.selectedIndex = 0; }
+      if (Array.isArray(st.ch)) st.ch.forEach(function (c) {
+        if (Array.isArray(c) && BYKEY[c[0]] && typeof c[1] === "string") chips.push({d: c[0], v: c[1]}); });
       if (Number.isInteger(st.sc) && st.sc >= 0 && st.sc < SORT_COLS.length &&
           (st.sd === "desc" || st.sd === "asc")) {
         sortState = {col: st.sc, dir: st.sd};
@@ -594,10 +671,29 @@
   teamsTopBox.addEventListener("toggle", save);
   teamsBottomBox.addEventListener("toggle", save);
   kind.addEventListener("change", function () {
-    scope(); fillValues(); sortState = null; save(); render(); });
+    scope(); sortState = null; drawChips(); search(); closeSugg(); save(); render(); });
   by.addEventListener("change", function () { sortState = null; save(); render(); });
-  fdim.addEventListener("change", function () { fillValues(); save(); render(); });
-  fval.addEventListener("change", function () { save(); render(); });
+  q.addEventListener("input", search);
+  q.addEventListener("focus", search);
+  q.addEventListener("blur", closeSugg);
+  q.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      if (!hits.length) return;
+      e.preventDefault(); hi = (hi + (e.key === "ArrowDown" ? 1 : hits.length - 1)) % hits.length; drawSugg();
+    } else if (e.key === "Enter") { if (hits.length) { e.preventDefault(); addChip(hits[hi]); } }
+    else if (e.key === "Escape") closeSugg();
+    else if (e.key === "Backspace" && !q.value && chips.length) { chips.pop(); chipsChanged(); }
+  });
+  sugg.addEventListener("mousedown", function (e) {
+    var r = e.target.closest(".sg-row"); if (!r) return;
+    e.preventDefault(); addChip(hits[+r.dataset.i]);
+  });
+  chipsEl.addEventListener("click", function (e) {
+    if (e.target.closest(".chip-clear")) { chips = []; chipsChanged(); return; }
+    var b = e.target.closest(".chip"); if (!b) return;
+    chips.splice(+b.dataset.i, 1); chipsChanged();
+  });
+  drawChips();
   render();
 })();
 </script>
