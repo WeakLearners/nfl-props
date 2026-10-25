@@ -34,10 +34,12 @@
 
   function sync(root) {
     (root || document).querySelectorAll("[data-mark-key]").forEach(function (b) {
-      var on = !!marked[b.getAttribute("data-mark-key")];
-      b.classList.toggle("on", on);
-      b.setAttribute("aria-pressed", on);
-      b.textContent = on ? "★" : "☆";
+      // Write only on change: a text write is itself a childList mutation, and the
+      // observer below calls sync(), so an unconditional write loops forever.
+      var on = !!marked[b.getAttribute("data-mark-key")], t = on ? "★" : "☆";
+      if (b.classList.contains("on") !== on) b.classList.toggle("on", on);
+      if (b.getAttribute("aria-pressed") !== String(on)) b.setAttribute("aria-pressed", on);
+      if (b.textContent !== t) b.textContent = t;
     });
   }
   window.markHas = function (k) { return !!marked[k]; };
@@ -83,7 +85,10 @@
   function start() {
     decorateReport();
     new MutationObserver(function (ms) {
-      if (loaded && ms.some(function (m) { return m.addedNodes.length; })) sync();
+      if (loaded && ms.some(function (m) {
+        var el = m.target.nodeType === 1 ? m.target : m.target.parentNode;
+        return m.addedNodes.length && !(el && el.closest(".mk-star"));
+      })) sync();
     }).observe(document.body, {childList: true, subtree: true});
     fetch("/api/marks", {cache: "no-store"}).then(function (r) { return r.json(); })
       .then(function (j) { j.marks.forEach(function (x) { marked[x] = 1; }); loaded = true; changed(); })
