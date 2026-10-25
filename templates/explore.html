@@ -35,6 +35,7 @@
     align-items:center; padding:3px 9px; border:1px solid var(--line); border-radius:3px;
     background:var(--surface); font:500 13px/1.2 "Public Sans",sans-serif; color:var(--ink)}
   .chip:hover{border-color:var(--ink-3)}
+  .chip[aria-pressed=true]{color:var(--accent); border-color:var(--accent)}
   .chip:focus-visible,.chip-clear:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
   .chip i{font-style:normal; color:var(--ink-3)}
   .chip-clear{all:unset; cursor:pointer; font-size:12.5px; color:var(--ink-3); text-decoration:underline}
@@ -195,6 +196,10 @@
         role="combobox" aria-expanded="false" aria-controls="sugg" data-inspect-id="explore-search">
       <div class="sugg" id="sugg" role="listbox" hidden data-inspect-id="explore-search-suggest"></div>
     </div>
+    <div class="ctl">
+      <label aria-hidden="true">&nbsp;</label>
+      <button type="button" class="chip" id="starred-only" aria-pressed="false" data-inspect-id="explore-starred-only">★ Starred only</button>
+    </div>
   </div>
   <div class="chips" id="chips" data-inspect-id="explore-chips"></div>
   </div>
@@ -297,8 +302,8 @@
   DIMS.forEach(function (d) { BYKEY[d[0]] = d; });
   // "Marked" is a search-only dimension: in BYKEY for the chips, not in DIMS, so it is
   // never a Group by option. Marks come from the shared script (marks.js).
-  BYKEY.marked = ["marked", "Marked", function (l) {
-    return window.markHas && markHas(markKey(l.season, l.week, l.p, l.s)) ? ["Marked only", 0] : null; }];
+  BYKEY.marked = ["marked", "Starred", function (l) {
+    return window.markHas && markHas(markKey(l.season, l.week, l.p, l.s)) ? ["Starred only", 0] : null; }];
   // Categories with many small groups sort by size; the rest keep their order.
   var BY_SIZE = {team: 1, opp: 1, player: 1, role: 1};
 
@@ -359,8 +364,8 @@
       if (!c) { c = m[k] = {d: d, v: label, n: 0, m: 0, t: tm, pre: pre}; r.push(c); }
       c.n += n; c.m += up;
     }
-    if (t && ("marked".indexOf(t) === 0 || "star".indexOf(t) === 0)) {
-      var mc = {d: "marked", v: "Marked only"}, f = BYKEY.marked[2];
+    if (t && ("marked".indexOf(t) === 0 || "starred".indexOf(t) === 0)) {
+      var mc = {d: "marked", v: "Starred only"}, f = BYKEY.marked[2];
       if (!chipOn(mc)) add("marked", mc.v, LEGS.filter(f).length, UP.filter(f).length, "", true);
     }
     if (t) DIMS.forEach(function (d) {
@@ -385,7 +390,16 @@
     }).join("");
   }
   function closeSugg() { hits = []; drawSugg(); }
+  // The "Starred only" button is the same chip as the search row: pressed while the
+  // chip exists. drawChips runs on every chip change, so it keeps the button in step.
+  var starBtn = document.getElementById("starred-only"), STARRED = {d: "marked", v: "Starred only"};
+  function syncStar() {
+    var f = BYKEY.marked[2];
+    starBtn.setAttribute("aria-pressed", String(chipOn(STARRED)));
+    starBtn.textContent = "★ Starred only (" + (LEGS.filter(f).length + UP.filter(f).length) + ")";
+  }
   function drawChips() {
+    syncStar();
     chipsEl.innerHTML = !chips.length ? "" : chips.map(function (c, i) {
       var n = chipCount(c);
       return '<button type="button" class="chip" data-i="' + i + '" aria-label="Remove ' + esc(c.v) + '">' +
@@ -693,7 +707,8 @@
     if (st) {
       if (BYKEY[st.by]) by.value = st.by;
       if (Array.isArray(st.ch)) st.ch.forEach(function (c) {
-        if (Array.isArray(c) && BYKEY[c[0]] && typeof c[1] === "string") chips.push({d: c[0], v: c[1]}); });
+        if (Array.isArray(c) && BYKEY[c[0]] && typeof c[1] === "string")
+          chips.push({d: c[0], v: c[0] === "marked" ? "Starred only" : c[1]}); });  // "Marked only" was the old label
       if (Number.isInteger(st.sc) && st.sc >= 0 && st.sc < SORT_COLS.length &&
           (st.sd === "desc" || st.sd === "asc")) {
         sortState = {col: st.sc, dir: st.sd};
@@ -711,7 +726,11 @@
     scope(); sortState = null; drawChips(); search(); closeSugg(); save(); render(); });
   by.addEventListener("change", function () { sortState = null; save(); render(); });
   document.addEventListener("marks-changed", function () {
-    if (chips.some(function (c) { return c.d === "marked"; })) { drawChips(); render(); }
+    if (chips.some(function (c) { return c.d === "marked"; })) { drawChips(); render(); } else syncStar();
+  });
+  starBtn.addEventListener("click", function () {
+    if (chipOn(STARRED)) chips = chips.filter(function (c) { return c.d !== "marked"; }), chipsChanged();
+    else addChip(STARRED);
   });
   q.addEventListener("input", search);
   q.addEventListener("focus", search);
