@@ -86,6 +86,7 @@
   .bar i.up{background:var(--good)} .bar i.down{background:var(--bad)}
   .bar b{position:absolute; top:-3px; width:2px; height:9px; background:var(--ink)}
 
+  #upcoming{margin-top:28px}
   tr.legs > td{padding:0 0 12px 14px; background:none; cursor:default}
   tr.legs table{margin-top:4px}
   tr.legs td{font-size:12px; padding:6px 6px; font-family:"IBM Plex Mono",monospace}
@@ -201,6 +202,7 @@
     <div class="ex-main" data-inspect-id="explore-main">
       <p class="summary" id="summary" data-inspect-id="explore-summary"></p>
       <div id="out" data-inspect-id="explore-table"></div>
+      <div id="upcoming"></div>
     </div>
   <footer data-inspect-id="explore-footer">A leg is graded once its game is final, by the
     same rule the listing uses: the real number beats the line. An anytime-TD pick hits on a
@@ -221,11 +223,13 @@
   // them made a headline that described nothing actually bet, so the page
   // shows one kind at a time and never both. "All" is every leg a book
   // priced; the shortlist is the subset the report picked.
-  var kind = document.getElementById("kind"), LEGS;
+  var kind = document.getElementById("kind"), LEGS, UP;
   function scope() {
     var k = kind.value;
-    LEGS = D.legs.filter(function (l) {
-      return l.s === "anytime_td" ? k === "td" : k === "all" || (k === "short" && !!l.pick); });
+    function inScope(l) {
+      return l.s === "anytime_td" ? k === "td" : k === "all" || (k === "short" && !!l.pick); }
+    LEGS = D.legs.filter(inScope);
+    UP = (D.upcoming || []).filter(inScope);  // this week's legs, same Picks scope
   }
 
   var STAT = {receiving_yards: "Receiving yards", rushing_yards: "Rushing yards",
@@ -324,14 +328,14 @@
   function chipOn(c) { return chips.some(function (x) { return x.d === c.d && x.v === c.v; }); }
   function chipCount(c) {
     var f = BYKEY[c.d][2];
-    return LEGS.filter(function (l) { var g = f(l); return g && g[0] === c.v; }).length;
+    return LEGS.concat(UP).filter(function (l) { var g = f(l); return g && g[0] === c.v; }).length;
   }
-  function filtered() {
-    if (!chips.length) return LEGS;
+  function filtered(legs) {
+    if (!chips.length) return legs;
     var by = {};
     chips.forEach(function (c) { (by[c.d] = by[c.d] || []).push(c.v); });
     var keys = Object.keys(by);
-    return LEGS.filter(function (l) {
+    return legs.filter(function (l) {
       return keys.every(function (k) { var g = BYKEY[k][2](l); return g && by[k].indexOf(g[0]) >= 0; });
     });
   }
@@ -349,19 +353,27 @@
     }).join(" · ")) + " — ";
   }
   function search() {
-    var t = q.value.trim().toLowerCase(), r = [];
-    if (t && ("marked".indexOf(t) === 0 || "star".indexOf(t) === 0) && !chipOn({d: "marked", v: "Marked only"}))
-      r.push({d: "marked", v: "Marked only", n: chipCount({d: "marked", v: "Marked only"}), pre: true, t: ""});
+    var t = q.value.trim().toLowerCase(), m = {}, r = [];
+    function add(d, label, n, up, tm, pre) {
+      var k = d + "\n" + label, c = m[k];
+      if (!c) { c = m[k] = {d: d, v: label, n: 0, m: 0, t: tm, pre: pre}; r.push(c); }
+      c.n += n; c.m += up;
+    }
+    if (t && ("marked".indexOf(t) === 0 || "star".indexOf(t) === 0)) {
+      var mc = {d: "marked", v: "Marked only"}, f = BYKEY.marked[2];
+      if (!chipOn(mc)) add("marked", mc.v, LEGS.filter(f).length, UP.filter(f).length, "", true);
+    }
     if (t) DIMS.forEach(function (d) {
-      groups(LEGS, d[0]).forEach(function (g) {
-        var i = g.label.toLowerCase().indexOf(t), c = {d: d[0], v: g.label};
-        if (i < 0 || chipOn(c)) return;
-        c.n = g.legs.length; c.pre = i === 0;
-        c.t = d[0] === "player" ? g.legs[0].tm : "";
-        r.push(c);
+      [LEGS, UP].forEach(function (set, w) {
+        groups(set, d[0]).forEach(function (g) {
+          var i = g.label.toLowerCase().indexOf(t);
+          if (i < 0 || chipOn({d: d[0], v: g.label})) return;
+          add(d[0], g.label, w ? 0 : g.legs.length, w ? g.legs.length : 0,
+              d[0] === "player" ? g.legs[0].tm : "", i === 0);
+        });
       });
     });
-    r.sort(function (a, b) { return (b.pre - a.pre) || (b.n - a.n); });
+    r.sort(function (a, b) { return (b.pre - a.pre) || (b.n + b.m - a.n - a.m); });
     hits = r.slice(0, 8); hi = 0; drawSugg();
   }
   function drawSugg() {
@@ -369,7 +381,7 @@
     sugg.innerHTML = hits.map(function (c, i) {
       return '<div class="sg-row' + (i === hi ? " on" : "") + '" role="option" data-i="' + i + '">' +
         '<span class="sg-dim">' + esc(dname(BYKEY[c.d])) + '</span><span class="sg-val">' +
-        esc(c.v + (c.t ? " (" + c.t + ")" : "")) + '</span><span class="sg-n">' + c.n + '</span></div>';
+        esc(c.v + (c.t ? " (" + c.t + ")" : "")) + '</span><span class="sg-n">(' + c.n + ')' + (c.m ? ' · ' + c.m + ' this week' : '') + '</span></div>';
     }).join("");
   }
   function closeSugg() { hits = []; drawSugg(); }
@@ -478,15 +490,18 @@
     return h ? '<span class="mk">' + h + '</span>' : "";
   }
 
-  function legRows(legs) {
-    return legs.slice().sort(function (a, b) {
+  // Rows for one leg list. The row and star ids are parameters because graded and
+  // upcoming tables share this; the upcoming table has no result column and keeps
+  // the order it is given.
+  function legRows(legs, rowId, starId, graded) {
+    return (graded ? legs.slice().sort(function (a, b) {
       return b.season - a.season || b.week - a.week || (a.p < b.p ? -1 : 1);
-    }).map(function (l) {
-      return '<tr data-inspect-id="explore-leg"><td>' + (window.markStar ? markStar(markKey(l.season, l.week, l.p, l.s), "mark-star-explore") : "") + trendMk(l, "explore-badge") + '<a href="/' + esc(l.file) + '">' + esc(l.p) + '</a>' +
+    }) : legs).map(function (l) {
+      return '<tr data-inspect-id="' + rowId + '"><td>' + (window.markStar ? markStar(markKey(l.season, l.week, l.p, l.s), starId) : "") + trendMk(l, "explore-badge") + '<a href="/' + esc(l.file) + '">' + esc(l.p) + '</a>' +
         '<span class="meta">' + esc(l.tm) + mk('<span class="dp">' + esc(l.role || "") + '</span>', l, "explore-rank-chip", "explore-badge") + '<span class="gm">' + esc("· W" + l.week + " " + l.game) + '</span></span></td>' +
         '<td>' + (l.s === "anytime_td" ? "anytime TD" : 'o' + l.line + ' ' + (SHORT[l.s] || l.s)) + '</td>' +
         '<td>' + (l.price == null ? "—" : (l.price > 0 ? "+" : "") + l.price) + '</td>' +
-        '<td><span class="mark ' + (l.hit ? "hit" : "miss") + '">' + l.actual + '</span></td></tr>';
+        (graded ? '<td><span class="mark ' + (l.hit ? "hit" : "miss") + '">' + l.actual + '</span></td>' : '') + '</tr>';
     }).join("");
   }
 
@@ -571,14 +586,14 @@
   });
 
   function render() {
-    var legs = filtered(), all = stats(legs), gs = groups(legs, by.value);
+    var legs = filtered(LEGS), all = stats(legs), gs = groups(legs, by.value);
     summary.innerHTML = chipPrefix() + "<b>" + all.h + "/" + all.n + "</b> hit (" + pct(all.rate) + ")" +
       (all.np ? " against <b>" + pct(all.be) + "</b> needed · $100 each: <b>" + money(all.pl) + "</b>" : "") +
       (all.np && all.np < all.n ? " · " + (all.n - all.np) + " unpriced legs left out of those two" : "") +
       (D.pending[kind.value] ? " · " + D.pending[kind.value] + " still waiting on a final score, " +
         "season-wide -- not scoped to the group or filter above" : "") +
       ((D.void || {})[kind.value] ? " · " + D.void[kind.value] + " void (player didn't play), left out" : "");
-    renderTop(legs); renderTeams(legs);
+    renderTop(legs); renderTeams(legs); renderUp();
     if (!legs.length) { out.innerHTML = '<p class="empty">No graded legs match.</p>'; return; }
     // (g, s) pairs, default order first -- groups() already carries the
     // category's own natural/by-size order, which sortState === null falls
@@ -619,6 +634,22 @@
     out._groups = rowsData.map(function (row) { return row.g; });
   }
 
+  // This week's legs under the same chips. Kickoff, then shortlist rank, then name.
+  var upEl = document.getElementById("upcoming");
+  function renderUp() {
+    var wk = D.upcomingWeek;
+    if (!wk) { upEl.innerHTML = ""; return; }
+    var legs = filtered(UP).slice().sort(function (a, b) {
+      return (a.kick || "~") < (b.kick || "~") ? -1 : (a.kick || "~") > (b.kick || "~") ? 1 :
+        (a.pick || 99) - (b.pick || 99) || (a.p < b.p ? -1 : 1);
+    });
+    upEl.innerHTML = '<p class="summary" data-inspect-id="explore-upcoming"><b>This week (Week ' + wk.week + ') · ' +
+      legs.length + ' leg' + (legs.length === 1 ? '' : 's') + ' match</b></p>' +
+      (legs.length ? '<table><tbody><tr class="legs"><td><table><colgroup><col><col class="l-st"><col class="l-pr"></colgroup><tbody>' +
+        legRows(legs, "explore-upcoming-leg", "mark-star-upcoming", false) + '</tbody></table></td></tr></tbody></table>'
+        : '<p class="empty">' + (UP.length ? "No legs this week match." : "No legs are waiting for a game this week.") + '</p>');
+  }
+
   function toggle(tr) {
     var open = tr.getAttribute("aria-expanded") === "true";
     var next = tr.nextElementSibling;
@@ -628,7 +659,7 @@
     x.className = "legs";
     x.setAttribute("data-inspect-id", "explore-group-legs");
     x.innerHTML = '<td colspan="6"><table><colgroup><col><col class="l-st"><col class="l-pr"><col class="l-ac"></colgroup>' +
-      '<tbody>' + legRows(g.legs) + '</tbody></table></td>';
+      '<tbody>' + legRows(g.legs, "explore-leg", "mark-star-explore", true) + '</tbody></table></td>';
     tr.after(x);
     tr.setAttribute("aria-expanded", "true");
   }

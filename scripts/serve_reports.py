@@ -1247,7 +1247,7 @@ EXPLORE_FIELDS = ("p", "tm", "vs", "role", "s", "line", "price", "mp", "mp_raw",
                   "def", "app", "pick", "game", "kick", "hit", "actual", "file")
 
 
-def td_legs(season, week):
+def td_legs(season, week, waiting_rows=None):
     """The week's anytime-TD markers as graded legs, shaped like the others.
 
     One marker per game: the likeliest scorer. It hits when the player scored
@@ -1257,6 +1257,7 @@ def td_legs(season, week):
     what the price implied, so the price is recovered from it. Without one,
     the leg counts toward hit rate but not toward Needed or $100 each.
     Returns (graded legs, count still waiting on a final score, count void).
+    A list passed as waiting_rows also receives the waiting picks as ungraded legs.
     """
     fname = os.path.join(ROOT, f"td_markers_{season}_w{week}.json")
     try:
@@ -1282,27 +1283,33 @@ def td_legs(season, week):
             sys.stderr.write(f"td outcomes unavailable: {e}\n")
     kicks = kickoffs()
     legs, waiting, void = [], 0, 0
+
+    def leg(m, away, home, hit, actual):
+        bp = m.get("book_p") if m.get("basis") == "model+book_vig" else None
+        price = None
+        if bp:
+            price = round(-100 * bp / (1 - bp)) if bp >= 0.5 else round(100 * (1 - bp) / bp)
+        return {
+            "p": m["player"], "tm": m.get("team"), "role": m.get("position"),
+            "vs": home if m.get("team") == away else away,
+            "s": "anytime_td", "line": 0.5, "price": price, "mp": m.get("model_p"),
+            "bp": bp, "def": None, "pick": None, "game": f"{away} @ {home}",
+            "kick": kicks.get((season, week, away, home)), "hit": hit,
+            "actual": actual, "file": f"report_{season}_w{week}_{away}-{home}.html",
+            "season": season, "week": week}
+
     for gk, m in marks.items():
         away, home = gk.split("-")
         if f"{away}@{home}" not in done:
             waiting += 1
+            if waiting_rows is not None:
+                waiting_rows.append(leg(m, away, home, None, None))
             continue
         tds = scored.get(name_key(m["player"])) if name_key else None
         if tds is None:  # no stat line: did not play, a book would void it
             void += 1
             continue
-        bp = m.get("book_p") if m.get("basis") == "model+book_vig" else None
-        price = None
-        if bp:
-            price = round(-100 * bp / (1 - bp)) if bp >= 0.5 else round(100 * (1 - bp) / bp)
-        legs.append({
-            "p": m["player"], "tm": m.get("team"), "role": m.get("position"),
-            "vs": home if m.get("team") == away else away,
-            "s": "anytime_td", "line": 0.5, "price": price, "mp": m.get("model_p"),
-            "bp": bp, "def": None, "pick": None, "game": f"{away} @ {home}",
-            "kick": kicks.get((season, week, away, home)), "hit": tds > 0,
-            "actual": tds, "file": f"report_{season}_w{week}_{away}-{home}.html",
-            "season": season, "week": week})
+        legs.append(leg(m, away, home, tds > 0, tds))
     return legs, waiting, void
 
 
@@ -1417,9 +1424,48 @@ def player_lines(season, name, team, weeks):
     return out
 
 
+def _upcoming(season, week):
+    """Legs of one week whose game is not final, shaped like explore_legs rows.
+
+    A final game with no stat line (void) is not upcoming, so only games still
+    to be played count. Includes the anytime-TD picks still waiting.
+    """
+    done = outcomes(season, week)[1]
+    rows = [dict(r) for r in lined(season, week)
+            if r["game"].replace(" @ ", "@") not in done]
+    for r in rows:
+        r["hit"] = None
+    td = []
+    td_legs(season, week, td)
+    for r in rows + td:
+        r["season"], r["week"] = season, week
+        r["rk"], r["rkt"] = chip_for(r["p"], r.get("role")) or (None, None)
+        r["bd"] = badges_for(r["p"], r.get("role"), r.get("vs"), week)
+    return [{k: r.get(k) for k in EXPLORE_FIELDS + ("season", "week", "rk", "rkt", "bd")}
+            for r in rows + td]
+
+
+def upcoming_legs():
+    """(legs, (season, week)) for the newest week on disk; ([], None) with no reports."""
+    weeks = []
+    try:
+        for f in os.listdir(ROOT):
+            m = NAME.search(f)
+            if m:
+                weeks.append((int(m.group(1)), int(m.group(2))))
+    except FileNotFoundError:
+        pass
+    if not weeks:
+        return [], None
+    sw = max(weeks)
+    return _upcoming(*sw), sw
+
+
 def explore_html():
     legs, pending, void = explore_legs()
-    blob = json.dumps({"legs": legs, "pending": pending, "void": void}).replace("</", "<\\/")
+    up, sw = upcoming_legs()
+    blob = json.dumps({"legs": legs, "pending": pending, "void": void, "upcoming": up,
+                       "upcomingWeek": {"season": sw[0], "week": sw[1]} if sw else None}).replace("</", "<\\/")
     head = HEAD.replace("NFL Props \u2014 reports", "NFL Props \u00b7 Results").format()
     body = open(EXPLORE_TPL, encoding="utf-8").read()
     return (head.replace(CHARSET, CHARSET + f"\n<script>window.__EXPLORE__={blob};</script>", 1)
