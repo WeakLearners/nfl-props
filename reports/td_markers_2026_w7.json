@@ -1,7 +1,7 @@
 {
  "CIN-BAL": {
   "basis": "model+book_vig",
-  "book_p": 0.649,
+  "book_p": 0.643,
   "conf": 0.509,
   "model_p": 0.509,
   "phase3": {
@@ -15,17 +15,17 @@
  },
  "CLE-TEN": {
   "basis": "model+book_vig",
-  "book_p": 0.339,
-  "conf": 0.339,
-  "model_p": 0.363,
+  "book_p": 0.444,
+  "conf": 0.39,
+  "model_p": 0.39,
   "phase3": {
-   "p_combined": 0.433,
-   "p_rec": 0.078,
-   "p_rush": 0.386
+   "p_combined": 0.311,
+   "p_rec": 0.033,
+   "p_rush": 0.287
   },
-  "player": "Quinshon Judkins",
+  "player": "Tony Pollard",
   "position": "RB",
-  "team": "CLE"
+  "team": "TEN"
  },
  "DAL-PHI": {
   "basis": "model+book_vig",
@@ -43,9 +43,9 @@
  },
  "DEN-ARI": {
   "basis": "model+book_vig",
-  "book_p": 0.444,
-  "conf": 0.443,
-  "model_p": 0.443,
+  "book_p": 0.435,
+  "conf": 0.435,
+  "model_p": 0.478,
   "phase3": {
    "p_combined": 0.387,
    "p_rec": 0.035,
@@ -71,8 +71,8 @@
  },
  "IND-MIN": {
   "basis": "model+book_vig",
-  "book_p": 0.435,
-  "conf": 0.435,
+  "book_p": 0.455,
+  "conf": 0.455,
   "model_p": 0.516,
   "phase3": {
    "p_combined": 0.393,
@@ -85,7 +85,7 @@
  },
  "KC-SEA": {
   "basis": "model+book_vig",
-  "book_p": 0.535,
+  "book_p": 0.545,
   "conf": 0.402,
   "model_p": 0.402,
   "phase3": {
@@ -112,8 +112,8 @@
   "team": "LA"
  },
  "MIA-NYJ": {
-  "basis": "model+book_vig",
-  "book_p": 0.512,
+  "basis": "model_only",
+  "book_p": null,
   "conf": 0.434,
   "model_p": 0.434,
   "phase3": {
@@ -141,9 +141,9 @@
  },
  "NYG-HOU": {
   "basis": "model+book_vig",
-  "book_p": 0.545,
-  "conf": 0.421,
-  "model_p": 0.421,
+  "book_p": 0.535,
+  "conf": 0.419,
+  "model_p": 0.419,
   "phase3": {
    "p_combined": 0.308,
    "p_rec": 0.086,
@@ -169,17 +169,17 @@
  },
  "SF-ATL": {
   "basis": "model+book_vig",
-  "book_p": 0.756,
-  "conf": 0.563,
-  "model_p": 0.563,
+  "book_p": 0.706,
+  "conf": 0.532,
+  "model_p": 0.532,
   "phase3": {
-   "p_combined": 0.444,
-   "p_rec": 0.124,
-   "p_rush": 0.365
+   "p_combined": 0.52,
+   "p_rec": 0.277,
+   "p_rush": 0.335
   },
-  "player": "Bijan Robinson",
+  "player": "Christian McCaffrey",
   "position": "RB",
-  "team": "ATL"
+  "team": "SF"
  },
  "TB-CAR": {
   "basis": "model+book_vig",
