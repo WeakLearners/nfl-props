@@ -46,6 +46,13 @@ class ChooseRungTests(unittest.TestCase):
         self.assertTrue(RP.rung_on(2026, 8))
         self.assertTrue(RP.rung_on(2027, 1))
 
+    def test_early_exception_is_one_game(self):
+        self.assertTrue(RP.rung_on(2026, 7, ["DAL", "PHI"]))
+        self.assertTrue(RP.rung_on(2026, 7, ["PHI", "DAL"]))
+        self.assertFalse(RP.rung_on(2026, 7, ["CIN", "BAL"]))
+        self.assertFalse(RP.rung_on(2026, 7))
+        self.assertTrue(RP.rung_on(2026, 8, ["CAR", "GB"]))
+
 
 class BuildTests(unittest.TestCase):
     """One real saved week-7 board, read-only. Skipped when no board is on disk."""

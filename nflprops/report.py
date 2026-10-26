@@ -42,8 +42,16 @@ RUNG_LO, RUNG_HI = -200, -110
 RUNG_FROM = (2026, 8)
 
 
-def rung_on(season, week):
-    return (season, week) >= RUNG_FROM
+# One early game (Sean, 2026-10-26): week 7 MNF, DAL @ PHI. It had no report yet
+# at the time. Every other week 7 report was already bet and must not change.
+RUNG_EARLY = {(2026, 7, "DAL", "PHI")}
+
+
+def rung_on(season, week, teams=()):
+    if (season, week) >= RUNG_FROM:
+        return True
+    t = sorted(teams)
+    return any((season, week) == e[:2] and t == sorted(e[2:]) for e in RUNG_EARLY)
 
 
 def choose_rung(ladder, mu, sd, f):
@@ -166,7 +174,7 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
     (empty when the sportsbook line agreed with the usage rank, or didn't
     narrow to exactly one priced QB). `rung_choice` None means on from week 8
     of 2026. True or False forces it (dry runs, tests)."""
-    use_rung = rung_on(season, week) if rung_choice is None else bool(rung_choice)
+    use_rung = rung_on(season, week, teams) if rung_choice is None else bool(rung_choice)
     with contextlib.redirect_stdout(io.StringIO()):
         pr = P.project_week(season, week)
         pool = R.star_pool(season, week)
