@@ -31,7 +31,7 @@ def raw_mp(leg):
     return leg["mp_raw"] if leg.get("mp_raw") is not None else leg["mp"]
 
 
-def graded_legs():
+def _all_graded():
     import sys
     sys.path.insert(0, str(PATH.parent.parent / "scripts"))
     import serve_reports as S
@@ -40,19 +40,29 @@ def graded_legs():
             and l.get("bp") is not None and l["hit"] is not None]
 
 
+def _fit_pool(legs):
+    # Edge-chosen rungs (week 8 on) are picked because raw mp > bp, so they regress; fitting on them pushes f toward 1, which empties every shortlist.
+    return [l for l in legs if l.get("rung") != "chosen"]
+
+
+def graded_legs():
+    return _fit_pool(_all_graded())
+
+
 def brier(legs, f):
     return sum((raw_mp(l) + f * (l["bp"] - raw_mp(l)) - l["hit"]) ** 2 for l in legs) / len(legs)
 
 
 def fit(write=True):
     """Pick f on the grid with the lowest Brier on all graded legs to date."""
-    legs = graded_legs()
+    every = _all_graded()
+    legs = _fit_pool(every)
     if not legs:
         return None
     best = min(GRID, key=lambda f: brier(legs, f))
     prev = load()
     res = {"fraction": best, "fit_through_week": max(l["week"] for l in legs),
-           "legs": len(legs), "brier_before": round(brier(legs, 0.0), 4),
+           "legs": len(legs), "chosen_excluded": len(every) - len(legs), "brier_before": round(brier(legs, 0.0), 4),
            "brier_after": round(brier(legs, best), 4),
            # a rerun in the same week keeps the earlier week's fraction as "previous"
            "previous_fraction": (None if not prev else prev.get("previous_fraction")

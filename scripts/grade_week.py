@@ -292,7 +292,8 @@ def adjustment_section(write=True):
             f"New fraction: {r['fraction']:.1f} (last week: "
             f"{'none' if prev is None else f'{prev:.1f}'}). Model moves that share of the way to the book.\n\n"
             f"Brier on {r['legs']} legs to date: {r['brier_before']:.4f} before, "
-            f"{r['brier_after']:.4f} after.\n")
+            f"{r['brier_after']:.4f} after.\n\n"
+            f"Edge-chosen rung legs left out of the fit: {r.get('chosen_excluded', 0)}.\n")
 
 
 if __name__ == "__main__":
