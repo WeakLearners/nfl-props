@@ -263,6 +263,12 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
     pr["use_new"] = [new_primary(ko.get(g), s) and pd.notna(n) and (g, pl, s) not in PINNED_OLD
                      for g, pl, s, n in zip(pr.game_id, pr.player, pr.stat, pr.new_proj)]
     pr["proj"] = np.where(pr.use_new, pr.new_proj, pr.old_proj)
+    # Weekly projection bias (calibration.json mu_bias): added to mu before ANY
+    # probability, z, lo or hi. sd is not changed. Same gate as the rung rule, so
+    # past reports re-render as they were. mu_raw keeps the number before it.
+    pr["mu_raw"] = pr.proj
+    if use_rung:
+        pr["proj"] = pr.proj + pr.stat.map(CAL.bias_for)
     # The old engine's defense multiplier is not applied to a new-primary number.
     pr["applied"] = pr.applied & ~pr.use_new
     pr["sd_adj"] = pr.sd * SD_INFLATE
@@ -350,7 +356,8 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
             "bd": player_badges(f"{r.player_key}|{r.position}", r.opponent, week if season == bdata["season"] else None, bdata),
             "p": r.player, "role": r.position + str(rank.get(r.player_key, 1)),
             "tm": r.team, "vs": r.opponent, "s": r.stat,
-            "mu": round(float(r.proj), 1), "sd": round(float(r.sd_adj), 1),
+            "mu": round(float(r.proj), 1),
+            **({"mu_raw": round(float(r.mu_raw), 1)} if use_rung else {}), "sd": round(float(r.sd_adj), 1),
             "lo": round(float(r.lo), 1), "hi": round(float(r.hi), 1),
             "dr": (card_line(bdata, r.opponent, r.position)
                    if season == bdata["season"] and week == bdata["slate_week"] else None),

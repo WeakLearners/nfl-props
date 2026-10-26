@@ -1,9 +1,24 @@
 {
  "fraction": 0.7,
- "fit_through_week": 6,
- "legs": 1896,
- "brier_before": 0.2322,
- "brier_after": 0.2243,
- "previous_fraction": null,
- "updated": "2026-10-20T09:00:05"
+ "fit_through_week": 7,
+ "legs": 2220,
+ "chosen_excluded": 0,
+ "mu_bias": {
+  "completions": 1.55,
+  "passing_yards": 13.95,
+  "receiving_yards": 2.41,
+  "receptions": 0.22,
+  "rushing_yards": 0.24
+ },
+ "mu_bias_n": {
+  "completions": 175,
+  "passing_yards": 175,
+  "receiving_yards": 938,
+  "receptions": 938,
+  "rushing_yards": 485
+ },
+ "brier_before": 0.2338,
+ "brier_after": 0.2272,
+ "previous_fraction": 0.7,
+ "updated": "2026-10-26T08:23:39"
 }

@@ -85,31 +85,48 @@ def legs(season, week):
     return pd.DataFrame(rows), final
 
 
+def projection_rows(season, weeks):
+    """One row per projected player-stat in finished games: the raw mu (before
+    any bias), the stored mu, and the actual. Not only shortlisted legs.
+    Reports built before the bias carry no mu_raw, and their mu is raw."""
+    rows = []
+    for week in weeks:
+        final = {(r.away_team, r.home_team)
+                 for r in G.played_games(season, week).itertuples()}
+        act = G.actuals(season, week)
+        if act.empty:
+            continue
+        by_key = act.set_index("key")
+        for rp in sorted((ROOT / "reports").glob(f"report_{season}_w{week}_*.html")):
+            if G.teams_of(rp) not in final:
+                continue
+            for d in G.load_report(rp):
+                k = name_key(d["p"])
+                if k not in by_key.index:
+                    continue
+                a = by_key.loc[k, d["s"]]
+                if isinstance(a, pd.Series):
+                    a = a.iloc[0]
+                if pd.notna(a):
+                    rows.append({"stat": d["s"], "mu": d["mu"],
+                                 "mu_raw": d.get("mu_raw", d["mu"]), "actual": float(a)})
+    return pd.DataFrame(rows)
+
+
 def accuracy(season, week):
     """Projection error across EVERY projected player in finished games, not the
-    shortlist. Six chosen legs flatter the model; this is the honest sample."""
-    final = {(r.away_team, r.home_team)
-             for r in G.played_games(season, week).itertuples()}
-    act = G.actuals(season, week)
-    if act.empty:
+    shortlist. Six chosen legs flatter the model; this is the honest sample.
+    Miss is the average absolute error of the raw mu, and of the raw mu plus
+    the fitted bias (calibration.json), so the bias effect is visible."""
+    from nflprops import calibration as CAL
+    df = projection_rows(season, [week])
+    if df.empty:
         return pd.DataFrame()
-    by_key = act.set_index("key")
-    rows = []
-    for rp in sorted((ROOT / "reports").glob(f"report_{season}_w{week}_*.html")):
-        if G.teams_of(rp) not in final:
-            continue
-        for d in G.load_report(rp):
-            k = name_key(d["p"])
-            if k not in by_key.index:
-                continue
-            a = by_key.loc[k, d["s"]]
-            if isinstance(a, pd.Series):
-                a = a.iloc[0]
-            if pd.notna(a):
-                rows.append({"stat": d["s"], "err": abs(d["mu"] - float(a))})
-    if not rows:
-        return pd.DataFrame()
-    return pd.DataFrame(rows).groupby("stat").err.agg(["mean", "count"])
+    df["b"] = df.stat.map(CAL.bias_for)
+    df["err"] = (df.mu_raw - df.actual).abs()
+    df["err_adj"] = (df.mu_raw + df.b - df.actual).abs()
+    return df.groupby("stat").agg(count=("err", "size"), mean=("err", "mean"),
+                                  adj=("err_adj", "mean"), bias=("b", "first"))
 
 
 def finished_weeks(season):
@@ -203,10 +220,13 @@ def render(season, week, df, acc, season_rows):
 
     if not acc.empty:
         L.append("## Projection error, every projected player\n")
-        L.append("| Stat | Players | Average miss |")
-        L.append("|---|---|---|")
+        from nflprops import calibration as CAL
+        nn = CAL.bias_n()
+        L.append("| Stat | Players | Bias (season n) | Miss, raw | Miss, with bias |")
+        L.append("|---|---|---|---|---|")
         for stat, r in acc.iterrows():
-            L.append(f"| {G.STAT_LABEL.get(stat, stat)} | {int(r['count'])} | {r['mean']:.1f} |")
+            L.append(f"| {G.STAT_LABEL.get(stat, stat)} | {int(r['count'])} | "
+                     f"{r['bias']:+.1f} ({nn.get(stat, 0)}) | {r['mean']:.1f} | {r['adj']:.1f} |")
         L.append("")
 
     if season_rows is not None and not season_rows.empty:
@@ -293,6 +313,9 @@ def adjustment_section(write=True):
             f"{'none' if prev is None else f'{prev:.1f}'}). Model moves that share of the way to the book.\n\n"
             f"Brier on {r['legs']} legs to date: {r['brier_before']:.4f} before, "
             f"{r['brier_after']:.4f} after.\n\n"
+            "Projection bias added to mu (actual minus mu, shrunk by n/(n+50)): "
+            + ", ".join(f"{k} {v:+.1f} (n {r['mu_bias_n'].get(k, 0)})"
+                        for k, v in sorted(r["mu_bias"].items())) + ".\n\n"
             f"Edge-chosen rung legs left out of the fit: {r.get('chosen_excluded', 0)}.\n")
 
 
