@@ -29,13 +29,13 @@
  },
  "DAL-PHI": {
   "basis": "model+book_vig",
-  "book_p": 0.63,
+  "book_p": 0.623,
   "conf": 0.481,
   "model_p": 0.481,
   "phase3": {
-   "p_combined": 0.346,
-   "p_rec": 0.096,
-   "p_rush": 0.277
+   "p_combined": 0.425,
+   "p_rec": 0.15,
+   "p_rush": 0.323
   },
   "player": "Javonte Williams",
   "position": "RB",
