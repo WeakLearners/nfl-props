@@ -400,7 +400,8 @@
   <p class="sub">Projected production for each team's featured players. The curve is the
     full range of plausible outcomes; the shaded band is the middle ~68%, where roughly two
     of every three games land. The solid upright rule marks the number FanDuel is pricing
-    closest to &minus;__TARGET_ABS__.</p>
+    closest to &minus;__TARGET_ABS__. From week 8 on it is the rung the card chose, priced
+    &minus;200 to &minus;110, where the model beats the book by the most.</p>
   <p class="sub"><strong>Ordered by how close that number sits to the curve's peak.</strong>
     Cards at the top are where the book and the card's engine agree on the likely outcome. Further
     down, the gap widens &mdash; a number well left of the peak is one the card's engine thinks clears
@@ -756,7 +757,14 @@ function p3Mark(d,c){
 
 function compare(d){
   if(d.line==null) return '<div class="cmp none" data-inspect-id="card-compare-none">no number near &minus;'+Math.abs(TARGET)+' offered</div>';
-  const off = Math.abs(d.price-TARGET) > 60;
+  // From week 8 the rung is chosen by edge, not by nearness to TARGET, so the
+  // "nearest rung" note is only for older reports. A small "old:" line shows the
+  // rung the old rule would have used.
+  const off = !d.rung && Math.abs(d.price-TARGET) > 60;
+  const sg = n => (n>0?"+":"&minus;")+Math.abs(n);
+  const oldNote = (d.rung==="chosen" && d.old_line!=null)
+    ? ' <span class="muted-note" data-inspect-id="card-old-rung">· old: o'+fmt(d.old_line)+' '+sg(d.old_price)+'</span>'
+    : (d.rung==="none" ? ' <span class="muted-note" data-inspect-id="card-old-rung">· no rung from &minus;200 to &minus;110 beats the book</span>' : '');
   const side = d.z<0 ? "above" : "below";
   return '<div class="cmp" data-inspect-id="card-compare">'
     + '<span class="cmp-line">'+fmt(d.line)+'<span class="px">'
@@ -766,6 +774,7 @@ function compare(d){
       +' · book <b>'+Math.round(d.bp*100)+'%</b></span>'
     + '</div>'
     + '<div class="cmp-z" data-inspect-id="card-compare-z">peak sits '+Math.abs(d.z).toFixed(2)+' sd '+side+' it'
+      + oldNote
       + (off?' <span class="muted-note">· nearest rung is '+(d.price>0?"+":"")+d.price+', not '+TARGET+'</span>':'')
     + '</div>';
 }

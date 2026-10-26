@@ -1244,7 +1244,8 @@ EXPLORE_TPL = os.path.join(BASE, "templates", "explore.html")
 # defense number actually fed that leg's projection. Carried through rather
 # than re-derived, so DEF_WEIGHT lives in exactly one place.
 EXPLORE_FIELDS = ("p", "tm", "vs", "role", "s", "line", "price", "mp", "mp_raw", "bp",
-                  "def", "app", "pick", "game", "kick", "hit", "actual", "file")
+                  "def", "app", "pick", "game", "kick", "hit", "actual", "file",
+                  "rung", "old_line", "old_price", "old_mp", "old_bp")
 
 
 def td_legs(season, week, waiting_rows=None):

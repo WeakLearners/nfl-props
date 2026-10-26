@@ -244,7 +244,7 @@ TRAY_JS = r"""
       var mp=Math.round(d.mp*100), bp=Math.round(d.bp*100);
       out.push("It clears "+d.line+" in "+mp+"% of outcomes, against "+bp+"% implied by the "+(d.price>0?"+":"")+d.price+" price.");
       out.push(mp-bp>=5?"The "+eng+" is more confident than the book.":bp-mp>=5?"The book is more confident than the "+eng+".":"The "+eng+" and the book agree within 5 points.");
-    } else out.push("FanDuel offered no number near −300 for "+label.toLowerCase()+".");
+    } else out.push("FanDuel offered no usable number for "+label.toLowerCase()+".");
     var a=(window.__ACTUALS__||{})[d.p+"|"+d.s];
     if(a!=null) out.push("Final: "+f1(a)+" "+unit+(d.line!=null?(a>d.line?", over the "+d.line+" line.":", under the "+d.line+" line."):"."));
     return out.join(" ");

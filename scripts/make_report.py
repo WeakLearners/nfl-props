@@ -5,9 +5,10 @@ Thin CLI over nflprops/report.py, the single report path the scheduled jobs
 (run_reports.py) use too, so a report built here is the same artifact as the
 one posted at 7am. Everything renders from templates/report.html.
 
-Usage: make_report.py SEASON WEEK TEAM_A,TEAM_B [--picks 6] [--target -300] [--dry]
+Usage: make_report.py SEASON WEEK TEAM_A,TEAM_B [--picks 6] [--target -300] [--dry] [--rung]
 
 --dry builds and prints the shortlist but writes nothing: no HTML, no saved board.
+--rung forces the rung choice on for a week before 8 (a dry run of the new rule).
 """
 import sys, pathlib
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
@@ -42,7 +43,8 @@ def main():
     lines, rem = RP.event_lines(e.id, target=target, **save)
     if lines.empty:
         sys.exit("no alternate lines on the board for that game yet")
-    rows, short, qb_notes = RP.build(SEASON, WEEK, TEAMS, lines, n_picks=n_picks)
+    rows, short, qb_notes = RP.build(SEASON, WEEK, TEAMS, lines, n_picks=n_picks,
+                                   rung_choice=True if "--rung" in sys.argv else None)
     if not rows or short.empty:
         sys.exit("nothing cleared the screens")
 

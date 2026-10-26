@@ -67,13 +67,21 @@ def legs(season, week):
                 a = a.iloc[0]
             line = d.get("line")
             hit = None if (a is None or pd.isna(a) or line is None) else bool(a > line)
+            # Rung choice (week 8 on): the same player-stat at the rung the old
+            # rule would have used, graded from its stored line.
+            old_line, old_price = d.get("old_line"), d.get("old_price")
+            old_hit = (None if (a is None or pd.isna(a) or old_line is None)
+                       else bool(a > old_line))
             conf = (None if d.get("mp") is None or d.get("bp") is None
                     else min(d["mp"], d["bp"]))
             rows.append({"game": f"{tm[0]} @ {tm[1]}", "margin": margin,
                          "player": d["p"], "stat": d["s"], "line": line,
                          "price": d.get("price"), "conf": conf,
                          "actual": None if a is None or pd.isna(a) else float(a),
-                         "hit": hit, "pnl": profit(d.get("price"), hit)})
+                         "hit": hit, "pnl": profit(d.get("price"), hit),
+                         "rung": d.get("rung"), "old_line": old_line,
+                         "old_price": old_price, "old_hit": old_hit,
+                         "old_pnl": profit(old_price, old_hit)})
     return pd.DataFrame(rows), final
 
 
@@ -225,6 +233,54 @@ def render(season, week, df, acc, season_rows):
     return "\n".join(L)
 
 
+def _breakeven(prices):
+    """Average break-even hit rate for a series of American prices."""
+    p = [(-x) / ((-x) + 100) if x < 0 else 100 / (x + 100) for x in prices]
+    return sum(p) / len(p) if p else None
+
+
+def _side(df, hit, price, pnl):
+    g = df[df[hit].notna()]
+    if g.empty:
+        return None
+    hits, n = int(g[hit].sum()), len(g)
+    return hits, n, _breakeven(g[price]), g[pnl].sum()
+
+
+def rung_section(df, season_df):
+    """Chosen rung vs old rung, same player-stats, week and season.
+
+    Only legs whose rung was chosen (week 8 on) have an old rung to compare.
+    Fallback legs and weeks before 8 are left out.
+    """
+    def pick(d):
+        if d is None or d.empty or "rung" not in d.columns:
+            return pd.DataFrame()
+        return d[(d.rung == "chosen") & d.old_line.notna()]
+
+    L = ["## Chosen rung vs old rung\n",
+         "Same players and stats on both sides. Chosen is the rung the card bet. "
+         "Old is the rung nearest -300. Only legs with a chosen rung count.\n"]
+    any_rows = False
+    L.append("| Scope | Rung | Legs | Hit | Needed | $100 flat |")
+    L.append("|---|---|---|---|---|---|")
+    for name, d in (("Week", pick(df)), ("Season", pick(season_df))):
+        if d.empty:
+            continue
+        for label, cols in (("Chosen", ("hit", "price", "pnl")),
+                            ("Old", ("old_hit", "old_price", "old_pnl"))):
+            r = _side(d, *cols)
+            if r:
+                any_rows = True
+                hits, n, be, pnl = r
+                L.append(f"| {name} | {label} | {n} | {hits}/{n} ({hits/n*100:.1f}%) | "
+                         f"{be*100:.1f}% | ${pnl:+,.0f} |")
+    if not any_rows:
+        return "## Chosen rung vs old rung\n\nNo graded legs with a chosen rung yet (starts with week 8).\n"
+    L.append("")
+    return "\n".join(L)
+
+
 def adjustment_section(write=True):
     """Refit the weekly fraction (decision #46) and report it in three lines."""
     from nflprops import calibration as CAL
@@ -263,6 +319,7 @@ if __name__ == "__main__":
 
     df, _ = legs(season, week)
     out = render(season, week, df, accuracy(season, week), season_df)
+    out += "\n" + rung_section(df, season_df)
     out += "\n" + adjustment_section(write=not a.no_write)
     if a.no_write:
         print(out)

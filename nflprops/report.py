@@ -33,6 +33,39 @@ SD_INFLATE = 1.10
 MIN_SNAP, MIN_GAMES = 0.55, 10
 DEFAULT_TARGET = -300
 
+# Rung choice (Sean, 2026-10-26; first used for week 8). For each player-stat
+# the book prices a ladder of Over rungs. Instead of the rung nearest -300, take
+# the rung priced -200 to -110 where the (shrunk) model probability beats the
+# book's by the most, and only if that gap is above zero. Earlier weeks keep the
+# nearest-to--300 rung exactly as bet.
+RUNG_LO, RUNG_HI = -200, -110
+RUNG_FROM = (2026, 8)
+
+
+def rung_on(season, week):
+    return (season, week) >= RUNG_FROM
+
+
+def choose_rung(ladder, mu, sd, f):
+    """Best rung in a ladder of (line, price) Overs, or None.
+
+    mp is the same Normal(mu, sd) tail the report uses, shrunk toward bp by f
+    (calibration.py). bp is the raw implied price, not de-vigged. Only prices
+    from RUNG_LO to RUNG_HI inclusive count. The edge mp - bp must be above 0.
+    """
+    best = None
+    for line, price in ladder or ():
+        if price is None or not (RUNG_LO <= price <= RUNG_HI):
+            continue
+        bp = _imp(price)
+        mp_raw = 1 - NormalDist(float(mu), float(sd)).cdf(float(line))
+        mp = mp_raw + f * (bp - mp_raw)
+        edge = mp - bp
+        if edge > 0 and (best is None or edge > best["edge"]):
+            best = {"line": float(line), "price": int(price), "bp": bp,
+                    "mp": mp, "mp_raw": mp_raw, "edge": edge}
+    return best
+
 ALT = {"player_pass_yds_alternate": "passing_yards",
        "player_rush_yds_alternate": "rushing_yards",
        "player_reception_yds_alternate": "receiving_yards",
@@ -87,8 +120,14 @@ def parse_lines(d, target=DEFAULT_TARGET):
         return pd.DataFrame()
     df = pd.DataFrame(rows)
     df["player_key"] = df.player.map(name_key)
+    # Every rung, kept for the rung choice. line/price stay the rung nearest the target.
+    ladders = {k: sorted({(float(a), int(b)) for a, b in zip(g.line, g.price)
+                          if pd.notna(a) and pd.notna(b)})
+               for k, g in df.groupby(["player_key", "stat"])}
     df["d"] = (df.price - target).abs()
-    return df.sort_values("d").drop_duplicates(["player_key", "stat"])
+    out = df.sort_values("d").drop_duplicates(["player_key", "stat"]).copy()
+    out["ladder"] = [ladders[(k, s)] for k, s in zip(out.player_key, out.stat)]
+    return out
 
 
 def report_path(season, week, team_a, team_b):
@@ -121,11 +160,13 @@ def new_primary(kickoff, stat):
     return stat in NEW_PRIMARY_STATS and bool(kickoff) and kickoff >= NEW_PRIMARY_FROM_KICKOFF
 
 
-def build(season, week, teams, lines, n_picks=6):
+def build(season, week, teams, lines, n_picks=6, rung_choice=None):
     """Return (rows, shortlist, qb_notes) for one game. `lines` comes from
     event_lines. `qb_notes` is the list of decision #36 QB1-override strings
     (empty when the sportsbook line agreed with the usage rank, or didn't
-    narrow to exactly one priced QB)."""
+    narrow to exactly one priced QB). `rung_choice` None means on from week 8
+    of 2026. True or False forces it (dry runs, tests)."""
+    use_rung = rung_on(season, week) if rung_choice is None else bool(rung_choice)
     with contextlib.redirect_stdout(io.StringIO()):
         pr = P.project_week(season, week)
         pool = R.star_pool(season, week)
@@ -221,11 +262,13 @@ def build(season, week, teams, lines, n_picks=6):
     pr["hi"] = pr.proj + pr.sd_adj
 
     if not lines.empty:
-        pr = pr.merge(lines[["player_key", "stat", "line", "price"]],
-                      on=["player_key", "stat"], how="left")
+        cols = ["player_key", "stat", "line", "price"] + (["ladder"] if "ladder" in lines.columns else [])
+        pr = pr.merge(lines[cols], on=["player_key", "stat"], how="left")
     else:
         pr["line"] = np.nan
         pr["price"] = np.nan
+    if "ladder" not in pr.columns:
+        pr["ladder"] = None
 
     pr["bp"] = pr.price.map(_imp)
     pr["mp"] = [np.nan if pd.isna(l) else 1 - NormalDist(float(m), float(s)).cdf(float(l))
@@ -236,6 +279,24 @@ def build(season, week, teams, lines, n_picks=6):
     _f = CAL.fraction()
     if _f:
         pr["mp"] = pr.mp + _f * (pr.bp - pr.mp)
+    # The old rung (nearest the target price), kept beside whatever is chosen.
+    pr["old_line"], pr["old_price"], pr["old_mp"], pr["old_bp"] = pr.line, pr.price, pr.mp, pr.bp
+    pr["rung"] = None
+    if use_rung:
+        for ix, r in pr.iterrows():
+            lad = r.ladder if isinstance(r.ladder, (list, tuple)) and len(r.ladder) else None
+            if pd.isna(r.line):
+                continue
+            if lad is None:
+                pr.at[ix, "rung"] = "fallback"
+                continue
+            c = choose_rung(lad, r.proj, r.sd_adj, _f)
+            if c is None:
+                pr.at[ix, "rung"] = "none"
+                continue
+            pr.at[ix, "rung"] = "chosen"
+            for k in ("line", "price", "bp", "mp", "mp_raw"):
+                pr.at[ix, k] = c[k]
     pr["z"] = (pr.line - pr.proj) / pr.sd_adj
     # Never claim more than the more pessimistic of model and market.
     pr["conf"] = pr[["mp", "bp"]].min(axis=1)
@@ -261,7 +322,9 @@ def build(season, week, teams, lines, n_picks=6):
     # Shortlist: strictly by confidence among legs passing the screens, one per
     # player. Two legs on one player die together if he is hurt or benched,
     # which is the concentration a multi-leg slip exists to avoid.
-    short = (pr[pr.clean & pr.line.notna()]
+    # With rung choice on, a leg that has a ladder but no qualifying rung shows
+    # its old rung and is never shortlisted. The list gets shorter, not filled.
+    short = (pr[pr.clean & pr.line.notna() & (pr.rung != "none")]
              .sort_values("conf", ascending=False)
              .drop_duplicates("player_key")
              .head(n_picks))
@@ -292,6 +355,12 @@ def build(season, week, teams, lines, n_picks=6):
             "mp_raw": None if pd.isna(r.mp_raw) else round(float(r.mp_raw), 3),
             "bp": None if pd.isna(r.bp) else round(float(r.bp), 3),
             "pick": None if r.pick is None else int(r.pick),
+            **({"rung": r.rung,
+                "old_line": None if pd.isna(r.old_line) else float(r.old_line),
+                "old_price": None if pd.isna(r.old_price) else int(r.old_price),
+                "old_mp": None if pd.isna(r.old_mp) else round(float(r.old_mp), 3),
+                "old_bp": None if pd.isna(r.old_bp) else round(float(r.old_bp), 3)}
+               if use_rung else {}),
             # pe: the engine behind mu ("new" = Phase 3 model, "old" = project.py).
             # alt: the OTHER engine's number, for the small comparison line.
             "pe": "new" if r.use_new else "old",
