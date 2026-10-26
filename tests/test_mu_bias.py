@@ -48,6 +48,20 @@ class BiasTests(unittest.TestCase):
         self.assertEqual(out[1]["mp_raw"], 0.5)    # no bias for this stat: untouched
         self.assertEqual(leg["mp_raw"], 0.5)       # input not changed
 
+    def test_keep_only_where_brier_drops(self):
+        def mk(st, hit):  # model says 50%, line at mu: a +bias raises mp
+            return {"s": st, "mu": 100.0, "sd": 10.0, "line": 100.0, "mp_raw": 0.5,
+                    "mp": 0.5, "bp": 0.5, "hit": hit}
+        legs = [mk("up_stat", True)] * 8 + [mk("up_stat", False)] * 2 \
+             + [mk("bad_stat", False)] * 8 + [mk("bad_stat", True)] * 2
+        kept, info = CAL.select_bias(legs, {"up_stat": 5.0, "bad_stat": 5.0, "no_legs": 2.0}, 0.0)
+        self.assertEqual(kept, {"up_stat": 5.0, "bad_stat": 0.0, "no_legs": 0.0})
+        self.assertTrue(info["up_stat"]["kept"])
+        self.assertLess(info["up_stat"]["brier_after"], info["up_stat"]["brier_before"])
+        self.assertFalse(info["bad_stat"]["kept"])
+        self.assertFalse(info["no_legs"]["kept"])
+        self.assertIsNone(info["no_legs"]["brier_before"])
+
     def test_bias_uses_mu_raw_when_present(self):
         leg = {"s": "passing_yards", "mu": 270.0, "mu_raw": 250.0, "sd": 50.0,
                "line": 250.0, "mp_raw": 0.65, "bp": 0.6}

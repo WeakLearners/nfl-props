@@ -313,9 +313,14 @@ def adjustment_section(write=True):
             f"{'none' if prev is None else f'{prev:.1f}'}). Model moves that share of the way to the book.\n\n"
             f"Brier on {r['legs']} legs to date: {r['brier_before']:.4f} before, "
             f"{r['brier_after']:.4f} after.\n\n"
-            "Projection bias added to mu (actual minus mu, shrunk by n/(n+50)): "
-            + ", ".join(f"{k} {v:+.1f} (n {r['mu_bias_n'].get(k, 0)})"
-                        for k, v in sorted(r["mu_bias"].items())) + ".\n\n"
+            "Projection bias added to mu (actual minus mu, shrunk by n/(n+50)). "
+            "A stat keeps it only if it lowers that stat's Brier:\n\n"
+            + "\n".join(
+                f"- {k}: candidate {r['mu_bias_candidate'].get(k, 0):+.1f} (n {r['mu_bias_n'].get(k, 0)}), "
+                + ("kept" if i["kept"] else "dropped")
+                + (f", Brier {i['brier_before']:.4f} to {i['brier_after']:.4f}"
+                   if i["brier_before"] is not None else ", no graded legs")
+                for k, i in sorted(r["mu_bias_kept"].items())) + "\n\n"
             f"Edge-chosen rung legs left out of the fit: {r.get('chosen_excluded', 0)}.\n")
 
 

@@ -88,6 +88,27 @@ def with_bias(legs, bias):
     return out
 
 
+def select_bias(legs, bias, f):
+    """Keep a stat's bias only if it lowers that stat's Brier at f.
+
+    Returns (kept, info). kept is {stat: value or 0.0}. info is
+    {stat: {"kept": bool, "brier_before": x, "brier_after": y}}. A stat with no
+    graded legs has no evidence, so its bias is dropped.
+    """
+    kept, info = {}, {}
+    for st, b in bias.items():
+        sub = [l for l in legs if l["s"] == st]
+        if not sub:
+            kept[st], info[st] = 0.0, {"kept": False, "brier_before": None, "brier_after": None}
+            continue
+        before = brier(sub, f)
+        after = brier(with_bias(sub, {st: b}), f)
+        keep = after < before
+        kept[st] = b if keep else 0.0
+        info[st] = {"kept": keep, "brier_before": round(before, 4), "brier_after": round(after, 4)}
+    return kept, info
+
+
 def raw_mp(leg):
     """The model probability before the adjustment (fit input)."""
     return leg["mp_raw"] if leg.get("mp_raw") is not None else leg["mp"]
@@ -119,15 +140,21 @@ def fit(write=True):
     """Pick f on the grid with the lowest Brier on all graded legs to date."""
     every = _all_graded()
     # Bias first, then f on probabilities that use the bias-corrected mu.
-    bias, bias_cnt = fit_bias()
-    legs = with_bias(_fit_pool(every), bias)
-    if not legs:
+    cand, bias_cnt = fit_bias()
+    pool = _fit_pool(every)
+    if not pool:
         return None
+    # A stat keeps its bias only if it lowers that stat's Brier. Test it at the f
+    # that fits with every candidate bias, then refit f on the kept biases.
+    f1 = min(GRID, key=lambda f: brier(with_bias(pool, cand), f))
+    bias, kept_info = select_bias(pool, cand, f1)
+    legs = with_bias(pool, bias)
     best = min(GRID, key=lambda f: brier(legs, f))
     prev = load()
     res = {"fraction": best, "fit_through_week": max(l["week"] for l in legs),
            "legs": len(legs), "chosen_excluded": len(every) - len(legs),
-           "mu_bias": bias, "mu_bias_n": bias_cnt, "brier_before": round(brier(legs, 0.0), 4),
+           "mu_bias": bias, "mu_bias_n": bias_cnt, "mu_bias_kept": kept_info,
+           "mu_bias_candidate": cand, "brier_before": round(brier(legs, 0.0), 4),
            "brier_after": round(brier(legs, best), 4),
            # a rerun in the same week keeps the earlier week's fraction as "previous"
            "previous_fraction": (None if not prev else prev.get("previous_fraction")
