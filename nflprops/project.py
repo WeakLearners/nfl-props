@@ -1,4 +1,7 @@
-"""Volume x efficiency projection engine.
+"""RETIRED 2026-10-27: no longer in the report build path (the Phase 3 model and spread.py replaced it).
+Kept so the research scripts that compare engines (head-to-head, holdout, backtest) still run.
+
+Volume x efficiency projection engine.
 
 The decomposition is the point. A player's yardage is noisy because it is a
 product of two things with very different stability: how often he touches the

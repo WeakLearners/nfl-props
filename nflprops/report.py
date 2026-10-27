@@ -10,7 +10,7 @@ from statistics import NormalDist
 import pandas as pd
 import numpy as np
 
-from . import project as P, reliability as R
+from . import reliability as R
 from .base import SPECS, DEF_WEIGHT
 from . import engine_source as ES, spread as SP
 from .features import defense_vs_position
@@ -28,9 +28,6 @@ if _SCRIPTS not in sys.path:
     sys.path.insert(0, _SCRIPTS)
 from vol_predict import phase3_vol  # noqa: E402
 
-# Errors ran ~10% larger than the model's own sd across 2023-2025, so the raw
-# spread understates how wrong a projection can be.
-SD_INFLATE = 1.10
 # Situational screens. A leg failing any of these is shown but never shortlisted.
 MIN_SNAP, MIN_GAMES = 0.55, 10
 DEFAULT_TARGET = -300
@@ -151,25 +148,6 @@ def _imp(a):
     return (-a) / ((-a) + 100) if a < 0 else 100 / (a + 100)
 
 
-# Decisions #42/#43: the 2026 holdout picked the new model for these stats.
-# Games from the 2026 week 5 4pm kickoffs on use it as the card number; earlier games keep the old
-# engine, as published.
-NEW_PRIMARY_STATS = {"passing_yards", "rushing_yards"}
-# Gate by kickoff (naive America/New_York, as stored in schedules): games that
-# kick off at or after this moment use the new model. Weeks 1-5 games before it
-# keep the old engine as published. Every later game is after it.
-NEW_PRIMARY_FROM_KICKOFF = "2026-10-11 16:00"
-
-
-# One-time override list. Empty: the Nix pin (DEN-LAC, 2026-10-11) was lifted after the
-# serving rank fix (decision #44) gave him 214.4, a sane number. Keyed on game, player, stat.
-PINNED_OLD = set()
-
-
-def new_primary(kickoff, stat):
-    return stat in NEW_PRIMARY_STATS and bool(kickoff) and kickoff >= NEW_PRIMARY_FROM_KICKOFF
-
-
 def build(season, week, teams, lines, n_picks=6, rung_choice=None):
     """Return (rows, shortlist, qb_notes) for one game. `lines` comes from
     event_lines. `qb_notes` is the list of decision #36 QB1-override strings
@@ -178,7 +156,7 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
     of 2026. True or False forces it (dry runs, tests)."""
     use_rung = rung_on(season, week, teams) if rung_choice is None else bool(rung_choice)
     with contextlib.redirect_stdout(io.StringIO()):
-        pr = P.project_week(season, week)
+        pr = SP.slate_rows(season, week)
         pool = R.star_pool(season, week)
         snaps = R.snap_share(season, week)
         cont = R.role_continuity(season, week)
@@ -216,19 +194,13 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
         return [], pr, qb_notes
     rank = {r.player_key: int(r["rank"]) for _, r in pool.iterrows()}
 
-    # Decision #31 (extended by #38/#39/#40): Phase 3's volume/yardage models.
-    # Since decision #42/#43 they are the primary number for passing_yards and
-    # rushing_yards from that kickoff, and the secondary line for the other stats.
-    # Never merged into one figure -- see #37.
-    try:
-        p3 = phase3_vol(season, week)
-    except Exception as e:
-        print(f"  ! phase3_vol failed, skipping: {e}")
-        p3 = pd.DataFrame(columns=["player_id"])
-    pr = pr.merge(p3, on="player_id", how="left") if "player_id" in pr.columns else pr
-    # Decision #38 adds receptions (targets.pkl x catch_rate_career); decision
-    # #39 adds passing_yards (features.db now carries QB passing features and
-    # y_passing_yards).
+    # The projection: Phase 3's volume/yardage models (decisions #31, #38, #39, #40) for every
+    # stat but completions, which uses the attempts x rate baseline from spread.py. One model
+    # for all stats since 2026-10-27; the old projection (project.py) is retired from this path.
+    p3 = phase3_vol(season, week)
+    if p3.empty:
+        raise RuntimeError("phase3_vol returned no rows (artifacts missing?); refusing to build a report without a projection")
+    pr = pr.merge(p3, on="player_id", how="left")
     for _c in ("p3_receiving_yards", "p3_rushing_yards", "p3_receptions", "p3_passing_yards"):
         if _c not in pr.columns:
             pr[_c] = np.nan
@@ -249,53 +221,22 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
             return np.nan
 
     pr["raw_def"] = pr.apply(raw_mult, axis=1)
-    pr["applied"] = pr.stat.map(lambda s: DEF_WEIGHT.get(s, 1.0) > 0)
-    # Decisions #42/#43: per-stat primary engine. On the switched stats the new
-    # model's number replaces the old engine's as the card's number (mu, range,
-    # curve, mp, z, conf, shortlist all follow). The new model has no spread of
-    # its own, so the old engine's sd_adj is kept around the new mean. The old
-    # engine's number moves to the secondary comparison line.
-    pr["old_proj"] = pr.proj
-    pr["new_proj"] = [r[f"p3_{r['stat']}"] if f"p3_{r['stat']}" in r.index else np.nan
-                      for _, r in pr.iterrows()]
-    with connect() as con:
-        _ko = pd.read_sql_query("SELECT game_id, gameday, gametime FROM schedules WHERE season=? AND week=?",
-                                con, params=[season, week])
-    ko = {r.game_id: f"{r.gameday} {r.gametime}" for r in _ko.itertuples() if r.gameday and r.gametime}
-    # Per-stat source of mu (engine_source.py). Default reproduces the kickoff-gated rule.
-    _src = ES.load()
-    _slate = SP.slate_rows(season, week) if ES.needs_slate(_src) else None
-    if _slate is not None:
-        # Completions has no Phase 3 model: its "new" number is the attempts x rate baseline.
-        _bm = _slate.set_index(["player_id", "stat"]).base_mu
-        _cm = pr.stat == "completions"
-        pr.loc[_cm, "new_proj"] = [_bm.get((i, "completions"), np.nan) for i in pr.loc[_cm, "player_id"]]
-
-    def _use_new(g, pl, s, n):
-        mode = _src["mu"].get(s, "old")
-        if mode == "old" or pd.isna(n) or (g, pl, s) in PINNED_OLD:
-            return False
-        return True if mode == "new" else new_primary(ko.get(g), s)
-    pr["use_new"] = [_use_new(g, pl, s, n) for g, pl, s, n in zip(pr.game_id, pr.player, pr.stat, pr.new_proj)]
-    pr["proj"] = np.where(pr.use_new, pr.new_proj, pr.old_proj)
+    # raw_def is context only: no opponent multiplier is applied to the new model's number.
+    pr["applied"] = False
+    pr["new_proj"] = [base if st == "completions" else (r[f"p3_{st}"] if f"p3_{st}" in r.index else np.nan)
+                      for (_, r), st, base in zip(pr.iterrows(), pr.stat, pr.base_mu)]
+    pr = pr[pr.new_proj.notna()].copy()
+    pr["proj"] = pr.new_proj
     # Weekly projection bias (calibration.json mu_bias): added to mu before ANY
     # probability, z, lo or hi. sd is not changed. Same gate as the rung rule, so
     # past reports re-render as they were. mu_raw keeps the number before it.
     pr["mu_raw"] = pr.proj
     if use_rung:
         pr["proj"] = pr.proj + pr.stat.map(CAL.bias_for)
-    # The old engine's defense multiplier is not applied to a new-primary number.
-    pr["applied"] = pr.applied & ~pr.use_new
-    pr["sd_adj"] = pr.sd * SD_INFLATE
-    pr["sp"] = "old"
-    if _slate is not None and any(v == "new" for v in _src["sd"].values()):
-        # New sd: the same per-player sd (spread.py), no 1.10, scaled per stat on out-of-fold residuals.
-        _sd = _slate.set_index(["player_id", "stat"]).sd
-        _sc = ES.sd_scale()
-        _new_sd = pd.Series([_sd.get((i, s), np.nan) * _sc[s] for i, s in zip(pr.player_id, pr.stat)], index=pr.index)
-        _use_sd = pr.stat.map(lambda s: _src["sd"].get(s) == "new") & _new_sd.notna()
-        pr["sd_adj"] = np.where(_use_sd, _new_sd, pr.sd_adj)
-        pr["sp"] = np.where(_use_sd, "new", "old")
+    # Spread: the per-player sd (spread.py), scaled per stat on out-of-fold residuals so that
+    # mu +/- sd covers about 68% of games (data/sd_scale.json). No 1.10 inflation.
+    _sc = ES.sd_scale()
+    pr["sd_adj"] = pr.sd * pr.stat.map(_sc)
     pr["lo"] = (pr.proj - pr.sd_adj).clip(lower=0)
     pr["hi"] = pr.proj + pr.sd_adj
 
@@ -402,9 +343,7 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
                if use_rung else {}),
             # pe: the engine behind mu ("new" = Phase 3 model, "old" = project.py).
             # The other engine's number is no longer put on the card (2026-10-27).
-            "pe": "new" if r.use_new else "old",
-            # sp: where the spread came from ("new" = spread.py, "old" = project.py x 1.10).
-            "sp": r.sp,
+            "pe": "new", "sp": "new",  # kept so model_quality and old readers see the path
         })
     return rows, pr.loc[short.index], qb_notes
 

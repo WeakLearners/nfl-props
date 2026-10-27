@@ -1,10 +1,11 @@
-"""Phase 1: with the default engine_source config, week 7 rows are what they were before the switch existed.
-Golden rows were captured from the pre-switch code on 2026-10-27 (tests/fixtures/w7_golden_rows.json)."""
+"""The build uses the new model for every stat (since 2026-10-27).
+Golden rows were captured from the build on 2026-10-27 (tests/fixtures/w7_new_rows.json): week 7,
+two games, empty lines, rung choice off."""
 import json
+import math
 import pathlib
 import sys
 import unittest
-from unittest import mock
 
 import pandas as pd
 
@@ -14,20 +15,14 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from nflprops import engine_source as ES, report as R, spread as SP
 
-GOLD = json.loads((ROOT / "tests" / "fixtures" / "w7_golden_rows.json").read_text())
-KEYS = ("mu", "sd", "lo", "hi", "pe", "role", "tm", "vs", "def", "app")
+GOLD = json.loads((ROOT / "tests" / "fixtures" / "w7_new_rows.json").read_text())
+KEYS = ("mu", "sd", "lo", "hi", "pe", "sp", "role", "tm", "vs", "def", "app")
 
 
-class Defaults(unittest.TestCase):
-    def test_default_config_is_the_new_path_for_every_stat(self):
-        cfg = ES.load()
-        self.assertEqual(cfg["sd"], {s: "new" for s in ES.STATS})
-        self.assertEqual(cfg["mu"], {s: "new" for s in ES.STATS})
-
-    def test_week7_rows_unchanged_with_the_legacy_config(self):
+class NewPathRows(unittest.TestCase):
+    def test_week7_rows_match_the_golden_rows(self):
         for game, gold in GOLD.items():
-            with mock.patch.object(ES, "load", lambda: ES.LEGACY):
-                rows, _, _ = R.build(2026, 7, game.split("-"), pd.DataFrame(), rung_choice=False)
+            rows, _, _ = R.build(2026, 7, game.split("-"), pd.DataFrame(), rung_choice=False)
             got = {(r["p"], r["s"]): r for r in rows}
             self.assertEqual(len(got), len(gold), game)
             for g in gold:
@@ -35,18 +30,21 @@ class Defaults(unittest.TestCase):
                 for k in KEYS:
                     self.assertEqual(r[k], g[k], (game, g["p"], g["s"], k))
 
-
-class NewDefaultRows(unittest.TestCase):
-    def test_every_row_is_new_path_with_a_finite_mu_and_sd(self):
-        import math
+    def test_every_row_has_a_finite_mu_and_sd(self):
         rows, _, _ = R.build(2026, 7, ["CLE", "TEN"], pd.DataFrame(), rung_choice=False)
         self.assertTrue(rows)
         for r in rows:
-            self.assertEqual(r["pe"], "new", (r["p"], r["s"]))
             self.assertTrue(math.isfinite(r["mu"]) and math.isfinite(r["sd"]) and r["sd"] > 0, (r["p"], r["s"]))
+
+    def test_sd_scale_has_every_stat(self):
+        sc = ES.sd_scale()
+        self.assertEqual(set(sc), set(ES.STATS))
+        self.assertTrue(all(0.5 < v < 1.5 for v in sc.values()))
 
 
 class SpreadMatchesOldSd(unittest.TestCase):
+    """spread.py is the sd that sat in project_week, moved unchanged (project.py is kept for this check)."""
+
     def test_slate_rows_sd_equals_project_week_sd(self):
         import contextlib
         import io

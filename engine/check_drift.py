@@ -102,7 +102,6 @@ def check_live_config(manifest: dict) -> list[str]:
         ("USE_VACATED", P.USE_VACATED, False),
         ("USE_RZ", P.USE_RZ, False),
         ("USE_CALIB", P.USE_CALIB, True),
-        ("SD_INFLATE (report.py)", R.SD_INFLATE, 1.10),
     ]
     for name, live, expected in checks:
         if live != expected:
