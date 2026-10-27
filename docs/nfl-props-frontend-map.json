@@ -530,7 +530,7 @@
           "kind": "text",
           "description": "Small line after the peak note on a card whose rung was chosen (week 8 on): the rung the old rule (nearest -300) would have used, for example 'old: o39.5 -310'. A leg with no rung from -200 to -110 that beats the book says so instead. Not shown on earlier reports.",
           "locate": {
-            "path": "templates/report.html:556",
+            "path": "templates/report.html:555",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-old-rung\"' templates/report.html"
           }
         },
@@ -540,7 +540,7 @@
           "kind": "text",
           "description": "Matchup line: the opponent's adjusted rank of 32 and its allowed per game (DATA field dr, from badges.json def_pos). Six position-stat pairs rank that one stat allowed to that position, with a unit and label in dr (u, l): RB receptions, RB receiving yds, RB rushing yds, QB rushing yds, WR receptions, TE receptions. Other stats use the whole-position rank (QB passing, WR/TE receiving yards). The Big day / Caution badge for RBs uses the RB rushing rank too, so line and badge cannot disagree. Reports built before 2026-10-04 show the raw ratio instead; reports built before 2026-10-27 keep the old whole-position rank.",
           "locate": {
-            "path": "templates/report.html:621",
+            "path": "templates/report.html:616",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-matchup\"' templates/report.html"
           }
         },
@@ -700,7 +700,7 @@
           "kind": "badge",
           "description": "Trend arrow (▲/▼) and matchup tag (Big day / Caution), on the line under the player name, last items of the .mk group. From nflprops/badges.py (data/ratings/badges.json). Hover title gives the numbers. Absent for almost everyone. Built by bdBadges(d,id) inside mk(). On the player card.",
           "locate": {
-            "path": "templates/report.html:630",
+            "path": "templates/report.html:629",
             "grep": "grep -n -F -- '\"card-badge\"' templates/report.html"
           }
         },
