@@ -241,11 +241,10 @@
      number) and new (purple, the Phase 3 model). Same colours as the lines
      on the curves. */
   .pk-models{font-family:"IBM Plex Mono",monospace; font-size:12px; flex:none;
-    display:grid; grid-template-columns:62px 62px; column-gap:12px; white-space:nowrap; color:var(--ink-3);
+    display:grid; grid-template-columns:62px; column-gap:12px; white-space:nowrap; color:var(--ink-3);
     font-variant-numeric:tabular-nums}
   /* Each number in a fixed box, right-aligned, so decimals and the labels
      line up down the column whatever the number's length. */
-  .pk-models .prim{text-decoration:underline; text-underline-offset:3px}
   .pk-models b{font-weight:600; display:inline-block; width:5ch; text-align:right; margin-left:4px}
   .pk-px{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-3);
     width:46px; text-align:right; flex:none; font-variant-numeric:tabular-nums}
@@ -279,25 +278,6 @@
   .td-phase3{
     font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:500;
     letter-spacing:.02em; color:var(--ink-2); flex:none; text-align:center;
-  }
-  /* Phase 3's ridge yardage number, shown next to this engine's own number
-     for the same stat, plus the gap between them -- two labelled models,
-     side by side, never averaged into one figure. Decision #31: on
-     receiving/rushing yards this engine's own number won the head-to-head
-     (data/vol_head_to_head.csv), so this is a second, informational read,
-     not a competing claim. Decision #37: emphasized (.big) when the two
-     models disagree by more than half this card's own spread -- a gap
-     that size is bigger than the model's own stated uncertainty, so it's
-     worth a second look at the card itself, not just the number. */
-  .p3-vol{
-    font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:500;
-    letter-spacing:.02em; color:var(--ink-3); align-self:flex-start; margin-top:3px;
-  }
-  .p3-vol .o, .p3-vol .n{font-weight:600}
-  .p3-vol .n{color:var(--p3)}
-  .p3-vol.big{
-    color:var(--ink); font-weight:600; background:var(--band);
-    padding:1px 5px; border-radius:2px;
   }
   .pick-badge{
     font-family:"IBM Plex Mono",monospace; font-weight:600;
@@ -412,7 +392,6 @@
     <span class="key"><span class="swatch" style="background:var(--kc)"></span><span id="teamB"></span></span>
     <span class="key"><span class="swatch band-key"></span>middle ~68% of outcomes</span>
     <span class="key"><span class="swatch" style="background:none;border-top:2px dashed var(--ink-3);height:0"></span>expected number on the card (team colour)</span>
-    <span class="key" data-inspect-id="legend-p3"><span class="swatch" style="background:none;border-top:2px dashed var(--p3);height:0"></span>the other engine's expected (purple: new model, grey: old engine)</span>
     <span class="key"><span class="swatch" style="background:none;border-left:2px solid var(--ink);width:0;height:14px"></span>FanDuel's ~&minus;__TARGET_ABS__ number</span>
     <span class="key" data-inspect-id="legend-actual"><span class="swatch" style="background:none;border-left:2px solid var(--good);width:0;height:14px"></span>what he actually did &mdash; <em class="lg-good">green</em> cleared the number, <em class="lg-bad">red</em> did not, grey means none was offered</span>
   </div>
@@ -481,9 +460,7 @@
     <p><strong>What this is not.</strong> These are projections, not edges. Tested against
     real sportsbook lines, this model's point estimates were <em>less</em> accurate than the
     market's. Useful for seeing a player's plausible range; not evidence anyone is mispriced.</p>
-    <p><strong>Two engines, old and new.</strong> Every passing-yards, receiving-yards,
-    rushing-yards, and receptions card carries two forecasts for the same player and stat. They
-    come from two different models, built at different times.</p>
+    <p><strong>Two engines, old and new.</strong> Two engines, built at different times, make the numbers on these cards.</p>
     <p><em>Old engine</em> (built 2026-09-13, <code>nflprops/project.py</code>). It makes the big
     number on every card and the range under it. It starts from the player's own recent games,
     weighting the latest most. It splits his workload (targets, carries, pass attempts) from what
@@ -491,7 +468,7 @@
     own, multiplies them back together, then adjusts for how tough the opponent's defense is.</p>
     <p><em>New model</em> (added 2026-09-24, decision #31, also called Phase 3; extended to
     receptions 2026-09-24, decision #38, and to passing yards 2026-09-24, decision #39). It makes
-    the small line under the range, e.g. <code>old engine 60 &middot; new model 52 (&minus;8)</code>.
+    a second forecast that is no longer printed on the card.
     For passing yards, receiving yards, and rushing yards it is a ridge regression: a straight-line
     fit that is penalized for leaning hard on any one input, so it can't memorize noise, trained on
     2019&ndash;2025 over a wider table of inputs (passing yards adds each QB's own attempts,
@@ -501,15 +478,6 @@
     shrunk history of catching the targets he gets. Head-to-head testing found that beat a ridge
     regression fit directly on receptions, by a hair. Neither engine ever sees the other's
     number.</p>
-    <p><strong>On the curve.</strong> The curve belongs to the old engine. Its dashed line, in the
-    team's colour, marks the old engine's number. The purple dashed line marks the new model's. When
-    the two lines sit apart, the engines disagree. The shortlist shows the same pair, in the same colours.</p>
-    <p><strong>Reading the gap.</strong> The number in brackets is new minus old. A minus sign means
-    the new model expects less. The two are never averaged into one figure. The line is shaded when
-    the gap is more than half the card's spread. The spread is the distance from the big number to
-    either end of its range. Say a card reads 60, range 40&ndash;80: the spread is 20, so a gap of
-    10 or more gets shaded. A gap that size is bigger than the old engine's own uncertainty, so the
-    card deserves a second look.</p>
     <p><strong>Which one to trust.</strong> Mixed. Scored on five seasons of real games
     (2021&ndash;2025, <code>data/vol_head_to_head.csv</code>,
     <code>data/vol_receptions_compare.csv</code>, and <code>data/passing_head_to_head.csv</code>),
@@ -541,8 +509,7 @@
     <p><strong>What this is not.</strong> These are projections, not edges. Tested against
     real sportsbook lines, the old engine's point estimates were <em>less</em> accurate than the
     market's. The new model has no such test. Useful for seeing a player's plausible range; not evidence anyone is mispriced.</p>
-    <p><strong>Two engines, one per stat (decision #42).</strong> Every passing-yards, receiving-yards,
-    rushing-yards, and receptions card carries two forecasts for the same player and stat. The card names
+    <p><strong>Two engines, one per stat (decision #42).</strong> Two engines make the numbers. The card names
     which engine makes the big number. From the 2026 week 5 4pm games (2026-10-11), the new model makes the big number for
     <strong>passing yards and rushing yards</strong>. The old engine makes it for <strong>receiving yards,
     receptions, and completions</strong>. Games before that kickoff used the old engine for every stat and
@@ -561,17 +528,6 @@
     his last 4 games, last 8, and career). Receptions is a different route: it predicts how many times
     a player will be targeted, then multiplies by his own shrunk history of catching the targets he gets.
     There is no new-model number for completions. Neither engine ever sees the other's number.</p>
-    <p><strong>On the curve.</strong> The solid number and the team-colour dashed line on the curve are the number on
-    the card, from the engine named on the card. The other dashed line marks the other engine: purple for the
-    new model, grey for the old engine. When the two lines sit apart, the engines disagree. The shortlist shows the
-    same pair.</p>
-    <p><strong>Reading the gap.</strong> The line under the range names both engines, the engine behind the big number
-    first, for example <code>new model 52 &middot; old engine 60 (+8)</code>. The number in brackets is the
-    other engine's number minus the big number. A plus sign means the other engine expects more. The two are never
-    averaged into one figure. The line is shaded when the gap is more than half the card's spread. The spread is the
-    distance from the big number to either end of its range. Say a card reads 60, range 40&ndash;80: the spread is 20,
-    so a gap of 10 or more gets shaded. A gap that size is bigger than the card's own uncertainty, so the card
-    deserves a second look.</p>
     <p><strong>Why these engines (decision #42).</strong> The 2026 holdout (weeks 1 to 4) scored both engines on the
     same player-games. The new model replaces the old engine on a stat only if its average miss is smaller by at
     least that stat's bar. Passing yards: 65.6 against 67.8 yards (3.25% smaller, bar 3%), new model. Rushing yards:
@@ -614,7 +570,6 @@ const ENGNAME = {old:"old engine", "new":"new model"};
   } else old.hidden=false;
 })();
 const engName = d => ENGNAME[d.pe];
-const altName = d => ENGNAME[d.pe==="new"?"old":"new"];
 const META = __META__;
 const TARGET = __TARGET__;
 const STATS = [
@@ -727,34 +682,6 @@ function actualMark(d,c){
     +'<circle cx="'+x.toFixed(1)+'" cy="'+(H-10)+'" r="2.5" fill="'+stroke+'"></circle>';
 }
 
-// Decision #37/#43: both engines, labelled, with the gap between them. "old
-// engine" is nflprops/project.py (the first engine, 2026-09-13); "new model"
-// is the Phase 3 model added 2026-09-24 (decision #31). The engine behind the big
-// number comes first. The gap is the other engine minus the big number. Emphasized
-// when the two disagree by more than half this card's own spread (d.sd).
-function p3Cmp(d,col){
-  if(d.alt==null) return "";
-  const gap = d.alt - d.mu;
-  const gapTxt = (gap>=0?"+":"") + fmt(gap);
-  const big = Math.abs(gap) >= 0.5*d.sd;
-  const clr = e => e==="new" ? "var(--p3)" : col;
-  const other = d.pe==="new" ? "old" : "new";
-  return '<span class="p3-vol'+(big?" big":"")+'" data-inspect-id="card-p3-vol">'+engName(d)+' <span class="o" style="color:'+clr(d.pe)+'">'
-    + fmt(d.mu) + '</span> &middot; '+altName(d)+' <span class="n" style="color:'+clr(other)+'">' + fmt(d.alt) + '</span> (' + gapTxt + ')</span>';
-}
-
-// The other engine's number on the same curve: a dashed rule, the same height as
-// the big number's. Purple when it is the new model, grey when it is the old engine.
-// Pinned to the edge (and drawn shorter-dashed) when it falls outside the drawn
-// range, like the actual-result mark.
-function p3Mark(d,c){
-  if(d.alt==null) return "";
-  const raw=c.X(d.alt), x=Math.max(1,Math.min(W-1,raw)), off=raw<1||raw>W-1;
-  return '<line class="meanline" data-inspect-id="card-p3-mark" x1="'+x.toFixed(1)+'" y1="'+(H-10)
-    +'" x2="'+x.toFixed(1)+'" y2="'+c.Y(c.peak).toFixed(1)+'" stroke="'+(d.pe==="new"?"var(--ink-3)":"var(--p3)")+'"'
-    +(off?' stroke-dasharray="1 2"':'')+'></line>';
-}
-
 function compare(d){
   if(d.line==null) return '<div class="cmp none" data-inspect-id="card-compare-none">no number near &minus;'+Math.abs(TARGET)+' offered</div>';
   // From week 8 the rung is chosen by edge, not by nearness to TARGET, so the
@@ -841,7 +768,7 @@ STATS.forEach(([key,label,unit])=>{
           +mk('<span class="role '+(d.tm===META.teamA?'a':'b')+'" data-inspect-id="card-role-badge">'+d.role+'</span>',d,"card-rank-chip","card-badge")+'</div>'
         +'<div class="fig-row"><span class="fig" data-inspect-id="card-expected">'
           +fmt(d.mu)+'</span>'+result(d)+'</div>'
-        +'<div class="rng" data-inspect-id="card-range">'+fmt(d.lo)+' – '+fmt(d.hi)+'</div>'+p3Cmp(d,col)+'</div>'
+        +'<div class="rng" data-inspect-id="card-range">'+fmt(d.lo)+' – '+fmt(d.hi)+'</div></div>'
       +'<div class="card-flags" data-inspect-id="card-flags">'+history(d)
         +(d.pick?'<span class="pick-badge" data-inspect-id="card-pick-badge">pick '+d.pick+'</span>':'')
         +(isTD?'<span class="td-badge" data-inspect-id="card-td-badge"'
@@ -856,7 +783,6 @@ STATS.forEach(([key,label,unit])=>{
       +'<path class="curve" d="'+c.path+'" stroke="'+col+'"></path>'
       +'<line class="meanline" x1="'+c.X(d.mu).toFixed(1)+'" y1="'+(H-10)+'" x2="'
         +c.X(d.mu).toFixed(1)+'" y2="'+c.Y(c.peak).toFixed(1)+'" stroke="'+col+'"></line>'
-      +p3Mark(d,c)
       +'<line class="axis" x1="0" y1="'+(H-10)+'" x2="'+W+'" y2="'+(H-10)+'"></line>'
       +'<text class="tick" x="0" y="'+(H-1)+'">'+fmt(Math.max(0,c.lo))+'</text>'
       +'<text class="tick" x="'+W+'" y="'+(H-1)+'" text-anchor="end">'+fmt(c.hi)+'</text>'
@@ -978,8 +904,7 @@ DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick).forEach(d=>{
     +'</span>'
     +'<span class="pk-bet" data-inspect-id="pick-bet">'+(STAT_ABBR[d.s]||d.s.replace(/_/g," "))+' over <b>'+d.line+'</b></span>'
     +pickSlotMk(d)
-    +'<span class="pk-mcell"><span class="pk-models" data-inspect-id="pick-models"><span'+(d.pe==="old"?' class="prim" title="old engine makes this leg\'s number"':'')+'>old<b style="color:'+col+'">'+(d.pe==="old"?fmt(d.mu):(d.alt==null?'&mdash;':fmt(d.alt)))+'</b></span>'
-      +'<span'+(d.pe==="new"?' class="prim" title="new model makes this leg\'s number"':'')+'>new<b style="color:var(--p3)">'+(d.pe==="new"?fmt(d.mu):(d.alt==null?'&mdash;':fmt(d.alt)))+'</b></span></span>'
+    +'<span class="pk-mcell"><span class="pk-models" data-inspect-id="pick-models" title="'+engName(d)+' projection"><b style="color:'+col+'">'+fmt(d.mu)+'</b></span>'
       +pickResult(d)+'</span>'
     +'<span class="pk-c"><span class="pk-px">'+(d.price>0?"+":"")+d.price+'</span>'
     +'<span class="pk-conf" style="color:'+col+'">'+Math.round(Math.min(d.mp,d.bp)*100)+'%</span></span>';

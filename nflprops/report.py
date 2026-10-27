@@ -377,11 +377,8 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
                 "old_bp": None if pd.isna(r.old_bp) else round(float(r.old_bp), 3)}
                if use_rung else {}),
             # pe: the engine behind mu ("new" = Phase 3 model, "old" = project.py).
-            # alt: the OTHER engine's number, for the small comparison line.
+            # The other engine's number is no longer put on the card (2026-10-27).
             "pe": "new" if r.use_new else "old",
-            "alt": (None if (r.old_proj is None or pd.isna(r.old_proj)) else round(float(r.old_proj), 1))
-                   if r.use_new
-                   else (None if pd.isna(r.new_proj) else round(float(r.new_proj), 1)),
         })
     return rows, pr.loc[short.index], qb_notes
 
