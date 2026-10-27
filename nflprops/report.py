@@ -11,7 +11,9 @@ import pandas as pd
 import numpy as np
 
 from . import project as P, reliability as R
-from .project import defense_vs_position, SPECS, DEF_WEIGHT
+from .base import SPECS, DEF_WEIGHT
+from . import engine_source as ES, spread as SP
+from .features import defense_vs_position
 from .config import require, ROOT, save_board
 from .odds import name_key
 from .db import connect
@@ -260,8 +262,21 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
         _ko = pd.read_sql_query("SELECT game_id, gameday, gametime FROM schedules WHERE season=? AND week=?",
                                 con, params=[season, week])
     ko = {r.game_id: f"{r.gameday} {r.gametime}" for r in _ko.itertuples() if r.gameday and r.gametime}
-    pr["use_new"] = [new_primary(ko.get(g), s) and pd.notna(n) and (g, pl, s) not in PINNED_OLD
-                     for g, pl, s, n in zip(pr.game_id, pr.player, pr.stat, pr.new_proj)]
+    # Per-stat source of mu (engine_source.py). Default reproduces the kickoff-gated rule.
+    _src = ES.load()
+    _slate = SP.slate_rows(season, week) if ES.needs_slate(_src) else None
+    if _slate is not None:
+        # Completions has no Phase 3 model: its "new" number is the attempts x rate baseline.
+        _bm = _slate.set_index(["player_id", "stat"]).base_mu
+        _cm = pr.stat == "completions"
+        pr.loc[_cm, "new_proj"] = [_bm.get((i, "completions"), np.nan) for i in pr.loc[_cm, "player_id"]]
+
+    def _use_new(g, pl, s, n):
+        mode = _src["mu"].get(s, "old")
+        if mode == "old" or pd.isna(n) or (g, pl, s) in PINNED_OLD:
+            return False
+        return True if mode == "new" else new_primary(ko.get(g), s)
+    pr["use_new"] = [_use_new(g, pl, s, n) for g, pl, s, n in zip(pr.game_id, pr.player, pr.stat, pr.new_proj)]
     pr["proj"] = np.where(pr.use_new, pr.new_proj, pr.old_proj)
     # Weekly projection bias (calibration.json mu_bias): added to mu before ANY
     # probability, z, lo or hi. sd is not changed. Same gate as the rung rule, so
@@ -272,6 +287,13 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
     # The old engine's defense multiplier is not applied to a new-primary number.
     pr["applied"] = pr.applied & ~pr.use_new
     pr["sd_adj"] = pr.sd * SD_INFLATE
+    if _slate is not None and any(v == "new" for v in _src["sd"].values()):
+        # New sd: the same per-player sd (spread.py), no 1.10, scaled per stat on out-of-fold residuals.
+        _sd = _slate.set_index(["player_id", "stat"]).sd
+        _sc = ES.sd_scale()
+        _new_sd = pd.Series([_sd.get((i, s), np.nan) * _sc[s] for i, s in zip(pr.player_id, pr.stat)], index=pr.index)
+        _use_sd = pr.stat.map(lambda s: _src["sd"].get(s) == "new") & _new_sd.notna()
+        pr["sd_adj"] = np.where(_use_sd, _new_sd, pr.sd_adj)
     pr["lo"] = (pr.proj - pr.sd_adj).clip(lower=0)
     pr["hi"] = pr.proj + pr.sd_adj
 

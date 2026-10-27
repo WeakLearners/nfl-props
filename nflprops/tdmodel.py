@@ -22,7 +22,7 @@ import numpy as np
 import pandas as pd
 
 from .db import connect
-from .project import (
+from .base import (
     _history, _player_baselines, _rz_baselines, _roster,
 )
 

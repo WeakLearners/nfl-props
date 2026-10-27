@@ -37,7 +37,7 @@ import pandas as pd
 
 ROOT = Path.home() / "Code/nfl-props"
 sys.path.insert(0, str(ROOT))
-from nflprops.project import _roster  # noqa: E402  -- the one place "who's on the field" is decided
+from nflprops.base import _roster  # noqa: E402  -- the one place "who's on the field" is decided
 
 LIVE_DB = ROOT / "data/nflprops.db"
 FEATURES_DB = ROOT / "data/features.db"

@@ -8,7 +8,7 @@ projects/nfl-props/defense-rankings-2026-10-04.md.
 import numpy as np
 import pandas as pd
 
-from .project import DECAY, PRIOR_SEASON_W, K_VOL_GAMES
+from .base import DECAY, PRIOR_SEASON_W, K_VOL_GAMES
 
 LOOKBACK_SEASONS = 1  # two seasons: the current one and the one before
 # Each rank is the order of ONE stat, the same number the page shows.

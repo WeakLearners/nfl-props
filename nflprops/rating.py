@@ -14,7 +14,7 @@ from scipy.stats import norm
 
 from .config import DATA_DIR
 from .features import defense_vs_position
-from .project import DECAY, PRIOR_SEASON_W, MIN_GAMES, K_VOL_GAMES
+from .base import DECAY, PRIOR_SEASON_W, MIN_GAMES, K_VOL_GAMES
 from .shares import player_game_shares
 
 RATINGS_DIR = DATA_DIR / "ratings"
