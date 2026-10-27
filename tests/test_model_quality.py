@@ -42,5 +42,13 @@ class Summary(unittest.TestCase):
         self.assertTrue(np.isnan(M._auc([0.5, 0.6], [1, 1])))
 
 
+class RawProb(unittest.TestCase):
+    def test_raw_falls_back_to_mp_only_when_missing(self):
+        self.assertEqual(M.raw_prob({"mp": 0.7, "mp_raw": 0.6}), 0.6)
+        self.assertEqual(M.raw_prob({"mp": 0.7}), 0.7)
+        self.assertEqual(M.raw_prob({"mp": 0.7, "mp_raw": None}), 0.7)
+        self.assertIsNone(M.raw_prob({}))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -13,7 +13,8 @@ week included). Definitions:
              out of both MAE numbers.
   rel_mae    mae / naive_mae. Below 1.0: the model beats the plain average.
   cov68      share of players with |actual - mu| <= sd. Target is about 68%.
-  brier_raw  Brier score of mp_raw (the model alone) against "actual beat the line".
+  brier_raw  Brier score of mp_raw (the model alone; where a report has no mp_raw, mp is used, because
+             it was not blended with the book yet) against "actual beat the line".
   brier_pub  Brier score of mp (the published number, moved toward the book by f).
   auc / auc_raw  chance that a leg that hit has a higher probability than a leg
              that missed (mp, mp_raw). 0.5 is a coin flip.
@@ -50,6 +51,12 @@ def _naive(season, week):
     return pg.groupby("key")[STATS].mean()
 
 
+def raw_prob(d):
+    """The model-alone probability of the over. Reports before the f blend (about week 6)
+    carry no mp_raw, and their mp is the raw tail, so mp stands in for it."""
+    return d.get("mp_raw") if d.get("mp_raw") is not None else d.get("mp")
+
+
 def collect(season, weeks):
     """One row per projected player-stat in finished games, with the actual and the naive."""
     import sys
@@ -84,7 +91,7 @@ def collect(season, weeks):
                 rows.append({
                     "season": season, "week": week, "stat": d["s"], "player": d["p"],
                     "mu": d["mu"], "sd": d.get("sd"), "actual": float(a), "naive": nv,
-                    "line": line, "mp": d.get("mp"), "mp_raw": d.get("mp_raw"),
+                    "line": line, "mp": d.get("mp"), "mp_raw": raw_prob(d),
                     "hit": None if line is None else float(a > line)})
     return pd.DataFrame(rows)
 

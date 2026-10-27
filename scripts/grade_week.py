@@ -165,7 +165,7 @@ def model_quality_section(mq, acc, week):
          "Rel MAE = model MAE / naive MAE on the same players (below 1.0 beats the plain average). "
          "Within 1 sd = share of players with actual inside mu plus or minus sd (target about 68%). "
          "Brier = mean squared error of a probability against \"actual beat the line\" (lower is better, "
-         "0.25 is a coin flip). Raw is the model alone. Published is moved toward the book by f. "
+         "0.25 is a coin flip). Raw is the model alone (reports before the blend have no stored raw number, so their published number is used, because it was not blended yet). Published is moved toward the book by f. "
          "AUC = chance that a leg that hit ranks above a leg that missed (0.5 is a coin flip). "
          "A star marks a count under 30.\n"]
     if mq is None or mq.empty:
