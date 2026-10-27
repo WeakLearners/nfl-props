@@ -18,7 +18,8 @@ week included). Definitions:
   brier_pub  Brier score of mp (the published number, moved toward the book by f).
   auc / auc_raw  chance that a leg that hit has a higher probability than a leg
              that missed (mp, mp_raw). 0.5 is a coin flip.
-  engine     "new" when more than half of the rows came from the new model (card field pe), else "old".
+  engine     "new" when more than half of the rows had both mu and sd from the new path (card fields pe and sp), else "old".
+             Weeks before 2026-10-27 are "old" for every stat, even where mu was already new, because the sd was the old one.
              A step change in the numbers at the week the engine changes is the switch, not drift.
   new_share  share of rows from the new model.
   b1..b5     five fixed bins of mp_raw (0-20, 20-40, 40-60, 60-80, 80-100%):
@@ -94,7 +95,7 @@ def collect(season, weeks):
                 rows.append({
                     "season": season, "week": week, "stat": d["s"], "player": d["p"],
                     "mu": d["mu"], "sd": d.get("sd"), "actual": float(a), "naive": nv,
-                    "line": line, "mp": d.get("mp"), "mp_raw": raw_prob(d), "engine": d.get("pe") or "old",
+                    "line": line, "mp": d.get("mp"), "mp_raw": raw_prob(d), "engine": "new" if (d.get("pe") == "new" and d.get("sp") == "new") else "old",
                     "hit": None if line is None else float(a > line)})
     return pd.DataFrame(rows)
 

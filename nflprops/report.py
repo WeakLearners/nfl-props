@@ -287,6 +287,7 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
     # The old engine's defense multiplier is not applied to a new-primary number.
     pr["applied"] = pr.applied & ~pr.use_new
     pr["sd_adj"] = pr.sd * SD_INFLATE
+    pr["sp"] = "old"
     if _slate is not None and any(v == "new" for v in _src["sd"].values()):
         # New sd: the same per-player sd (spread.py), no 1.10, scaled per stat on out-of-fold residuals.
         _sd = _slate.set_index(["player_id", "stat"]).sd
@@ -294,6 +295,7 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
         _new_sd = pd.Series([_sd.get((i, s), np.nan) * _sc[s] for i, s in zip(pr.player_id, pr.stat)], index=pr.index)
         _use_sd = pr.stat.map(lambda s: _src["sd"].get(s) == "new") & _new_sd.notna()
         pr["sd_adj"] = np.where(_use_sd, _new_sd, pr.sd_adj)
+        pr["sp"] = np.where(_use_sd, "new", "old")
     pr["lo"] = (pr.proj - pr.sd_adj).clip(lower=0)
     pr["hi"] = pr.proj + pr.sd_adj
 
@@ -401,6 +403,8 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
             # pe: the engine behind mu ("new" = Phase 3 model, "old" = project.py).
             # The other engine's number is no longer put on the card (2026-10-27).
             "pe": "new" if r.use_new else "old",
+            # sp: where the spread came from ("new" = spread.py, "old" = project.py x 1.10).
+            "sp": r.sp,
         })
     return rows, pr.loc[short.index], qb_notes
 

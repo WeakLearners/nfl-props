@@ -10,7 +10,7 @@ sd per stat:
   "new"    spread.py sd (same per-player sd shrunk toward the position, no 1.10) x the
            per-stat scale in data/sd_scale.json
 
-Defaults reproduce the behaviour before 2026-10-28 exactly. data/engine_source.json,
+The defaults are the new path for every stat (since 2026-10-27). LEGACY is the earlier default. data/engine_source.json,
 if present, overrides them key by key. td is not a switch: tdmodel.py reads only the
 shared primitives in base.py, not the old projection.
 """
@@ -21,7 +21,13 @@ from .config import DATA_DIR
 STATS = ("passing_yards", "completions", "rushing_yards", "receiving_yards", "receptions")
 PATH = DATA_DIR / "engine_source.json"
 SCALE_PATH = DATA_DIR / "sd_scale.json"
+# Flipped 2026-10-27: one model for every stat (Sean). Before this the defaults were
+# mu {passing, rushing: "gated"; receiving, receptions, completions: "old"} and sd "old".
 DEFAULT = {
+    "mu": {s: "new" for s in STATS},
+    "sd": {s: "new" for s in STATS},
+}
+LEGACY = {
     "mu": {"passing_yards": "gated", "rushing_yards": "gated", "receiving_yards": "old",
            "receptions": "old", "completions": "old"},
     "sd": {s: "old" for s in STATS},
