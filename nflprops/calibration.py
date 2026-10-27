@@ -136,11 +136,14 @@ def brier(legs, f):
     return sum((raw_mp(l) + f * (l["bp"] - raw_mp(l)) - l["hit"]) ** 2 for l in legs) / len(legs)
 
 
-def fit(write=True):
-    """Pick f on the grid with the lowest Brier on all graded legs to date."""
-    every = _all_graded()
+def fit(write=True, legs=None, rows=None):
+    """Pick f on the grid with the lowest Brier on all graded legs to date.
+
+    legs / rows (tests, and the new-path refit in scripts/refit_new_path.py) replace the graded
+    legs and the projected-player rows. Left out, the fit reads the reports as before."""
+    every = _all_graded() if legs is None else legs
     # Bias first, then f on probabilities that use the bias-corrected mu.
-    cand, bias_cnt = fit_bias()
+    cand, bias_cnt = fit_bias(rows)
     pool = _fit_pool(every)
     if not pool:
         return None

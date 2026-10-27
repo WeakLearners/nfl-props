@@ -18,6 +18,9 @@ week included). Definitions:
   brier_pub  Brier score of mp (the published number, moved toward the book by f).
   auc / auc_raw  chance that a leg that hit has a higher probability than a leg
              that missed (mp, mp_raw). 0.5 is a coin flip.
+  engine     "new" when more than half of the rows came from the new model (card field pe), else "old".
+             A step change in the numbers at the week the engine changes is the switch, not drift.
+  new_share  share of rows from the new model.
   b1..b5     five fixed bins of mp_raw (0-20, 20-40, 40-60, 60-80, 80-100%):
              leg count, mean predicted, share that hit.
 Probability numbers use every projected player that has a priced line, not only
@@ -91,7 +94,7 @@ def collect(season, weeks):
                 rows.append({
                     "season": season, "week": week, "stat": d["s"], "player": d["p"],
                     "mu": d["mu"], "sd": d.get("sd"), "actual": float(a), "naive": nv,
-                    "line": line, "mp": d.get("mp"), "mp_raw": raw_prob(d),
+                    "line": line, "mp": d.get("mp"), "mp_raw": raw_prob(d), "engine": d.get("pe") or "old",
                     "hit": None if line is None else float(a > line)})
     return pd.DataFrame(rows)
 
@@ -128,7 +131,9 @@ def summarize(df):
     nv = df[df.naive.notna()]
     cv = df[df.sd.notna()]
     pr = df[df.mp.notna() & df.mp_raw.notna() & df.hit.notna()]
+    new_share = float((df.engine == "new").mean()) if n and "engine" in df else 0.0
     r = {"n": n,
+         "engine": "new" if new_share > 0.5 else "old", "new_share": round(new_share, 3),
          "bias": float((df.actual - df.mu).mean()) if n else np.nan,
          "mae": float((df.actual - df.mu).abs().mean()) if n else np.nan,
          "naive_n": len(nv),

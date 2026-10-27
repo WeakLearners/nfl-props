@@ -153,6 +153,7 @@
   .mqt td{text-align:right; padding:5px 8px; border-bottom:1px solid var(--line-soft)}
   .mqt th:first-child,.mqt td:first-child{text-align:left; font-family:"Public Sans",sans-serif; color:var(--ink-2); font-size:13px; text-transform:none; letter-spacing:0}
   .mqt .lown{color:var(--ink-3); font-style:italic}
+  .mqt .sw{border-left:2px solid var(--den)}
   .mqt .sea{border-left:1px solid var(--line); font-weight:600}
   .mqh{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-2); font-weight:500; margin:18px 0 6px}
   .hm{display:grid; grid-template-columns:40px minmax(0,1fr); gap:6px 12px; align-items:center}
@@ -209,7 +210,7 @@ __TRAY_CSS__
   <div class="pg-content">
     <section class="sec" data-inspect-id="trends-model-quality">
       <h2>Model quality by week <span class="sub">projections vs actuals &middot; no betting line</span></h2>
-      <p class="fine">How good the projections were, week by week. Italic means fewer than 30 players or legs. Rel MAE is the model's average miss divided by the miss of a plain career average for the same players: below 1.0 beats it. Within 1 sd is the share of players inside the stated range (target about 68%). Brier is the model's raw probability score against the line: 0.25 is a coin flip, lower is better.</p>
+      <p class="fine">How good the projections were, week by week. Italic means fewer than 30 players or legs. Rel MAE is the model's average miss divided by the miss of a plain career average for the same players: below 1.0 beats it. Within 1 sd is the share of players inside the stated range (target about 68%). Brier is the model's raw probability score against the line: 0.25 is a coin flip, lower is better. An orange rule on the left of a cell marks the first week a stat's numbers came from the new model, so a step there is the switch and not drift.</p>
       <div id="mq" data-inspect-id="trends-mq-tables"></div>
     </section>
     <section class="sec" data-inspect-id="trends-charts">
@@ -295,6 +296,7 @@ var MQ=D.mq||[], MQS=[["passing_yards","Passing yards"],["completions","Completi
 function renderMq(){
   var box=document.getElementById("mq"); if(!box) return;
   var wk=MQ.filter(function(r){return r.scope==="week";}), ss=MQ.filter(function(r){return r.scope==="season";});
+  MQS.forEach(function(s){var prev=null; wk.filter(function(r){return r.stat===s[0];}).sort(function(a,b){return a.week-b.week;}).forEach(function(r){if(prev!==null&&r.engine!==prev) r.sw=true; prev=r.engine;});});
   var weeks=[]; wk.forEach(function(r){if(weeks.indexOf(r.week)<0) weeks.push(r.week);}); weeks.sort(function(a,b){return a-b;});
   if(!weeks.length){box.innerHTML='<p class="fine">No graded weeks yet.</p>'; return;}
   var M=[["rel_mae","Rel MAE","naive_n",function(v){return v.toFixed(3);},function(v){return v<1?"up":"dn";},"trends-mq-table-rel"],
@@ -306,7 +308,8 @@ function renderMq(){
       function cell(r,cls){
         if(!r||r[m[0]]==null) return '<td class="'+(cls||"")+'">&ndash;</td>';
         var low=(r[m[2]]||0)<30, tone=m[4]&&!low?m[4](r[m[0]]):"";
-        return '<td class="'+(cls||"")+(low?" lown":"")+(tone?" "+tone:"")+'" title="n='+r[m[2]]+'">'+m[3](r[m[0]])+'</td>';}
+        var sw=r.sw?" sw":"", tt=r.sw?"; engine changed to the "+r.engine+" model this week":"";
+        return '<td class="'+(cls||"")+(low?" lown":"")+(tone?" "+tone:"")+sw+'" title="n='+r[m[2]]+tt+'">'+m[3](r[m[0]])+'</td>';}
       var cells=weeks.map(function(w){return cell(wk.filter(function(r){return r.stat===s[0]&&r.week===w;})[0]);}).join("");
       return '<tr><td>'+s[1]+'</td>'+cells+cell(ss.filter(function(r){return r.stat===s[0];})[0],"sea")+'</tr>';}).join("");
     return '<h3 class="mqh">'+m[1]+'</h3><table class="mqt" data-inspect-id="'+m[5]+'"><thead>'+head+'</thead><tbody>'+body+'</tbody></table>';}).join("");

@@ -403,7 +403,7 @@ def page_data(data):
                              label="Watch", olText="Watch (no history rate for rank moves)", cls="none",
                              pct=None, n=None, merged="", thin=False, ppg3=None, ppgS=None))
     from .model_quality import load as mq_load
-    keep = ("scope", "week", "stat", "n", "naive_n", "rel_mae", "cov68", "cov_n", "priced_n", "brier_raw")
+    keep = ("scope", "week", "stat", "engine", "n", "naive_n", "rel_mae", "cov68", "cov_n", "priced_n", "brier_raw")
     mq = [{k: r[k] for k in keep} for r in mq_load() if r["season"] == data["season"]]
     return dict(rows=rows, dvp=sec["dvp"], mq=mq)
 
