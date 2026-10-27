@@ -402,7 +402,10 @@ def page_data(data):
                              games=r["games"], next=r["next"], opp=None, bl="", sample=f"{r['games']} games",
                              label="Watch", olText="Watch (no history rate for rank moves)", cls="none",
                              pct=None, n=None, merged="", thin=False, ppg3=None, ppgS=None))
-    return dict(rows=rows, dvp=sec["dvp"])
+    from .model_quality import load as mq_load
+    keep = ("scope", "week", "stat", "n", "naive_n", "rel_mae", "cov68", "cov_n", "priced_n", "brier_raw")
+    mq = [{k: r[k] for k in keep} for r in mq_load() if r["season"] == data["season"]]
+    return dict(rows=rows, dvp=sec["dvp"], mq=mq)
 
 
 def render(data):

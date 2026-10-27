@@ -1,21 +1,21 @@
 {
  "fraction": 0.7,
  "fit_through_week": 7,
- "legs": 2220,
- "chosen_excluded": 0,
+ "legs": 2233,
+ "chosen_excluded": 10,
  "mu_bias": {
   "completions": 0.0,
-  "passing_yards": 13.95,
+  "passing_yards": 13.64,
   "receiving_yards": 0.0,
   "receptions": 0.0,
   "rushing_yards": 0.0
  },
  "mu_bias_n": {
-  "completions": 175,
-  "passing_yards": 175,
-  "receiving_yards": 938,
-  "receptions": 938,
-  "rushing_yards": 485
+  "completions": 177,
+  "passing_yards": 177,
+  "receiving_yards": 948,
+  "receptions": 948,
+  "rushing_yards": 490
  },
  "mu_bias_kept": {
   "completions": {
@@ -25,34 +25,34 @@
   },
   "passing_yards": {
    "kept": true,
-   "brier_before": 0.2001,
-   "brier_after": 0.1988
+   "brier_before": 0.2022,
+   "brier_after": 0.2009
   },
   "receiving_yards": {
    "kept": false,
    "brier_before": 0.2215,
-   "brier_after": 0.2227
+   "brier_after": 0.2226
   },
   "receptions": {
    "kept": false,
-   "brier_before": 0.2261,
-   "brier_after": 0.2268
+   "brier_before": 0.2263,
+   "brier_after": 0.227
   },
   "rushing_yards": {
    "kept": false,
-   "brier_before": 0.2467,
-   "brier_after": 0.2469
+   "brier_before": 0.2461,
+   "brier_after": 0.2465
   }
  },
  "mu_bias_candidate": {
-  "completions": 1.55,
-  "passing_yards": 13.95,
-  "receiving_yards": 2.41,
-  "receptions": 0.22,
-  "rushing_yards": 0.24
+  "completions": 1.53,
+  "passing_yards": 13.64,
+  "receiving_yards": 2.38,
+  "receptions": 0.21,
+  "rushing_yards": 0.46
  },
- "brier_before": 0.2331,
- "brier_after": 0.2265,
+ "brier_before": 0.2334,
+ "brier_after": 0.2266,
  "previous_fraction": 0.7,
- "updated": "2026-10-26T08:27:07"
+ "updated": "2026-10-27T08:11:57"
 }

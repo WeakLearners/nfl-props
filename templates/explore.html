@@ -108,6 +108,15 @@
   .empty{color:var(--ink-3); font-style:italic; margin-top:20px}
   /* Top 5: the best hit rates from every grouping at once. Each row is a
      button that switches Group by to where that group lives. */
+  /* Model quality box: projections vs actuals, above the betting results. */
+  #mqbox{margin:0 0 20px}
+  #mqbox table{max-width:1040px; margin-top:8px}
+  #mqbox td{font-size:12.5px}
+  #mqbox td:first-child{font-size:16px}
+  #mqbox td.lown{color:var(--ink-3); font-style:italic}
+  #mqbox td.wk{border-left:1px solid var(--line)}
+  #mqbox th.wk{border-left:1px solid var(--line)}
+  #mqbox .mq-note{font-size:12.5px; color:var(--ink-3); max-width:92ch; margin:8px 0 0}
   .top{margin:0}
   .top-h{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.14em;
     text-transform:uppercase; color:var(--ink-3); margin:0 0 4px; cursor:pointer;
@@ -161,6 +170,10 @@
     <h1 data-inspect-id="explore-title">Results</h1>
   </header>
   <div class="pg-intro">
+    <details class="top" id="mqbox" open data-inspect-id="explore-model-quality">
+      <summary class="top-h">Model quality &middot; projections vs actuals, no betting line</summary>
+      <div id="mq" data-inspect-id="explore-mq-table"></div>
+    </details>
     <div class="pg-aside ex-side" data-inspect-id="explore-side">
   <details class="top" id="topbox" open data-inspect-id="explore-top5">
     <summary class="top-h">Top 5 groups &middot; 20+ legs</summary>
@@ -599,6 +612,36 @@
     by.value = b.dataset.by; sortState = null; save(); render();
   });
 
+  // Model quality box: read from data/model_quality.csv (via D.mq). Season to
+  // date, then the latest week. Counts under 30 are italic.
+  function renderMq() {
+    var rows = D.mq || [], el = document.getElementById("mq");
+    var ss = rows.filter(function (r) { return r.scope === "season"; });
+    if (!ss.length) { el.innerHTML = '<p class="mq-note">No graded projections yet.</p>'; return; }
+    var wkN = ss[0].week;
+    var wk = rows.filter(function (r) { return r.scope === "week" && r.week === wkN; });
+    var NAMES = [["passing_yards", "Passing yards"], ["completions", "Completions"], ["rushing_yards", "Rushing yards"],
+                 ["receiving_yards", "Receiving yards"], ["receptions", "Receptions"]];
+    function f(v, d) { return v == null ? "&ndash;" : Number(v).toFixed(d); }
+    function p(v) { return v == null ? "&ndash;" : (v * 100).toFixed(0) + "%"; }
+    function c(v, low, cls) { return '<td class="' + (cls || "") + (low ? " lown" : "") + '">' + v + "</td>"; }
+    var body = NAMES.map(function (nm) {
+      var s = ss.filter(function (r) { return r.stat === nm[0]; })[0]; if (!s) return "";
+      var w = wk.filter(function (r) { return r.stat === nm[0]; })[0] || {};
+      var lo = s.n < 30, lp = s.priced_n < 30, lw = (w.n || 0) < 30;
+      return "<tr><td>" + nm[1] + "</td>" + c(s.n, lo) + c(f(s.bias, 1), lo) + c(f(s.mae, 1), lo) + c(f(s.rel_mae, 3), lo) +
+        c(p(s.cov68), lo) + c(s.priced_n, lp) + c(f(s.brier_raw, 3), lp) + c(f(s.auc_raw, 2), lp) +
+        c(f(w.rel_mae, 3), lw, "wk") + c(p(w.cov68), lw) + "</tr>";
+    }).join("");
+    el.innerHTML = '<table><colgroup><col style="width:150px"><col><col><col><col><col><col><col><col><col><col></colgroup><thead><tr>' +
+      "<th>Season to date</th><th>Players</th><th>Bias</th><th>MAE</th><th>Rel MAE</th><th>Within 1 sd</th>" +
+      '<th>Priced legs</th><th>Brier raw</th><th>AUC raw</th><th class="wk">Wk ' + wkN + ' rel MAE</th><th>Wk ' + wkN + " within 1 sd</th>" +
+      "</tr></thead><tbody>" + body + "</tbody></table>" +
+      '<p class="mq-note">Rel MAE = the model\u2019s average miss / the miss of a plain career average for the same players (below 1.0 is better). ' +
+      "Within 1 sd target is about 68%. Brier: 0.25 is a coin flip. AUC: 0.5 is a coin flip. Italic = under 30. " +
+      'Week-by-week: <a href="/trends.html" data-inspect-id="explore-mq-trend-link">Trends page</a>. Betting results start below.</p>';
+  }
+
   function render() {
     var legs = filtered(LEGS), all = stats(legs), gs = groups(legs, by.value);
     summary.innerHTML = chipPrefix() + "<b>" + all.h + "/" + all.n + "</b> hit (" + pct(all.rate) + ")" +
@@ -607,7 +650,7 @@
       (D.pending[kind.value] ? " · " + D.pending[kind.value] + " still waiting on a final score, " +
         "season-wide -- not scoped to the group or filter above" : "") +
       ((D.void || {})[kind.value] ? " · " + D.void[kind.value] + " void (player didn't play), left out" : "");
-    renderTop(legs); renderTeams(legs); renderUp();
+    renderTop(legs); renderTeams(legs); renderUp(); renderMq();
     if (!legs.length) { out.innerHTML = '<p class="empty">No graded legs match.</p>'; return; }
     // (g, s) pairs, default order first -- groups() already carries the
     // category's own natural/by-size order, which sortState === null falls

@@ -1465,7 +1465,10 @@ def upcoming_legs():
 def explore_html():
     legs, pending, void = explore_legs()
     up, sw = upcoming_legs()
-    blob = json.dumps({"legs": legs, "pending": pending, "void": void, "upcoming": up,
+    from nflprops.model_quality import load as mq_load
+    mq = mq_load()
+    mq = [r for r in mq if r["season"] == max([x["season"] for x in mq])] if mq else []
+    blob = json.dumps({"legs": legs, "pending": pending, "void": void, "upcoming": up, "mq": mq,
                        "upcomingWeek": {"season": sw[0], "week": sw[1]} if sw else None}).replace("</", "<\\/")
     head = HEAD.replace("NFL Props \u2014 reports", "NFL Props \u00b7 Results").format()
     body = open(EXPLORE_TPL, encoding="utf-8").read()

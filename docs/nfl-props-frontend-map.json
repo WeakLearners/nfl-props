@@ -538,7 +538,7 @@
           "id": "card-matchup",
           "label": "Matchup note",
           "kind": "text",
-          "description": "Matchup line: the opponent's adjusted rank of 32 against this position and its yds/g allowed (DATA field dr, from badges.json def_pos, the same table the Big day / Caution badge uses, so the two cannot disagree). Reports built before 2026-10-04 show the raw ratio instead.",
+          "description": "Matchup line: the opponent's adjusted rank of 32 against this position and its allowed per game (DATA field dr, from badges.json def_pos). For RB receptions and RB receiving yards it ranks receiving allowed to RBs (receptions/g or receiving yds/g, with a stat label), not the rush-plus-receive 'vs RB' rank; dr then also carries u (unit) and l (label). Other stats use the whole-position rank the Big day / Caution badge is built from. Reports built before 2026-10-04 show the raw ratio instead; reports built before 2026-10-27 show the old RB rank on RB receiving cards.",
           "locate": {
             "path": "templates/report.html:827",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-matchup\"' templates/report.html"
@@ -1387,7 +1387,7 @@
           "kind": "layout",
           "description": "Full-width column (LAYOUT_CSS) holding the whole explore page.",
           "locate": {
-            "path": "templates/explore.html:158",
+            "path": "templates/explore.html:167",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-wrap\"' templates/explore.html"
           }
         },
@@ -1397,8 +1397,38 @@
           "kind": "layout",
           "description": "Table and grading note. From 1280px wide the table is on the left and the grading note is a side column on the right. One column below that.",
           "locate": {
-            "path": "templates/explore.html:206",
+            "path": "templates/explore.html:219",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-grid\"' templates/explore.html"
+          }
+        },
+        {
+          "id": "explore-model-quality",
+          "label": "Model quality box",
+          "kind": "list",
+          "description": "Box at the top of the page, above the Top 5 boxes. Season-to-date projection quality per stat: players, bias, MAE, Rel MAE (model miss / plain career average miss, below 1.0 is better), share inside mu +/- 1 sd, priced legs, raw Brier, raw AUC, plus the latest week's Rel MAE and within-1-sd. Read from data/model_quality.csv (window.__EXPLORE__.mq, set in explore_html()). Counts under 30 are italic. It does not follow the Picks / Group by controls and does not mix bet products: it measures projections, not bets. A <details> box, open by default.",
+          "locate": {
+            "path": "templates/explore.html:173",
+            "grep": "grep -n -F -- 'data-inspect-id=\"explore-model-quality\"' templates/explore.html"
+          }
+        },
+        {
+          "id": "explore-mq-table",
+          "label": "Model quality table",
+          "kind": "table",
+          "description": "The table inside the Model quality box. One row per stat. Built by renderMq().",
+          "locate": {
+            "path": "templates/explore.html:175",
+            "grep": "grep -n -F -- 'data-inspect-id=\"explore-mq-table\"' templates/explore.html"
+          }
+        },
+        {
+          "id": "explore-mq-trend-link",
+          "label": "Model quality trend link",
+          "kind": "link",
+          "description": "Link under the Model quality table to the week-by-week view on the Trends page.",
+          "locate": {
+            "path": "templates/explore.html:642",
+            "grep": "grep -n -F -- 'data-inspect-id=\"explore-mq-trend-link\"' templates/explore.html"
           }
         },
         {
@@ -1407,7 +1437,7 @@
           "kind": "layout",
           "description": "Holds the three list boxes: Top 5 groups, Top 5 teams, Bottom 5 teams. From 900px wide they share one row as three equal columns. Below that they stack. It is the whole intro row: the page has no intro paragraph.",
           "locate": {
-            "path": "templates/explore.html:164",
+            "path": "templates/explore.html:177",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-side\"' templates/explore.html"
           }
         },
@@ -1417,7 +1447,7 @@
           "kind": "layout",
           "description": "Holds the summary, the controls and the table.",
           "locate": {
-            "path": "templates/explore.html:207",
+            "path": "templates/explore.html:220",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-main\"' templates/explore.html"
           }
         },
@@ -1427,7 +1457,7 @@
           "kind": "text",
           "description": "'Graded picks' kicker above the title.",
           "locate": {
-            "path": "templates/explore.html:160",
+            "path": "templates/explore.html:169",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-eyebrow\"' templates/explore.html"
           }
         },
@@ -1437,7 +1467,7 @@
           "kind": "heading",
           "description": "'Results'.",
           "locate": {
-            "path": "templates/explore.html:161",
+            "path": "templates/explore.html:170",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-title\"' templates/explore.html"
           }
         },
@@ -1447,7 +1477,7 @@
           "kind": "layout",
           "description": "Holds the Picks select, the Group by select and the Search input. The chip row sits just under it. The row sits above the results table, below the summary line.",
           "locate": {
-            "path": "templates/explore.html:180",
+            "path": "templates/explore.html:193",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-controls\"' templates/explore.html"
           }
         },
@@ -1457,7 +1487,7 @@
           "kind": "input",
           "description": "Scopes the whole page: all legs with a book line (default; picked or not, graded by the same rule), the shortlist subset the model actually picked, or anytime-TD picks. TD picks are never pooled with the others - a different model, one per game. Pending counts are per option. Persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:183",
+            "path": "templates/explore.html:196",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-kind\"' templates/explore.html"
           }
         },
@@ -1467,7 +1497,7 @@
           "kind": "input",
           "description": "Chooses the category the graded legs are cut by: stat, position, depth role, week, kickoff window, price band, model confidence band, model vs book, opponent defense (model-used) (the report's def multiplier: 1.0 = league average for that position; only covers passing yards, completions and rushing yards -- rushing at half weight -- since DEF_WEIGHT is 0 for receiving yards and receptions, and those legs are left out of this grouping), shortlist rank, team, opponent, player. The choice persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:191",
+            "path": "templates/explore.html:204",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-group-by\"' templates/explore.html"
           }
         },
@@ -1477,7 +1507,7 @@
           "kind": "input",
           "description": "Type a player, team, stat, week or any other value. Typing a prefix of marked or starred offers Starred only: legs with a star, kept live as stars change. Suggestions come from graded legs and this week's legs; a row reads (N) graded plus this week count. The same chips also filter the This week table. Matches the value label (case-insensitive) across every Group by category. Up/Down moves, Enter adds, Esc closes, Backspace on an empty input removes the last chip.",
           "locate": {
-            "path": "templates/explore.html:196",
+            "path": "templates/explore.html:209",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-search\"' templates/explore.html"
           }
         },
@@ -1487,7 +1517,7 @@
           "kind": "list",
           "description": "Dropdown under the search input. At most 8 rows: category, value, and leg count in the current Picks scope. Prefix matches first, then by leg count. Player rows show the team. Values already chosen as chips are left out.",
           "locate": {
-            "path": "templates/explore.html:197",
+            "path": "templates/explore.html:210",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-search-suggest\"' templates/explore.html"
           }
         },
@@ -1497,7 +1527,7 @@
           "kind": "button",
           "description": "Toggle right after the search input. Adds or removes the same Starred only chip as the search row, and shows the count of starred legs (graded plus this week) for the current Picks scope. Pressed (accent colour) while the chip exists, so removing the chip turns it off.",
           "locate": {
-            "path": "templates/explore.html:201",
+            "path": "templates/explore.html:214",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-starred-only\"' templates/explore.html"
           }
         },
@@ -1507,7 +1537,7 @@
           "kind": "list",
           "description": "One chip per chosen value, plus Clear all. Same category = OR, different categories = AND. A chip that matches no legs stays and shows (0). The x on a chip removes it. Persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:204",
+            "path": "templates/explore.html:217",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-chips\"' templates/explore.html"
           }
         },
@@ -1517,7 +1547,7 @@
           "kind": "table",
           "description": "Second table under the graded results: this week's legs whose game is not final, plus waiting anytime-TD picks. Driven by the Picks select and the same search chips. Heading reads This week (Week N) and the match count. Sorted by kickoff, shortlist rank, player. No result column. Not part of the summary or Top/Teams boxes.",
           "locate": {
-            "path": "templates/explore.html:660",
+            "path": "templates/explore.html:703",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-upcoming\"' templates/explore.html"
           }
         },
@@ -1527,7 +1557,7 @@
           "kind": "row",
           "description": "One upcoming leg: star, trend badge, player link, team, role and game, then line and stat, then price.",
           "locate": {
-            "path": "templates/explore.html:663",
+            "path": "templates/explore.html:706",
             "grep": "grep -n -F -- '\"explore-upcoming-leg\"' templates/explore.html"
           }
         },
@@ -1537,7 +1567,7 @@
           "kind": "button",
           "description": "Star toggle from scripts/marks.js on an upcoming leg row. Marks are stored on the server. Key season|week|player|stat.",
           "locate": {
-            "path": "templates/explore.html:663",
+            "path": "templates/explore.html:706",
             "grep": "grep -n -F -- '\"mark-star-upcoming\"' templates/explore.html"
           }
         },
@@ -1547,7 +1577,7 @@
           "kind": "text",
           "description": "Hits/graded, hit rate vs needed, and flat $100 return for the current filter; plus how many legs are still waiting on a final score -- that count is season-wide, not scoped to the current Picks/Group by/Only selection. Also counts void legs (game final but the player has no stat line - he didn't play, a book would void it), also season-wide.",
           "locate": {
-            "path": "templates/explore.html:208",
+            "path": "templates/explore.html:221",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-summary\"' templates/explore.html"
           }
         },
@@ -1557,7 +1587,7 @@
           "kind": "list",
           "description": "The five best hit rates across every Group by option at once (Player, Team and Opponent excluded, because those list teams; the two team boxes cover them), for the current Picks/Only selection. A group needs 20+ graded legs; a group equal to the whole current set is skipped, and so is one with the exact same legs as a group already listed (Position QB vs Depth role QB1). Clicking a row switches Group by to that option. Sits in the intro row as a <details> box, first of three equal columns, left of the two team boxes; clicking its heading collapses it, and the open/closed state is saved with the rest of the view.",
           "locate": {
-            "path": "templates/explore.html:165",
+            "path": "templates/explore.html:178",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-top5\"' templates/explore.html"
           }
         },
@@ -1567,7 +1597,7 @@
           "kind": "list",
           "description": "The five teams with the best hit rate, grouped by the player's team, for the current Picks/Only selection. A team needs 20+ graded legs. Same box, header row and row shape as Top 5 groups. With fewer than ten qualifying teams it takes the larger half, so no team shows in both team boxes. Its open/closed state is saved with the view.",
           "locate": {
-            "path": "templates/explore.html:169",
+            "path": "templates/explore.html:182",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-teams-top\"' templates/explore.html"
           }
         },
@@ -1577,7 +1607,7 @@
           "kind": "list",
           "description": "The five teams with the lowest hit rate, lowest first. Same rules and shape as Top 5 teams. Open/closed state saved with the view.",
           "locate": {
-            "path": "templates/explore.html:173",
+            "path": "templates/explore.html:186",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-teams-bottom\"' templates/explore.html"
           }
         },
@@ -1587,7 +1617,7 @@
           "kind": "row",
           "description": "Label is the Group by name and the group, for example Stat - Receptions. It shortens with an ellipsis; the title tooltip shows the full text. Click switches Group by to that option. Built by boxRows() in the page script.",
           "locate": {
-            "path": "templates/explore.html:570",
+            "path": "templates/explore.html:583",
             "grep": "grep -n -F -- '\"explore-top5-row\"' templates/explore.html"
           }
         },
@@ -1597,7 +1627,7 @@
           "kind": "row",
           "description": "Click switches Group by to Team, the same as a Top 5 row. It does not set the Only filter. Built by boxRows() through teamRows().",
           "locate": {
-            "path": "templates/explore.html:577",
+            "path": "templates/explore.html:590",
             "grep": "grep -n -F -- '\"explore-teams-row\"' templates/explore.html"
           }
         },
@@ -1607,7 +1637,7 @@
           "kind": "layout",
           "description": "Receives the grouped table, rendered by render() in the page script.",
           "locate": {
-            "path": "templates/explore.html:209",
+            "path": "templates/explore.html:222",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-table\"' templates/explore.html"
           }
         },
@@ -1617,7 +1647,7 @@
           "kind": "table",
           "description": "One row per group: legs, hits, hit rate with a bar (tick = needed), needed, $100 each. Built at runtime. Every header is a sort button (see explore-sort-header) -- 1st click sorts the rows descending by that column's raw number (A-Z for the label column), 2nd click ascending, 3rd click back to the category's own default order; nulls (a group with no priced legs, shown as — for Needed/$100 each) always sort last. Re-sorting collapses any expanded group. The active sort resets when Group by or Picks changes and otherwise persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:645",
+            "path": "templates/explore.html:688",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-groups\"' templates/explore.html"
           }
         },
@@ -1627,7 +1657,7 @@
           "kind": "button",
           "description": "One shared id for all six header buttons (group label, Legs, Hits, Hit rate, Needed, $100 each) -- the anchor is the template string that builds all six, not a single element. Keyboard-operable (a real <button>); aria-sort lives on the parent <th>, not the button. Shows a trailing ▼/▲ on the active column only; inactive headers show no arrow. Styled to inherit the th's mono/10px/uppercase look with no browser button chrome.",
           "locate": {
-            "path": "templates/explore.html:643",
+            "path": "templates/explore.html:686",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-sort-header\"' templates/explore.html"
           }
         },
@@ -1637,7 +1667,7 @@
           "kind": "row",
           "description": "Click or Enter expands the legs in that group. Greyed (tr.thin) under 10 legs. Row order is the active column sort when one is set (see explore-sort-header), otherwise the category's default: team/opponent/player/depth role by size, the rest natural band order.",
           "locate": {
-            "path": "templates/explore.html:627",
+            "path": "templates/explore.html:670",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-group-row\"' templates/explore.html"
           }
         },
@@ -1647,7 +1677,7 @@
           "kind": "row",
           "description": "Inserted under a group row by toggle(); lists each leg newest week first.",
           "locate": {
-            "path": "templates/explore.html:674",
+            "path": "templates/explore.html:717",
             "grep": "grep -n -F -- '\"explore-group-legs\"' templates/explore.html"
           }
         },
@@ -1657,7 +1687,7 @@
           "kind": "row",
           "description": "Player (links to its report), team role, week and game; the line, price, and the actual number as a HIT/MISS pill.",
           "locate": {
-            "path": "templates/explore.html:676",
+            "path": "templates/explore.html:719",
             "grep": "grep -n -F -- '\"explore-leg\"' templates/explore.html"
           }
         },
@@ -1667,7 +1697,7 @@
           "kind": "badge",
           "description": "Outline chip like #12 WR after the depth role, inside the .mk group in the leg meta line. Built by mk() / rkChip(l,id) from the rk and rkt fields serve_reports adds to each leg. Absent below the floor.",
           "locate": {
-            "path": "templates/explore.html:515",
+            "path": "templates/explore.html:528",
             "grep": "grep -n -F -- '\"explore-rank-chip\"' templates/explore.html"
           }
         },
@@ -1677,7 +1707,7 @@
           "kind": "badge",
           "description": "Badge from nflprops/badges.py (data/ratings/badges.json): ▲/▼ trend, or Big day / Caution matchup. Sits after the rank chip, never replaces it. Hover title gives the numbers. Absent for almost everyone. Built by bdBadges(l,id) from the bd field serve_reports adds to each leg. Matchup badge only on legs from the badge week.",
           "locate": {
-            "path": "templates/explore.html:514",
+            "path": "templates/explore.html:527",
             "grep": "grep -n -F -- '\"explore-badge\"' templates/explore.html"
           }
         },
@@ -1687,7 +1717,7 @@
           "kind": "text",
           "description": "Grading rule (same as the listing: actual beats the line, final games only), the under-ten caveat, and which stats the opponent-defense grouping covers.",
           "locate": {
-            "path": "templates/explore.html:212",
+            "path": "templates/explore.html:225",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-footer\"' templates/explore.html"
           }
         }
@@ -2076,7 +2106,7 @@
           "kind": "table",
           "description": "Total rank, team, the ranked EPA number, extra yard columns,, points per game allowed. Shown at once with the other three tables. Written by render_defenses().",
           "locate": {
-            "path": "nflprops/defense_rank.py:119",
+            "path": "nflprops/defense_rank.py:125",
             "grep": "grep -n -F -- 'defenses-table-{key}' nflprops/defense_rank.py"
           }
         },
@@ -2086,7 +2116,7 @@
           "kind": "table",
           "description": "Run rank, team, the ranked EPA number, extra yard columns,, points per game allowed. Shown at once with the other three tables. Written by render_defenses().",
           "locate": {
-            "path": "nflprops/defense_rank.py:119",
+            "path": "nflprops/defense_rank.py:125",
             "grep": "grep -n -F -- 'defenses-table-{key}' nflprops/defense_rank.py"
           }
         },
@@ -2096,7 +2126,7 @@
           "kind": "table",
           "description": "Pass rank, team, the ranked EPA number, extra yard columns,, points per game allowed. Shown at once with the other three tables. Written by render_defenses().",
           "locate": {
-            "path": "nflprops/defense_rank.py:119",
+            "path": "nflprops/defense_rank.py:125",
             "grep": "grep -n -F -- 'defenses-table-{key}' nflprops/defense_rank.py"
           }
         },
@@ -2106,7 +2136,7 @@
           "kind": "table-row",
           "description": "One defense in the Total table.",
           "locate": {
-            "path": "nflprops/defense_rank.py:125",
+            "path": "nflprops/defense_rank.py:131",
             "grep": "grep -n -F -- 'defenses-row-{key}' nflprops/defense_rank.py"
           }
         },
@@ -2116,7 +2146,7 @@
           "kind": "table-row",
           "description": "One defense in the Run table.",
           "locate": {
-            "path": "nflprops/defense_rank.py:125",
+            "path": "nflprops/defense_rank.py:131",
             "grep": "grep -n -F -- 'defenses-row-{key}' nflprops/defense_rank.py"
           }
         },
@@ -2126,7 +2156,7 @@
           "kind": "table-row",
           "description": "One defense in the Pass table.",
           "locate": {
-            "path": "nflprops/defense_rank.py:125",
+            "path": "nflprops/defense_rank.py:131",
             "grep": "grep -n -F -- 'defenses-row-{key}' nflprops/defense_rank.py"
           }
         },
@@ -2136,7 +2166,7 @@
           "kind": "table",
           "description": "Team, then rank and yards per game allowed to QB, RB, WR and TE. Shown at once with the other three tables. Written by render_defenses().",
           "locate": {
-            "path": "nflprops/defense_rank.py:119",
+            "path": "nflprops/defense_rank.py:125",
             "grep": "grep -n -F -- 'defenses-table-{key}' nflprops/defense_rank.py"
           }
         },
@@ -2146,7 +2176,7 @@
           "kind": "table-row",
           "description": "One defense in the By position table.",
           "locate": {
-            "path": "nflprops/defense_rank.py:134",
+            "path": "nflprops/defense_rank.py:140",
             "grep": "grep -n -F -- 'defenses-row-pos' nflprops/defense_rank.py"
           }
         },
@@ -2156,7 +2186,7 @@
           "kind": "badge",
           "description": "Trend arrow after the team name in the Total, Run and Pass tables. Up = the defense got tougher, down = it allows more. Neutral colours.",
           "locate": {
-            "path": "nflprops/defense_rank.py:126",
+            "path": "nflprops/defense_rank.py:132",
             "grep": "grep -n -F -- '\"defenses-badge\"' nflprops/defense_rank.py"
           }
         },
@@ -2166,7 +2196,7 @@
           "kind": "badge",
           "description": "Trend arrow inside a vs QB/RB/WR/TE cell of the By position table.",
           "locate": {
-            "path": "nflprops/defense_rank.py:135",
+            "path": "nflprops/defense_rank.py:141",
             "grep": "grep -n -F -- '\"defenses-badge-pos\"' nflprops/defense_rank.py"
           }
         },
@@ -2176,7 +2206,7 @@
           "kind": "table-header",
           "description": "Rank and yards per game allowed to QB.",
           "locate": {
-            "path": "nflprops/defense_rank.py:138",
+            "path": "nflprops/defense_rank.py:144",
             "grep": "grep -n -F -- 'defenses-col-{k}' nflprops/defense_rank.py"
           }
         },
@@ -2186,7 +2216,7 @@
           "kind": "table-header",
           "description": "Rank and yards per game allowed to RB.",
           "locate": {
-            "path": "nflprops/defense_rank.py:138",
+            "path": "nflprops/defense_rank.py:144",
             "grep": "grep -n -F -- 'defenses-col-{k}' nflprops/defense_rank.py"
           }
         },
@@ -2196,7 +2226,7 @@
           "kind": "table-header",
           "description": "Rank and yards per game allowed to WR.",
           "locate": {
-            "path": "nflprops/defense_rank.py:138",
+            "path": "nflprops/defense_rank.py:144",
             "grep": "grep -n -F -- 'defenses-col-{k}' nflprops/defense_rank.py"
           }
         },
@@ -2206,7 +2236,7 @@
           "kind": "table-header",
           "description": "Rank and yards per game allowed to TE.",
           "locate": {
-            "path": "nflprops/defense_rank.py:138",
+            "path": "nflprops/defense_rank.py:144",
             "grep": "grep -n -F -- 'defenses-col-{k}' nflprops/defense_rank.py"
           }
         },
@@ -2235,7 +2265,7 @@
           "kind": "layout",
           "description": "Page container.",
           "locate": {
-            "path": "templates/trends.html:181",
+            "path": "templates/trends.html:188",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-wrap\"' templates/trends.html"
           }
         },
@@ -2245,7 +2275,7 @@
           "kind": "layout",
           "description": "Eyebrow and title.",
           "locate": {
-            "path": "templates/trends.html:182",
+            "path": "templates/trends.html:189",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-header\"' templates/trends.html"
           }
         },
@@ -2255,7 +2285,7 @@
           "kind": "label",
           "description": "Eyebrow above the title: 'Trends use games through ... built ...'.",
           "locate": {
-            "path": "templates/trends.html:183",
+            "path": "templates/trends.html:190",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-data-through\"' templates/trends.html"
           }
         },
@@ -2265,7 +2295,7 @@
           "kind": "note",
           "description": "\"Entertainment. Past data is not a pick.\" Kept from the old page.",
           "locate": {
-            "path": "templates/trends.html:187",
+            "path": "templates/trends.html:194",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-disclaimer\"' templates/trends.html"
           }
         },
@@ -2275,7 +2305,7 @@
           "kind": "note",
           "description": "Definitions of Likely to hold, Likely to fade and Watch, and the held rule. Kept from the old page.",
           "locate": {
-            "path": "templates/trends.html:188",
+            "path": "templates/trends.html:195",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-footer\"' templates/trends.html"
           }
         },
@@ -2285,7 +2315,7 @@
           "kind": "legend",
           "description": "Intro-row aside: hollow and filled dot, and the three outlook colours.",
           "locate": {
-            "path": "templates/trends.html:189",
+            "path": "templates/trends.html:196",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-key\"' templates/trends.html"
           }
         },
@@ -2295,8 +2325,58 @@
           "kind": "filter",
           "description": "All, QB, RB, WR, TE. Filters the charts, the list and the defense map.",
           "locate": {
-            "path": "templates/trends.html:198",
+            "path": "templates/trends.html:205",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-filter\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-model-quality",
+          "label": "Model quality section",
+          "kind": "layout",
+          "description": "Section at the top of the content. Week-by-week model quality per stat. It does not use the position filter. Data: data/model_quality.csv, embedded as D.mq by page_data().",
+          "locate": {
+            "path": "templates/trends.html:210",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-model-quality\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-mq-tables",
+          "label": "Model quality tables",
+          "kind": "layout",
+          "description": "Holds the three week-by-week tables, drawn by renderMq().",
+          "locate": {
+            "path": "templates/trends.html:213",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-mq-tables\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-mq-table-rel",
+          "label": "Rel MAE by week",
+          "kind": "table",
+          "description": "Rel MAE per stat per week plus the season. Below 1.0 (green) beats a plain career average. Italic = under 30 players. Id is set from the M list in renderMq().",
+          "locate": {
+            "path": "templates/trends.html:300",
+            "grep": "grep -n -F -- '\"trends-mq-table-rel\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-mq-table-cov",
+          "label": "Within 1 sd by week",
+          "kind": "table",
+          "description": "Share of players inside mu +/- sd, per stat per week plus the season. Target about 68%. Id is set from the M list in renderMq().",
+          "locate": {
+            "path": "templates/trends.html:301",
+            "grep": "grep -n -F -- '\"trends-mq-table-cov\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-mq-table-brier",
+          "label": "Brier by week",
+          "kind": "table",
+          "description": "Brier score of the raw model probability against the line, per stat per week. 0.25 is a coin flip. Weeks before 6 have no stored probability. Completions has no line. Id is set from the M list in renderMq().",
+          "locate": {
+            "path": "templates/trends.html:302",
+            "grep": "grep -n -F -- '\"trends-mq-table-brier\"' templates/trends.html"
           }
         },
         {
@@ -2305,7 +2385,7 @@
           "kind": "layout",
           "description": "Section that holds the four dumbbell charts.",
           "locate": {
-            "path": "templates/trends.html:203",
+            "path": "templates/trends.html:215",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-charts\"' templates/trends.html"
           }
         },
@@ -2315,7 +2395,7 @@
           "kind": "chart",
           "description": "Dumbbell chart of target share (WR, TE) and carry share (RB). Top 10 moves. Dot colour is the outlook.",
           "locate": {
-            "path": "templates/trends.html:267",
+            "path": "templates/trends.html:279",
             "grep": "grep -n -F -- 'id:\"trends-chart-usage\"' templates/trends.html"
           }
         },
@@ -2325,7 +2405,7 @@
           "kind": "list-row",
           "description": "One player in the usage chart. A click opens the player tray.",
           "locate": {
-            "path": "templates/trends.html:267",
+            "path": "templates/trends.html:279",
             "grep": "grep -n -F -- 'rowId:\"trends-chart-usage-row\"' templates/trends.html"
           }
         },
@@ -2335,7 +2415,7 @@
           "kind": "button",
           "description": "Shows all rows of the usage chart.",
           "locate": {
-            "path": "templates/trends.html:267",
+            "path": "templates/trends.html:279",
             "grep": "grep -n -F -- 'moreId:\"trends-chart-usage-more\"' templates/trends.html"
           }
         },
@@ -2345,7 +2425,7 @@
           "kind": "chart",
           "description": "Dumbbell chart of offense snap share.",
           "locate": {
-            "path": "templates/trends.html:268",
+            "path": "templates/trends.html:280",
             "grep": "grep -n -F -- 'id:\"trends-chart-snap\"' templates/trends.html"
           }
         },
@@ -2355,7 +2435,7 @@
           "kind": "list-row",
           "description": "One player in the snap share chart.",
           "locate": {
-            "path": "templates/trends.html:268",
+            "path": "templates/trends.html:280",
             "grep": "grep -n -F -- 'rowId:\"trends-chart-snap-row\"' templates/trends.html"
           }
         },
@@ -2365,7 +2445,7 @@
           "kind": "button",
           "description": "Shows all rows of the snap share chart.",
           "locate": {
-            "path": "templates/trends.html:268",
+            "path": "templates/trends.html:280",
             "grep": "grep -n -F -- 'moreId:\"trends-chart-snap-more\"' templates/trends.html"
           }
         },
@@ -2375,7 +2455,7 @@
           "kind": "chart",
           "description": "Dumbbell chart of carries and targets inside the 10, per game.",
           "locate": {
-            "path": "templates/trends.html:269",
+            "path": "templates/trends.html:281",
             "grep": "grep -n -F -- 'id:\"trends-chart-rz\"' templates/trends.html"
           }
         },
@@ -2385,7 +2465,7 @@
           "kind": "list-row",
           "description": "One player in the inside-10 chart.",
           "locate": {
-            "path": "templates/trends.html:269",
+            "path": "templates/trends.html:281",
             "grep": "grep -n -F -- 'rowId:\"trends-chart-rz-row\"' templates/trends.html"
           }
         },
@@ -2395,7 +2475,7 @@
           "kind": "button",
           "description": "Shows all rows of the inside-10 chart.",
           "locate": {
-            "path": "templates/trends.html:269",
+            "path": "templates/trends.html:281",
             "grep": "grep -n -F -- 'moreId:\"trends-chart-rz-more\"' templates/trends.html"
           }
         },
@@ -2405,7 +2485,7 @@
           "kind": "chart",
           "description": "Dumbbell chart of week-over-week rank moves. Left is better. No history rate.",
           "locate": {
-            "path": "templates/trends.html:270",
+            "path": "templates/trends.html:282",
             "grep": "grep -n -F -- 'id:\"trends-chart-rank\"' templates/trends.html"
           }
         },
@@ -2415,7 +2495,7 @@
           "kind": "list-row",
           "description": "One player in the rank movers chart.",
           "locate": {
-            "path": "templates/trends.html:270",
+            "path": "templates/trends.html:282",
             "grep": "grep -n -F -- 'rowId:\"trends-chart-rank-row\"' templates/trends.html"
           }
         },
@@ -2425,7 +2505,7 @@
           "kind": "button",
           "description": "Shows all rows of the rank movers chart.",
           "locate": {
-            "path": "templates/trends.html:270",
+            "path": "templates/trends.html:282",
             "grep": "grep -n -F -- 'moreId:\"trends-chart-rank-more\"' templates/trends.html"
           }
         },
@@ -2435,7 +2515,7 @@
           "kind": "link",
           "description": "Link in the rank movers hint to the full rankings.",
           "locate": {
-            "path": "templates/trends.html:270",
+            "path": "templates/trends.html:282",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-rankings-link\"' templates/trends.html"
           }
         },
@@ -2445,7 +2525,7 @@
           "kind": "layout",
           "description": "Section with the By player and By pattern list.",
           "locate": {
-            "path": "templates/trends.html:207",
+            "path": "templates/trends.html:219",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-list\"' templates/trends.html"
           }
         },
@@ -2455,7 +2535,7 @@
           "kind": "control",
           "description": "Switch between By player and By pattern. The choice is kept in localStorage.",
           "locate": {
-            "path": "templates/trends.html:210",
+            "path": "templates/trends.html:222",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-view-switch\"' templates/trends.html"
           }
         },
@@ -2465,7 +2545,7 @@
           "kind": "button",
           "description": "Shows the list with one row for each player.",
           "locate": {
-            "path": "templates/trends.html:211",
+            "path": "templates/trends.html:223",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-view-player\"' templates/trends.html"
           }
         },
@@ -2475,7 +2555,7 @@
           "kind": "button",
           "description": "Shows the hold-rate cards.",
           "locate": {
-            "path": "templates/trends.html:212",
+            "path": "templates/trends.html:224",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-view-pattern\"' templates/trends.html"
           }
         },
@@ -2485,7 +2565,7 @@
           "kind": "list",
           "description": "One row for each player, with all signals as chips. Top 12 first.",
           "locate": {
-            "path": "templates/trends.html:294",
+            "path": "templates/trends.html:328",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-player-list\"' templates/trends.html"
           }
         },
@@ -2495,7 +2575,7 @@
           "kind": "list-row",
           "description": "One player. A click opens the player tray.",
           "locate": {
-            "path": "templates/trends.html:297",
+            "path": "templates/trends.html:331",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-player-row\"' templates/trends.html"
           }
         },
@@ -2505,7 +2585,7 @@
           "kind": "button",
           "description": "Shows every player in the list.",
           "locate": {
-            "path": "templates/trends.html:298",
+            "path": "templates/trends.html:332",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-player-more\"' templates/trends.html"
           }
         },
@@ -2515,7 +2595,7 @@
           "kind": "layout",
           "description": "Pattern cards with a past hold rate of 60.0% or more. Open by default.",
           "locate": {
-            "path": "templates/trends.html:304",
+            "path": "templates/trends.html:338",
             "grep": "grep -n -F -- 'id:\"trends-lane-hold\"' templates/trends.html"
           }
         },
@@ -2525,7 +2605,7 @@
           "kind": "layout",
           "description": "Pattern cards with a past hold rate of 40.0% or less. Open by default.",
           "locate": {
-            "path": "templates/trends.html:305",
+            "path": "templates/trends.html:339",
             "grep": "grep -n -F -- 'id:\"trends-lane-fade\"' templates/trends.html"
           }
         },
@@ -2535,7 +2615,7 @@
           "kind": "layout",
           "description": "Pattern cards with every other rate. Closed by default.",
           "locate": {
-            "path": "templates/trends.html:306",
+            "path": "templates/trends.html:340",
             "grep": "grep -n -F -- 'id:\"trends-lane-watch\"' templates/trends.html"
           }
         },
@@ -2545,7 +2625,7 @@
           "kind": "button",
           "description": "Opens and closes the Watch group.",
           "locate": {
-            "path": "templates/trends.html:306",
+            "path": "templates/trends.html:340",
             "grep": "grep -n -F -- 'toggleId:\"trends-lane-watch-toggle\"' templates/trends.html"
           }
         },
@@ -2555,7 +2635,7 @@
           "kind": "card",
           "description": "One kind of change, such as Snap share, WR risers. Big hold rate, bar, player chips, numbers table.",
           "locate": {
-            "path": "templates/trends.html:331",
+            "path": "templates/trends.html:365",
             "grep": "grep -n -F -- '\"trends-pattern-card\"' templates/trends.html"
           }
         },
@@ -2565,7 +2645,7 @@
           "kind": "button",
           "description": "A player and change inside a pattern card. A click opens the player tray.",
           "locate": {
-            "path": "templates/trends.html:331",
+            "path": "templates/trends.html:365",
             "grep": "grep -n -F -- '\"trends-pattern-chip\"' templates/trends.html"
           }
         },
@@ -2575,7 +2655,7 @@
           "kind": "layout",
           "description": "Section with the team pass-share chart.",
           "locate": {
-            "path": "templates/trends.html:218",
+            "path": "templates/trends.html:230",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-teams\"' templates/trends.html"
           }
         },
@@ -2585,7 +2665,7 @@
           "kind": "chart",
           "description": "Dumbbell chart of team pass share, last 3 games against the baseline.",
           "locate": {
-            "path": "templates/trends.html:348",
+            "path": "templates/trends.html:382",
             "grep": "grep -n -F -- '\"trends-team-chart\"' templates/trends.html"
           }
         },
@@ -2595,7 +2675,7 @@
           "kind": "list-row",
           "description": "One team. A click opens the tray with the team numbers.",
           "locate": {
-            "path": "templates/trends.html:348",
+            "path": "templates/trends.html:382",
             "grep": "grep -n -F -- '\"trends-team-row\"' templates/trends.html"
           }
         },
@@ -2605,7 +2685,7 @@
           "kind": "disclosure",
           "description": "Closed table with pass share, points per game, outlook and next game for each team.",
           "locate": {
-            "path": "templates/trends.html:221",
+            "path": "templates/trends.html:233",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-team-numbers\"' templates/trends.html"
           }
         },
@@ -2615,7 +2695,7 @@
           "kind": "layout",
           "description": "Section with the defense map and the tables.",
           "locate": {
-            "path": "templates/trends.html:223",
+            "path": "templates/trends.html:235",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-dvp\"' templates/trends.html"
           }
         },
@@ -2625,7 +2705,7 @@
           "kind": "chart",
           "description": "32 defenses for each position as coloured cells, toughest first.",
           "locate": {
-            "path": "templates/trends.html:227",
+            "path": "templates/trends.html:239",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-dvp-map\"' templates/trends.html"
           }
         },
@@ -2635,7 +2715,7 @@
           "kind": "value",
           "description": "One defense. The tooltip has rank, yards per game, last week rank and games.",
           "locate": {
-            "path": "templates/trends.html:357",
+            "path": "templates/trends.html:391",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-dvp-cell\"' templates/trends.html"
           }
         },
@@ -2645,7 +2725,7 @@
           "kind": "disclosure",
           "description": "Closed tables with the 5 toughest and 5 softest defenses for each position.",
           "locate": {
-            "path": "templates/trends.html:228",
+            "path": "templates/trends.html:240",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-dvp-numbers\"' templates/trends.html"
           }
         },
@@ -2655,7 +2735,7 @@
           "kind": "overlay",
           "description": "Tray from the right with every signal for one player or team. Shell and CSS are TRAY_CSS from nflprops/tray.py. Closes with the x, Esc or a click outside.",
           "locate": {
-            "path": "templates/trends.html:371",
+            "path": "templates/trends.html:405",
             "grep": "grep -n -F -- 'dataset.inspectId=\"trends-tray\"' templates/trends.html"
           }
         },
@@ -2665,7 +2745,7 @@
           "kind": "button",
           "description": "Closes the tray.",
           "locate": {
-            "path": "templates/trends.html:396",
+            "path": "templates/trends.html:430",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-tray-close\"' templates/trends.html"
           }
         },
@@ -2675,7 +2755,7 @@
           "kind": "card",
           "description": "One signal in the tray: last 3, before, change, sample, outlook bar, n and merged cases.",
           "locate": {
-            "path": "templates/trends.html:386",
+            "path": "templates/trends.html:420",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-tray-signal\"' templates/trends.html"
           }
         }
@@ -2724,7 +2804,7 @@
           "kind": "button",
           "description": "Star toggle (empty star unmarked, filled star marked) from the shared script scripts/marks.js. Marks are stored on the server (data/marks.json via /api/marks), so every page, origin and machine shows the same set. The key is season|week|player|stat. One per leg row inside an expanded Results group.",
           "locate": {
-            "path": "templates/explore.html:676",
+            "path": "templates/explore.html:719",
             "grep": "grep -n -F -- '\"mark-star-explore\"' templates/explore.html"
           }
         },
@@ -2744,7 +2824,7 @@
           "kind": "layout",
           "description": "Two-row header spliced into every page by with_chrome(): brand and three sections on row 1, the section's pages and the results stamp on row 2. site_nav() takes this id as a parameter.",
           "locate": {
-            "path": "scripts/serve_reports.py:1848",
+            "path": "scripts/serve_reports.py:1851",
             "grep": "grep -n -F -- 'inspect_id=\"site-nav\"' scripts/serve_reports.py"
           }
         },
@@ -2754,7 +2834,7 @@
           "kind": "link",
           "description": "'NFL Props', links to /.",
           "locate": {
-            "path": "scripts/serve_reports.py:1860",
+            "path": "scripts/serve_reports.py:1863",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-nav-brand\"' scripts/serve_reports.py"
           }
         },
@@ -2764,7 +2844,7 @@
           "kind": "link",
           "description": "Week section (Games and Slate). Active on /, /slate and every report.",
           "locate": {
-            "path": "scripts/serve_reports.py:1819",
+            "path": "scripts/serve_reports.py:1822",
             "grep": "grep -n -F -- '\"site-nav-week\"' scripts/serve_reports.py"
           }
         },
@@ -2774,7 +2854,7 @@
           "kind": "link",
           "description": "Players section (Rankings and Trends).",
           "locate": {
-            "path": "scripts/serve_reports.py:1820",
+            "path": "scripts/serve_reports.py:1823",
             "grep": "grep -n -F -- '\"site-nav-players\"' scripts/serve_reports.py"
           }
         },
@@ -2784,7 +2864,7 @@
           "kind": "link",
           "description": "Results section, /explore.",
           "locate": {
-            "path": "scripts/serve_reports.py:1822",
+            "path": "scripts/serve_reports.py:1825",
             "grep": "grep -n -F -- '\"site-nav-results\"' scripts/serve_reports.py"
           }
         },
@@ -2794,7 +2874,7 @@
           "kind": "layout",
           "description": "Pages of the current section, separated by a dot. Empty for Results.",
           "locate": {
-            "path": "scripts/serve_reports.py:1862",
+            "path": "scripts/serve_reports.py:1865",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-subnav\"' scripts/serve_reports.py"
           }
         },
@@ -2804,7 +2884,7 @@
           "kind": "link",
           "description": "Games, / . Current on the home page only.",
           "locate": {
-            "path": "scripts/serve_reports.py:1823",
+            "path": "scripts/serve_reports.py:1826",
             "grep": "grep -n -F -- '\"site-subnav-games\"' scripts/serve_reports.py"
           }
         },
@@ -2814,7 +2894,7 @@
           "kind": "link",
           "description": "Slate, /slate.",
           "locate": {
-            "path": "scripts/serve_reports.py:1824",
+            "path": "scripts/serve_reports.py:1827",
             "grep": "grep -n -F -- '\"site-subnav-slate\"' scripts/serve_reports.py"
           }
         },
@@ -2824,7 +2904,7 @@
           "kind": "link",
           "description": "Rankings, /rankings.html.",
           "locate": {
-            "path": "scripts/serve_reports.py:1825",
+            "path": "scripts/serve_reports.py:1828",
             "grep": "grep -n -F -- '\"site-subnav-rankings\"' scripts/serve_reports.py"
           }
         },
@@ -2834,7 +2914,7 @@
           "kind": "link",
           "description": "Top-bar section Trends, /trends.html. Moved out of the Players row on 2026-10-04.",
           "locate": {
-            "path": "scripts/serve_reports.py:1821",
+            "path": "scripts/serve_reports.py:1824",
             "grep": "grep -n -F -- '\"site-nav-trends\"' scripts/serve_reports.py"
           }
         },
@@ -2844,7 +2924,7 @@
           "kind": "text",
           "description": "How far the season's results go, 'Wk 4 · 2/16 final'. From results_stamp(), one read-only query per request. Empty if the query fails.",
           "locate": {
-            "path": "scripts/serve_reports.py:1863",
+            "path": "scripts/serve_reports.py:1866",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-stamp\"' scripts/serve_reports.py"
           }
         },
@@ -2854,7 +2934,7 @@
           "kind": "text",
           "description": "One-line standing disclaimer spliced after every page by with_chrome().",
           "locate": {
-            "path": "scripts/serve_reports.py:2006",
+            "path": "scripts/serve_reports.py:2009",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-footer\"' scripts/serve_reports.py"
           }
         }

@@ -147,7 +147,73 @@ def headline(df):
     return hits, n, hits / n, pnl, pnl / (100 * n)
 
 
-def render(season, week, df, acc, season_rows):
+def _f(x, d=1, pct=False):
+    if x is None or pd.isna(x):
+        return "n/a"
+    if round(x, d + (2 if pct else 0)) == 0:
+        x = 0.0
+    return f"{x*100:.{d}f}%" if pct else f"{x:.{d}f}"
+
+
+def model_quality_section(mq, acc, week):
+    """Top section: how good the projections were, with no betting line involved.
+    mq: collect() frame for the season through `week`. acc: accuracy() table."""
+    from nflprops import model_quality as MQ
+    L = ["# Model quality (no betting line involved)\n",
+         "Definitions. Bias = mean of actual minus mu. MAE = mean absolute error of mu as published. "
+         "Naive = the player's plain average of the stat over all earlier regular-season games. "
+         "Rel MAE = model MAE / naive MAE on the same players (below 1.0 beats the plain average). "
+         "Within 1 sd = share of players with actual inside mu plus or minus sd (target about 68%). "
+         "Brier = mean squared error of a probability against \"actual beat the line\" (lower is better, "
+         "0.25 is a coin flip). Raw is the model alone. Published is moved toward the book by f. "
+         "AUC = chance that a leg that hit ranks above a leg that missed (0.5 is a coin flip). "
+         "A star marks a count under 30.\n"]
+    if mq is None or mq.empty:
+        return "\n".join(L + ["No projections graded yet.\n"])
+    wk = mq[mq.week == week]
+    for name, d in (("Week " + str(week), wk), ("Season to date", mq[mq.week <= week])):
+        if d.empty:
+            continue
+        t = MQ.table(d, by_week=False)
+        L.append(f"## {name}: projection error and spread\n")
+        L.append("| Stat | Players | Bias | MAE | Naive MAE | Rel MAE | Within 1 sd |")
+        L.append("|---|---|---|---|---|---|---|")
+        for _, r in t.iterrows():
+            star = "*" if r.n < MQ.MIN_N else ""
+            L.append(f"| {G.STAT_LABEL.get(r.stat, r.stat)} | {int(r.n)}{star} | {_f(r.bias)} | {_f(r.mae)} | "
+                     f"{_f(r.naive_mae)} | {_f(r.rel_mae, 3)} | {_f(r.cov68, 1, True)} |")
+        L.append("")
+        L.append(f"## {name}: probability and ranking\n")
+        L.append("| Stat | Priced legs | Brier raw | Brier published | AUC raw | AUC published |")
+        L.append("|---|---|---|---|---|---|")
+        for _, r in t.iterrows():
+            star = "*" if r.priced_n < MQ.MIN_N else ""
+            L.append(f"| {G.STAT_LABEL.get(r.stat, r.stat)} | {int(r.priced_n)}{star} | {_f(r.brier_raw, 4)} | "
+                     f"{_f(r.brier_pub, 4)} | {_f(r.auc_raw, 3)} | {_f(r.auc, 3)} |")
+        L.append("")
+        pr = d[d.mp.notna() & d.mp_raw.notna() & d.hit.notna()]
+        L.append(f"## {name}: predicted vs realized (raw model probability, all stats)\n")
+        L.append("| Predicted | Legs | Mean predicted | Hit |")
+        L.append("|---|---|---|---|")
+        for lab, n, pp, rr in MQ.bins(pr):
+            L.append(f"| {lab} | {n}{'*' if n < MQ.MIN_N else ''} | {_f(pp, 1, True)} | {_f(rr, 1, True)} |")
+        L.append("")
+    L.append("Priced legs are projected players that have a line on their card, not only the shortlist. "
+             "Completions has no line. The week-by-week trend is on the Trends page.\n")
+    if not acc.empty:
+        L.append("## Projection error with the fitted bias, every projected player\n")
+        from nflprops import calibration as CAL
+        nn = CAL.bias_n()
+        L.append("| Stat | Players | Bias (season n) | Miss, raw | Miss, with bias |")
+        L.append("|---|---|---|---|---|")
+        for stat, r in acc.iterrows():
+            L.append(f"| {G.STAT_LABEL.get(stat, stat)} | {int(r['count'])} | "
+                     f"{r['bias']:+.1f} ({nn.get(stat, 0)}) | {r['mean']:.1f} | {r['adj']:.1f} |")
+        L.append("")
+    return "\n".join(L)
+
+
+def render(season, week, df, acc, season_rows, mq=None):
     L = [f"# Week {week} — the whole slate ({dt.date.today()})\n"]
     sched = G.played_games(season, week)
     with connect() as con:
@@ -162,8 +228,11 @@ def render(season, week, df, acc, season_rows):
              f"{len(sched)} of {total} games on the schedule are final.\n")
     L.append(f"**Status:** {'final.' if done else 'partial — more games still to play.'}\n")
     L.append("Measurement only. No model, weight, or screen was changed to produce it.\n")
+    L.append(model_quality_section(mq, acc, week))
 
     h = headline(df)
+    L.append("# Against the line\n")
+    L.append("Shortlisted priced Over legs only. Anytime-TD picks are not in this section.\n")
     L.append("## The week in one line\n")
     if not h:
         L.append("Nothing graded yet.\n")
@@ -217,17 +286,6 @@ def render(season, week, df, acc, season_rows):
                  f"${b.pnl.sum():+,.0f} |")
     L.append("\nA band where actual sits well under claimed is the model talking "
              "itself into legs. One where actual sits over it is money left behind.\n")
-
-    if not acc.empty:
-        L.append("## Projection error, every projected player\n")
-        from nflprops import calibration as CAL
-        nn = CAL.bias_n()
-        L.append("| Stat | Players | Bias (season n) | Miss, raw | Miss, with bias |")
-        L.append("|---|---|---|---|---|")
-        for stat, r in acc.iterrows():
-            L.append(f"| {G.STAT_LABEL.get(stat, stat)} | {int(r['count'])} | "
-                     f"{r['bias']:+.1f} ({nn.get(stat, 0)}) | {r['mean']:.1f} | {r['adj']:.1f} |")
-        L.append("")
 
     if season_rows is not None and not season_rows.empty:
         sh = headline(season_rows)
@@ -347,9 +405,13 @@ if __name__ == "__main__":
     season_df = pd.concat(season_rows) if season_rows else pd.DataFrame()
 
     df, _ = legs(season, week)
-    out = render(season, week, df, accuracy(season, week), season_df)
+    from nflprops import model_quality as MQ
+    mq = MQ.collect(season, [w for w in weeks if w <= week])
+    out = render(season, week, df, accuracy(season, week), season_df, mq)
     out += "\n" + rung_section(df, season_df)
     out += "\n" + adjustment_section(write=not a.no_write)
+    if not a.no_write:
+        MQ.write_csv(season, weeks, MQ.collect(season, weeks))
     if a.no_write:
         print(out)
     else:
