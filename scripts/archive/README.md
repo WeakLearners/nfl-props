@@ -1,0 +1,3 @@
+# Archived scripts: the retired old engine
+
+These scripts import `nflprops/project.py`, the old volume-times-efficiency projection. Sean retired it on 2026-10-27 (one model for every stat; see `projects/nfl-props/model-findings.md` in the vault). They are kept for history, so the head-to-head, holdout and backtest numbers they produced can be traced and re-run. The report build does not run them, and no scheduled job or test calls them. They were written to run from `scripts/`, so their `ROOT` and relative imports (for example `from project_week import ...`) can need a small edit to run from this folder. `nflprops/project.py` stays in the repo, marked retired, for the same reason.

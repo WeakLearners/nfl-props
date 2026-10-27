@@ -85,8 +85,8 @@ def check_file_hashes(manifest: dict) -> list[str]:
 def check_live_config(manifest: dict) -> list[str]:
     problems = []
     try:
-        from nflprops import project as P
-        from nflprops import report as R
+        from nflprops import base as P
+        from nflprops import report as R  # noqa: F401
     except Exception as e:
         return [f"IMPORT FAILED: could not import nflprops.project/report -- {e}"]
 
@@ -99,9 +99,6 @@ def check_live_config(manifest: dict) -> list[str]:
         ("K_VAR_GAMES", P.K_VAR_GAMES, 5.0),
         ("K_SHARE_GAMES", P.K_SHARE_GAMES, 4.0),
         ("USE_SHARE", P.USE_SHARE, True),
-        ("USE_VACATED", P.USE_VACATED, False),
-        ("USE_RZ", P.USE_RZ, False),
-        ("USE_CALIB", P.USE_CALIB, True),
     ]
     for name, live, expected in checks:
         if live != expected:
@@ -113,18 +110,6 @@ def check_live_config(manifest: dict) -> list[str]:
     }
     if dict(P.DEF_WEIGHT) != def_weight_expected:
         problems.append(f"CONFIG DRIFT: DEF_WEIGHT live={P.DEF_WEIGHT!r} manifest={def_weight_expected!r}")
-
-    calib_expected = {
-        "completions": (-0.8345, 1.0133),
-        "passing_yards": (-14.0245, 1.0350),
-        "receiving_yards": (-2.0835, 1.0376),
-        "receptions": (-0.1638, 1.0391),
-        "rushing_yards": (-1.6995, 1.0255),
-    }
-    for stat, exp in calib_expected.items():
-        live = tuple(P.CALIB.get(stat, ()))
-        if live != exp:
-            problems.append(f"CONFIG DRIFT: CALIB[{stat}] live={live!r} manifest={exp!r}")
 
     # report.py's shortlist screens (MIN_SNAP / MIN_GAMES) are covered by the
     # file-hash check above rather than a live-value check here.
