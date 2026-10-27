@@ -19,7 +19,8 @@ week included). Definitions:
   auc / auc_raw  chance that a leg that hit has a higher probability than a leg
              that missed (mp, mp_raw). 0.5 is a coin flip.
   engine     "new" when more than half of the rows had both mu and sd from the new path (card fields pe and sp), else "old".
-             Weeks before 2026-10-27 are "old" for every stat, even where mu was already new, because the sd was the old one.
+             Weeks 1 to 7 were published on the old path. Where data/rescored.csv has a row for the player-stat, mu, sd and
+             the probabilities are the new-path rescore (published reports are untouched), so those weeks read "new".
              A step change in the numbers at the week the engine changes is the switch, not drift.
   new_share  share of rows from the new model.
   b1..b5     five fixed bins of mp_raw (0-20, 20-40, 40-60, 60-80, 80-100%):
@@ -68,6 +69,10 @@ def collect(season, weeks):
     if sc not in sys.path:
         sys.path.insert(0, sc)
     import grade_game as G
+    from statistics import NormalDist
+    from . import calibration as CAL, rescored as RS
+    rescored_ix = RS.index(season)
+    _f = CAL.fraction()
     rows = []
     for week in weeks:
         final = {(r.away_team, r.home_team) for r in G.played_games(season, week).itertuples()}
@@ -92,10 +97,21 @@ def collect(season, weeks):
                 if isinstance(nv, pd.Series):
                     nv = nv.iloc[0]
                 line = d.get("line")
+                mu, sd, mp, mp_raw = d["mu"], d.get("sd"), d.get("mp"), raw_prob(d)
+                engine = "new" if (d.get("pe") == "new" and d.get("sp") == "new") else "old"
+                rk = (week, d["p"], d["s"])
+                if rk in rescored_ix.index:
+                    # Weeks scored again on the new path (data/rescored.csv): same player-stat, new mu and sd.
+                    rr = rescored_ix.loc[rk]
+                    rr = rr.iloc[0] if isinstance(rr, pd.DataFrame) else rr
+                    mu, sd, engine = float(rr.mu), float(rr.sd), "new"
+                    if line is not None and d.get("bp") is not None:
+                        mp_raw = float(1 - NormalDist(mu, sd).cdf(float(line)))
+                        mp = mp_raw + _f * (float(d["bp"]) - mp_raw)  # published form: blended with the current f
                 rows.append({
                     "season": season, "week": week, "stat": d["s"], "player": d["p"],
-                    "mu": d["mu"], "sd": d.get("sd"), "actual": float(a), "naive": nv,
-                    "line": line, "mp": d.get("mp"), "mp_raw": raw_prob(d), "engine": "new" if (d.get("pe") == "new" and d.get("sp") == "new") else "old",
+                    "mu": mu, "sd": sd, "actual": float(a), "naive": nv,
+                    "line": line, "mp": mp, "mp_raw": mp_raw, "engine": engine,
                     "hit": None if line is None else float(a > line)})
     return pd.DataFrame(rows)
 

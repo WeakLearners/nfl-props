@@ -2263,7 +2263,7 @@
           "id": "trends-model-quality",
           "label": "Model quality section",
           "kind": "layout",
-          "description": "Section at the top of the content. Week-by-week model quality per stat. It does not use the position filter. Data: data/model_quality.csv, embedded as D.mq by page_data(). An orange rule on a cell marks the first week a stat's numbers came from the new model (engine column in the CSV).",
+          "description": "Section at the top of the content. Week-by-week model quality per stat. It does not use the position filter. Data: data/model_quality.csv, embedded as D.mq by page_data(). Weeks 1 to 7 are rescored on the current model (data/rescored.csv). An orange rule on a cell marks a week where a stat's model path changed (the engine column in the CSV); none shows now.",
           "locate": {
             "path": "templates/trends.html:211",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-model-quality\"' templates/trends.html"

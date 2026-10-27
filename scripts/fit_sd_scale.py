@@ -2,7 +2,7 @@
 """Fit the per-stat scale of the new-path sd on out-of-fold residuals.
 
 The Phase 3 artifacts are trained through 2025, so every 2026 week is out of sample.
-For each finished 2026 week: new mu (Phase 3, or the attempts x rate baseline for
+For each finished 2026 week, on the player-stats that have a card in the published reports: new mu (Phase 3, or the attempts x rate baseline for
 completions) against the actual, divided by the new-path sd (spread.py, no 1.10).
 scale = the 68.3rd percentile of |actual - mu| / sd, so that mu +/- scale*sd covers
 68.3% of the games. Writes data/sd_scale.json. Does not touch calibration.json.
@@ -65,6 +65,11 @@ if __name__ == "__main__":
     df = collect(a.season, weeks)
     if a.save:
         df.to_pickle(a.save)
+    # Fit on the rows that get a card (the report's player pool), not on every rostered player.
+    # On the whole roster the cards' coverage came out 63% for receiving yards at the 68% scale.
+    from nflprops import model_quality as MQ
+    pub = MQ.collect(a.season, weeks)[["week", "player", "stat"]].drop_duplicates()
+    df = df.merge(pub, on=["week", "player", "stat"], how="inner")
     df["u"] = (df.actual - df.mu_new).abs() / df.sd_new
     scale = {s: round(float(np.quantile(g.u, 0.683)), 3) for s, g in df.groupby("stat")}
     for s, g in df.groupby("stat"):

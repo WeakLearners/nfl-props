@@ -7,6 +7,8 @@ Entertainment only; no edge claim (decision #46).
 """
 import json, pathlib, datetime
 
+import pandas as pd
+
 PATH = pathlib.Path(__file__).resolve().parent.parent / "data" / "calibration.json"
 GRID = [i / 10 for i in range(11)]
 
@@ -61,8 +63,15 @@ def fit_bias(rows=None):
         import sys
         sys.path.insert(0, str(PATH.parent.parent / "scripts"))
         import grade_week as GW
+        from . import rescored as RS
         from .config import CURRENT_SEASON
-        rows = GW.projection_rows(CURRENT_SEASON, GW.finished_weeks(CURRENT_SEASON))
+        mw = RS.max_week(CURRENT_SEASON)
+        later = [w for w in GW.finished_weeks(CURRENT_SEASON) if w > mw]
+        rows = GW.projection_rows(CURRENT_SEASON, later) if later else pd.DataFrame(columns=["stat", "mu", "mu_raw", "actual"])
+        if mw:  # weeks 1..mw come from the new-path rescore, not the published mu
+            d = RS.load()
+            d = d[d.season == CURRENT_SEASON]
+            rows = pd.concat([d.assign(mu_raw=d.mu)[["stat", "mu", "mu_raw", "actual"]], rows], ignore_index=True)
     if rows is None or len(rows) == 0:
         return {}, {}
     rows = rows.assign(e=rows.actual - rows.mu_raw)
@@ -123,6 +132,30 @@ def _all_graded():
             and l.get("bp") is not None and l["hit"] is not None]
 
 
+def _rescore(legs):
+    """Weeks scored again on the new path (data/rescored.csv) replace the published mu, sd and
+    raw probability. Later weeks are already new-path. Published reports are not changed."""
+    from statistics import NormalDist
+    from . import rescored as RS
+    from .config import CURRENT_SEASON
+    if not RS.max_week(CURRENT_SEASON):
+        return legs
+    ix = RS.index(CURRENT_SEASON)
+    out = []
+    for l in legs:
+        k = (l.get("week"), l.get("p"), l.get("s"))
+        if l.get("season", CURRENT_SEASON) == CURRENT_SEASON and k in ix.index and l.get("line") is not None:
+            r = ix.loc[k]
+            r = r.iloc[0] if isinstance(r, pd.DataFrame) else r
+            p = 1 - NormalDist(float(r.mu), float(r.sd)).cdf(float(l["line"]))
+            l = dict(l, mu=float(r.mu), mu_raw=float(r.mu), sd=float(r.sd), mp_raw=p, mp=p)
+        elif (l.get("p") is not None and l.get("week", 99) <= RS.max_week(CURRENT_SEASON)
+              and l.get("season", CURRENT_SEASON) == CURRENT_SEASON):
+            continue  # a leg in a rescored week that has no rescored row cannot be scored on the new path
+        out.append(l)
+    return out
+
+
 def _fit_pool(legs):
     # Edge-chosen rungs (week 8 on) are picked because raw mp > bp, so they regress; fitting on them pushes f toward 1, which empties every shortlist.
     return [l for l in legs if l.get("rung") != "chosen"]
@@ -141,7 +174,7 @@ def fit(write=True, legs=None, rows=None):
 
     legs / rows (tests, and the new-path refit in scripts/refit_new_path.py) replace the graded
     legs and the projected-player rows. Left out, the fit reads the reports as before."""
-    every = _all_graded() if legs is None else legs
+    every = _rescore(_all_graded()) if legs is None else legs
     # Bias first, then f on probabilities that use the bias-corrected mu.
     cand, bias_cnt = fit_bias(rows)
     pool = _fit_pool(every)

@@ -2,15 +2,15 @@
  "fitted_through_week": 7,
  "season": 2026,
  "n": {
-  "completions": 235,
-  "passing_yards": 235,
-  "receiving_yards": 1973,
-  "receptions": 1973,
-  "rushing_yards": 813
+  "completions": 177,
+  "passing_yards": 177,
+  "receiving_yards": 948,
+  "receptions": 948,
+  "rushing_yards": 490
  },
- "completions": 1.064,
- "passing_yards": 0.979,
- "receiving_yards": 0.959,
- "receptions": 0.956,
- "rushing_yards": 0.999
+ "completions": 1.086,
+ "passing_yards": 0.971,
+ "receiving_yards": 1.091,
+ "receptions": 1.064,
+ "rushing_yards": 1.038
 }
