@@ -227,7 +227,7 @@
     rushing or receiving touchdown; passing TDs don't count. TD picks without a book price
     count toward hit rate only. Rows under ten graded legs
     are greyed out &mdash; at that size a hit rate is mostly luck. Prices are what the report
-    held when it was generated. <b>Opponent defense</b> only groups legs the old engine actually used
+    held when it was generated. <b>Opponent defense</b> only groups legs the projection actually used
     that number for &mdash; passing yards, completions, and rushing yards (rushing at half
     weight). It's never applied to receiving yards or receptions, so those legs sit outside
     this grouping rather than being counted against a number that didn't shape them.</footer>
@@ -236,7 +236,7 @@
 <script>
 (function () {
   var D = window.__EXPLORE__ || {legs: [], pending: {}, void: {}};
-  // Shortlist legs and TD picks are different products: a different engine,
+  // Shortlist legs and TD picks are different products: a different product,
   // one TD pick per game, and only the shortlist feeds the parlays. Pooling
   // them made a headline that described nothing actually bet, so the page
   // shows one kind at a time and never both. "All" is every leg a book
@@ -289,20 +289,20 @@
       if (l.price > 0) return ["Plus money", -1];
       return band(-l.price, [200, 250, 300, 400],
         ["-199 to -101", "-200 to -249", "-250 to -299", "-300 to -399", "-400 or shorter"]); }],
-    ["conf", "Card-engine confidence", function (l) {
+    ["conf", "Confidence", function (l) {
       return band(l.mp * 100, [65, 70, 75, 80],
         ["Under 65%", "65–70%", "70–75%", "75–80%", "80%+"]); }],
-    ["edge", "Card engine vs book", function (l) {
+    ["edge", "Model vs book", function (l) {
       if (l.bp == null) return null;
       return band((l.mp - l.bp) * 100, [0, 3, 6],
-        ["Engine below book", "0–3 pts above", "3–6 pts above", "6+ pts above"]); }],
+        ["Model below book", "0–3 pts above", "3–6 pts above", "6+ pts above"]); }],
     // report.py only feeds this multiplier into the projection for passing
     // yards, completions, and rushing yards (rushing at half weight) -- it
     // cost 12% of MAE for receiving yards/receptions in backtesting and was
     // turned off there. l.app carries that same applied/not flag through
-    // unchanged, so a leg the old engine never used the number for is left out
+    // unchanged, so a leg the projection never used the number for is left out
     // of this grouping rather than mixed in with the ones it did shape.
-    ["def", "Opponent defense (old-engine-used)", function (l) {
+    ["def", "Opponent defense", function (l) {
       if (l.def == null || !l.app) return null;
       return band(l.def, [0.9, 1.1],
         ["Tough (under 0.9)", "Average (0.9–1.1)", "Soft (over 1.1)"]); }],

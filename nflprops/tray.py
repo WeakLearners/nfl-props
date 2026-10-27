@@ -238,7 +238,7 @@ TRAY_JS = r"""
       if(/\bbd-big\b/.test(b[0])) out.push("This is a Big day matchup: a top-15% "+pos+" against one of the 5 defenses that allow the most to the position.");
       if(/\bbd-caution\b/.test(b[0])) out.push("This is a Caution matchup: a top-15% "+pos+" against one of the 5 toughest defenses to the position.");
     });
-    var eng=(d.pe==="new"?"new model":"old engine");
+    var eng="model";
     out.push("The "+eng+" puts the middle of the range at "+f1(d.mu)+" "+unit+", with most games between "+f1(d.lo)+" and "+f1(d.hi)+".");
     if(d.line!=null&&d.mp!=null&&d.bp!=null){
       var mp=Math.round(d.mp*100), bp=Math.round(d.bp*100);
@@ -272,7 +272,7 @@ TRAY_JS = r"""
     });
     s+=lb+'</svg>';
     return s+'<div class="ptray-key">'+(games.some(function(g){return gl(g,d.s);})?'<span><i></i>tick: that week\'s FanDuel line</span>':'')
-      +'<span><i class="mu"></i>'+(d.pe==="new"?"new model":"old engine")+' expected '+f1(d.mu)+'</span>'
+      +'<span><i class="mu"></i>'+'projection '+f1(d.mu)+'</span>'
       +(games.some(function(g){return gl(g,d.s);})?'<span>bars: green hit, red miss, grey no line</span>':'')+'</div>';
   }
 

@@ -1100,8 +1100,7 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
   <div class="pg-intro"><div class="pg-lede">
   <p class="sub" data-inspect-id="slate-subtitle">Every shortlisted leg in the week,
     pooled by sitting and ranked three ways. Model is this project's own chance the
-    leg lands, from the engine named on the report card (the old engine before the 2026-10-11 4pm games; from those games the
-    new model for passing and rushing yards). Book is what FanDuel's price implies. The small figure under Book is
+    leg lands, from the report card. Book is what FanDuel's price implies. The small figure under Book is
     the difference, and it is the only column that says anything the book doesn't.</p>
   </div></div>
   {tabs}
@@ -1160,7 +1159,7 @@ def slate_windows(season, week):
         tables = (
             slate_table(sorted(rs, key=lambda r: -r["mp"])[:5],
                         "Most likely to happen",
-                        "Ranked by the card engine's own chance the leg lands.", graded_week)
+                        "Ranked by the card's own chance the leg lands.", graded_week)
             + slate_table(sorted(rs, key=lambda r: r["price"])[:5],
                           "Shortest odds",
                           "The heaviest favourites, and so the smallest payouts.",
@@ -2007,8 +2006,8 @@ LAYOUT_CSS = """<style>
 
 
 SITE_FOOTER = ('<div class="sf" data-inspect-id="site-footer"><p>Entertainment only. '
-               'Projections, not edges. Against real sportsbook lines, the old engine was '
-               'the less accurate of the two. The new model has not been tested against lines.</p></div>')
+               'Projections, not edges. Against real sportsbook lines, the projections were '
+               'less accurate than the market.</p></div>')
 WRAP_OPEN = re.compile(r'<div class="wrap"[^>]*>')
 TITLE_TAG = re.compile(r"<title>.*?</title>", re.S)
 
