@@ -359,7 +359,7 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
             "mu": round(float(r.proj), 1),
             **({"mu_raw": round(float(r.mu_raw), 1)} if use_rung else {}), "sd": round(float(r.sd_adj), 1),
             "lo": round(float(r.lo), 1), "hi": round(float(r.hi), 1),
-            "dr": (card_line(bdata, r.opponent, r.position)
+            "dr": (card_line(bdata, r.opponent, r.position, r.stat)
                    if season == bdata["season"] and week == bdata["slate_week"] else None),
             "def": None if pd.isna(r.raw_def) else round(float(r.raw_def), 2),
             "app": bool(r.applied),

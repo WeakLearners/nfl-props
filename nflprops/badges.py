@@ -91,22 +91,41 @@ def matchup_tone(rank, n_def=32):
     return "soft" if rank > n_def - TONE_N else "mid"
 
 
+# stat, rank key in defense_rank, unit, card label. The RB card line for these two stats ranks
+# receiving allowed to RBs, not the rush-plus-receive "vs RB" rank.
+RB_REC = (("receiving_yards", "rbrecyd", "receiving yds/g", "receiving yds"),
+          ("receptions", "rbrec", "receptions/g", "receptions"))
+RB_REC_VAL = {"rbrecyd": "rbrec_ypg", "rbrec": "rbrec_pg"}
+
+
 def def_pos_table(dranks):
     """{team: {POS: {"rank": int, "ypg": float}}}: the adjusted whole-position defense rank."""
     out = {}
     for r in dranks.itertuples():
         out[r.team] = {pos: {"rank": int(getattr(r, f"{pos.lower()}_rank")),
                              "ypg": round(float(getattr(r, f"{pos.lower()}_ypg")), 1)} for pos in POS_STAT}
+        # RB receiving stats get their own rank (receiving only). Keys are "RB|stat".
+        for stat, col, unit, lab in RB_REC:
+            out[r.team][f"RB|{stat}"] = {"rank": int(getattr(r, f"{col}_rank")),
+                                         "ypg": round(float(getattr(r, RB_REC_VAL[col])), 1),
+                                         "u": unit, "l": lab}
     return out
 
 
-def card_line(data, opp, pos):
+def card_line(data, opp, pos, stat=None):
     """The card's matchup line: {"rk", "y", "t"} (rank of 32, adjusted yds/g allowed, tone) or None.
     Reads the same def_pos table the matchup badges were computed from."""
-    e = (data or {}).get("def_pos", {}).get(opp, {}).get(pos)
+    t = (data or {}).get("def_pos", {}).get(opp, {})
+    if pos == "RB" and stat in dict.fromkeys(x[0] for x in RB_REC):
+        e = t.get(f"RB|{stat}")  # no fallback: a missing receiving rank shows no rank, never the rushing one
+    else:
+        e = t.get(pos)
     if not e:
         return None
-    return {"rk": e["rank"], "y": e["ypg"], "t": matchup_tone(e["rank"])}
+    out = {"rk": e["rank"], "y": e["ypg"], "t": matchup_tone(e["rank"])}
+    if "u" in e:
+        out["u"], out["l"] = e["u"], e["l"]
+    return out
 
 
 def check_consistency(data):

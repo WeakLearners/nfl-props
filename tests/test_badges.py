@@ -159,5 +159,21 @@ class CardLineMatchesBadge(unittest.TestCase):
             B.check_consistency(data)
 
 
+class RbReceivingLine(unittest.TestCase):
+    """RB receptions and receiving yards rank receiving allowed to RBs, never the rush-plus-receive rank."""
+    data = {"def_pos": {"JAX": {"RB": {"rank": 3, "ypg": 118.0},
+                                "RB|receiving_yards": {"rank": 28, "ypg": 41.0, "u": "receiving yds/g", "l": "receiving yds"}}}}
+
+    def test_receiving_yards_uses_its_own_rank(self):
+        cl = B.card_line(self.data, "JAX", "RB", "receiving_yards")
+        self.assertEqual((cl["rk"], cl["t"], cl["u"]), (28, "soft", "receiving yds/g"))
+
+    def test_rushing_keeps_the_position_rank(self):
+        self.assertEqual(B.card_line(self.data, "JAX", "RB", "rushing_yards")["rk"], 3)
+
+    def test_missing_receiving_rank_is_none_not_the_rushing_rank(self):
+        self.assertIsNone(B.card_line(self.data, "JAX", "RB", "receptions"))
+
+
 if __name__ == "__main__":
     unittest.main()

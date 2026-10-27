@@ -825,8 +825,8 @@ STATS.forEach(([key,label,unit])=>{
       // Same adjusted whole-position rank the Big day / Caution badge is built from.
       const word=d.dr.t==="tough"?"tougher than most":d.dr.t==="soft"?"softer than most":"about average";
       match='<div class="matchup'+(d.dr.t==="tough"?' tough':'')+'" data-inspect-id="card-matchup"><span class="dot"></span>'
-        +'<span>vs '+d.vs+' <em>'+d.dr.rk+ord(d.dr.rk)+' of 32</em> vs '+d.role.replace(/[0-9]+$/,"")
-        +', '+word+' <span class="muted-note">· '+d.dr.y.toFixed(1)+' yds/g allowed, adjusted</span></span></div>';
+        +'<span>vs '+d.vs+' <em>'+d.dr.rk+ord(d.dr.rk)+' of 32</em> vs '+d.role.replace(/[0-9]+$/,"")+(d.dr.l?' '+d.dr.l:'')
+        +', '+word+' <span class="muted-note">· '+d.dr.y.toFixed(1)+' '+(d.dr.u||'yds/g')+' allowed, adjusted</span></span></div>';
     } else if(d.def!=null){
       const word=d.def>1.03?"softer than average":d.def<0.97?"tougher than average":"about average";
       match='<div class="matchup'+(d.def<0.97?' tough':'')+'" data-inspect-id="card-matchup"><span class="dot"></span>'

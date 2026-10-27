@@ -13,7 +13,10 @@ from .project import DECAY, PRIOR_SEASON_W, K_VOL_GAMES
 LOOKBACK_SEASONS = 1  # two seasons: the current one and the one before
 # Each rank is the order of ONE stat, the same number the page shows.
 RANK_STAT = {"total": "epa_play", "run": "epa_rush", "pass": "epa_db",
-             "qb": "qb_ypg", "rb": "rb_ypg", "wr": "wr_ypg", "te": "te_ypg"}
+             "qb": "qb_ypg", "rb": "rb_ypg", "wr": "wr_ypg", "te": "te_ypg",
+             # Receiving only, allowed to RBs. The "rb" rank above adds rushing yards to
+             # receiving yards, so it cannot say how a defense covers a back in the passing game.
+             "rbrecyd": "rbrec_ypg", "rbrec": "rbrec_pg"}
 # stat -> (numerator, denominator or None for a per-game value)
 STATS = {
     "epa_db": ("pass_epa", "dropbacks"), "pass_ypg": ("pass_yds", None),
@@ -21,6 +24,7 @@ STATS = {
     "ypc": ("rush_yds", "carries"), "epa_play": ("epa", "plays"),
     "qb_ypg": ("qb_yds", None), "rb_ypg": ("rb_yds", None),
     "wr_ypg": ("wr_yds", None), "te_ypg": ("te_yds", None),
+    "rbrec_ypg": ("rb_rec_yds", None), "rbrec_pg": ("rb_rec", None),
 }
 POSITIONS = (("qb", "QB"), ("rb", "RB"), ("wr", "WR"), ("te", "TE"))
 
@@ -34,6 +38,8 @@ def team_games(con, season, week):
                   SUM(COALESCE(rushing_yards,0)) rush_yds,
                   SUM(CASE WHEN position='QB' THEN COALESCE(passing_yards,0) ELSE 0 END) qb_yds,
                   SUM(CASE WHEN position='RB' THEN COALESCE(rushing_yards,0)+COALESCE(receiving_yards,0) ELSE 0 END) rb_yds,
+                  SUM(CASE WHEN position='RB' THEN COALESCE(receiving_yards,0) ELSE 0 END) rb_rec_yds,
+                  SUM(CASE WHEN position='RB' THEN COALESCE(receptions,0) ELSE 0 END) rb_rec,
                   SUM(CASE WHEN position='WR' THEN COALESCE(receiving_yards,0) ELSE 0 END) wr_yds,
                   SUM(CASE WHEN position='TE' THEN COALESCE(receiving_yards,0) ELSE 0 END) te_yds
            FROM player_games WHERE season_type='REG' AND season >= ?

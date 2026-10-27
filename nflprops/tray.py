@@ -230,7 +230,7 @@ TRAY_JS = r"""
     var pos=d.role.replace(/[0-9]+$/,"");
     if(d.dr){
       var word=d.dr.t==="tough"?"tougher than most":d.dr.t==="soft"?"softer than most":"about average";
-      out.push(d.vs+" ranks "+ordn(d.dr.rk)+" of 32 against "+pos+"s, "+word+", at "+d.dr.y.toFixed(1)+" yards a game allowed (adjusted).");
+      out.push(d.vs+" ranks "+ordn(d.dr.rk)+" of 32 against "+pos+"s"+(d.dr.l?" ("+d.dr.l+")":"")+", "+word+", at "+d.dr.y.toFixed(1)+" "+(d.dr.u?d.dr.u.replace("/g"," a game"):"yards a game")+" allowed (adjusted).");
     } else if(d.def!=null){
       out.push(d.vs+" is "+(d.def>1.03?"softer than average":d.def<0.97?"tougher than average":"about average")+" against this stat.");
     }
