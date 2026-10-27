@@ -21,7 +21,8 @@ def synthetic():
             rows.append(dict(game_id=f"{wk}-{d}", season=2026, week=wk, off=teams[(i + wk) % 32], defn=d,
                              pass_epa=0.1 * i * 30, rush_epa=0.05 * i * 20, dropbacks=30, carries=20,
                              pass_yds=200 + 3 * i, rush_yds=80 + 2 * i, pa=10 + i,
-                             qb_yds=200 + 3 * i, rb_yds=90 + 2 * i, wr_yds=150 + i, te_yds=40 + i, rb_rec_yds=30 + i, rb_rec=3 + i / 10))
+                             qb_yds=200 + 3 * i, rb_yds=90 + 2 * i, wr_yds=150 + i, te_yds=40 + i, rb_rec_yds=30 + i, rb_rec=3 + i / 10,
+                             qb_rush_yds=10 + i, rb_rush_yds=60 + i, wr_rec=10 + i / 10, te_rec=4 + i / 10))
     g = pd.DataFrame(rows)
     g["epa"], g["plays"] = g.pass_epa + g.rush_epa, g.dropbacks + g.carries
     return g

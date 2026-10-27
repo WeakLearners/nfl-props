@@ -91,24 +91,29 @@ def matchup_tone(rank, n_def=32):
     return "soft" if rank > n_def - TONE_N else "mid"
 
 
-# stat, rank key in defense_rank, unit, card label. The RB card line for these two stats ranks
-# receiving allowed to RBs, not the rush-plus-receive "vs RB" rank.
-RB_REC = (("receiving_yards", "rbrecyd", "receiving yds/g", "receiving yds"),
-          ("receptions", "rbrec", "receptions/g", "receptions"))
-RB_REC_VAL = {"rbrecyd": "rbrec_ypg", "rbrec": "rbrec_pg"}
+# (position, stat) -> (rank key in defense_rank, value column, unit, card label). The card line for these
+# pairs ranks the defense on that one stat allowed to that position. Without this the line used the
+# whole-position rank: RB rushing plus receiving yards, QB passing yards, WR/TE receiving yards.
+POS_STAT_LINE = {
+    ("RB", "receiving_yards"): ("rbrecyd", "rbrec_ypg", "receiving yds/g", "receiving yds"),
+    ("RB", "receptions"): ("rbrec", "rbrec_pg", "receptions/g", "receptions"),
+    ("RB", "rushing_yards"): ("rbrush", "rbrush_ypg", "rushing yds/g", "rushing yds"),
+    ("QB", "rushing_yards"): ("qbrush", "qbrush_ypg", "rushing yds/g", "rushing yds"),
+    ("WR", "receptions"): ("wrrec", "wrrec_pg", "receptions/g", "receptions"),
+    ("TE", "receptions"): ("terec", "terec_pg", "receptions/g", "receptions"),
+}
 
 
 def def_pos_table(dranks):
-    """{team: {POS: {"rank": int, "ypg": float}}}: the adjusted whole-position defense rank."""
+    """{team: {POS: {"rank": int, "ypg": float}}}: the adjusted whole-position defense rank,
+    plus "POS|stat" entries (with "u" unit and "l" label) for the pairs in POS_STAT_LINE."""
     out = {}
     for r in dranks.itertuples():
         out[r.team] = {pos: {"rank": int(getattr(r, f"{pos.lower()}_rank")),
                              "ypg": round(float(getattr(r, f"{pos.lower()}_ypg")), 1)} for pos in POS_STAT}
-        # RB receiving stats get their own rank (receiving only). Keys are "RB|stat".
-        for stat, col, unit, lab in RB_REC:
-            out[r.team][f"RB|{stat}"] = {"rank": int(getattr(r, f"{col}_rank")),
-                                         "ypg": round(float(getattr(r, RB_REC_VAL[col])), 1),
-                                         "u": unit, "l": lab}
+        for (pos, stat), (key, col, unit, lab) in POS_STAT_LINE.items():
+            out[r.team][f"{pos}|{stat}"] = {"rank": int(getattr(r, f"{key}_rank")),
+                                            "ypg": round(float(getattr(r, col)), 1), "u": unit, "l": lab}
     return out
 
 
@@ -116,8 +121,8 @@ def card_line(data, opp, pos, stat=None):
     """The card's matchup line: {"rk", "y", "t"} (rank of 32, adjusted yds/g allowed, tone) or None.
     Reads the same def_pos table the matchup badges were computed from."""
     t = (data or {}).get("def_pos", {}).get(opp, {})
-    if pos == "RB" and stat in dict.fromkeys(x[0] for x in RB_REC):
-        e = t.get(f"RB|{stat}")  # no fallback: a missing receiving rank shows no rank, never the rushing one
+    if (pos, stat) in POS_STAT_LINE:
+        e = t.get(f"{pos}|{stat}")  # no fallback: a missing stat rank shows no rank, never another stat's
     else:
         e = t.get(pos)
     if not e:
@@ -135,7 +140,8 @@ def check_consistency(data):
         m = e.get("matchup")
         if not m:
             continue
-        line = card_line(data, m["opp"], key.split("|")[1])
+        pos = key.split("|")[1]
+        line = card_line(data, m["opp"], pos, POS_STAT[pos])
         want = {"big": "soft", "caution": "tough"}[m["kind"]]
         if line is None or line["t"] != want:
             raise AssertionError(f"matchup badge {m['kind']} for {key} vs {m['opp']} disagrees with card line {line}")
@@ -237,7 +243,9 @@ def _matchups(season, week, df, dranks):
             o = opp.get(r.team)
             if o is None or o not in dr.index:
                 continue
-            rk = int(dr.loc[o, f"{k}_rank"])
+            sl = POS_STAT_LINE.get((pos, POS_STAT[pos]))
+            rkey, ycol = (sl[0], sl[1]) if sl else (k, f"{k}_ypg")
+            rk = int(dr.loc[o, f"{rkey}_rank"])
             kind = matchup_kind(int(r.rank), n, int(r.n_games), rk)
             if not kind:
                 continue
@@ -245,7 +253,7 @@ def _matchups(season, week, df, dranks):
             out[f"{name_key(r.name)}|{pos}"] = {"matchup": {
                 "kind": kind, "opp": o, "week": week + 1,
                 "title": (f"{lead}: #{int(r.rank)} {pos} by recent production vs {o}, {ordinal(rk)} of 32 vs {pos}, "
-                          f"{dr.loc[o, f'{k}_ypg']:.1f} yds/g allowed (opponent-adjusted).")}}
+                          f"{dr.loc[o, ycol]:.1f} yds/g allowed (opponent-adjusted).")}}
     return out
 
 

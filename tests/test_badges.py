@@ -136,14 +136,14 @@ class CardLineMatchesBadge(unittest.TestCase):
         # Chase Brown rec yds (JAX 4th vs RB) and Zay Flowers rec yds (TEN 28th vs WR), the 2026 week-4 cases.
         data = {"players": {"c b|RB": {"matchup": {"kind": "caution", "opp": "JAX", "week": 4}},
                             "z f|WR": {"matchup": {"kind": "big", "opp": "TEN", "week": 4}}},
-                "def_pos": {"JAX": {"RB": {"rank": 4, "ypg": 61.0}}, "TEN": {"WR": {"rank": 28, "ypg": 130.0}}}}
+                "def_pos": {"JAX": {"RB": {"rank": 4, "ypg": 61.0}, "RB|rushing_yards": {"rank": 4, "ypg": 61.0}}, "TEN": {"WR": {"rank": 28, "ypg": 130.0}}}}
         self.assertEqual(B.check_consistency(data), 2)
         self.assertEqual(B.card_line(data, "JAX", "RB")["t"], "tough")
         self.assertEqual(B.card_line(data, "TEN", "WR")["t"], "soft")
 
     def test_disagreement_is_caught(self):
         data = {"players": {"c b|RB": {"matchup": {"kind": "caution", "opp": "JAX", "week": 4}}},
-                "def_pos": {"JAX": {"RB": {"rank": 20, "ypg": 90.0}}}}
+                "def_pos": {"JAX": {"RB": {"rank": 20, "ypg": 90.0}, "RB|rushing_yards": {"rank": 20, "ypg": 90.0}}}}
         with self.assertRaises(AssertionError):
             B.check_consistency(data)
 
@@ -168,8 +168,14 @@ class RbReceivingLine(unittest.TestCase):
         cl = B.card_line(self.data, "JAX", "RB", "receiving_yards")
         self.assertEqual((cl["rk"], cl["t"], cl["u"]), (28, "soft", "receiving yds/g"))
 
-    def test_rushing_keeps_the_position_rank(self):
-        self.assertEqual(B.card_line(self.data, "JAX", "RB", "rushing_yards")["rk"], 3)
+    def test_rushing_has_no_fallback_to_the_position_rank(self):
+        self.assertIsNone(B.card_line(self.data, "JAX", "RB", "rushing_yards"))
+
+    def test_every_special_pair_has_its_own_line(self):
+        data = {"def_pos": {"JAX": {f"{p}|{s}": {"rank": 5, "ypg": 1.0, "u": "x", "l": "y"}
+                                    for (p, s) in B.POS_STAT_LINE}}}
+        for (p, s) in B.POS_STAT_LINE:
+            self.assertEqual(B.card_line(data, "JAX", p, s)["rk"], 5, (p, s))
 
     def test_missing_receiving_rank_is_none_not_the_rushing_rank(self):
         self.assertIsNone(B.card_line(self.data, "JAX", "RB", "receptions"))

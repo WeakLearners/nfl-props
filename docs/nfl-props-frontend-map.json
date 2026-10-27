@@ -538,7 +538,7 @@
           "id": "card-matchup",
           "label": "Matchup note",
           "kind": "text",
-          "description": "Matchup line: the opponent's adjusted rank of 32 against this position and its allowed per game (DATA field dr, from badges.json def_pos). For RB receptions and RB receiving yards it ranks receiving allowed to RBs (receptions/g or receiving yds/g, with a stat label), not the rush-plus-receive 'vs RB' rank; dr then also carries u (unit) and l (label). Other stats use the whole-position rank the Big day / Caution badge is built from. Reports built before 2026-10-04 show the raw ratio instead; reports built before 2026-10-27 show the old RB rank on RB receiving cards.",
+          "description": "Matchup line: the opponent's adjusted rank of 32 and its allowed per game (DATA field dr, from badges.json def_pos). Six position-stat pairs rank that one stat allowed to that position, with a unit and label in dr (u, l): RB receptions, RB receiving yds, RB rushing yds, QB rushing yds, WR receptions, TE receptions. Other stats use the whole-position rank (QB passing, WR/TE receiving yards). The Big day / Caution badge for RBs uses the RB rushing rank too, so line and badge cannot disagree. Reports built before 2026-10-04 show the raw ratio instead; reports built before 2026-10-27 keep the old whole-position rank.",
           "locate": {
             "path": "templates/report.html:827",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-matchup\"' templates/report.html"
@@ -2106,7 +2106,7 @@
           "kind": "table",
           "description": "Total rank, team, the ranked EPA number, extra yard columns,, points per game allowed. Shown at once with the other three tables. Written by render_defenses().",
           "locate": {
-            "path": "nflprops/defense_rank.py:125",
+            "path": "nflprops/defense_rank.py:133",
             "grep": "grep -n -F -- 'defenses-table-{key}' nflprops/defense_rank.py"
           }
         },
@@ -2116,7 +2116,7 @@
           "kind": "table",
           "description": "Run rank, team, the ranked EPA number, extra yard columns,, points per game allowed. Shown at once with the other three tables. Written by render_defenses().",
           "locate": {
-            "path": "nflprops/defense_rank.py:125",
+            "path": "nflprops/defense_rank.py:133",
             "grep": "grep -n -F -- 'defenses-table-{key}' nflprops/defense_rank.py"
           }
         },
@@ -2126,7 +2126,7 @@
           "kind": "table",
           "description": "Pass rank, team, the ranked EPA number, extra yard columns,, points per game allowed. Shown at once with the other three tables. Written by render_defenses().",
           "locate": {
-            "path": "nflprops/defense_rank.py:125",
+            "path": "nflprops/defense_rank.py:133",
             "grep": "grep -n -F -- 'defenses-table-{key}' nflprops/defense_rank.py"
           }
         },
@@ -2136,7 +2136,7 @@
           "kind": "table-row",
           "description": "One defense in the Total table.",
           "locate": {
-            "path": "nflprops/defense_rank.py:131",
+            "path": "nflprops/defense_rank.py:139",
             "grep": "grep -n -F -- 'defenses-row-{key}' nflprops/defense_rank.py"
           }
         },
@@ -2146,7 +2146,7 @@
           "kind": "table-row",
           "description": "One defense in the Run table.",
           "locate": {
-            "path": "nflprops/defense_rank.py:131",
+            "path": "nflprops/defense_rank.py:139",
             "grep": "grep -n -F -- 'defenses-row-{key}' nflprops/defense_rank.py"
           }
         },
@@ -2156,7 +2156,7 @@
           "kind": "table-row",
           "description": "One defense in the Pass table.",
           "locate": {
-            "path": "nflprops/defense_rank.py:131",
+            "path": "nflprops/defense_rank.py:139",
             "grep": "grep -n -F -- 'defenses-row-{key}' nflprops/defense_rank.py"
           }
         },
@@ -2166,7 +2166,7 @@
           "kind": "table",
           "description": "Team, then rank and yards per game allowed to QB, RB, WR and TE. Shown at once with the other three tables. Written by render_defenses().",
           "locate": {
-            "path": "nflprops/defense_rank.py:125",
+            "path": "nflprops/defense_rank.py:133",
             "grep": "grep -n -F -- 'defenses-table-{key}' nflprops/defense_rank.py"
           }
         },
@@ -2176,7 +2176,7 @@
           "kind": "table-row",
           "description": "One defense in the By position table.",
           "locate": {
-            "path": "nflprops/defense_rank.py:140",
+            "path": "nflprops/defense_rank.py:148",
             "grep": "grep -n -F -- 'defenses-row-pos' nflprops/defense_rank.py"
           }
         },
@@ -2186,7 +2186,7 @@
           "kind": "badge",
           "description": "Trend arrow after the team name in the Total, Run and Pass tables. Up = the defense got tougher, down = it allows more. Neutral colours.",
           "locate": {
-            "path": "nflprops/defense_rank.py:132",
+            "path": "nflprops/defense_rank.py:140",
             "grep": "grep -n -F -- '\"defenses-badge\"' nflprops/defense_rank.py"
           }
         },
@@ -2196,7 +2196,7 @@
           "kind": "badge",
           "description": "Trend arrow inside a vs QB/RB/WR/TE cell of the By position table.",
           "locate": {
-            "path": "nflprops/defense_rank.py:141",
+            "path": "nflprops/defense_rank.py:149",
             "grep": "grep -n -F -- '\"defenses-badge-pos\"' nflprops/defense_rank.py"
           }
         },
@@ -2206,7 +2206,7 @@
           "kind": "table-header",
           "description": "Rank and yards per game allowed to QB.",
           "locate": {
-            "path": "nflprops/defense_rank.py:144",
+            "path": "nflprops/defense_rank.py:152",
             "grep": "grep -n -F -- 'defenses-col-{k}' nflprops/defense_rank.py"
           }
         },
@@ -2216,7 +2216,7 @@
           "kind": "table-header",
           "description": "Rank and yards per game allowed to RB.",
           "locate": {
-            "path": "nflprops/defense_rank.py:144",
+            "path": "nflprops/defense_rank.py:152",
             "grep": "grep -n -F -- 'defenses-col-{k}' nflprops/defense_rank.py"
           }
         },
@@ -2226,7 +2226,7 @@
           "kind": "table-header",
           "description": "Rank and yards per game allowed to WR.",
           "locate": {
-            "path": "nflprops/defense_rank.py:144",
+            "path": "nflprops/defense_rank.py:152",
             "grep": "grep -n -F -- 'defenses-col-{k}' nflprops/defense_rank.py"
           }
         },
@@ -2236,7 +2236,7 @@
           "kind": "table-header",
           "description": "Rank and yards per game allowed to TE.",
           "locate": {
-            "path": "nflprops/defense_rank.py:144",
+            "path": "nflprops/defense_rank.py:152",
             "grep": "grep -n -F -- 'defenses-col-{k}' nflprops/defense_rank.py"
           }
         },
