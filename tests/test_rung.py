@@ -78,7 +78,8 @@ class BuildTests(unittest.TestCase):
         self.assertTrue(chosen)
         for r in chosen:
             self.assertTrue(-200 <= r["price"] <= -110)
-            self.assertGreater(r["mp"], r["bp"])
+            # mp and bp are stored rounded to 3 places; the code enforces edge > 0 before rounding.
+            self.assertGreaterEqual(r["mp"], r["bp"])
             self.assertIsNotNone(r["old_line"])
             self.assertIsNotNone(r["old_price"])
             self.assertIsNotNone(r["old_mp"])
