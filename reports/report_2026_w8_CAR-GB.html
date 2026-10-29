@@ -302,6 +302,7 @@
   .muted-note{color:var(--ink-3); opacity:.8}
   svg{display:block; width:100%; height:78px; overflow:visible; margin-top:4px}
   .curve{fill:none; stroke-width:2}
+  .meanline{stroke-width:1.5; stroke-dasharray:2 2.5}
   .axis{stroke:var(--line); stroke-width:1}
   .tick{font-family:"IBM Plex Mono",monospace; font-size:9px; fill:var(--ink-3)}
   .hit{fill:transparent; cursor:crosshair}
@@ -373,7 +374,7 @@
   </header>
   <p class="sub">Projected production for each team's featured players. The curve is the
     full range of plausible outcomes; the shaded band is the middle ~68%, where roughly two
-    of every three games land. The number FanDuel is pricing is shown under the curve.
+    of every three games land. The solid upright rule marks the number FanDuel is pricing.
     From week 8 on it is the rung the card chose, priced
     &minus;200 to &minus;110, where the model beats the book by the most.</p>
   <p class="sub"><strong>Ordered by how close that number sits to the curve's peak.</strong>
@@ -385,6 +386,9 @@
     <span class="key"><span class="swatch" style="background:var(--den)"></span><span id="teamA"></span></span>
     <span class="key"><span class="swatch" style="background:var(--kc)"></span><span id="teamB"></span></span>
     <span class="key"><span class="swatch band-key"></span>middle ~68% of outcomes</span>
+    <span class="key"><span class="swatch" style="background:none;border-top:2px dashed var(--ink-3);height:0"></span>the card's expected number (team colour)</span>
+    <span class="key"><span class="swatch" style="background:none;border-left:2px solid var(--ink);width:0;height:14px"></span>the number FanDuel is pricing</span>
+    <span class="key" data-inspect-id="legend-actual"><span class="swatch" style="background:none;border-left:2px solid var(--good);width:0;height:14px"></span>what he actually did &mdash; <em class="lg-good">green</em> cleared the number, <em class="lg-bad">red</em> did not, grey means none was offered</span>
   </div>
 
   <section class="picks" data-inspect-id="picks-section">
@@ -508,6 +512,13 @@ function showTip(e,html){tip.innerHTML=html;tip.classList.add("on");
   tip.style.top=Math.max(e.clientY-r.height-10,8)+"px";}
 function hideTip(){tip.classList.remove("on")}
 
+function lineMark(d,c){
+  if(d.line==null) return "";
+  const x=Math.max(1,Math.min(W-1,c.X(d.line)));
+  return '<line x1="'+x.toFixed(1)+'" y1="6" x2="'+x.toFixed(1)+'" y2="'+(H-10)
+    +'" stroke="var(--ink)" stroke-width="2"></line>'
+    +'<circle cx="'+x.toFixed(1)+'" cy="6" r="2.5" fill="var(--ink)"></circle>';
+}
 function result(d, id){
   const a = (window.__ACTUALS__ || {})[d.p + "|" + d.s];
   if(a == null) return "";
@@ -542,6 +553,25 @@ function history(d){
   return '<div class="hist" data-inspect-id="card-history" role="img"'
     + ' aria-label="last ' + n + ' call' + (n === 1 ? "" : "s")
     + ' on this player and stat, most recent first">' + dots + '</div>';
+}
+
+// The real number, drawn where it fell on the player's own curve. The pill
+// says he caught 51 yards; this says whether 51 was the middle of what the
+// model expected or out in the tail. A projection that was badly wrong looks
+// wrong here even when the leg happened to win.
+function actualMark(d,c){
+  const a = (window.__ACTUALS__ || {})[d.p + "|" + d.s];
+  if(a == null) return "";
+  const stroke = d.line == null ? "var(--ink-3)"
+    : (a > d.line ? "var(--good)" : "var(--bad)");
+  const raw = c.X(a), x = Math.max(1, Math.min(W-1, raw));
+  // A number past the end of the drawn range is pinned to the edge. The dash
+  // says so, rather than pretending the curve reached that far.
+  const off = raw < 1 || raw > W-1;
+  return '<line data-inspect-id="card-actual-mark" x1="'+x.toFixed(1)+'" y1="6" x2="'
+    +x.toFixed(1)+'" y2="'+(H-10)+'" stroke="'+stroke+'" stroke-width="2"'
+    +(off?' stroke-dasharray="3 2"':'')+'></line>'
+    +'<circle cx="'+x.toFixed(1)+'" cy="'+(H-10)+'" r="2.5" fill="'+stroke+'"></circle>';
 }
 
 function compare(d){
@@ -641,9 +671,13 @@ STATS.forEach(([key,label,unit])=>{
       +': expected '+fmt(d.mu)+', middle range '+fmt(d.lo)+' to '+fmt(d.hi)+'">'
       +'<path d="'+c.band+'" fill="'+fill+'"></path>'
       +'<path class="curve" d="'+c.path+'" stroke="'+col+'"></path>'
+      +'<line class="meanline" x1="'+c.X(d.mu).toFixed(1)+'" y1="'+(H-10)+'" x2="'
+        +c.X(d.mu).toFixed(1)+'" y2="'+c.Y(c.peak).toFixed(1)+'" stroke="'+col+'"></line>'
       +'<line class="axis" x1="0" y1="'+(H-10)+'" x2="'+W+'" y2="'+(H-10)+'"></line>'
       +'<text class="tick" x="0" y="'+(H-1)+'">'+fmt(Math.max(0,c.lo))+'</text>'
       +'<text class="tick" x="'+W+'" y="'+(H-1)+'" text-anchor="end">'+fmt(c.hi)+'</text>'
+      +lineMark(d,c)
+      +actualMark(d,c)
       +'<rect class="hit" data-inspect-id="card-curve-hitbox" x="0" y="0" width="'+W+'" height="'+H+'"></rect>'
       +'</svg>'
       +compare(d)
