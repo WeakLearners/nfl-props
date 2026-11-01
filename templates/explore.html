@@ -315,8 +315,16 @@
   DIMS.forEach(function (d) { BYKEY[d[0]] = d; });
   // "Marked" is a search-only dimension: in BYKEY for the chips, not in DIMS, so it is
   // never a Group by option. Marks come from the shared script (marks.js).
+  // Starred only is current-week only: a star never carries into a new week. Current week =
+  // the week of the upcoming legs, else (between weeks) the latest graded week. Stored marks
+  // for older weeks are kept as history; they just do not match this chip.
+  var CUR = (function () {
+    var src = (D.upcoming || []).length ? D.upcoming : D.legs, best = 0;
+    src.forEach(function (l) { best = Math.max(best, l.season * 100 + l.week); });
+    return best;
+  })();
   BYKEY.marked = ["marked", "Starred", function (l) {
-    return window.markHas && markHas(markKey(l.season, l.week, l.p, l.s)) ? ["Starred only", 0] : null; }];
+    return l.season * 100 + l.week === CUR && window.markHas && markHas(markKey(l.season, l.week, l.p, l.s)) ? ["Starred only", 0] : null; }];
   // Categories with many small groups sort by size; the rest keep their order.
   var BY_SIZE = {team: 1, opp: 1, player: 1, role: 1};
 
