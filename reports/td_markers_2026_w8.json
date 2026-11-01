@@ -1,13 +1,13 @@
 {
  "ARI-DAL": {
   "basis": "model+book_vig",
-  "book_p": 0.697,
+  "book_p": 0.714,
   "conf": 0.572,
   "model_p": 0.572,
   "phase3": {
-   "p_combined": 0.424,
-   "p_rec": 0.06,
-   "p_rush": 0.388
+   "p_combined": 0.41,
+   "p_rec": 0.086,
+   "p_rush": 0.354
   },
   "player": "Javonte Williams",
   "position": "RB",
@@ -15,13 +15,13 @@
  },
  "ATL-TB": {
   "basis": "model+book_vig",
-  "book_p": 0.556,
+  "book_p": 0.5,
   "conf": 0.48,
   "model_p": 0.48,
   "phase3": {
-   "p_combined": 0.375,
-   "p_rec": 0.113,
-   "p_rush": 0.296
+   "p_combined": 0.297,
+   "p_rec": 0.091,
+   "p_rush": 0.227
   },
   "player": "Bucky Irving",
   "position": "RB",
@@ -29,13 +29,13 @@
  },
  "BAL-BUF": {
   "basis": "model+book_vig",
-  "book_p": 0.706,
+  "book_p": 0.667,
   "conf": 0.632,
   "model_p": 0.632,
   "phase3": {
-   "p_combined": 0.385,
-   "p_rec": 0.031,
-   "p_rush": 0.366
+   "p_combined": 0.384,
+   "p_rec": 0.046,
+   "p_rush": 0.354
   },
   "player": "Derrick Henry",
   "position": "RB",
@@ -57,27 +57,27 @@
  },
  "CHI-SEA": {
   "basis": "model+book_vig",
-  "book_p": 0.592,
-  "conf": 0.462,
-  "model_p": 0.462,
+  "book_p": 0.524,
+  "conf": 0.46,
+  "model_p": 0.46,
   "phase3": {
-   "p_combined": 0.293,
-   "p_rec": 0.032,
-   "p_rush": 0.27
+   "p_combined": 0.367,
+   "p_rec": 0.095,
+   "p_rush": 0.301
   },
-  "player": "Emanuel Wilson",
+  "player": "D'Andre Swift",
   "position": "RB",
-  "team": "SEA"
+  "team": "CHI"
  },
  "CLE-PIT": {
   "basis": "model+book_vig",
-  "book_p": 0.435,
+  "book_p": 0.426,
   "conf": 0.406,
   "model_p": 0.406,
   "phase3": {
-   "p_combined": 0.31,
-   "p_rec": 0.068,
-   "p_rush": 0.259
+   "p_combined": 0.357,
+   "p_rec": 0.062,
+   "p_rush": 0.314
   },
   "player": "Quinshon Judkins",
   "position": "RB",
@@ -85,13 +85,13 @@
  },
  "IND-JAX": {
   "basis": "model+book_vig",
-  "book_p": 0.556,
+  "book_p": 0.5,
   "conf": 0.476,
   "model_p": 0.476,
   "phase3": {
-   "p_combined": 0.444,
-   "p_rec": 0.143,
-   "p_rush": 0.351
+   "p_combined": 0.512,
+   "p_rec": 0.242,
+   "p_rush": 0.356
   },
   "player": "Bhayshul Tuten",
   "position": "RB",
@@ -100,8 +100,8 @@
  "KC-DEN": {
   "basis": "model+book_vig",
   "book_p": 0.583,
-  "conf": 0.421,
-  "model_p": 0.421,
+  "conf": 0.471,
+  "model_p": 0.471,
   "phase3": {
    "p_combined": 0.34,
    "p_rec": 0.043,
@@ -113,7 +113,7 @@
  },
  "LAC-LA": {
   "basis": "model+book_vig",
-  "book_p": 0.583,
+  "book_p": 0.565,
   "conf": 0.478,
   "model_p": 0.478,
   "phase3": {
@@ -126,22 +126,22 @@
   "team": "LA"
  },
  "LV-NYJ": {
-  "basis": "model+book_vig",
-  "book_p": 0.512,
-  "conf": 0.444,
-  "model_p": 0.444,
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.473,
+  "model_p": 0.473,
   "phase3": {
-   "p_combined": 0.439,
-   "p_rec": 0.189,
-   "p_rush": 0.308
+   "p_combined": 0.339,
+   "p_rec": 0.081,
+   "p_rush": 0.281
   },
-  "player": "Ashton Jeanty",
+  "player": "Breece Hall",
   "position": "RB",
-  "team": "LV"
+  "team": "NYJ"
  },
  "MIN-DET": {
   "basis": "model+book_vig",
-  "book_p": 0.744,
+  "book_p": 0.706,
   "conf": 0.54,
   "model_p": 0.54,
   "phase3": {
@@ -155,13 +155,13 @@
  },
  "NE-MIA": {
   "basis": "model+book_vig",
-  "book_p": 0.574,
-  "conf": 0.412,
-  "model_p": 0.412,
+  "book_p": 0.556,
+  "conf": 0.392,
+  "model_p": 0.392,
   "phase3": {
-   "p_combined": 0.366,
-   "p_rec": 0.081,
-   "p_rush": 0.31
+   "p_combined": 0.371,
+   "p_rec": 0.07,
+   "p_rush": 0.324
   },
   "player": "Rhamondre Stevenson",
   "position": "RB",
@@ -183,13 +183,13 @@
  },
  "TEN-CIN": {
   "basis": "model+book_vig",
-  "book_p": 0.615,
+  "book_p": 0.592,
   "conf": 0.515,
   "model_p": 0.515,
   "phase3": {
-   "p_combined": 0.518,
-   "p_rec": 0.22,
-   "p_rush": 0.381
+   "p_combined": 0.542,
+   "p_rec": 0.278,
+   "p_rush": 0.366
   },
   "player": "Chase Brown",
   "position": "RB",

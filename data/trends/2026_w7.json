@@ -542,11 +542,11 @@
     "vol": 31,
     "label": "Watch",
     "outlook": "Watch (42.9%, n=219)",
-    "next": "at GB",
+    "next": "vs DEN",
     "dvp": {
-     "rk": 19,
-     "y": 147.8,
-     "t": "mid"
+     "rk": 9,
+     "y": 136.5,
+     "t": "tough"
     }
    },
    {
@@ -689,11 +689,11 @@
     "vol": 10,
     "label": "Watch",
     "outlook": "Watch (42.6%, n=61)",
-    "next": "vs CAR",
+    "next": "at NE",
     "dvp": {
-     "rk": 5,
-     "y": 132.9,
-     "t": "tough"
+     "rk": 23,
+     "y": 153.9,
+     "t": "soft"
     }
    },
    {
@@ -1046,11 +1046,11 @@
     "vol": 21,
     "label": "Watch",
     "outlook": "Watch (51.3%, n=76)",
-    "next": "at GB",
+    "next": "vs DEN",
     "dvp": {
-     "rk": 19,
-     "y": 147.8,
-     "t": "mid"
+     "rk": 9,
+     "y": 136.5,
+     "t": "tough"
     }
    },
    {
@@ -1466,11 +1466,11 @@
     "vol": 32,
     "label": "Watch",
     "outlook": "Watch (47.4%, n=215)",
-    "next": "vs CAR",
+    "next": "at NE",
     "dvp": {
-     "rk": 5,
-     "y": 132.9,
-     "t": "tough"
+     "rk": 23,
+     "y": 153.9,
+     "t": "soft"
     }
    },
    {
@@ -1928,11 +1928,11 @@
     "vol": 10,
     "label": "Watch",
     "outlook": "Watch (59.6%, n=52)",
-    "next": "at GB",
+    "next": "vs DEN",
     "dvp": {
-     "rk": 4,
-     "y": 45.5,
-     "t": "tough"
+     "rk": 21,
+     "y": 57.0,
+     "t": "mid"
     }
    },
    {
@@ -2560,11 +2560,11 @@
     "vol": 16,
     "label": "Watch",
     "outlook": "Watch (49.3%, n=71)",
-    "next": "vs CAR",
+    "next": "at NE",
     "dvp": {
-     "rk": 30,
-     "y": 137.0,
-     "t": "soft"
+     "rk": 6,
+     "y": 115.5,
+     "t": "tough"
     }
    },
    {
@@ -2602,11 +2602,11 @@
     "vol": 24,
     "label": "Watch",
     "outlook": "Watch (49.3%, n=71)",
-    "next": "vs CAR",
+    "next": "at NE",
     "dvp": {
-     "rk": 30,
-     "y": 137.0,
-     "t": "soft"
+     "rk": 6,
+     "y": 115.5,
+     "t": "tough"
     }
    },
    {
@@ -2854,10 +2854,10 @@
     "vol": 55,
     "label": "Watch",
     "outlook": "Watch (41.3%, n=75)",
-    "next": "at GB",
+    "next": "vs DEN",
     "dvp": {
-     "rk": 12,
-     "y": 120.4,
+     "rk": 11,
+     "y": 120.3,
      "t": "mid"
     }
    },
@@ -3423,10 +3423,10 @@
     "vol": 80,
     "label": "Likely to hold",
     "outlook": "Likely to hold (70.0%, n=80)",
-    "next": "vs CAR",
+    "next": "at NE",
     "dvp": {
-     "rk": 18,
-     "y": 54.5,
+     "rk": 20,
+     "y": 55.9,
      "t": "mid"
     }
    },
@@ -3486,11 +3486,11 @@
     "vol": 108,
     "label": "Likely to hold",
     "outlook": "Likely to hold (70.7%, n=133)",
-    "next": "vs CAR",
+    "next": "at NE",
     "dvp": {
-     "rk": 5,
-     "y": 132.9,
-     "t": "tough"
+     "rk": 23,
+     "y": 153.9,
+     "t": "soft"
     }
    },
    {
@@ -4158,11 +4158,11 @@
     "vol": 117,
     "label": "Watch",
     "outlook": "Watch (53.1%, n=113)",
-    "next": "at GB",
+    "next": "vs DEN",
     "dvp": {
-     "rk": 19,
-     "y": 147.8,
-     "t": "mid"
+     "rk": 9,
+     "y": 136.5,
+     "t": "tough"
     }
    },
    {
@@ -4284,11 +4284,11 @@
     "vol": 162,
     "label": "Likely to hold",
     "outlook": "Likely to hold (70.3%, n=357)",
-    "next": "at GB",
+    "next": "vs DEN",
     "dvp": {
-     "rk": 19,
-     "y": 147.8,
-     "t": "mid"
+     "rk": 9,
+     "y": 136.5,
+     "t": "tough"
     }
    },
    {
@@ -4368,11 +4368,11 @@
     "vol": 104,
     "label": "Likely to hold",
     "outlook": "Likely to hold (62.9%, n=62)",
-    "next": "vs CAR",
+    "next": "at NE",
     "dvp": {
-     "rk": 30,
-     "y": 137.0,
-     "t": "soft"
+     "rk": 6,
+     "y": 115.5,
+     "t": "tough"
     }
    },
    {
@@ -4620,11 +4620,11 @@
     "vol": 165,
     "label": "Likely to hold",
     "outlook": "Likely to hold (72.1%, n=165)",
-    "next": "at GB",
+    "next": "vs DEN",
     "dvp": {
-     "rk": 4,
-     "y": 45.5,
-     "t": "tough"
+     "rk": 21,
+     "y": 57.0,
+     "t": "mid"
     }
    },
    {
@@ -4914,11 +4914,11 @@
     "vol": 92,
     "label": "Likely to hold",
     "outlook": "Likely to hold (70.3%, n=357)",
-    "next": "vs CAR",
+    "next": "at NE",
     "dvp": {
-     "rk": 5,
-     "y": 132.9,
-     "t": "tough"
+     "rk": 23,
+     "y": 153.9,
+     "t": "soft"
     }
    },
    {
@@ -4998,11 +4998,11 @@
     "vol": 177,
     "label": "Watch",
     "outlook": "Watch (53.1%, n=113)",
-    "next": "at GB",
+    "next": "vs DEN",
     "dvp": {
-     "rk": 19,
-     "y": 147.8,
-     "t": "mid"
+     "rk": 9,
+     "y": 136.5,
+     "t": "tough"
     }
    },
    {
@@ -5460,11 +5460,11 @@
     "vol": 233,
     "label": "Watch",
     "outlook": "Watch (53.1%, n=147)",
-    "next": "at GB",
+    "next": "vs DEN",
     "dvp": {
-     "rk": 19,
-     "y": 147.8,
-     "t": "mid"
+     "rk": 9,
+     "y": 136.5,
+     "t": "tough"
     }
    },
    {
@@ -6027,10 +6027,10 @@
     "vol": 239,
     "label": "Watch",
     "outlook": "Watch (50.5%, n=103)",
-    "next": "at GB",
+    "next": "vs DEN",
     "dvp": {
-     "rk": 12,
-     "y": 120.4,
+     "rk": 11,
+     "y": 120.3,
      "t": "mid"
     }
    },
@@ -6489,11 +6489,11 @@
     "vol": 144,
     "label": "Watch",
     "outlook": "Watch (56.4%, n=78)",
-    "next": "at GB",
+    "next": "vs DEN",
     "dvp": {
-     "rk": 4,
-     "y": 45.5,
-     "t": "tough"
+     "rk": 21,
+     "y": 57.0,
+     "t": "mid"
     }
    },
    {
@@ -6615,11 +6615,11 @@
     "vol": 249,
     "label": "Watch",
     "outlook": "Watch (51.6%, n=155)",
-    "next": "vs CAR",
+    "next": "at NE",
     "dvp": {
-     "rk": 5,
-     "y": 132.9,
-     "t": "tough"
+     "rk": 23,
+     "y": 153.9,
+     "t": "soft"
     }
    },
    {
@@ -7224,11 +7224,11 @@
     "vol": 120,
     "label": "Watch",
     "outlook": "Watch (47.6%, n=82)",
-    "next": "vs CAR",
+    "next": "at NE",
     "dvp": {
-     "rk": 30,
-     "y": 137.0,
-     "t": "soft"
+     "rk": 6,
+     "y": 115.5,
+     "t": "tough"
     }
    },
    {
@@ -7371,11 +7371,11 @@
     "vol": 246,
     "label": "Likely to hold",
     "outlook": "Likely to hold (66.7%, n=132)",
-    "next": "vs CAR",
+    "next": "at NE",
     "dvp": {
-     "rk": 5,
-     "y": 132.9,
-     "t": "tough"
+     "rk": 23,
+     "y": 153.9,
+     "t": "soft"
     }
    },
    {
@@ -7413,11 +7413,11 @@
     "vol": 167,
     "label": "Watch",
     "outlook": "Watch (56.4%, n=78)",
-    "next": "at GB",
+    "next": "vs DEN",
     "dvp": {
-     "rk": 4,
-     "y": 45.5,
-     "t": "tough"
+     "rk": 21,
+     "y": 57.0,
+     "t": "mid"
     }
    },
    {
@@ -7434,10 +7434,10 @@
     "vol": 242,
     "label": "Watch",
     "outlook": "Watch (55.2%, n=58)",
-    "next": "vs CAR",
+    "next": "at NE",
     "dvp": {
-     "rk": 18,
-     "y": 54.5,
+     "rk": 20,
+     "y": 55.9,
      "t": "mid"
     }
    },
@@ -8045,10 +8045,10 @@
     "vol": 0,
     "label": "Likely to hold",
     "outlook": "Likely to hold (66.0%, n=97)",
-    "next": "at GB",
+    "next": "vs DEN",
     "dvp": {
-     "rk": 12,
-     "y": 120.4,
+     "rk": 11,
+     "y": 120.3,
      "t": "mid"
     }
    },
@@ -8066,11 +8066,11 @@
     "vol": 0,
     "label": "Likely to hold",
     "outlook": "Likely to hold (61.5%, n=52)",
-    "next": "vs CAR",
+    "next": "at NE",
     "dvp": {
-     "rk": 5,
-     "y": 132.9,
-     "t": "tough"
+     "rk": 23,
+     "y": 153.9,
+     "t": "soft"
     }
    },
    {
@@ -8234,11 +8234,11 @@
     "vol": 0,
     "label": "Likely to hold",
     "outlook": "Likely to hold (61.5%, n=52)",
-    "next": "at GB",
+    "next": "vs DEN",
     "dvp": {
-     "rk": 19,
-     "y": 147.8,
-     "t": "mid"
+     "rk": 9,
+     "y": 136.5,
+     "t": "tough"
     }
    },
    {
@@ -8255,11 +8255,11 @@
     "vol": 0,
     "label": "Likely to fade",
     "outlook": "Likely to fade (38.8%, n=67, merged: rise 0.5-1 + 1+)",
-    "next": "vs CAR",
+    "next": "at NE",
     "dvp": {
-     "rk": 30,
-     "y": 137.0,
-     "t": "soft"
+     "rk": 6,
+     "y": 115.5,
+     "t": "tough"
     }
    },
    {
@@ -8444,11 +8444,11 @@
     "vol": 0,
     "label": "Likely to fade",
     "outlook": "Likely to fade (31.5%, n=124)",
-    "next": "vs CAR",
+    "next": "at NE",
     "dvp": {
-     "rk": 5,
-     "y": 132.9,
-     "t": "tough"
+     "rk": 23,
+     "y": 153.9,
+     "t": "soft"
     }
    },
    {
@@ -8885,11 +8885,11 @@
     "vol": 0,
     "label": "Likely to fade",
     "outlook": "Likely to fade (24.1%, n=112, merged: rise 0.25-0.5 + 0.5-1)",
-    "next": "vs CAR",
+    "next": "at NE",
     "dvp": {
-     "rk": 5,
-     "y": 132.9,
-     "t": "tough"
+     "rk": 23,
+     "y": 153.9,
+     "t": "soft"
     }
    },
    {
@@ -9074,11 +9074,11 @@
     "vol": 0,
     "label": "Watch",
     "outlook": "Watch (51.4%, n=109)",
-    "next": "vs CAR",
+    "next": "at NE",
     "dvp": {
-     "rk": 30,
-     "y": 137.0,
-     "t": "soft"
+     "rk": 6,
+     "y": 115.5,
+     "t": "tough"
     }
    },
    {
@@ -9284,11 +9284,11 @@
     "vol": 0,
     "label": "Watch",
     "outlook": "Watch (55.8%, n=129)",
-    "next": "vs CAR",
+    "next": "at NE",
     "dvp": {
-     "rk": 30,
-     "y": 137.0,
-     "t": "soft"
+     "rk": 6,
+     "y": 115.5,
+     "t": "tough"
     }
    },
    {
@@ -9830,11 +9830,11 @@
     "vol": 0,
     "label": "Watch",
     "outlook": "Watch (50.0%, n=98)",
-    "next": "at GB",
+    "next": "vs DEN",
     "dvp": {
-     "rk": 19,
-     "y": 147.8,
-     "t": "mid"
+     "rk": 9,
+     "y": 136.5,
+     "t": "tough"
     }
    },
    {
@@ -9893,11 +9893,11 @@
     "vol": 0,
     "label": "Watch",
     "outlook": "Watch (54.2%, n=120)",
-    "next": "at GB",
+    "next": "vs DEN",
     "dvp": {
-     "rk": 4,
-     "y": 45.5,
-     "t": "tough"
+     "rk": 21,
+     "y": 57.0,
+     "t": "mid"
     }
    },
    {
@@ -10481,11 +10481,11 @@
     "vol": 0,
     "label": "Likely to fade",
     "outlook": "Likely to fade (36.9%, n=222)",
-    "next": "at GB",
+    "next": "vs DEN",
     "dvp": {
-     "rk": 19,
-     "y": 147.8,
-     "t": "mid"
+     "rk": 9,
+     "y": 136.5,
+     "t": "tough"
     }
    },
    {
@@ -10628,11 +10628,11 @@
     "vol": 0,
     "label": "Watch",
     "outlook": "Watch (54.2%, n=120)",
-    "next": "at GB",
+    "next": "vs DEN",
     "dvp": {
-     "rk": 4,
-     "y": 45.5,
-     "t": "tough"
+     "rk": 21,
+     "y": 57.0,
+     "t": "mid"
     }
    },
    {
@@ -11410,7 +11410,7 @@
     "vol": 0,
     "label": "Watch",
     "outlook": "Watch (47.1%, n=68)",
-    "next": "at GB",
+    "next": "vs DEN",
     "dvp": null
    },
    {
@@ -11427,7 +11427,7 @@
     "vol": 0,
     "label": "Watch",
     "outlook": "Watch (47.1%, n=68)",
-    "next": "vs CAR",
+    "next": "at NE",
     "dvp": null
    },
    {
@@ -11648,7 +11648,7 @@
     "prev": 4,
     "move": -9,
     "games": 36,
-    "next": "at GB"
+    "next": "vs DEN"
    },
    {
     "name": "Cam Skattebo",
@@ -11748,7 +11748,7 @@
     "prev": 27,
     "move": -8,
     "games": 27,
-    "next": "at GB"
+    "next": "vs DEN"
    },
    {
     "name": "Rashid Shaheed",
@@ -12108,7 +12108,7 @@
     "prev": 59,
     "move": -5,
     "games": 8,
-    "next": "vs CAR"
+    "next": "at NE"
    },
    {
     "name": "Harold Fannin Jr.",
@@ -12158,7 +12158,7 @@
     "prev": 87,
     "move": -5,
     "games": 28,
-    "next": "at GB"
+    "next": "vs DEN"
    },
    {
     "name": "J.J. McCarthy",
@@ -12188,7 +12188,7 @@
     "prev": 7,
     "move": -4,
     "games": 36,
-    "next": "at GB"
+    "next": "vs DEN"
    },
    {
     "name": "Christian McCaffrey",
@@ -12228,7 +12228,7 @@
     "prev": 56,
     "move": -4,
     "games": 32,
-    "next": "vs CAR"
+    "next": "at NE"
    },
    {
     "name": "Colston Loveland",
@@ -12258,7 +12258,7 @@
     "prev": 31,
     "move": -4,
     "games": 31,
-    "next": "at GB"
+    "next": "vs DEN"
    },
    {
     "name": "Wan'Dale Robinson",
@@ -12318,7 +12318,7 @@
     "prev": 8,
     "move": 3,
     "games": 37,
-    "next": "vs CAR"
+    "next": "at NE"
    },
    {
     "name": "Drake Maye",
@@ -12468,7 +12468,7 @@
     "prev": 62,
     "move": -3,
     "games": 16,
-    "next": "vs CAR"
+    "next": "at NE"
    },
    {
     "name": "Mason Taylor",
@@ -12508,7 +12508,7 @@
     "prev": 9,
     "move": -3,
     "games": 23,
-    "next": "at GB"
+    "next": "vs DEN"
    },
    {
     "name": "Parker Washington",
@@ -12528,7 +12528,7 @@
     "prev": 20,
     "move": 3,
     "games": 21,
-    "next": "vs CAR"
+    "next": "at NE"
    },
    {
     "name": "Rome Odunze",
@@ -13018,7 +13018,7 @@
     "prev": 83,
     "move": 2,
     "games": 24,
-    "next": "vs CAR"
+    "next": "at NE"
    },
    {
     "name": "Darius Cooper",
@@ -13338,7 +13338,7 @@
     "prev": 10,
     "move": -1,
     "games": 32,
-    "next": "vs CAR"
+    "next": "at NE"
    },
    {
     "name": "Dallas Goedert",
@@ -13378,7 +13378,7 @@
     "prev": 29,
     "move": 1,
     "games": 15,
-    "next": "at GB"
+    "next": "vs DEN"
    },
    {
     "name": "Oronde Gadsden II",
