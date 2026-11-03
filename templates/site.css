@@ -632,3 +632,4 @@ html body .wrap[data-page="games"] .card .sb .t{display:flex; align-items:center
 html body .logo-line .tlogo.sm{height:18px; width:18px; margin:0 var(--s1) 0 0; vertical-align:-4px}
 html body .logo-line .tlogo.sm:first-child{margin-left:0}
 html body h1 .tlogo{height:44px; width:44px}
+html body .wrap[data-page="report"] :is(.card,.grid,.one-grid)[hidden], html body .wrap[data-page="report"] #sections [hidden]{display:none !important}
