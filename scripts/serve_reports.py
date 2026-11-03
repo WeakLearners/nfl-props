@@ -2221,6 +2221,36 @@ CARD_JS = """<script>
 </script>"""
 
 
+# Team logos on pages that draw their team names in the browser (Slate, Results). The markup comes from
+# the same logo() helper as the header and the cards, so the fallback is one code path.
+def logo_js():
+    from nflprops.gamelines_view import logo
+    tpl = json.dumps(logo("__A__", "sm"))
+    return """<script>
+(function(){
+  var T=%s, SEL=".gm, #teams-top .top-row, #teams-bottom .top-row, #top .top-row, tr.grp td:first-child", busy=false;
+  var AB=/\\b(ARI|ATL|BAL|BUF|CAR|CHI|CIN|CLE|DAL|DEN|DET|GB|HOU|IND|JAX|KC|LAC|LA|LV|MIA|MIN|NE|NO|NYG|NYJ|PHI|PIT|SEA|SF|TB|TEN|WAS)\\b/g;
+  function run(){
+    if(busy) return; busy=true;
+    document.querySelectorAll(SEL).forEach(function(el){
+      var w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT), nodes=[], n;
+      while((n=w.nextNode())) nodes.push(n);
+      nodes.forEach(function(t){
+        var tx=t.nodeValue; if(!/^[\\s\\u00b7]*([A-Z]{2,3})(\\s*@\\s*[A-Z]{2,3})?\\s*$/.test(tx)) return;
+        if(t.parentNode.closest&&t.parentNode.closest(".logo-line")) return;
+        var span=document.createElement("span"); span.className="logo-line";
+        span.innerHTML=tx.replace(AB,function(a){return T.replace("__A__",a)+a;});
+        if(span.querySelector("img")) t.parentNode.replaceChild(span,t);
+      });
+    });
+    busy=false;
+  }
+  run();
+  new MutationObserver(function(){ setTimeout(run,0); }).observe(document.body,{childList:true,subtree:true});
+})();
+</script>""" % tpl
+
+
 class Handler(SimpleHTTPRequestHandler):
     # Tailscale Serve proxies in front of this. An HTTP/1.0 server behind a
     # 1.1 proxy is a known way to get a request that never returns, so speak
@@ -2458,7 +2488,7 @@ class Handler(SimpleHTTPRequestHandler):
             # The slate gets the overlay on the same terms as the listing:
             # spliced in per request, never written to disk. Nothing is stored
             # for this page at all - it is read back out of the report files.
-            html = with_chrome(slate_html() + TABS_JS, "week", "slate", "NFL Props \u00b7 Slate")
+            html = with_chrome(slate_html() + TABS_JS + logo_js(), "week", "slate", "NFL Props \u00b7 Slate")
             body = (with_theme(html) + '\n<script src="/_inspector.js"></script>\n').encode()
             self._send(body, "text/html; charset=utf-8")
             return
@@ -2466,7 +2496,7 @@ class Handler(SimpleHTTPRequestHandler):
         if path in ("/explore", "/explore/", "/explore.html"):
             # Built per request from the reports on disk and the results in
             # the database, like the slate. Nothing is stored for it.
-            html = with_chrome(explore_html(), "results", None, "NFL Props \u00b7 Results")
+            html = with_chrome(explore_html() + logo_js(), "results", None, "NFL Props \u00b7 Results")
             body = (with_theme(html) + '\n<script src="/_inspector.js"></script>\n').encode()
             self._send(body, "text/html; charset=utf-8")
             return

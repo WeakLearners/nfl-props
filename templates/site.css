@@ -627,3 +627,8 @@ html body .tlogo.sm,html body .tlogo-sw.sm{height:20px; width:20px; margin-right
 html body .tlogo-sw{height:12px; width:12px; border-radius:2px; background:var(--ink-3); align-self:center}
 html body .wrap[data-page="report"] h1 .gh-side{gap:var(--s3)}
 html body .wrap[data-page="games"] .card .sb .t{display:flex; align-items:center}
+
+/* Logos in rows: sized to the text. Header logos match the rank badge (44px). */
+html body .logo-line .tlogo.sm{height:18px; width:18px; margin:0 var(--s1) 0 0; vertical-align:-4px}
+html body .logo-line .tlogo.sm:first-child{margin-left:0}
+html body h1 .tlogo{height:44px; width:44px}
