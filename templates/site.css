@@ -478,7 +478,7 @@ html body .wrap[data-page="report"] .glp .pf-v{font:500 var(--t-data)/var(--lh-d
 /* Game page review fixes */
 html body .wrap[data-page="report"] > .legend{grid-row:auto; justify-self:stretch}
 html body .wrap[data-page="report"] .two{grid-template-columns:minmax(0,1fr) 320px}
-html body .wrap[data-page="report"] #picklist, html body .wrap[data-page="report"] .pk-head{--pk-cols:minmax(180px,1fr) minmax(110px,.6fr) minmax(170px,.9fr) 196px 92px}
+html body .wrap[data-page="report"] #picklist, html body .wrap[data-page="report"] .pk-head{--pk-cols:minmax(max-content,1fr) minmax(max-content,.6fr) minmax(max-content,.9fr) 196px 92px}
 html body .wrap[data-page="report"] .glp .pf-v{flex-wrap:nowrap}
 html body .wrap[data-page="report"] .glp-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 html body .wrap[data-page="report"] .pk-slotcell b, html body .wrap[data-page="report"] .pk-slotcell em{color:var(--ink)}
@@ -495,3 +495,29 @@ html body .wrap[data-page="results"] .gl-block{margin-top:var(--s7)}
 html body .wrap[data-page="trends"] td:is(.up,.dn){color:var(--ink)}
 html body .wrap[data-page="slate"] [data-inspect-id="slate-window-hits"]{background:none}
 html body .wrap[data-page="results"] #mqbox table{width:100%}
+
+/* ---- Responsive: content decides. Stacked by default, side by side only when there is room. ---- */
+html body .wrap[data-page="report"] .two{grid-template-columns:minmax(0,1fr)}
+html body .wrap[data-page="report"] .two > .glp .glp-grid{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+@media (min-width:1500px){
+  html body .wrap[data-page="report"] .two{grid-template-columns:minmax(0,1fr) 320px}
+  html body .wrap[data-page="report"] .two > .glp .glp-grid{grid-template-columns:1fr 1fr}
+}
+/* Intro: legend under the text unless there is room beside it. */
+@media (max-width:1499px){
+  html body .wrap[data-page="report"] > .legend{grid-column:1/-1; grid-row:auto}
+  html body .wrap[data-page="report"] > .legend:not(.x){columns:2 360px; display:block}
+  html body .wrap[data-page="report"] > .legend > *{break-inside:avoid; margin-bottom:var(--s2)}
+}
+/* Shortlist: names never cut. Drop the INFO column first, then wrap the leg under the name. */
+html body .wrap[data-page="report"] .pk-nm{overflow:visible; text-overflow:clip; flex:none}
+html body .wrap[data-page="report"] #picklist li > *{overflow:visible; text-overflow:clip}
+@media (max-width:1320px){
+  html body .wrap[data-page="report"] #picklist, html body .wrap[data-page="report"] .pk-head{--pk-cols:minmax(max-content,1fr) minmax(max-content,.7fr) 196px 92px}
+  html body .wrap[data-page="report"] :is(.pk-slotcell,.pk-head .h-info){display:none}
+}
+/* Cards reflow by content width. */
+html body .wrap[data-page="report"] .grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+html body .wrap[data-page="games"] .panel:not([hidden]):has(.card .kick){grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+html body .wrap[data-page] :is(.fbar,.filter,.pg-controls){flex-wrap:wrap}
+
