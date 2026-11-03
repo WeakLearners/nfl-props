@@ -2125,6 +2125,8 @@ def report_fixes(html, has_hist, has_acts, tr):
     if has_acts:
         html = html.replace('<span class="h-models">Models</span>',
                             '<span class="h-models"><span>Model</span><span>Actual</span></span>', 1)
+    html = html.replace("the card\u2019s expected number (team colour)", "the card\u2019s expected number")
+    html = html.replace("the card's expected number (team colour)", "the card's expected number")
     k = html.find("</style>")
     return html[:k + 8] + REPORT_FIX_CSS + html[k + 8:] if k >= 0 else html
 
@@ -2266,7 +2268,17 @@ class Handler(SimpleHTTPRequestHandler):
                     from nflprops.gamelines_view import index_by_game, lines_blob, page_html as gl_page
                     hit = index_by_game(lines_blob()).get((int(m.group(1)), int(m.group(2)), m.group(3), m.group(4)))
                     if hit and '<div class="fbar"' in html:
-                        html = html.replace('<div class="fbar"', gl_page(*hit) + '\n  <div class="fbar"', 1)
+                        two = '<section class="picks"' in html
+                        if two:
+                            html = html.replace('<section class="picks"', '<div class="two"><section class="picks"', 1)
+                        html = html.replace('<div class="fbar"', gl_page(*hit) + ('</div>' if two else '') + '\n  <div class="fbar"', 1)
+                        g0 = hit[0]
+                        if g0.get("home_score") is not None and g0.get("away_score") is not None:
+                            aw, hw = int(g0["away_score"]), int(g0["home_score"])
+                            html = re.sub(r'(<h1>)([^<]+?) (<span class="at">at</span>) ([^<]+)(</h1>)',
+                                          lambda mm: (f'{mm.group(1)}{mm.group(2)} <span class="gh-sc{" w" if aw > hw else ""}">{aw}</span> '
+                                                      f'{mm.group(3)} {mm.group(4)} <span class="gh-sc{" w" if hw > aw else ""}">{hw}</span>{mm.group(5)}'),
+                                          html, 1)
                 except Exception as e:  # noqa: BLE001 -- the report works without game lines
                     sys.stderr.write(f"game lines section skipped: {e}\n")
                 html = report_fixes(html, bool(hist), bool(acts), {"a": (tr or {}).get(m.group(3)), "b": (tr or {}).get(m.group(4))})

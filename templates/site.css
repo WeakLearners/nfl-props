@@ -467,3 +467,11 @@ html body .wrap[data-page="games"] .card.graded > .score b{color:var(--ink); fon
 html body .wrap[data-page] .parlays b.good{color:var(--good)}
 html body .wrap[data-page] .parlays b.bad{color:var(--bad)}
 html body .wrap[data-page] .parlays b{font:500 var(--t-data)/1 var(--f-mono)}
+
+/* Game page: shortlist and game lines side by side (M7 score is in the h1). */
+html body .wrap[data-page="report"] .two{display:grid; grid-template-columns:minmax(0,1fr); gap:var(--s3); align-items:start; margin-top:var(--s5)}
+@media (min-width:1800px){html body .wrap[data-page="report"] .two{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}}
+html body .wrap[data-page="report"] .two > .picks{margin:0}
+html body .wrap[data-page="report"] .two > .glp{margin:0; background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:var(--s4)}
+html body .wrap[data-page="report"] .glp .glp-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+html body .wrap[data-page="report"] .glp .pf-v{font:500 var(--t-data)/var(--lh-data) var(--f-mono); flex-wrap:wrap}
