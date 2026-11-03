@@ -1,0 +1,461 @@
+/* nfl-props site.css -- one design system for every page.
+   Source: projects/nfl-props/design/ui-audit-2026-11-03.md and ui-mockups-2026-11-03/.
+
+   MARKUP CHANGES THE SERVER MUST MAKE (scripts/serve_reports.py unless named)
+   --------------------------------------------------------------------------
+   M1  Splice point (recommended; the early splice was tested and renders the same
+       on the default views, because the overrides win by specificity). with_chrome() must append a style element holding site.css at the
+       END of the page, after SITE_FOOTER, not after the .wrap open tag. The game page
+       has style blocks later in its body (.glp, .ptray). They win over a file that is
+       placed earlier. Keep CHROME_CSS + LAYOUT_CSS + BADGE_CSS where they are.
+   M2  Header bar. site_nav(): one row. Emit
+         <div class="sn" ...><a class="sn-brand">..</a><span class="sn-links">..</span>
+         <span class="sn-right"><span class="sn-stamp">..</span></span></div>
+       Drop the .sn-sub row. THEME build(): if .sn-right exists, append #nflt-btn
+       into it (else body, as now). CSS below already works with the old markup
+       (two rows flattened, button absolutely placed); M2 makes it exact.
+   M3  Sub-views as one tab control. Move the Games / Slate links out of the bar
+       into the page title block as
+         <nav class="seg" aria-label="View"><a class="on">Games</a><a>Slate</a></nav>
+       Players has one sub-page ("Rankings"): emit nothing.
+   M4  Week page card (render of a.card / div.card in the index):
+         <div class="card-top"><span class="kick">THU 8:15 PM · Oct 29</span>
+           <span class="state">Final</span></div>      <- first child of .card
+       Optional, for the two-line score block of the mockup:
+         <div class="sb"><span class="t">CAR</span><span class="sc">19</span>
+           <span class="t w">GB</span><span class="sc w">27</span></div>
+       (w = winner). If .sb is emitted, drop .name and .final from that card.
+       When any card has .kick, the CSS below removes the slot rows and puts all
+       cards of the week in one grid. Until then the slot rows stay.
+   M5  75% meter. After each props .hits-label, before its .score:
+         <span class="hits-meter" style="--p:59%"></span>
+       --p is the hit rate. The tick at 75% is drawn by CSS.
+   M6  Week summary. Replace the week .parlays line in each panel with
+         <div class="sum-row">
+           <div class="sum-box" data-inspect-id="index-sum-props"><span class="sum-k">Props</span>
+             <span class="sum-i">Short list parlays <b>4</b> of <b>13</b> won</span>
+             <span class="sum-i">Net <b class="bad">−$1.79</b></span>
+             <span class="sum-i dim">1 game not graded</span></div>
+           <div class="sum-box" data-inspect-id="index-sum-gl"><span class="sum-k">Game lines</span>
+             <span class="sum-i">Winner <b>11–3</b></span><span class="sum-i">Spread <b>8–5</b></span>
+             <span class="sum-i">Total <b>6–8</b></span></div></div>
+       Game-lines totals are not in the HTML now. The server must count them.
+   M7  Game page header (templates/report.html): put the final score in the header:
+         <h1>KC <span class="gh-sc">24</span> <span class="at">at</span> DEN <span class="gh-sc w">28</span></h1>
+       Text change in the legend: "the card's expected number (team colour)" is no
+       longer true (curves are grey). Say "the card's expected number".
+   M8  Help panels. One element on every page: <details class="help"><summary>How to
+       read ..</summary>..</details>, or keep .legend (styled the same below).
+   M9  Remove inline style="max-width:820px" on [data-inspect-id="trends-team-numbers"]
+       (overridden below with !important until then).
+*/
+
+/* ===================================================================== tokens */
+/* Existing tokens keep their values. Only --accent is restated, because
+   report.html, rankings.html and trends.html do not define it (they use --den,
+   which the server rewrites to a team colour on each game page). */
+:root:root:root{
+  --accent:#eb6834;
+  /* New tokens. Mixed from existing tokens, so light and dark both follow and no
+     new hex enters the site. Measured in Chrome: --surface-2 light #f3f3f2,
+     dark #232322. --good-t / --bad-t = --good / --bad at 12% alpha in each theme. */
+  --surface-2:color-mix(in srgb, var(--ink) 4%, var(--surface));
+  --good-t:color-mix(in srgb, var(--good) 12%, transparent);
+  --bad-t:color-mix(in srgb, var(--bad) 12%, transparent);
+
+  --f-display:"Barlow Condensed",Impact,sans-serif;
+  --f-body:"Public Sans",ui-sans-serif,system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+
+  /* 6 sizes. No other size is permitted. */
+  --t-display:40px; --t-h2:22px; --t-h3:17px; --t-body:14px; --t-data:13px; --t-label:11px;
+  --lh-display:44px; --lh-h2:28px; --lh-h3:22px; --lh-body:21px; --lh-data:18px; --lh-label:14px;
+
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px;
+  --r:6px; --r-sm:4px;
+  --bar-h:56px;
+}
+@media (prefers-color-scheme: dark){
+  :root:root:root:not([data-theme="light"]){ --accent:#d95926 }
+}
+:root:root:root[data-theme="dark"]{ --accent:#d95926 }
+
+/* ===================================================================== base */
+html body{font:400 var(--t-body)/var(--lh-body) var(--f-body)}
+html body :focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+/* Prose links: accent and underline. Replaces the browser's default violet. */
+html body .wrap[data-page] a:not([class]):not(:is(td,th,.sn,nav,.mk) a),
+html body .sf a{color:var(--accent); text-decoration:underline; text-underline-offset:2px}
+
+/* ===================================================================== header bar */
+/* One 56px bar on every page: brand + main nav left, stamp + theme toggle right.
+   Works on the current two-row markup (rows flattened with display:contents). */
+html body .wrap[data-page]{padding-top:0}
+html body .wrap[data-page] > .sn{
+  display:flex; align-items:center; gap:var(--s6); height:var(--bar-h);
+  margin:0 calc(-1 * var(--gutter)) var(--s6); padding:0 var(--gutter);
+  padding-right:calc(var(--gutter) + 72px);         /* room for #nflt-btn (old markup) */
+  border-bottom:1px solid var(--line); background:var(--bg);
+  font-family:var(--f-body); text-transform:none; letter-spacing:0}
+html body .wrap[data-page] > .sn:has(.sn-right #nflt-btn){padding-right:var(--gutter)}
+html body .wrap[data-page] .sn :is(.sn-row,.sn-top,.sn-sub){display:contents}
+html body .wrap[data-page] .sn a.sn-brand{font:700 var(--t-h3)/1 var(--f-display);
+  letter-spacing:.02em; text-transform:uppercase; color:var(--ink); padding:0}
+html body .wrap[data-page] .sn .sn-links{display:flex; gap:var(--s5); height:100%}
+html body .wrap[data-page] .sn .sn-links a{display:flex; align-items:center; height:100%;
+  padding:0; font:500 var(--t-body)/1 var(--f-body); color:var(--ink-3);
+  border-bottom:2px solid transparent; border-top:2px solid transparent}
+html body .wrap[data-page] .sn .sn-links a:hover{color:var(--ink)}
+html body .wrap[data-page] .sn .sn-links a.on{color:var(--ink); border-bottom-color:var(--accent)}
+html body .wrap[data-page] .sn :is(.sn-stamp,.sn-right){margin-left:auto; padding:0;
+  display:flex; align-items:center; gap:var(--s4);
+  font:400 var(--t-data)/1 var(--f-mono); font-variant-numeric:tabular-nums; color:var(--ink-3)}
+html body .wrap[data-page] .sn .sn-right .sn-stamp{margin-left:0}
+/* Old markup only: the sub-page links sit in the bar as a small tab control
+   until M3 moves them to the title block. A section with one sub-page shows none. */
+html body .wrap[data-page] .sn [data-inspect-id="site-subnav"]{display:inline-flex}
+html body .wrap[data-page] .sn [data-inspect-id="site-subnav"]:empty,
+html body .wrap[data-page] .sn [data-inspect-id="site-subnav"]:not(:has(.sep)){display:none}
+html body .wrap[data-page] .sn [data-inspect-id="site-subnav"] .sep{display:none}
+/* Theme toggle. With M2 it sits in .sn-right. Without it, it is placed over the
+   right end of the bar (the bar is the first thing on every page). */
+html body #nflt-btn{
+  position:absolute; top:calc((var(--bar-h) - 28px) / 2); right:var(--gutter); left:auto; bottom:auto;
+  height:28px; padding:0 var(--s2); border-radius:var(--r); z-index:5;
+  border:1px solid var(--line); background:var(--surface); color:var(--ink-3);
+  font:500 var(--t-label)/1 var(--f-body); letter-spacing:.06em; text-transform:uppercase}
+html body #nflt-btn:hover{color:var(--ink); border-color:var(--ink-3)}
+html body .sn-right #nflt-btn{position:static}
+@media (max-width:720px){
+  html body .wrap[data-page] > .sn{height:auto; min-height:var(--bar-h); flex-wrap:wrap;
+    row-gap:0; column-gap:var(--s4); padding-top:var(--s2); padding-bottom:var(--s2)}
+  html body .wrap[data-page] .sn .sn-links{height:40px; gap:var(--s4)}
+}
+
+/* ===================================================================== page title block */
+html body .wrap[data-page] header{border-bottom:0; padding-bottom:0; margin:0}
+html body .wrap[data-page] .eyebrow{margin:0 0 var(--s2);
+  font:500 var(--t-label)/var(--lh-label) var(--f-body); letter-spacing:.06em;
+  text-transform:uppercase; color:var(--ink-3)}
+html body .wrap[data-page] h1{font:700 var(--t-display)/var(--lh-display) var(--f-display);
+  letter-spacing:0; text-transform:uppercase; color:var(--ink); margin:0}
+html body .wrap[data-page] h1 .at{color:var(--ink-3); font-weight:500}
+html body .wrap[data-page] h1 .gh-sc{font:500 var(--t-display)/var(--lh-display) var(--f-mono);
+  font-variant-numeric:tabular-nums; color:var(--ink-3); margin:0 var(--s2)}
+html body .wrap[data-page] h1 .gh-sc.w{color:var(--ink)}
+/* Lede and help text: one size, one colour, 68ch. */
+html body .wrap[data-page] :is(.sub,.note,.pg-lede p,.picks-note,.lane-h p,.top-note){
+  font:400 var(--t-body)/var(--lh-body) var(--f-body); color:var(--ink-2); max-width:68ch}
+html body .wrap[data-page] :is(.fine,.hint,.mq-note,.pf-wide,.small),
+html body .wrap[data-page] #mqbox .mq-note,
+html body .ptray .small{
+  font-size:var(--t-data); line-height:var(--lh-data); max-width:68ch}
+html body .wrap[data-page] .pg-intro{margin-top:var(--s3); column-gap:var(--s7)}
+html body .wrap[data-page] .pg-controls{margin-top:var(--s5); padding-bottom:var(--s3); gap:var(--s3) var(--s5)}
+html body .wrap[data-page] .pg-content{margin-top:var(--s5)}
+
+/* ===================================================================== headings */
+html body .wrap[data-page] h2{font:600 var(--t-h2)/var(--lh-h2) var(--f-display);
+  text-transform:uppercase; letter-spacing:.02em; color:var(--ink)}
+html body .wrap[data-page] :is(h2 .unit,h2 .sub,h2 .yds,.rk-pos h2 .yds){
+  font:400 var(--t-data)/var(--lh-data) var(--f-body); letter-spacing:0; text-transform:none;
+  color:var(--ink-3); max-width:none}
+html body .wrap[data-page] :is(h3,.tbl h4,.pc-t,.lane-h h3,.wbtn h3){
+  font:600 var(--t-h3)/var(--lh-h3) var(--f-display); letter-spacing:.01em}
+/* Section-size titles that were 19-36px. */
+html body .wrap[data-page] :is(.win-h,.ph,.lane-h h3,.wbtn h3){font-size:var(--t-h2); line-height:var(--lh-h2)}
+html body :is(.ptray h2,.ptray .tt-sig h3 b){font-size:var(--t-h2); line-height:var(--lh-h2)}
+/* Player and game names: h3 everywhere. */
+html body .wrap[data-page] :is(.name,.pk-name,.who a,.top-lbl,.pr .who b,.g){
+  font-family:var(--f-display); font-weight:600; font-size:var(--t-h3); line-height:var(--lh-h3)}
+
+/* ===================================================================== tab control (.seg) */
+/* One control for: week tabs (.tabs .tab), Players/Defenses (.filter button),
+   Trends position + view (.chips button), game-page filter (.fgrp .fchip), and
+   the new <nav class="seg"> (M3). Items adjoin; the selected one is raised. */
+html body .wrap[data-page] :is(.tabs,.filter,.seg,.fgrp){gap:0; border-bottom:0; flex-wrap:wrap; align-items:center}
+html body .wrap[data-page="trends"] .chips{gap:0; align-items:center}
+html body .wrap[data-page] .seg{display:inline-flex}
+html body .wrap[data-page] :is(.tabs .tab,.filter button,.seg > a,.fgrp .fchip,.sn [data-inspect-id="site-subnav"] a),
+html body .wrap[data-page="trends"] .chips button{
+  appearance:none; box-sizing:border-box; display:inline-flex; align-items:center; gap:var(--s1);
+  height:32px; margin:0 0 0 -1px; padding:0 var(--s3);
+  font:500 var(--t-data)/1 var(--f-body); letter-spacing:0; text-transform:none; white-space:nowrap;
+  color:var(--ink-3); background:var(--surface); text-decoration:none; cursor:pointer;
+  border:1px solid var(--line); border-radius:0; box-shadow:none; position:relative}
+html body .wrap[data-page] .sn [data-inspect-id="site-subnav"] a{height:28px}
+html body .wrap[data-page] :is(.tabs .tab,.filter button,.seg > a,.fgrp .fchip,.sn [data-inspect-id="site-subnav"] a):first-of-type,
+html body .wrap[data-page="trends"] .chips button:first-of-type{margin-left:0; border-radius:var(--r) 0 0 var(--r)}
+html body .wrap[data-page] :is(.tabs .tab,.filter button,.seg > a,.fgrp .fchip,.sn [data-inspect-id="site-subnav"] a):last-of-type,
+html body .wrap[data-page="trends"] .chips button:last-of-type{border-radius:0 var(--r) var(--r) 0}
+html body .wrap[data-page] :is(.tabs .tab,.filter button,.seg > a,.fgrp .fchip,.sn [data-inspect-id="site-subnav"] a):only-of-type,
+html body .wrap[data-page="trends"] .chips button:only-of-type{border-radius:var(--r)}
+html body .wrap[data-page] :is(.tabs .tab,.filter button,.seg > a,.fgrp .fchip,.sn [data-inspect-id="site-subnav"] a):hover,
+html body .wrap[data-page="trends"] .chips button:hover{color:var(--ink-2)}
+html body .wrap[data-page] :is(.tabs .tab[aria-selected="true"],.filter button[aria-pressed="true"],.seg > a.on,.fgrp .fchip[aria-pressed="true"],.sn [data-inspect-id="site-subnav"] a.on),
+html body .wrap[data-page="trends"] .chips button[aria-pressed="true"]{
+  background:var(--surface-2); color:var(--ink); border-color:var(--line);
+  box-shadow:inset 0 -2px 0 var(--accent); z-index:1}
+html body .wrap[data-page] :is(.tabs .tab,.filter button,.fgrp .fchip):focus-visible,
+html body .wrap[data-page="trends"] .chips button:focus-visible{outline:2px solid var(--accent); outline-offset:-2px; z-index:2}
+html body .wrap[data-page] .tabs .tab .n{font:400 var(--t-label)/1 var(--f-mono); letter-spacing:0; color:var(--ink-3)}
+/* Labels in front of a control. */
+html body .wrap[data-page] :is(.fgrp-k,.chips .lab,.sw .lab,.ctl label){
+  font:500 var(--t-label)/var(--lh-label) var(--f-body); letter-spacing:.06em;
+  text-transform:uppercase; color:var(--ink-3); margin-right:var(--s2)}
+html body .wrap[data-page] .tabs{margin-top:var(--s5)}
+@media (max-width:560px){
+  html body .wrap[data-page] .tabs{flex-wrap:nowrap; overflow-x:auto}
+  html body .wrap[data-page] .tabs .tab{flex:none; padding:0 var(--s2)}
+}
+/* Inputs on the same control row. */
+html body .wrap[data-page] :is(.frng,select,.srch input){height:32px; border-radius:var(--r);
+  border:1px solid var(--line); background:var(--surface-2); color:var(--ink);
+  font:500 var(--t-data)/1 var(--f-body)}
+html body .wrap[data-page] .frng{font-family:var(--f-mono); padding:0 var(--s2); width:64px}
+html body .wrap[data-page] .fbar{gap:var(--s3) var(--s5); padding:var(--s3) var(--s4);
+  border-radius:var(--r); margin-top:var(--s7)}
+html body .wrap[data-page] :is(.freset,.chip-clear,.tbtn){font:500 var(--t-data)/1 var(--f-body);
+  letter-spacing:0; text-transform:none}
+html body .wrap[data-page] .tbtn{height:32px; padding:0 var(--s3); border-radius:var(--r)}
+html body .wrap[data-page] :is(.fcount,.filters .count){font:400 var(--t-data)/1 var(--f-body); color:var(--ink-3)}
+
+/* ===================================================================== tables */
+/* Header 11px label, 40px rows, line-soft dividers, numbers right in mono,
+   full width. Colour in a cell only for hit/miss text. */
+html body .wrap[data-page] table{width:100%; max-width:none}
+html body .wrap[data-page] :is(.mqt,#mqbox table,.teamwrap,.tw,.tablewrap){max-width:none}
+html body .wrap[data-page] [data-inspect-id="trends-team-numbers"]{max-width:none !important}
+html body .wrap[data-page] :is(th,table.gl th,.mqt th,.rk-grid th,.dfn-grid th,.ptray th,.tbl th){
+  font:500 var(--t-label)/var(--lh-label) var(--f-body); letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink-3); padding:var(--s2); border-bottom:1px solid var(--line); vertical-align:bottom}
+html body .wrap[data-page] .rk-grid :is(th,td),
+html body .wrap[data-page] .dfn-grid :is(th,td){padding-left:var(--s2); padding-right:var(--s2)}
+html body .wrap[data-page] :is(td,table.gl td,.mqt td,.rk-grid td,.dfn-grid td),
+html body .wrap[data-page] #mqbox td{
+  height:40px; padding-top:0; padding-bottom:0; vertical-align:middle;
+  border-bottom:1px solid var(--line-soft)}
+html body .wrap[data-page] :is(th,td,table.gl th,table.gl td):first-child{padding-left:0}
+html body .wrap[data-page] :is(th,td,table.gl th,table.gl td):last-child{padding-right:0}
+html body .wrap[data-page] :is(th.num,table.gl th.num){text-align:right}
+html body .wrap[data-page] :is(td.num,.mqt td,.dfn-grid td.num),
+html body .wrap[data-page] #mqbox td:not(:first-child){
+  text-align:right; font-family:var(--f-mono); font-size:var(--t-data); font-weight:500;
+  font-variant-numeric:tabular-nums}
+html body .wrap[data-page] :is(td,.dfn-grid table,tr.legs td,td.w,.mqt){font-size:var(--t-data)}
+html body .wrap[data-page] #mqbox td:not(:first-child){font-size:var(--t-data)}
+html body .wrap[data-page] .mqt :is(th,td):first-child{text-align:left}
+html body .wrap[data-page] .mqt td:first-child{font:400 var(--t-body)/1 var(--f-body); color:var(--ink-2)}
+/* A summary column (Season) keeps its rule and weight. */
+html body .wrap[data-page] :is(.mqt .sea,#mqbox td.wk,#mqbox th.wk){border-left:1px solid var(--line)}
+/* Tables in a box: no extra frame. */
+html body .wrap[data-page] .tw{border:0; background:none; border-radius:0}
+html body .wrap[data-page] .tablewrap tbody tr:hover td{background:var(--surface-2)}
+html body .wrap[data-page] .rk-grid thead tr{height:auto}
+/* Nested leg rows on Results stay compact. */
+html body .wrap[data-page] tr.legs table td{height:32px}
+html body .wrap[data-page] tr.legs > td{height:auto}
+
+/* ===================================================================== help panel */
+/* One look for every explanation: game-page legend, Players badge note, Trends
+   "How to read", and <details class="help"> (M8). */
+html body .wrap[data-page] :is(.legend,details.help){
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r);
+  padding:var(--s4); font:400 var(--t-data)/var(--lh-data) var(--f-body); color:var(--ink-2)}
+html body .wrap[data-page] .legend :is(.key,p,span){font-size:var(--t-data)}
+html body .wrap[data-page] .legend .lh{font:500 var(--t-label)/var(--lh-label) var(--f-body);
+  letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3)}
+html body .wrap[data-page="report"] > .legend{gap:var(--s2) var(--s5); margin:var(--s4) 0 var(--s6)}
+html body .wrap[data-page] details.help > summary,
+html body .wrap[data-page] details[data-inspect-id="table-details"] > summary{
+  cursor:pointer; font:500 var(--t-data)/var(--lh-data) var(--f-body); letter-spacing:0;
+  text-transform:none; color:var(--ink-3)}
+/* Data boxes (Results top 5, model quality): same frame as a card. */
+html body .wrap[data-page] :is(.ex-side .top,details.top){border-radius:var(--r)}
+html body .wrap[data-page] :is(.top-h,.top-sub,.top .tm-head){font:500 var(--t-label)/var(--lh-label) var(--f-body);
+  letter-spacing:.06em; text-transform:uppercase}
+
+/* ===================================================================== HIT / MISS mark */
+/* Dot + word, on the right of its row. Never a filled box. */
+html body .wrap[data-page] :is(.gl-v .score,.glp .pill,.mark){
+  display:inline-flex; align-items:center; justify-self:end; gap:5px;
+  height:auto; min-width:0; padding:0; margin:0; border:0; border-radius:0; background:none;
+  font:500 var(--t-label)/var(--lh-label) var(--f-body); letter-spacing:.06em; text-transform:uppercase}
+html body .wrap[data-page] :is(.gl-v .score,.glp .pill,.mark)::before{
+  content:""; width:6px; height:6px; border-radius:50%; background:currentColor; flex:none}
+html body .wrap[data-page] :is(.gl-v .score.good,.glp .pill.good,.mark.hit){color:var(--good)}
+html body .wrap[data-page] :is(.gl-v .score.bad,.glp .pill.bad,.mark.miss){color:var(--bad)}
+html body .wrap[data-page] :is(.gl-v .score.na,.glp .pill.push){color:var(--ink-3); border:0}
+/* Value left, mark in its own right-hand column. */
+html body .wrap[data-page] .gl-v{display:grid; grid-template-columns:minmax(0,1fr) 52px;
+  align-items:center; column-gap:var(--s2); font:500 var(--t-data)/24px var(--f-mono); color:var(--ink)}
+html body .wrap[data-page] .glp .pf-v{display:flex; align-items:center; gap:var(--s2)}
+html body .wrap[data-page] .glp .pf-v .pill{margin-left:auto}
+
+/* ===================================================================== tinted badges */
+/* A count or a number that hit or missed: tinted ground, coloured text. */
+html body .wrap[data-page] :is(.card > .score,.win-h .score,.parlays .score,.sum-box b.good,.sum-box b.bad,.res-mark){
+  display:inline-flex; align-items:center; justify-content:center; height:20px; padding:0 6px;
+  border:0; border-radius:var(--r-sm); font:500 var(--t-data)/1 var(--f-mono);
+  font-variant-numeric:tabular-nums; letter-spacing:0}
+html body .wrap[data-page] :is(.card > .score.good,.win-h .score.good,.parlays .score.good,.res-mark.hit){background:var(--good-t); color:var(--good)}
+html body .wrap[data-page] :is(.card > .score.bad,.win-h .score.bad,.parlays .score.bad,.res-mark.miss){background:var(--bad-t); color:var(--bad)}
+html body .wrap[data-page] :is(.card > .score.na,.res-mark.none){background:var(--surface-2); color:var(--ink-3); border:0}
+html body .wrap[data-page] .res-mark{width:auto; min-width:44px; font-weight:600}
+html body .wrap[data-page] :is(.parlay.won,.sum-box b.good){color:var(--good)}
+html body .wrap[data-page] :is(.parlay.lost,.sum-box b.bad){color:var(--bad)}
+html body .wrap[data-page] :is(.sum-box b.good,.sum-box b.bad){background:none; height:auto; padding:0}
+
+/* Tags: role, rank, badges, pick, TD. One neutral outlined shape. */
+html body .wrap[data-page] :is(.role,.rk,.bd,.pick-badge,.td-badge,.day,.wxm,.tag),
+html body .ptray :is(.role,.rk,.bd){
+  height:18px; padding:0 6px; border-radius:var(--r-sm); background:none;
+  font:500 var(--t-label)/1 var(--f-mono); letter-spacing:0; text-transform:none;
+  color:var(--ink-2); border:1px solid var(--line); box-shadow:none}
+html body .wrap[data-page] :is(.role.a,.role.b){color:var(--ink-2); border-color:var(--line)}
+html body .wrap[data-page] .pick-badge{color:var(--ink); border-color:var(--ink-3); text-transform:uppercase; letter-spacing:.06em}
+html body .wrap[data-page] .td-badge{color:var(--ink-2); border-color:var(--ink-3)}
+html body .wrap[data-page] .bd-big{color:var(--ink); background:none; border-color:var(--ink)}
+html body .wrap[data-page] .bd-caution{color:var(--ink-2); background:var(--surface-2); border-color:var(--ink-3)}
+/* The trend glyphs are masks, not boxes: keep their own size. */
+html body .wrap[data-page] :is(.bd-up,.bd-down,.bd-d-up,.bd-d-down){height:18px; width:10px; padding:0; border:0}
+html body .wrap[data-page] :is(.td-phase3,.pk-n){font:500 var(--t-label)/1 var(--f-mono)}
+/* Team colour: a small square swatch beside the name. Nothing else. */
+html body .wrap[data-page="report"] :is(.role.a,.role.b)::before{
+  content:""; width:8px; height:8px; border-radius:2px; margin-right:5px; flex:none}
+html body .wrap[data-page="report"] .role.a::before{background:var(--den)}
+html body .wrap[data-page="report"] .role.b::before{background:var(--kc)}
+html body .wrap[data-page] .legend .swatch{width:10px; height:10px; border-radius:2px}
+/* Team rank boxes in the game title: neutral, no team fill. */
+html body .wrap[data-page] h1 :is(.trk.a,.trk.b){background:var(--surface); color:var(--ink);
+  border:1px solid var(--line); box-shadow:none; border-radius:var(--r-sm)}
+html body .wrap[data-page] h1 .trk b{font-size:var(--t-data)}
+html body .wrap[data-page] h1 .trk i{font-size:var(--t-label); margin-top:2px}
+
+/* ===================================================================== week page */
+html body .wrap[data-page="games"] .rows,
+html body .wrap[data-page="games"] .slot .rows{gap:var(--s3); grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+html body .wrap[data-page] .card{border-radius:var(--r)}
+html body .wrap[data-page="games"] .card{padding:var(--s4); row-gap:var(--s1); column-gap:var(--s2)}
+html body .wrap[data-page="games"] a.card:hover{background:var(--surface-2); border-color:var(--line)}
+html body .wrap[data-page="games"] .card.graded{grid-template-columns:72px minmax(0,1fr) auto; align-items:center}
+html body .wrap[data-page="games"] .card.graded > :is(.name,.final,.sec,.gl-rows,.card-top,.sb){grid-column:1/-1}
+html body .wrap[data-page="games"] .card.graded > .hits-label + .score{grid-column:2 / -1}
+html body .wrap[data-page="games"] .card.graded > .hits-meter + .score{grid-column:auto}
+html body .wrap[data-page="games"] .card .final{font:500 var(--t-data)/var(--lh-data) var(--f-mono);
+  color:var(--ink-2); padding-bottom:var(--s3); border-bottom:1px solid var(--line-soft)}
+html body .wrap[data-page="games"] .card .sec{margin-top:var(--s2);
+  font:500 var(--t-label)/var(--lh-label) var(--f-body); letter-spacing:.06em; color:var(--ink-3)}
+html body .wrap[data-page="games"] .card .sec + .sec,
+html body .wrap[data-page="games"] .card .score + .sec,
+html body .wrap[data-page="games"] .card .score ~ .sec{padding-top:var(--s3); margin-top:var(--s3);
+  border-top:1px solid var(--line-soft)}
+html body .wrap[data-page="games"] .card .sec .note{font:400 var(--t-data)/1 var(--f-body); letter-spacing:0}
+html body .wrap[data-page="games"] .card .hits-label{font:400 var(--t-data)/24px var(--f-body); letter-spacing:0; color:var(--ink-2)}
+html body .wrap[data-page="games"] .card .gl-rows{grid-template-columns:72px minmax(0,1fr); column-gap:var(--s2); row-gap:0}
+html body .wrap[data-page="games"] .card.none .name{color:var(--ink-3)}
+/* M4: card top line and the two-line score block. */
+html body .wrap[data-page="games"] .card .card-top{display:flex; justify-content:space-between; margin-bottom:var(--s2);
+  font:500 var(--t-label)/var(--lh-label) var(--f-body); letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3)}
+html body .wrap[data-page="games"] .card .sb{display:grid; grid-template-columns:1fr auto; row-gap:2px;
+  padding-bottom:var(--s3); border-bottom:1px solid var(--line-soft)}
+html body .wrap[data-page="games"] .card .sb .t{font:600 var(--t-h3)/var(--lh-h3) var(--f-display); color:var(--ink-3)}
+html body .wrap[data-page="games"] .card .sb .sc{font:500 var(--t-h3)/var(--lh-h3) var(--f-mono); text-align:right; color:var(--ink-3)}
+html body .wrap[data-page="games"] .card .sb .w{color:var(--ink)}
+/* M5: thin meter with a tick at 75%. */
+html body .wrap[data-page="games"] .hits-meter{position:relative; display:block; height:4px; min-width:40px;
+  border-radius:2px; background:linear-gradient(var(--m-c,var(--ink-3)),var(--m-c,var(--ink-3))) 0 0 / var(--p,0%) 100% no-repeat, var(--line-soft)}
+html body .wrap[data-page="games"] .hits-meter:has(+ .score.good){--m-c:var(--good)}
+html body .wrap[data-page="games"] .hits-meter:has(+ .score.bad){--m-c:color-mix(in srgb, var(--bad) 70%, transparent)}
+html body .wrap[data-page="games"] .hits-meter::after{content:""; position:absolute; left:75%; top:-3px;
+  width:1px; height:10px; background:var(--ink-3)}
+/* M4 present: one grid in kickoff order, no slot rows. */
+html body .wrap[data-page="games"] .panel:not([hidden]):has(.card .kick){display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:var(--s3); align-items:start; margin-top:var(--s5)}
+html body .wrap[data-page="games"] .panel:has(.card .kick) > .parlays{margin:0}
+html body .wrap[data-page="games"] .panel:has(.card .kick) :is(.slot,.slot .rows){display:contents}
+html body .wrap[data-page="games"] .panel:has(.card .kick) .slot-h{display:none}
+html body .wrap[data-page="games"] .panel > :is(.parlays,.sum-row,.empty){grid-column:1/-1}
+/* Week and season summary. .parlays is the interim box until M6. */
+html body .wrap[data-page] .parlays{display:flex; align-items:center; gap:var(--s3); margin:var(--s4) 0 0;
+  font:400 var(--t-data)/var(--lh-data) var(--f-body); letter-spacing:0; color:var(--ink-2)}
+html body .wrap[data-page] .panel > .parlays{background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r); padding:var(--s3) var(--s4); margin:var(--s5) 0 0}
+html body .wrap[data-page] .sum-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));
+  gap:var(--s3); margin:var(--s5) 0 var(--s2)}
+html body .wrap[data-page] .sum-box{display:flex; flex-wrap:wrap; align-items:baseline; gap:var(--s2) var(--s5);
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:var(--s3) var(--s4);
+  font:400 var(--t-data)/var(--lh-data) var(--f-body); color:var(--ink-2)}
+html body .wrap[data-page] .sum-box .sum-k{min-width:84px; font:500 var(--t-label)/var(--lh-label) var(--f-body);
+  letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3)}
+html body .wrap[data-page] .sum-box b{font:500 var(--t-data)/1 var(--f-mono); color:var(--ink)}
+html body .wrap[data-page] .sum-box .dim{margin-left:auto; color:var(--ink-3)}
+/* Slot heading (until M4) and the slate's sitting heading. */
+html body .wrap[data-page] :is(.slot-h,.win-h){font-family:var(--f-display); letter-spacing:.02em}
+html body .wrap[data-page] .slot-h{font-size:var(--t-h3); line-height:var(--lh-h3)}
+html body .wrap[data-page] .day{color:var(--ink-2); border-color:var(--line)}
+html body .wrap[data-page] :is(.slot-time,.slot-date){font:500 var(--t-data)/var(--lh-h3) var(--f-mono); letter-spacing:0}
+html body .wrap[data-page] .slot-date{color:var(--ink-3)}
+html body .wrap[data-page] :is(.slot-h .n,.win-h .n){font:400 var(--t-label)/1 var(--f-mono); letter-spacing:0}
+
+/* ===================================================================== game page */
+html body .wrap[data-page="report"] .picks{border:1px solid var(--line); border-radius:var(--r);
+  padding:var(--s4) var(--s5); background:var(--surface)}
+html body .wrap[data-page="report"] h2{margin-top:var(--s7); margin-bottom:var(--s4); padding-bottom:var(--s2)}
+html body .wrap[data-page="report"] h2.picks-h{margin:0 0 var(--s2); padding-bottom:0}
+html body .wrap[data-page="report"] .grid{gap:var(--s3); margin-top:var(--s4)}
+html body .wrap[data-page="report"] .card{padding:var(--s4); gap:var(--s1)}
+html body .wrap[data-page="report"] .card.pick{border:1px solid var(--line); padding:var(--s4)}
+html body .wrap[data-page="report"] .card.td{background:var(--surface); border-color:var(--line)}
+html body .wrap[data-page="report"] .fig{font:500 var(--t-h2)/var(--lh-h2) var(--f-mono); letter-spacing:0}
+html body .wrap[data-page="report"] :is(.rng,.cmp,.cmp-z,.matchup,.pk-bet,.pk-slot,.pk-models,.pk-px){font-size:var(--t-data)}
+html body .wrap[data-page="report"] :is(.cmp-line){font-size:var(--t-body)}
+html body .wrap[data-page="report"] .cmp-line .px{font-size:var(--t-label)}
+html body .wrap[data-page="report"] .matchup{font-size:var(--t-data); color:var(--ink-3)}
+html body .wrap[data-page="report"] .pk-head{font:500 var(--t-label)/var(--lh-label) var(--f-body); letter-spacing:.06em}
+html body .wrap[data-page="report"] #picklist li{padding:0; min-height:40px}
+html body .wrap[data-page="report"] .pk-conf{font-size:var(--t-h3)}
+html body .wrap[data-page="report"] :is(.pf-k){font:400 var(--t-data)/1 var(--f-body)}
+html body .wrap[data-page="report"] .pf-v{font-size:var(--t-h3)}
+html body .wrap[data-page="report"] .glp .sub2,
+html body .wrap[data-page="report"] .glp .flag{font:500 var(--t-label)/var(--lh-label) var(--f-mono); letter-spacing:0}
+/* Curves: both teams in --ink-2. The 50% window is a neutral band. */
+html body .wrap[data-page] .card svg :is(.curve,.meanline){stroke:var(--ink-2)}
+html body .wrap[data-page] .card svg > path:not(.curve){fill:var(--band, var(--line-soft))}
+html body .wrap[data-page] .card svg .tick{font-size:var(--t-label)}
+html body .ptray-chart .mu{stroke:var(--ink-2)}
+html body .ptray-key i.mu{border-top-color:var(--ink-2)}
+html body :is(.ptray-chart text,.ptray th,.ptray .gl){font-size:var(--t-label)}
+html body :is(.ptray .kv,.ptray-key,.ptray-an){font-size:var(--t-data)}
+html body .ptray-x{font-size:var(--t-h3); border-radius:var(--r)}
+html body .tip{font-size:var(--t-label); border-radius:var(--r-sm)}
+
+/* ===================================================================== remaining off-scale sizes */
+/* Every half-pixel or off-scale size found in the served CSS, set to the scale. */
+html body .wrap[data-page] :is(.meta,.gap,.pill,.chip .k,.pc-p small,.hmax,.sg-dim,tr.legs .meta,
+  .top-dim,.dr .nm .tm,.ax .scale,.ax .cap,.gbar s,.pp1 .tm,.cell small,.tm){font-size:var(--t-label)}
+html body .wrap[data-page] :is(.stat,.rank,.yds,.dr .v,.pr .n,.nx small,.pp1 b,.mg,.sg-n,.chip,.cell b,.dr .nm,.wbtn .d){font-size:var(--t-data)}
+html body .wrap[data-page] .yds{font-size:var(--t-label)}
+html body .wrap[data-page] :is(.summary){font-size:var(--t-body)}
+html body .wrap[data-page] :is(tr.grp td:first-child,.top-h)::before{font-size:var(--t-data)}
+html body .wrap[data-page] tr.legs td:first-child{font-size:var(--t-body)}
+html body .wrap[data-page] footer,
+html body .sf{font:400 var(--t-data)/var(--lh-data) var(--f-body); color:var(--ink-3)}
+html body .wrap[data-page] footer p{font-size:var(--t-data)}
+html body .wrap[data-page="report"] footer :is(p,strong){font-size:var(--t-data)}
+
+/* Team colour set inline by the game-page script on shortlist numbers (Model,
+   Confidence). Needs !important until report.html stops writing style="color:..". */
+html body .wrap[data-page="report"] :is(.pk-models b,.pk-conf)[style]{color:var(--ink) !important}
+html body .wrap[data-page="report"] .frng{width:72px}
+/* Star mark from /_marks.js (slate, results). */
+html body .wrap[data-page] .mk-star{font-size:var(--t-data)}
+/* Name column on Results: h3. Placed last so it wins over the table size. */
+html body .wrap[data-page="results"] td:first-child:not(tr.legs td),
+html body .wrap[data-page] #mqbox td:first-child{font-size:var(--t-h3)}
+/* Slate "Book" difference: a difference, not a result. No accent, no red. */
+html body .wrap[data-page] .gap.up{color:var(--ink-2)}
+/* Defenses view: keep the trend-arrow slot in the last number column. */
+html body .wrap[data-page="rankings"] .dfn-grid td.num:last-child{padding-right:calc(var(--s2) + 1.1em)}
+/* Game-page range filters: the dash must not touch the inputs. */
+html body .wrap[data-page] .fgrp:not(:has(.fchip)){gap:var(--s1)}

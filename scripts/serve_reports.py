@@ -1551,7 +1551,7 @@ THEME = """<script>
       } catch (e) { /* the page still works, the choice just will not stick */ }
       paint(b);
     });
-    document.body.appendChild(b);
+    (document.querySelector(".sn-right") || document.body).appendChild(b);
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", build);
@@ -1887,9 +1887,9 @@ def site_nav(section, page, inspect_id="site-nav"):
     return (f'<div class="sn" role="navigation" aria-label="Site" data-inspect-id="{inspect_id}">'
             f'<div class="sn-row sn-top">'
             f'<a class="sn-brand" href="/" data-inspect-id="site-nav-brand">NFL Props</a>'
-            f'<span class="sn-links">{top}</span></div>'
-            f'<div class="sn-row sn-sub"><span data-inspect-id="site-subnav">{sub}</span>'
-            f'<span class="sn-stamp" data-inspect-id="site-stamp">{results_stamp()}</span></div></div>')
+            f'<span class="sn-links">{top}</span>'
+            f'<span class="sn-right"><span class="sn-stamp" data-inspect-id="site-stamp">{results_stamp()}</span></span></div>'
+            f'<div class="sn-row sn-sub"><span data-inspect-id="site-subnav">{sub}</span></div></div>')
 
 
 LAYOUT_CSS = """<style>
@@ -2032,6 +2032,7 @@ LAYOUT_CSS = """<style>
 </style>"""
 
 
+SITE_CSS = os.path.join(BASE, "templates", "site.css")
 SITE_FOOTER = ('<div class="sf" data-inspect-id="site-footer"><p>Entertainment only. '
                'Projections, not edges. Against real sportsbook lines, the projections were '
                'less accurate than the market.</p></div>')
@@ -2052,7 +2053,7 @@ def with_chrome(html, section, page, title):
         lambda m: m.group(0)[:-1] + f' data-page="{key}">' + "\n"
                   + CHROME_CSS + LAYOUT_CSS + f"<style>{BADGE_CSS}</style>" + site_nav(section, page),
         html, 1)
-    return html + "\n" + SITE_FOOTER
+    return html + "\n" + SITE_FOOTER + "<style>" + open(SITE_CSS, encoding="utf-8").read() + "</style>"
 
 # Game-page fixes spliced per request, so no report file is rewritten.
 REPORT_FIX_CSS = """<style>
