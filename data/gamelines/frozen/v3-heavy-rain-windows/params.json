@@ -1,0 +1,12 @@
+{
+ "version": "v3-heavy-rain-windows",
+ "params": {
+  "alpha": 10.0,
+  "half_life": 20.0,
+  "qb": true,
+  "rest": false,
+  "wx": [
+   "heavy"
+  ]
+ }
+}

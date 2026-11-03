@@ -20,7 +20,8 @@ QB_WINDOW = 8        # the usual starter = most common starter in the last 8 gam
 QB_MIN_STARTS = 3    # fewer starts than this and the team has no usual starter
 
 # Chosen on 2024-2025 out-of-fold games (scripts/fit_game_lines.py), never on 2026.
-PARAMS = {"alpha": 10.0, "half_life": 20.0, "qb": True, "rest": False}
+MODEL_VERSION = "v3-heavy-rain-windows"   # bump when PARAMS or the model code change; frozen files are kept per version
+PARAMS = {"alpha": 10.0, "half_life": 20.0, "qb": True, "rest": False, "wx": ("heavy",)}
 
 
 def _t(df):
@@ -44,7 +45,40 @@ def load_games(db_path=DB_PATH):
     g["played"] = g["home_score"].notna()
     g["margin"] = g["home_score"] - g["away_score"]
     g["total"] = g["home_score"] + g["away_score"]
-    return _qb_flags(g)
+    return _qb_flags(_weather_cols(g))
+
+
+WX_FEATURES = ("wind", "rain", "heavy", "cold")
+
+
+USE_FORECAST = True   # a 2026 game with a stored pre-kickoff forecast uses it, not the measured value
+
+
+def _weather_cols(g, use_forecast=None):
+    """w_wind, w_rain, w_heavy, w_cold from the weather cache. Zero for domes and unknown.
+
+    Past seasons use the measured value near kickoff. A 2026 game uses the forecast the hourly job
+    stored before kickoff when there is one (w_src = "forecast"), else the measured value.
+    """
+    from . import weather as W
+    use_forecast = USE_FORECAST if use_forecast is None else use_forecast
+    w = W.load()[["game_id", "applies", "temp_f", "wind_mph", "precip_mm"]]
+    g = g.merge(w, on="game_id", how="left")
+    g["w_src"] = np.where(g["temp_f"].notna(), "measured", "none")
+    if use_forecast:
+        fc = W.forecasts_made()
+        g = g.merge(fc, on="game_id", how="left")
+        has = g["fc_precip_mm"].notna() & g["applies"].fillna(False).astype(bool)
+        g.loc[has, "precip_mm"] = g.loc[has, "fc_precip_mm"]
+        g.loc[has, "wind_mph"] = g.loc[has, "fc_wind_mph"]
+        g.loc[has, "temp_f"] = g.loc[has, "fc_temp_f"]
+        g.loc[has, "w_src"] = "forecast"
+    ok = g["temp_f"].notna()
+    g["w_wind"] = np.where(ok, (g["wind_mph"] - 10).clip(lower=0) / 10, 0.0)
+    g["w_rain"] = np.where(ok, g["precip_mm"].clip(upper=3), 0.0)
+    g["w_heavy"] = np.where(ok, (g["precip_mm"] >= W.HEAVY_RAIN_MM).astype(float), 0.0)
+    g["w_cold"] = np.where(ok, (40 - g["temp_f"]).clip(lower=0) / 20, 0.0)
+    return g
 
 
 def _qb_flags(g):
@@ -76,12 +110,12 @@ def _qb_flags(g):
     return g
 
 
-def _design(g, teams, qb, rest):
+def _design(g, teams, qb, rest, wx=()):
     """Two rows per game: the home team's points, then the away team's."""
     n = len(g)
     ti = {t: i for i, t in enumerate(teams)}
     k = len(teams)
-    extra = 1 + (2 if qb else 0) + (1 if rest else 0)
+    extra = 1 + (2 if qb else 0) + (1 if rest else 0) + len(wx)
     X = np.zeros((2 * n, 2 * k + extra))
     hr = g["home_team"].map(ti).to_numpy()
     ar = g["away_team"].map(ti).to_numpy()
@@ -103,6 +137,11 @@ def _design(g, teams, qb, rest):
         rd = (g["home_rest"] - g["away_rest"]).clip(-7, 7).fillna(0).to_numpy() / 7.0
         X[idx, c] = rd
         X[n + idx, c] = -rd
+        c += 1
+    for f in wx:                  # weather lowers or raises both teams' points alike
+        X[idx, c] = g["w_" + f].to_numpy()
+        X[n + idx, c] = g["w_" + f].to_numpy()
+        c += 1
     return X
 
 
@@ -111,7 +150,7 @@ def fit_predict(train, target, params=None):
     p = {**PARAMS, **(params or {})}
     teams = sorted(set(train["home_team"]) | set(train["away_team"]) | set(target["home_team"])
                    | set(target["away_team"]))
-    X = _design(train, teams, p["qb"], p["rest"])
+    X = _design(train, teams, p["qb"], p["rest"], tuple(p["wx"]))
     y = np.concatenate([train["home_score"].to_numpy(), train["away_score"].to_numpy()])
     age = train["t"].max() + 1 - train["t"].to_numpy()
     w = 0.5 ** (age / p["half_life"])
@@ -124,7 +163,7 @@ def fit_predict(train, target, params=None):
     scale[k2:] = boost
     m = Ridge(alpha=p["alpha"]).fit(X * scale, y, sample_weight=w)
     coef = m.coef_ * scale
-    Xt = _design(target, teams, p["qb"], p["rest"])
+    Xt = _design(target, teams, p["qb"], p["rest"], tuple(p["wx"]))
     pred = Xt @ coef + m.intercept_
     n = len(target)
     out = target.copy()
@@ -132,7 +171,7 @@ def fit_predict(train, target, params=None):
     out["pred_margin"] = out["mu_home"] - out["mu_away"]
     out["pred_total"] = out["mu_home"] + out["mu_away"]
     names = (["home_field"] + (["qb_out_own", "qb_out_opp"] if p["qb"] else [])
-             + (["rest_diff"] if p["rest"] else []))
+             + (["rest_diff"] if p["rest"] else []) + ["wx_" + f for f in p["wx"]])
     out.attrs["coefs"] = dict(zip(names, coef[k2:].round(3)))
     return out
 
@@ -225,3 +264,69 @@ def metrics(df):
     out["bias_margin"] = float((d["pred_margin"] - d["margin"]).mean())
     out["bias_total"] = float((d["pred_total"] - d["total"]).mean())
     return out
+
+
+def _wlp(hit):
+    """[W, L, P] from an array of 1 (win), 0 (loss), 0.5 (push)."""
+    hit = np.asarray(hit, dtype=float)
+    return [int((hit == 1).sum()), int((hit == 0).sum()), int((hit == 0.5).sum())]
+
+
+def _payout(american):
+    o = np.asarray(american, dtype=float)
+    return np.where(o > 0, o / 100.0, 100.0 / np.abs(o))
+
+
+def tallies(df, value_margin):
+    """W-L-P for each category, each on its own. Pushes are P. No combined record.
+
+    spread   model side against the closing spread       (rows where the model and the line differ)
+    total    over or under against the closing total
+    moneyline straight up: the model's favourite (win chance above 50%)
+    value    games where the model's win chance beats the de-vigged closing chance by value_margin or more;
+             paper units at the closing moneyline, 1 unit flat. Entertainment only.
+    """
+    d = df[df["played"] & df["spread_line"].notna()]
+    out = {"n": int(len(d))}
+    cover = d["margin"] - d["spread_line"]
+    side = d["pred_margin"] - d["spread_line"]
+    m = side != 0
+    out["spread"] = _wlp(np.where(cover[m] == 0, 0.5, ((cover[m] > 0) == (side[m] > 0)).astype(float)))
+    ou = d["total"] - d["total_line"]
+    oside = d["pred_total"] - d["total_line"]
+    m = oside != 0
+    out["total"] = _wlp(np.where(ou[m] == 0, 0.5, ((ou[m] > 0) == (oside[m] > 0)).astype(float)))
+    m = d["p_home"] != 0.5
+    home_pick = d["p_home"][m] > 0.5
+    res = d["margin"][m]
+    out["moneyline"] = _wlp(np.where(res == 0, 0.5, ((res > 0) == home_pick).astype(float)))
+    mk = d.dropna(subset=["home_moneyline", "away_moneyline"])
+    pm = devig(mk["home_moneyline"], mk["away_moneyline"])
+    edge_h = mk["p_home"].to_numpy() - pm
+    pick_home = edge_h >= value_margin
+    pick_away = -edge_h >= value_margin
+    sel = pick_home | pick_away
+    v = mk[sel]
+    ph = pick_home[sel]
+    won = np.where(v["margin"] == 0, 0.5, ((v["margin"] > 0) == ph).astype(float))
+    odds = np.where(ph, v["home_moneyline"], v["away_moneyline"])
+    units = np.where(won == 1, _payout(odds), np.where(won == 0, -1.0, 0.0))
+    out["value"] = _wlp(won)
+    out["value_units"] = float(units.sum())
+    out["value_n"] = int(len(v))
+    return out
+
+
+def calibration(df, edges=(0, 0.2, 0.4, 0.6, 0.8, 1.0001)):
+    """Model home win chance in five buckets: games, mean predicted, actual home win share, mean market chance."""
+    d = df[df["played"] & df["p_home"].notna()].copy()
+    d["won"] = np.where(d["margin"] > 0, 1.0, np.where(d["margin"] < 0, 0.0, 0.5))
+    d["mkt"] = devig(d["home_moneyline"], d["away_moneyline"])
+    rows = []
+    for lo, hi in zip(edges[:-1], edges[1:]):
+        g = d[(d["p_home"] >= lo) & (d["p_home"] < hi)]
+        rows.append({"lo": lo, "hi": min(hi, 1.0), "n": int(len(g)),
+                     "pred": float(g["p_home"].mean()) if len(g) else None,
+                     "actual": float(g["won"].mean()) if len(g) else None,
+                     "market": float(g["mkt"].mean()) if len(g) else None})
+    return rows

@@ -23,3 +23,14 @@ def sd_scale():
     except (OSError, ValueError):
         d = {}
     return {s: float(d.get(s, 1.0)) for s in STATS}
+
+
+def sd_scale_display():
+    """{stat: scale} for the displayed window (WINDOW_DISPLAY), on the same unscaled sd as sd_scale()."""
+    try:
+        d = json.loads(SCALE_PATH.read_text()).get("p50", {})
+    except (OSError, ValueError):
+        d = {}
+    base = sd_scale()
+    # no p50 fitted yet: fall back to the normal-curve ratio of the two targets
+    return {s: float(d.get(s, base[s] * 0.6745 / 1.0)) for s in STATS}

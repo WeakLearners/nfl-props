@@ -1,0 +1,80 @@
+{
+ "completions": {
+  "n": 261,
+  "mae_as_built": 5.574756876735293,
+  "mae_filled": 5.574756876735293,
+  "mae_off": 5.574756876735293,
+  "n_rough": 13,
+  "mae_as_built_rough": 7.418297268072907,
+  "mae_off_rough": 7.418297268072907,
+  "mae_filled_rough": 7.418297268072907
+ },
+ "passing_yards": {
+  "n": 261,
+  "mae_as_built": 64.30087522493527,
+  "mae_filled": 64.30087522493527,
+  "mae_off": 64.38622187250515,
+  "n_rough": 13,
+  "mae_as_built_rough": 90.09191772481687,
+  "mae_off_rough": 93.46330493754233,
+  "mae_filled_rough": 90.09191772481687
+ },
+ "receiving_yards": {
+  "n": 2110,
+  "mae_as_built": 16.469302930144977,
+  "mae_filled": 16.469302930144977,
+  "mae_off": 16.536764945943926,
+  "n_rough": 82,
+  "mae_as_built_rough": 16.485605446657534,
+  "mae_off_rough": 17.389718597862718,
+  "mae_filled_rough": 16.485605446657534
+ },
+ "receptions": {
+  "n": 2110,
+  "mae_as_built": 1.2550623296448888,
+  "mae_filled": 1.2550623296448888,
+  "mae_off": 1.2577450474426515,
+  "n_rough": 82,
+  "mae_as_built_rough": 1.2102382402712573,
+  "mae_off_rough": 1.2439794800103747,
+  "mae_filled_rough": 1.2102382402712573
+ },
+ "rushing_yards": {
+  "n": 885,
+  "mae_as_built": 17.234209504969336,
+  "mae_filled": 17.234209504969336,
+  "mae_off": 17.4437969139067,
+  "n_rough": 37,
+  "mae_as_built_rough": 17.433154736144832,
+  "mae_off_rough": 17.497831042916506,
+  "mae_filled_rough": 17.433154736144832
+ },
+ "_tail_adjustment_test": {
+  "note": "Walk-forward on rough-weather rows only (kickoff-hour wind >=15 mph or rain >=1 mm/h): factor = 1 + 0.5*(sum actual / sum mu - 1) from earlier rough rows (at least 5), applied to the next rough week. Only 5 rough games in weeks 1-8, so this cannot validate anything.",
+  "completions": {
+   "n_scored": 2,
+   "mae_base": 14.25106412839726,
+   "mae_tail_adj": 13.079772780592554
+  },
+  "passing_yards": {
+   "n_scored": 2,
+   "mae_base": 162.39671262065292,
+   "mae_tail_adj": 166.53551416782378
+  },
+  "receiving_yards": {
+   "n_scored": 68,
+   "mae_base": 16.915374091318625,
+   "mae_tail_adj": 17.238341083114896
+  },
+  "receptions": {
+   "n_scored": 68,
+   "mae_base": 1.1752638563344544,
+   "mae_tail_adj": 1.1987008475278933
+  },
+  "rushing_yards": {
+   "n_scored": 30,
+   "mae_base": 17.924951766090633,
+   "mae_tail_adj": 18.14309076564657
+  }
+ }
+}

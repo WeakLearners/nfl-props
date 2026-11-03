@@ -13,6 +13,9 @@ week included). Definitions:
              out of both MAE numbers.
   rel_mae    mae / naive_mae. Below 1.0: the model beats the plain average.
   cov68      share of players with |actual - mu| <= sd. Target is about 68%.
+  cov50, width50  the same two numbers for the 50% window shown on the cards (WINDOW_DISPLAY).
+  width      mean full width of that window (2 x sd), in the stat's own units (yards, catches). A
+             better model keeps cov68 near the target while this number shrinks.
   brier_raw  Brier score of mp_raw (the model alone; where a report has no mp_raw, mp is used, because
              it was not blended with the book yet) against "actual beat the line".
   brier_pub  Brier score of mp (the published number, moved toward the book by f).
@@ -142,6 +145,15 @@ def bins(sub):
     return out
 
 
+def _r50(d):
+    """sd of the 50% window / sd of the 68% window, per row's stat (both scales from data/sd_scale.json)."""
+    from . import engine_source as ES
+    if "stat" not in d.columns:
+        return np.full(len(d), np.nan)
+    a, b = ES.sd_scale_display(), ES.sd_scale()
+    return d["stat"].map(lambda s: a[s] / b[s]).to_numpy()
+
+
 def summarize(df):
     """One dict of A1-A4 numbers for a frame of one stat (any span of weeks)."""
     n = len(df)
@@ -158,6 +170,9 @@ def summarize(df):
          "model_mae_same": float((nv.actual - nv.mu).abs().mean()) if len(nv) else np.nan,
          "cov_n": len(cv),
          "cov68": float(((cv.actual - cv.mu).abs() <= cv.sd).mean()) if len(cv) else np.nan,
+         "width": float((2 * cv.sd).mean()) if len(cv) else np.nan,   # full window, stat units
+         "cov50": float(((cv.actual - cv.mu).abs() <= cv.sd * _r50(cv)).mean()) if len(cv) else np.nan,
+         "width50": float((2 * cv.sd * _r50(cv)).mean()) if len(cv) else np.nan,
          "priced_n": len(pr),
          "brier_raw": _brier(pr.mp_raw, pr.hit), "brier_pub": _brier(pr.mp, pr.hit),
          "auc": _auc(pr.mp, pr.hit) if len(pr) else np.nan,

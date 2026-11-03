@@ -31,7 +31,7 @@ class GameLines(unittest.TestCase):
         tr = pd.DataFrame(rows)
         tgt = pd.DataFrame([dict(season=2024, week=19, t=61, home_team="AAA", away_team="BBB",
                                  home_qb_out=0, away_qb_out=0, home_rest=7, away_rest=7)])
-        out = G.fit_predict(tr, tgt, {"alpha": 5.0, "half_life": 1e9})
+        out = G.fit_predict(tr, tgt, {"alpha": 5.0, "half_life": 1e9, "wx": ()})
         assert out["pred_margin"].iloc[0] > 3
         assert abs(out["pred_total"].iloc[0] - (out["mu_home"] + out["mu_away"]).iloc[0]) < 1e-9
 

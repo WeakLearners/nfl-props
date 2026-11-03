@@ -1,0 +1,170 @@
+{
+ "none | 2024-25 | measured": {
+  "n": 480,
+  "mae_margin": 10.536171478826207,
+  "mae_total": 10.201893826735917,
+  "mae_score": 7.538362868028563,
+  "n_heavy": 6,
+  "n_forecast_rows": 0
+ },
+ "none | 2026 wk1-8 | forecast-where-made": {
+  "n": 120,
+  "mae_margin": 9.870792257424672,
+  "mae_total": 11.131731978524751,
+  "mae_score": 7.592613378459415,
+  "n_heavy": 5,
+  "n_forecast_rows": 65
+ },
+ "wind | 2024-25 | measured": {
+  "n": 480,
+  "mae_margin": 10.536171478826207,
+  "mae_total": 10.224228908197748,
+  "mae_score": 7.549233805499127,
+  "n_heavy": 6,
+  "n_forecast_rows": 0
+ },
+ "wind | 2026 wk1-8 | forecast-where-made": {
+  "n": 120,
+  "mae_margin": 9.870792257424673,
+  "mae_total": 11.165509465097834,
+  "mae_score": 7.585964136001598,
+  "n_heavy": 5,
+  "n_forecast_rows": 65
+ },
+ "rain | 2024-25 | measured": {
+  "n": 480,
+  "mae_margin": 10.536171478826207,
+  "mae_total": 10.206137198202741,
+  "mae_score": 7.515970138806211,
+  "n_heavy": 6,
+  "n_forecast_rows": 0
+ },
+ "rain | 2026 wk1-8 | forecast-where-made": {
+  "n": 120,
+  "mae_margin": 9.870792257424673,
+  "mae_total": 11.015346329946766,
+  "mae_score": 7.489378976917948,
+  "n_heavy": 5,
+  "n_forecast_rows": 65
+ },
+ "wind+rain | 2024-25 | measured": {
+  "n": 480,
+  "mae_margin": 10.536171478826208,
+  "mae_total": 10.20878335533242,
+  "mae_score": 7.526470702868189,
+  "n_heavy": 6,
+  "n_forecast_rows": 0
+ },
+ "wind+rain | 2026 wk1-8 | forecast-where-made": {
+  "n": 120,
+  "mae_margin": 9.870792257424675,
+  "mae_total": 11.028414743977192,
+  "mae_score": 7.4849248572048985,
+  "n_heavy": 5,
+  "n_forecast_rows": 65
+ },
+ "heavy | 2024-25 | measured": {
+  "n": 480,
+  "mae_margin": 10.536171478826207,
+  "mae_total": 10.179553955721113,
+  "mae_score": 7.5165438125160104,
+  "n_heavy": 6,
+  "n_forecast_rows": 0
+ },
+ "heavy | 2026 wk1-8 | forecast-where-made": {
+  "n": 120,
+  "mae_margin": 9.870792257424673,
+  "mae_total": 11.028036033066535,
+  "mae_score": 7.501876885227106,
+  "n_heavy": 5,
+  "n_forecast_rows": 65
+ },
+ "rain+heavy | 2024-25 | measured": {
+  "n": 480,
+  "mae_margin": 10.536171478826207,
+  "mae_total": 10.211662617665832,
+  "mae_score": 7.520894352072514,
+  "n_heavy": 6,
+  "n_forecast_rows": 0
+ },
+ "rain+heavy | 2026 wk1-8 | forecast-where-made": {
+  "n": 120,
+  "mae_margin": 9.870792257424673,
+  "mae_total": 11.026233300974246,
+  "mae_score": 7.49639265989887,
+  "n_heavy": 5,
+  "n_forecast_rows": 65
+ },
+ "wind+rain+heavy | 2024-25 | measured": {
+  "n": 480,
+  "mae_margin": 10.536171478826207,
+  "mae_total": 10.211969037401749,
+  "mae_score": 7.529775322257124,
+  "n_heavy": 6,
+  "n_forecast_rows": 0
+ },
+ "wind+rain+heavy | 2026 wk1-8 | forecast-where-made": {
+  "n": 120,
+  "mae_margin": 9.870792257424673,
+  "mae_total": 11.04436039737564,
+  "mae_score": 7.494559585845205,
+  "n_heavy": 5,
+  "n_forecast_rows": 65
+ },
+ "none | 2026 wk1-8 | measured only": {
+  "n": 120,
+  "mae_margin": 9.870792257424672,
+  "mae_total": 11.131731978524751,
+  "mae_score": 7.592613378459415,
+  "n_heavy": 6,
+  "n_forecast_rows": 0
+ },
+ "wind | 2026 wk1-8 | measured only": {
+  "n": 120,
+  "mae_margin": 9.870792257424673,
+  "mae_total": 11.183905794158209,
+  "mae_score": 7.5979623928790305,
+  "n_heavy": 6,
+  "n_forecast_rows": 0
+ },
+ "rain | 2026 wk1-8 | measured only": {
+  "n": 120,
+  "mae_margin": 9.870792257424673,
+  "mae_total": 11.045615202494373,
+  "mae_score": 7.512069116527456,
+  "n_heavy": 6,
+  "n_forecast_rows": 0
+ },
+ "wind+rain | 2026 wk1-8 | measured only": {
+  "n": 120,
+  "mae_margin": 9.870792257424675,
+  "mae_total": 11.06354648734751,
+  "mae_score": 7.51514706783327,
+  "n_heavy": 6,
+  "n_forecast_rows": 0
+ },
+ "heavy | 2026 wk1-8 | measured only": {
+  "n": 120,
+  "mae_margin": 9.870792257424673,
+  "mae_total": 10.96404364591616,
+  "mae_score": 7.463509753056723,
+  "n_heavy": 6,
+  "n_forecast_rows": 0
+ },
+ "rain+heavy | 2026 wk1-8 | measured only": {
+  "n": 120,
+  "mae_margin": 9.870792257424675,
+  "mae_total": 11.013254016457916,
+  "mae_score": 7.496875380189176,
+  "n_heavy": 6,
+  "n_forecast_rows": 0
+ },
+ "wind+rain+heavy | 2026 wk1-8 | measured only": {
+  "n": 120,
+  "mae_margin": 9.870792257424673,
+  "mae_total": 11.029077376483057,
+  "mae_score": 7.496573036628992,
+  "n_heavy": 6,
+  "n_forecast_rows": 0
+ }
+}

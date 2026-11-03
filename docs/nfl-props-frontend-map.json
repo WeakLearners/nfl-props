@@ -30,7 +30,7 @@
           "kind": "layout",
           "description": "Full-width column (LAYOUT_CSS) that everything on the report sits inside.",
           "locate": {
-            "path": "templates/report.html:370",
+            "path": "templates/report.html:371",
             "grep": "grep -n -F -- 'data-inspect-id=\"page-wrap\"' templates/report.html"
           }
         },
@@ -40,8 +40,18 @@
           "kind": "layout",
           "description": "Top block holding the eyebrow line and the matchup headline.",
           "locate": {
-            "path": "templates/report.html:371",
+            "path": "templates/report.html:372",
             "grep": "grep -n -F -- 'data-inspect-id=\"page-header\"' templates/report.html"
+          }
+        },
+        {
+          "id": "report-weather",
+          "label": "Kickoff weather line",
+          "kind": "text",
+          "description": "Under the intro: kickoff weather for the game (forecast with its pull time, or actual), or \"indoors\". Filled by the page script from META.wx, which nflprops/report.py (and scripts/rerender_reports.py) writes from nflprops/weather.py game_summary().",
+          "locate": {
+            "path": "templates/report.html:386",
+            "grep": "grep -n -F -- 'id=\"wxline\" data-inspect-id=\"report-weather\"' templates/report.html"
           }
         },
         {
@@ -50,7 +60,7 @@
           "kind": "badge",
           "description": "Left of the away team name in the headline, spanning the capital height (.74em, bottom on the baseline). Two lines: rank (#31) over hit rate (49.2%). Away colours, as on the role badges: white fill, team colour (--away, else --den) text and edge. Hit-rate rank of the team (Results page Teams box, All legs, 20+ legs to qualify), for example #3. Placed by the page script from window.__TEAMRANK__, which serve_reports.py injects per request via team_ranking(). Absent for a team under 20 legs and when the report is opened as a file. Tooltip gives rank, of, rate and hits/legs.",
           "locate": {
-            "path": "templates/report.html:820",
+            "path": "templates/report.html:823",
             "grep": "grep -n -F -- '\"header-rank-away\"' templates/report.html"
           }
         },
@@ -60,7 +70,7 @@
           "kind": "badge",
           "description": "Left of the home team name in the headline, spanning the capital height (.74em, bottom on the baseline). Two lines: rank over hit rate. Home colours, as on the role badges: team colour (--home, else --kc) fill, white text. Hit-rate rank of the team (Results page Teams box, All legs, 20+ legs to qualify), for example #3. Placed by the page script from window.__TEAMRANK__, which serve_reports.py injects per request via team_ranking(). Absent for a team under 20 legs and when the report is opened as a file. Tooltip gives rank, of, rate and hits/legs.",
           "locate": {
-            "path": "templates/report.html:820",
+            "path": "templates/report.html:823",
             "grep": "grep -n -F -- '\"header-rank-home\"' templates/report.html"
           }
         },
@@ -70,7 +80,7 @@
           "kind": "text",
           "description": "Kickoff time, week and season. Filled at build time from __EYEBROW__ in nflprops/report.py.",
           "locate": {
-            "path": "templates/report.html:372",
+            "path": "templates/report.html:373",
             "grep": "grep -n -F -- 'data-inspect-id=\"eyebrow\"' templates/report.html"
           }
         },
@@ -80,7 +90,7 @@
           "kind": "legend",
           "description": "Explains the two team colours, the shaded middle-68% band, the dashed expected-number rule, the FanDuel number rule and the actual-result rule. Rules restored 2026-10-29.",
           "locate": {
-            "path": "templates/report.html:385",
+            "path": "templates/report.html:388",
             "grep": "grep -n -F -- 'data-inspect-id=\"legend\"' templates/report.html"
           }
         },
@@ -90,7 +100,7 @@
           "kind": "control",
           "description": "Compact bar above the stat sections. Chips for team, position and market narrow the cards: OR within a group, AND across groups. Client-side only. The choice is saved per report in localStorage.",
           "locate": {
-            "path": "templates/report.html:409",
+            "path": "templates/report.html:412",
             "grep": "grep -n -F -- 'data-inspect-id=\"filter-bar\"' templates/report.html"
           }
         },
@@ -100,7 +110,7 @@
           "kind": "control",
           "description": "One attribute group in the filter bar (Team, Position or Market). Built at runtime. A group with only one value is left out.",
           "locate": {
-            "path": "templates/report.html:728",
+            "path": "templates/report.html:731",
             "grep": "grep -n -F -- 'dataset.inspectId=\"filter-group\"' templates/report.html"
           }
         },
@@ -110,7 +120,7 @@
           "kind": "control",
           "description": "Toggle button for one value of an attribute. Dark fill means selected. Built at runtime.",
           "locate": {
-            "path": "templates/report.html:732",
+            "path": "templates/report.html:735",
             "grep": "grep -n -F -- 'dataset.inspectId=\"filter-chip\"' templates/report.html"
           }
         },
@@ -120,7 +130,7 @@
           "kind": "control",
           "description": "Clears every chip and shows all cards again. Hidden while no chip is selected.",
           "locate": {
-            "path": "templates/report.html:422",
+            "path": "templates/report.html:425",
             "grep": "grep -n -F -- 'data-inspect-id=\"filter-reset\"' templates/report.html"
           }
         },
@@ -130,7 +140,7 @@
           "kind": "text",
           "description": "Reads Showing X of Y cards. Updates on every chip click.",
           "locate": {
-            "path": "templates/report.html:423",
+            "path": "templates/report.html:426",
             "grep": "grep -n -F -- 'data-inspect-id=\"filter-count\"' templates/report.html"
           }
         },
@@ -140,7 +150,7 @@
           "kind": "control",
           "description": "Min and max inputs for the projection, the figure shown large on the card (d.mu).",
           "locate": {
-            "path": "templates/report.html:410",
+            "path": "templates/report.html:413",
             "grep": "grep -n -F -- 'data-inspect-id=\"filter-range-model\"' templates/report.html"
           }
         },
@@ -150,7 +160,7 @@
           "kind": "control",
           "description": "Lower limit for the expected figure on the card.",
           "locate": {
-            "path": "templates/report.html:411",
+            "path": "templates/report.html:414",
             "grep": "grep -n -F -- 'data-inspect-id=\"filter-model-min\"' templates/report.html"
           }
         },
@@ -160,7 +170,7 @@
           "kind": "control",
           "description": "Upper limit for the expected figure on the card.",
           "locate": {
-            "path": "templates/report.html:413",
+            "path": "templates/report.html:416",
             "grep": "grep -n -F -- 'data-inspect-id=\"filter-model-max\"' templates/report.html"
           }
         },
@@ -170,7 +180,7 @@
           "kind": "control",
           "description": "Min and max inputs for the book's implied chance, in whole percent (d.bp x 100, rounded; vig included). Cards with no book price hide when a limit is set. Saved values from the old book-line range are dropped on load.",
           "locate": {
-            "path": "templates/report.html:414",
+            "path": "templates/report.html:417",
             "grep": "grep -n -F -- 'data-inspect-id=\"filter-range-book\"' templates/report.html"
           }
         },
@@ -180,7 +190,7 @@
           "kind": "control",
           "description": "Lower limit for the book percent (whole number, 0 to 100).",
           "locate": {
-            "path": "templates/report.html:415",
+            "path": "templates/report.html:418",
             "grep": "grep -n -F -- 'data-inspect-id=\"filter-book-min\"' templates/report.html"
           }
         },
@@ -190,7 +200,7 @@
           "kind": "control",
           "description": "Upper limit for the book percent (whole number, 0 to 100).",
           "locate": {
-            "path": "templates/report.html:417",
+            "path": "templates/report.html:420",
             "grep": "grep -n -F -- 'data-inspect-id=\"filter-book-max\"' templates/report.html"
           }
         },
@@ -200,7 +210,7 @@
           "kind": "control",
           "description": "Min and max inputs for the card's chance of the over, in whole percent (d.mp x 100, rounded). Cards with no chance (no line offered) hide when a limit is set.",
           "locate": {
-            "path": "templates/report.html:418",
+            "path": "templates/report.html:421",
             "grep": "grep -n -F -- 'data-inspect-id=\"filter-range-conf\"' templates/report.html"
           }
         },
@@ -210,7 +220,7 @@
           "kind": "control",
           "description": "Lower limit for the confidence percent.",
           "locate": {
-            "path": "templates/report.html:419",
+            "path": "templates/report.html:422",
             "grep": "grep -n -F -- 'data-inspect-id=\"filter-conf-min\"' templates/report.html"
           }
         },
@@ -220,7 +230,7 @@
           "kind": "control",
           "description": "Upper limit for the confidence percent.",
           "locate": {
-            "path": "templates/report.html:421",
+            "path": "templates/report.html:424",
             "grep": "grep -n -F -- 'data-inspect-id=\"filter-conf-max\"' templates/report.html"
           }
         },
@@ -230,7 +240,7 @@
           "kind": "card",
           "description": "Black-bordered panel holding the ranked shortlist and its payout footer.",
           "locate": {
-            "path": "templates/report.html:394",
+            "path": "templates/report.html:397",
             "grep": "grep -n -F -- 'data-inspect-id=\"picks-section\"' templates/report.html"
           }
         },
@@ -240,7 +250,7 @@
           "kind": "heading",
           "description": "'The shortlist' with the 'most confident first' unit label.",
           "locate": {
-            "path": "templates/report.html:395",
+            "path": "templates/report.html:398",
             "grep": "grep -n -F -- 'data-inspect-id=\"picks-heading\"' templates/report.html"
           }
         },
@@ -250,7 +260,7 @@
           "kind": "text",
           "description": "Assumed $1 parlay on every shortlist leg, right of the heading. Hidden until every leg is graded. Won in good, lost in bad, push in grey. Hover lists the legs and combined odds. Entertainment only.",
           "locate": {
-            "path": "templates/report.html:395",
+            "path": "templates/report.html:398",
             "grep": "grep -n -F -- 'data-inspect-id=\"shortlist-parlay\"' templates/report.html"
           }
         },
@@ -260,7 +270,7 @@
           "kind": "text",
           "description": "States that confidence means likely, not mispriced. This is the disclaimer, not decoration.",
           "locate": {
-            "path": "templates/report.html:396",
+            "path": "templates/report.html:399",
             "grep": "grep -n -F -- 'data-inspect-id=\"picks-note\"' templates/report.html"
           }
         },
@@ -270,7 +280,7 @@
           "kind": "text",
           "description": "Header row of the shortlist, same grid template as every row: NAME | INFO | MODELS | CONFIDENCE. Small mono caps like 'most confident first'. INFO and MODELS are hidden at 560px and below.",
           "locate": {
-            "path": "templates/report.html:400",
+            "path": "templates/report.html:403",
             "grep": "grep -n -F -- 'data-inspect-id=\"picklist-head\"' templates/report.html"
           }
         },
@@ -280,7 +290,7 @@
           "kind": "list",
           "description": "Empty <ol> in the template. Filled at runtime from every DATA row carrying a pick number.",
           "locate": {
-            "path": "templates/report.html:401",
+            "path": "templates/report.html:404",
             "grep": "grep -n -F -- 'data-inspect-id=\"picklist\"' templates/report.html"
           }
         },
@@ -290,7 +300,7 @@
           "kind": "list-item",
           "description": "One leg: rank, player, bet and line, price, confidence percent.",
           "locate": {
-            "path": "templates/report.html:791",
+            "path": "templates/report.html:794",
             "grep": "grep -n -F -- 'dataset.inspectId=\"pick-row\"' templates/report.html"
           }
         },
@@ -300,7 +310,7 @@
           "kind": "panel",
           "description": "Straight payout, naive joint chance, and the correlation note.",
           "locate": {
-            "path": "templates/report.html:402",
+            "path": "templates/report.html:405",
             "grep": "grep -n -F -- 'data-inspect-id=\"picks-foot\"' templates/report.html"
           }
         },
@@ -310,7 +320,7 @@
           "kind": "value",
           "description": "Product of every leg's decimal odds. Computed in the template's own script, not server-side.",
           "locate": {
-            "path": "templates/report.html:403",
+            "path": "templates/report.html:406",
             "grep": "grep -n -F -- 'data-inspect-id=\"payout-value\"' templates/report.html"
           }
         },
@@ -320,7 +330,7 @@
           "kind": "value",
           "description": "Product of min(model, book) across legs. 'Naive' because it assumes independence.",
           "locate": {
-            "path": "templates/report.html:404",
+            "path": "templates/report.html:407",
             "grep": "grep -n -F -- 'data-inspect-id=\"joint-value\"' templates/report.html"
           }
         },
@@ -330,7 +340,7 @@
           "kind": "text",
           "description": "Whether the legs share a game. Text chosen in nflprops/report.py and injected via META.corrnote.",
           "locate": {
-            "path": "templates/report.html:405",
+            "path": "templates/report.html:408",
             "grep": "grep -n -F -- 'data-inspect-id=\"corr-note\"' templates/report.html"
           }
         },
@@ -340,7 +350,7 @@
           "kind": "layout",
           "description": "Empty div. Runtime appends one heading plus one card grid per stat in STATS.",
           "locate": {
-            "path": "templates/report.html:426",
+            "path": "templates/report.html:429",
             "grep": "grep -n -F -- 'data-inspect-id=\"stat-sections\"' templates/report.html"
           }
         },
@@ -350,7 +360,7 @@
           "kind": "heading",
           "description": "Stat name plus its unit, e.g. 'Rushing yards / yards'.",
           "locate": {
-            "path": "templates/report.html:617",
+            "path": "templates/report.html:620",
             "grep": "grep -n -F -- 'dataset.inspectId=\"stat-heading\"' templates/report.html"
           }
         },
@@ -360,7 +370,7 @@
           "kind": "layout",
           "description": "Responsive grid of player cards for one stat, ordered by how close the book's number sits to the curve's peak.",
           "locate": {
-            "path": "templates/report.html:620",
+            "path": "templates/report.html:623",
             "grep": "grep -n -F -- 'dataset.inspectId=\"stat-grid\"' templates/report.html"
           }
         },
@@ -370,7 +380,7 @@
           "kind": "card",
           "description": "One player-stat projection. Gets a heavier border when it is a shortlist pick.",
           "locate": {
-            "path": "templates/report.html:627",
+            "path": "templates/report.html:630",
             "grep": "grep -n -F -- 'dataset.inspectId=\"player-card\"' templates/report.html"
           }
         },
@@ -380,7 +390,7 @@
           "kind": "text",
           "description": "Player name in the card's top row. Wraps onto a second line rather than truncating, so a long name is always shown in full.",
           "locate": {
-            "path": "templates/report.html:659",
+            "path": "templates/report.html:662",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-player-name\"' templates/report.html"
           }
         },
@@ -390,7 +400,7 @@
           "kind": "badge",
           "description": "Team-coloured position pill, e.g. QB1 or WR2. First item of the .mk group.",
           "locate": {
-            "path": "templates/report.html:660",
+            "path": "templates/report.html:663",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-role-badge\"' templates/report.html"
           }
         },
@@ -400,7 +410,7 @@
           "kind": "container",
           "description": "Left column of the card head: name and position, the expected number, and the range under it. Sits beside the flag stack so the two share the head's height.",
           "locate": {
-            "path": "templates/report.html:657",
+            "path": "templates/report.html:660",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-main\"' templates/report.html"
           }
         },
@@ -410,7 +420,7 @@
           "kind": "container",
           "description": "Left half of the card head: the player's name and his position badge.",
           "locate": {
-            "path": "templates/report.html:658",
+            "path": "templates/report.html:661",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-identity\"' templates/report.html"
           }
         },
@@ -420,7 +430,7 @@
           "kind": "container",
           "description": "Top-right column of the card. Holds the five-dot record, then the pick and td badges stacked below it. The td badge is followed by the single td % (card-td-prob).",
           "locate": {
-            "path": "templates/report.html:664",
+            "path": "templates/report.html:667",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-flags\"' templates/report.html"
           }
         },
@@ -430,7 +440,7 @@
           "kind": "status",
           "description": "Last five calls we published on this player and stat, most recent on the left. Green cleared the line, red did not, grey means no number was offered. A hollow dot is a week we never made the call.",
           "locate": {
-            "path": "templates/report.html:553",
+            "path": "templates/report.html:556",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-history\"' templates/report.html"
           }
         },
@@ -440,7 +450,7 @@
           "kind": "status",
           "description": "One week of that record. Hover gives the week, the real number, and how it went.",
           "locate": {
-            "path": "templates/report.html:549",
+            "path": "templates/report.html:552",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-history-dot\"' templates/report.html"
           }
         },
@@ -450,7 +460,7 @@
           "kind": "badge",
           "description": "Only present when the player is on the shortlist. Shows the pick's rank.",
           "locate": {
-            "path": "templates/report.html:665",
+            "path": "templates/report.html:668",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-pick-badge\"' templates/report.html"
           }
         },
@@ -460,7 +470,7 @@
           "kind": "value",
           "description": "The big number: the card's projection mu (d.mu). The engine behind it is internal (d.pe) and is not printed.",
           "locate": {
-            "path": "templates/report.html:661",
+            "path": "templates/report.html:664",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-expected\"' templates/report.html"
           }
         },
@@ -468,10 +478,20 @@
           "id": "card-range",
           "label": "Card range",
           "kind": "value",
-          "description": "The middle-68% band, mu plus or minus one sd, printed as two numbers. sd is the projection's sd widened 10%.",
+          "description": "The middle-68% band, mu plus or minus one sd, printed as two numbers. sd is the projection's sd widened 10%. Shows the 50% window (WINDOW_DISPLAY) since 2026-11-02, then the wx mark if any.",
           "locate": {
-            "path": "templates/report.html:663",
+            "path": "templates/report.html:666",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-range\"' templates/report.html"
+          }
+        },
+        {
+          "id": "card-weather-mark",
+          "label": "Weather mark on a card",
+          "kind": "badge",
+          "description": "Small \"wx +n.n\" tag after the 50% window on a card when the weather inputs moved that projection by 3% or more (DATA.wxd = projection with weather minus without). Display only.",
+          "locate": {
+            "path": "templates/report.html:831",
+            "grep": "grep -n -F -- 'data-inspect-id=\"card-weather-mark\"' templates/report.html"
           }
         },
         {
@@ -480,7 +500,7 @@
           "kind": "chart",
           "description": "Inline SVG Gaussian. Built by curve() from mu and sd alone.",
           "locate": {
-            "path": "templates/report.html:670",
+            "path": "templates/report.html:673",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-curve\"' templates/report.html"
           }
         },
@@ -490,7 +510,7 @@
           "kind": "overlay",
           "description": "Transparent rect that catches mousemove and drives the tooltip. The chart has no other pointer handling.",
           "locate": {
-            "path": "templates/report.html:681",
+            "path": "templates/report.html:684",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-curve-hitbox\"' templates/report.html"
           }
         },
@@ -500,7 +520,7 @@
           "kind": "panel",
           "description": "FanDuel's line and price, then the card's chance of the over (labelled 'model') next to the book's implied chance.",
           "locate": {
-            "path": "templates/report.html:588",
+            "path": "templates/report.html:591",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-compare\"' templates/report.html"
           }
         },
@@ -510,7 +530,7 @@
           "kind": "panel",
           "description": "Shown instead of the comparison when no price near the target was offered for this player-stat.",
           "locate": {
-            "path": "templates/report.html:578",
+            "path": "templates/report.html:581",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-compare-none\"' templates/report.html"
           }
         },
@@ -520,7 +540,7 @@
           "kind": "text",
           "description": "How many standard deviations separate the book's number from the curve's peak.",
           "locate": {
-            "path": "templates/report.html:595",
+            "path": "templates/report.html:598",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-compare-z\"' templates/report.html"
           }
         },
@@ -530,7 +550,7 @@
           "kind": "text",
           "description": "Small line after the peak note on a card whose rung was chosen (week 8 on): the rung the old rule (nearest -300) would have used, for example 'old: o39.5 -310'. A leg with no rung from -200 to -110 that beats the book says so instead. Not shown on earlier reports.",
           "locate": {
-            "path": "templates/report.html:585",
+            "path": "templates/report.html:588",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-old-rung\"' templates/report.html"
           }
         },
@@ -540,7 +560,7 @@
           "kind": "text",
           "description": "Matchup line: the opponent's adjusted rank of 32 and its allowed per game (DATA field dr, from badges.json def_pos). Six position-stat pairs rank that one stat allowed to that position, with a unit and label in dr (u, l): RB receptions, RB receiving yds, RB rushing yds, QB rushing yds, WR receptions, TE receptions. Other stats use the whole-position rank (QB passing, WR/TE receiving yards). The Big day / Caution badge for RBs uses the RB rushing rank too, so line and badge cannot disagree. Reports built before 2026-10-04 show the raw ratio instead; reports built before 2026-10-27 keep the old whole-position rank.",
           "locate": {
-            "path": "templates/report.html:646",
+            "path": "templates/report.html:649",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-matchup\"' templates/report.html"
           }
         },
@@ -550,7 +570,7 @@
           "kind": "overlay",
           "description": "Fixed-position readout that follows the cursor across a curve, showing a value and the chance of more.",
           "locate": {
-            "path": "templates/report.html:461",
+            "path": "templates/report.html:464",
             "grep": "grep -n -F -- 'data-inspect-id=\"curve-tooltip\"' templates/report.html"
           }
         },
@@ -560,7 +580,7 @@
           "kind": "disclosure",
           "description": "Collapsed section holding every projected figure, not just the featured cards.",
           "locate": {
-            "path": "templates/report.html:428",
+            "path": "templates/report.html:431",
             "grep": "grep -n -F -- 'data-inspect-id=\"table-details\"' templates/report.html"
           }
         },
@@ -570,7 +590,7 @@
           "kind": "button",
           "description": "Click target that expands the full figures table.",
           "locate": {
-            "path": "templates/report.html:429",
+            "path": "templates/report.html:432",
             "grep": "grep -n -F -- 'data-inspect-id=\"table-summary\"' templates/report.html"
           }
         },
@@ -580,7 +600,7 @@
           "kind": "table",
           "description": "Every DATA row: player, role, stat, expected, minus and plus one sd, spread, matchup.",
           "locate": {
-            "path": "templates/report.html:430",
+            "path": "templates/report.html:433",
             "grep": "grep -n -F -- 'data-inspect-id=\"full-table\"' templates/report.html"
           }
         },
@@ -590,7 +610,7 @@
           "kind": "table-row",
           "description": "One player-stat row in the full table.",
           "locate": {
-            "path": "templates/report.html:882",
+            "path": "templates/report.html:899",
             "grep": "grep -n -F -- 'dataset.inspectId=\"table-row\"' templates/report.html"
           }
         },
@@ -600,7 +620,7 @@
           "kind": "text",
           "description": "Four explanatory blocks: reading the matchup figure, curve width, model versus book, and the 'these are not edges' disclaimer.",
           "locate": {
-            "path": "templates/report.html:437",
+            "path": "templates/report.html:440",
             "grep": "grep -n -F -- 'data-inspect-id=\"footer-notes\"' templates/report.html"
           }
         },
@@ -610,7 +630,7 @@
           "kind": "text",
           "description": "Footer notes: how wide the curves are, model vs book, what this is not. No engine names.",
           "locate": {
-            "path": "templates/report.html:444",
+            "path": "templates/report.html:447",
             "grep": "grep -n -F -- 'data-inspect-id=\"footer-per-stat\"' templates/report.html"
           }
         },
@@ -620,7 +640,7 @@
           "kind": "card",
           "description": "The likeliest touchdown scorer's player card, washed in that player's team colour so the eye finds them before reading a name. Every card for that player is tinted, one per stat.",
           "locate": {
-            "path": "templates/report.html:638",
+            "path": "templates/report.html:641",
             "grep": "grep -n -F -- 'inspectId = \"td-scorer-card' templates/report.html"
           }
         },
@@ -630,7 +650,7 @@
           "kind": "badge",
           "description": "Pill reading exactly 'TD Alert', on the scorer's first card only (one per game). Title tooltip 'Backfill: model only, no pre-game odds' when the marker is a backfill. The probability sits beside it (card-td-prob).",
           "locate": {
-            "path": "templates/report.html:666",
+            "path": "templates/report.html:669",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-td-badge\"' templates/report.html"
           }
         },
@@ -640,7 +660,7 @@
           "kind": "text",
           "description": "Lower of the model's number and the book's, e.g. '55%', next to the TD Alert pill.",
           "locate": {
-            "path": "templates/report.html:668",
+            "path": "templates/report.html:671",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-td-prob\"' templates/report.html"
           }
         },
@@ -650,7 +670,7 @@
           "kind": "status",
           "description": "Filled pill on a player card's headline row, beside the number the model expected. Carries the number the player actually put up; green means it beat the line, red means it did not. Fixed width so a one-digit and a three-digit actual make the same block. Drawn for every projected player with a line, not only the shortlisted ones. The values arrive as window.__ACTUALS__, spliced in by scripts/serve_reports.py at serve time -- a report is written before kickoff and never rewritten, so the outcome cannot be baked in. Hover text and aria-label say hit or miss in words, since colour alone is not readable to everyone.",
           "locate": {
-            "path": "templates/report.html:533",
+            "path": "templates/report.html:536",
             "grep": "grep -n -F -- 'id||\"card-result\"' templates/report.html"
           }
         },
@@ -660,7 +680,7 @@
           "kind": "chart",
           "description": "Vertical rule drawn on a player's curve at the number he actually put up, with a dot at its foot. Green cleared the betting line, red did not, grey means no number was offered on that stat. The pill says whether the leg won; this says whether the projection was any good. A figure past the drawn range is pinned to the edge and dashed. Restored 2026-10-29.",
           "locate": {
-            "path": "templates/report.html:571",
+            "path": "templates/report.html:574",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-actual-mark\"' templates/report.html"
           }
         },
@@ -670,7 +690,7 @@
           "kind": "legend",
           "description": "The curve legend's entry for the actual-result rule, saying what green, red and grey mean.",
           "locate": {
-            "path": "templates/report.html:391",
+            "path": "templates/report.html:394",
             "grep": "grep -n -F -- 'data-inspect-id=\"legend-actual\"' templates/report.html"
           }
         },
@@ -680,7 +700,7 @@
           "kind": "status",
           "description": "The pill itself on a shortlist row. Same markup as the card pill, under its own id so the inspector can tell the two apart.",
           "locate": {
-            "path": "templates/report.html:770",
+            "path": "templates/report.html:773",
             "grep": "grep -n -F -- 'pick-result-mark' templates/report.html"
           }
         },
@@ -690,7 +710,7 @@
           "kind": "status",
           "description": "The same pill on a shortlist row, sitting directly after the leg it grades rather than at the far end of the row. The slot keeps its width when a game has not finished, so the rows stay a column while results land one game at a time.",
           "locate": {
-            "path": "templates/report.html:769",
+            "path": "templates/report.html:772",
             "grep": "grep -n -F -- 'data-inspect-id=\"pick-result\"' templates/report.html"
           }
         },
@@ -701,7 +721,7 @@
           "description": "The shortlist row's projection: one number, the card's own mu in the team colour.",
           "locate": {
             "grep": "grep -n -F -- 'data-inspect-id=\"pick-models\"' templates/report.html",
-            "path": "templates/report.html:797"
+            "path": "templates/report.html:800"
           }
         },
         {
@@ -710,7 +730,7 @@
           "kind": "badge",
           "description": "Outline chip like '#12 WR': position rank by recent production (nflprops/rating.py chip_lookup, through the latest completed week). Not the depth chart. The filled role pill (WR1) is separate and unchanged. Absent when the player is below the ranking floor. Built by rkChip(d,id). On the player card, beside the role badge.",
           "locate": {
-            "path": "templates/report.html:660",
+            "path": "templates/report.html:663",
             "grep": "grep -n -F -- '\"card-rank-chip\"' templates/report.html"
           }
         },
@@ -720,7 +740,7 @@
           "kind": "badge",
           "description": "Trend arrow (▲/▼) and matchup tag (Big day / Caution), on the line under the player name, last items of the .mk group. From nflprops/badges.py (data/ratings/badges.json). Hover title gives the numbers. Absent for almost everyone. Built by bdBadges(d,id) inside mk(). On the player card.",
           "locate": {
-            "path": "templates/report.html:659",
+            "path": "templates/report.html:662",
             "grep": "grep -n -F -- '\"card-badge\"' templates/report.html"
           }
         },
@@ -730,7 +750,7 @@
           "kind": "badge",
           "description": "Outline chip like '#12 WR': position rank by recent production (nflprops/rating.py chip_lookup, through the latest completed week). Not the depth chart. The filled role pill (WR1) is separate and unchanged. Absent when the player is below the ranking floor. Built by rkChip(d,id). On a shortlist row.",
           "locate": {
-            "path": "templates/report.html:793",
+            "path": "templates/report.html:796",
             "grep": "grep -n -F -- '\"pick-rank-chip\"' templates/report.html"
           }
         },
@@ -740,7 +760,7 @@
           "kind": "badge",
           "description": "Badge from nflprops/badges.py (data/ratings/badges.json): ▲/▼ trend, or Big day / Caution matchup. Sits after the rank chip inside the .mk group, never replaces it. Hover title gives the numbers. Absent for almost everyone. On a shortlist row.",
           "locate": {
-            "path": "templates/report.html:793",
+            "path": "templates/report.html:796",
             "grep": "grep -n -F -- ',\"pick-badge\")' templates/report.html"
           }
         },
@@ -750,7 +770,7 @@
           "kind": "text",
           "description": "Second grid track of a shortlist row, left of INFO: the stat abbreviated (pass yds, rush yds, rec yds, rec, comp) and 'over' plus the bold line value. Aligned in its own column down the list. Built in the row script from STAT_ABBR. On a shortlist row.",
           "locate": {
-            "path": "templates/report.html:795",
+            "path": "templates/report.html:798",
             "grep": "grep -n -F -- 'data-inspect-id=\"pick-bet\"' templates/report.html"
           }
         },
@@ -760,7 +780,7 @@
           "kind": "text",
           "description": "INFO column of a shortlist row: 'QB1 #1 slot: 50% (4/8)' (whole percent), the percent coloured: 70%+ good, 55-69% neutral, under 55% bad, or muted 'no graded history' at n=0. Hit rate of this depth role at this shortlist slot over all graded shortlist legs; TD picks are never pooled. The server adds window.__PICKSLOT__ per request (pick_slot_rates() in scripts/serve_reports.py); a file opened on its own has none and the cell is empty. Built by pickSlotMk(d). On a shortlist row.",
           "locate": {
-            "path": "templates/report.html:784",
+            "path": "templates/report.html:787",
             "grep": "grep -n -F -- 'data-inspect-id=\"pick-slot-rate\"' templates/report.html"
           }
         },
@@ -770,7 +790,7 @@
           "kind": "badge",
           "description": "Outline chip like '#12 WR': position rank by recent production (nflprops/rating.py chip_lookup, through the latest completed week). Not the depth chart. The filled role pill (WR1) is separate and unchanged. Absent when the player is below the ranking floor. Built by rkChip(d,id). In the full figures table.",
           "locate": {
-            "path": "templates/report.html:884",
+            "path": "templates/report.html:901",
             "grep": "grep -n -F -- '\"table-rank-chip\"' templates/report.html"
           }
         },
@@ -780,7 +800,7 @@
           "kind": "badge",
           "description": "Badge from nflprops/badges.py (data/ratings/badges.json): ▲/▼ trend, or Big day / Caution matchup. Sits after the rank chip, never replaces it. Hover title gives the numbers. Absent for almost everyone. In the full figures table.",
           "locate": {
-            "path": "templates/report.html:884",
+            "path": "templates/report.html:901",
             "grep": "grep -n -F -- '\"table-badge\"' templates/report.html"
           }
         },
@@ -1347,7 +1367,7 @@
           "kind": "layout",
           "description": "Table and grading note. From 1280px wide the table is on the left and the grading note is a side column on the right. One column below that.",
           "locate": {
-            "path": "templates/explore.html:219",
+            "path": "templates/explore.html:223",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-grid\"' templates/explore.html"
           }
         },
@@ -1362,10 +1382,30 @@
           }
         },
         {
+          "id": "explore-model-window",
+          "label": "Model-only record box",
+          "kind": "box",
+          "description": "Own box next to Model quality: per stat, share of results inside the 50% window and the 68% window, and the mean width of each, season to date and for the latest week. No betting line. Window half-widths come from data/sd_scale.json.",
+          "locate": {
+            "path": "templates/explore.html:177",
+            "grep": "grep -n -F -- 'data-inspect-id=\"explore-model-window\"' templates/explore.html"
+          }
+        },
+        {
+          "id": "explore-mqw-table",
+          "label": "Model-only record table",
+          "kind": "table",
+          "description": "The table inside the model-only record box. Drawn by renderMqw().",
+          "locate": {
+            "path": "templates/explore.html:179",
+            "grep": "grep -n -F -- 'data-inspect-id=\"explore-mqw-table\"' templates/explore.html"
+          }
+        },
+        {
           "id": "explore-mq-table",
           "label": "Model quality table",
           "kind": "table",
-          "description": "The table inside the Model quality box. One row per stat. Built by renderMq().",
+          "description": "Model quality table: bias, MAE, rel MAE, priced legs, Brier raw, AUC raw. The within-window numbers moved to the model-only record box.",
           "locate": {
             "path": "templates/explore.html:175",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-mq-table\"' templates/explore.html"
@@ -1377,7 +1417,7 @@
           "kind": "link",
           "description": "Link under the Model quality table to the week-by-week view on the Trends page.",
           "locate": {
-            "path": "templates/explore.html:650",
+            "path": "templates/explore.html:654",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-mq-trend-link\"' templates/explore.html"
           }
         },
@@ -1387,7 +1427,7 @@
           "kind": "layout",
           "description": "Holds the three list boxes: Top 5 groups, Top 5 teams, Bottom 5 teams. From 900px wide they share one row as three equal columns. Below that they stack. It is the whole intro row: the page has no intro paragraph.",
           "locate": {
-            "path": "templates/explore.html:177",
+            "path": "templates/explore.html:181",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-side\"' templates/explore.html"
           }
         },
@@ -1397,7 +1437,7 @@
           "kind": "layout",
           "description": "Holds the summary, the controls and the table.",
           "locate": {
-            "path": "templates/explore.html:220",
+            "path": "templates/explore.html:224",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-main\"' templates/explore.html"
           }
         },
@@ -1427,7 +1467,7 @@
           "kind": "layout",
           "description": "Holds the Picks select, the Group by select and the Search input. The chip row sits just under it. The row sits above the results table, below the summary line.",
           "locate": {
-            "path": "templates/explore.html:193",
+            "path": "templates/explore.html:197",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-controls\"' templates/explore.html"
           }
         },
@@ -1437,7 +1477,7 @@
           "kind": "input",
           "description": "Scopes the whole page: all legs with a book line (default; picked or not, graded by the same rule), the shortlist subset the model actually picked, or anytime-TD picks. TD picks are never pooled with the others - a different model, one per game. Pending counts are per option. Persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:196",
+            "path": "templates/explore.html:200",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-kind\"' templates/explore.html"
           }
         },
@@ -1447,7 +1487,7 @@
           "kind": "input",
           "description": "Chooses the category the graded legs are cut by: stat, position, depth role, week, kickoff window, price band, model confidence band, model vs book, opponent defense (model-used) (the report's def multiplier: 1.0 = league average for that position; only covers passing yards, completions and rushing yards -- rushing at half weight -- since DEF_WEIGHT is 0 for receiving yards and receptions, and those legs are left out of this grouping), shortlist rank, team, opponent, player. The choice persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:204",
+            "path": "templates/explore.html:208",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-group-by\"' templates/explore.html"
           }
         },
@@ -1457,7 +1497,7 @@
           "kind": "input",
           "description": "Type a player, team, stat, week or any other value. Typing a prefix of marked or starred offers Starred only: legs with a star, kept live as stars change. Suggestions come from graded legs and this week's legs; a row reads (N) graded plus this week count. The same chips also filter the This week table. Matches the value label (case-insensitive) across every Group by category. Up/Down moves, Enter adds, Esc closes, Backspace on an empty input removes the last chip.",
           "locate": {
-            "path": "templates/explore.html:209",
+            "path": "templates/explore.html:213",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-search\"' templates/explore.html"
           }
         },
@@ -1467,7 +1507,7 @@
           "kind": "list",
           "description": "Dropdown under the search input. At most 8 rows: category, value, and leg count in the current Picks scope. Prefix matches first, then by leg count. Player rows show the team. Values already chosen as chips are left out.",
           "locate": {
-            "path": "templates/explore.html:210",
+            "path": "templates/explore.html:214",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-search-suggest\"' templates/explore.html"
           }
         },
@@ -1477,7 +1517,7 @@
           "kind": "button",
           "description": "Toggle right after the search input. Adds or removes the same Starred only chip as the search row, and shows the count of starred legs for the current week only (this week's upcoming legs, or the latest graded week between weeks) in the current Picks scope. Stars on past weeks stay stored but never match. Pressed (accent colour) while the chip exists, so removing the chip turns it off.",
           "locate": {
-            "path": "templates/explore.html:214",
+            "path": "templates/explore.html:218",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-starred-only\"' templates/explore.html"
           }
         },
@@ -1487,7 +1527,7 @@
           "kind": "list",
           "description": "One chip per chosen value, plus Clear all. Same category = OR, different categories = AND. A chip that matches no legs stays and shows (0). The x on a chip removes it. Persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:217",
+            "path": "templates/explore.html:221",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-chips\"' templates/explore.html"
           }
         },
@@ -1497,7 +1537,7 @@
           "kind": "table",
           "description": "Second table under the graded results: this week's legs whose game is not final, plus waiting anytime-TD picks. Driven by the Picks select and the same search chips. Heading reads This week (Week N) and the match count. Sorted by kickoff, shortlist rank, player. No result column. Not part of the summary or Top/Teams boxes.",
           "locate": {
-            "path": "templates/explore.html:711",
+            "path": "templates/explore.html:735",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-upcoming\"' templates/explore.html"
           }
         },
@@ -1507,7 +1547,7 @@
           "kind": "row",
           "description": "One upcoming leg: star, trend badge, player link, team, role and game, then line and stat, then price.",
           "locate": {
-            "path": "templates/explore.html:714",
+            "path": "templates/explore.html:738",
             "grep": "grep -n -F -- '\"explore-upcoming-leg\"' templates/explore.html"
           }
         },
@@ -1517,7 +1557,7 @@
           "kind": "button",
           "description": "Star toggle from scripts/marks.js on an upcoming leg row. Marks are stored on the server. Key season|week|player|stat.",
           "locate": {
-            "path": "templates/explore.html:714",
+            "path": "templates/explore.html:738",
             "grep": "grep -n -F -- '\"mark-star-upcoming\"' templates/explore.html"
           }
         },
@@ -1527,7 +1567,7 @@
           "kind": "text",
           "description": "Hits/graded, hit rate vs needed, and flat $100 return for the current filter; plus how many legs are still waiting on a final score -- that count is season-wide, not scoped to the current Picks/Group by/Only selection. Also counts void legs (game final but the player has no stat line - he didn't play, a book would void it), also season-wide.",
           "locate": {
-            "path": "templates/explore.html:221",
+            "path": "templates/explore.html:225",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-summary\"' templates/explore.html"
           }
         },
@@ -1537,7 +1577,7 @@
           "kind": "list",
           "description": "The five best hit rates across every Group by option at once (Player, Team and Opponent excluded, because those list teams; the two team boxes cover them), for the current Picks/Only selection. A group needs 20+ graded legs; a group equal to the whole current set is skipped, and so is one with the exact same legs as a group already listed (Position QB vs Depth role QB1). Clicking a row switches Group by to that option. Sits in the intro row as a <details> box, first of three equal columns, left of the two team boxes; clicking its heading collapses it, and the open/closed state is saved with the rest of the view.",
           "locate": {
-            "path": "templates/explore.html:178",
+            "path": "templates/explore.html:182",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-top5\"' templates/explore.html"
           }
         },
@@ -1547,7 +1587,7 @@
           "kind": "list",
           "description": "The five teams with the best hit rate, grouped by the player's team, for the current Picks/Only selection. A team needs 20+ graded legs. Same box, header row and row shape as Top 5 groups. With fewer than ten qualifying teams it takes the larger half, so no team shows in both team boxes. Its open/closed state is saved with the view.",
           "locate": {
-            "path": "templates/explore.html:182",
+            "path": "templates/explore.html:186",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-teams-top\"' templates/explore.html"
           }
         },
@@ -1557,7 +1597,7 @@
           "kind": "list",
           "description": "The five teams with the lowest hit rate, lowest first. Same rules and shape as Top 5 teams. Open/closed state saved with the view.",
           "locate": {
-            "path": "templates/explore.html:186",
+            "path": "templates/explore.html:190",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-teams-bottom\"' templates/explore.html"
           }
         },
@@ -1567,7 +1607,7 @@
           "kind": "row",
           "description": "Label is the Group by name and the group, for example Stat - Receptions. It shortens with an ellipsis; the title tooltip shows the full text. Click switches Group by to that option. Built by boxRows() in the page script.",
           "locate": {
-            "path": "templates/explore.html:591",
+            "path": "templates/explore.html:595",
             "grep": "grep -n -F -- '\"explore-top5-row\"' templates/explore.html"
           }
         },
@@ -1577,7 +1617,7 @@
           "kind": "row",
           "description": "Click switches Group by to Team, the same as a Top 5 row. It does not set the Only filter. Built by boxRows() through teamRows().",
           "locate": {
-            "path": "templates/explore.html:598",
+            "path": "templates/explore.html:602",
             "grep": "grep -n -F -- '\"explore-teams-row\"' templates/explore.html"
           }
         },
@@ -1587,7 +1627,7 @@
           "kind": "layout",
           "description": "Receives the grouped table, rendered by render() in the page script.",
           "locate": {
-            "path": "templates/explore.html:222",
+            "path": "templates/explore.html:226",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-table\"' templates/explore.html"
           }
         },
@@ -1597,7 +1637,7 @@
           "kind": "table",
           "description": "One row per group: legs, hits, hit rate with a bar (tick = needed), needed, $100 each. Built at runtime. Every header is a sort button (see explore-sort-header) -- 1st click sorts the rows descending by that column's raw number (A-Z for the label column), 2nd click ascending, 3rd click back to the category's own default order; nulls (a group with no priced legs, shown as — for Needed/$100 each) always sort last. Re-sorting collapses any expanded group. The active sort resets when Group by or Picks changes and otherwise persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:696",
+            "path": "templates/explore.html:720",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-groups\"' templates/explore.html"
           }
         },
@@ -1607,7 +1647,7 @@
           "kind": "button",
           "description": "One shared id for all six header buttons (group label, Legs, Hits, Hit rate, Needed, $100 each) -- the anchor is the template string that builds all six, not a single element. Keyboard-operable (a real <button>); aria-sort lives on the parent <th>, not the button. Shows a trailing ▼/▲ on the active column only; inactive headers show no arrow. Styled to inherit the th's mono/10px/uppercase look with no browser button chrome.",
           "locate": {
-            "path": "templates/explore.html:694",
+            "path": "templates/explore.html:718",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-sort-header\"' templates/explore.html"
           }
         },
@@ -1617,7 +1657,7 @@
           "kind": "row",
           "description": "Click or Enter expands the legs in that group. Greyed (tr.thin) under 10 legs. Row order is the active column sort when one is set (see explore-sort-header), otherwise the category's default: team/opponent/player/depth role by size, the rest natural band order.",
           "locate": {
-            "path": "templates/explore.html:678",
+            "path": "templates/explore.html:702",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-group-row\"' templates/explore.html"
           }
         },
@@ -1627,7 +1667,7 @@
           "kind": "row",
           "description": "Inserted under a group row by toggle(); lists each leg newest week first.",
           "locate": {
-            "path": "templates/explore.html:725",
+            "path": "templates/explore.html:749",
             "grep": "grep -n -F -- '\"explore-group-legs\"' templates/explore.html"
           }
         },
@@ -1637,7 +1677,7 @@
           "kind": "row",
           "description": "Player (links to its report), team role, week and game; the line, price, and the actual number as a HIT/MISS pill.",
           "locate": {
-            "path": "templates/explore.html:727",
+            "path": "templates/explore.html:751",
             "grep": "grep -n -F -- '\"explore-leg\"' templates/explore.html"
           }
         },
@@ -1647,7 +1687,7 @@
           "kind": "badge",
           "description": "Outline chip like #12 WR after the depth role, inside the .mk group in the leg meta line. Built by mk() / rkChip(l,id) from the rk and rkt fields serve_reports adds to each leg. Absent below the floor.",
           "locate": {
-            "path": "templates/explore.html:536",
+            "path": "templates/explore.html:540",
             "grep": "grep -n -F -- '\"explore-rank-chip\"' templates/explore.html"
           }
         },
@@ -1657,7 +1697,7 @@
           "kind": "badge",
           "description": "Badge from nflprops/badges.py (data/ratings/badges.json): ▲/▼ trend, or Big day / Caution matchup. Sits after the rank chip, never replaces it. Hover title gives the numbers. Absent for almost everyone. Built by bdBadges(l,id) from the bd field serve_reports adds to each leg. Matchup badge only on legs from the badge week.",
           "locate": {
-            "path": "templates/explore.html:535",
+            "path": "templates/explore.html:539",
             "grep": "grep -n -F -- '\"explore-badge\"' templates/explore.html"
           }
         },
@@ -1667,7 +1707,7 @@
           "kind": "text",
           "description": "Grading rule (same as the listing: actual beats the line, final games only), the under-ten caveat, and which stats the opponent-defense grouping covers.",
           "locate": {
-            "path": "templates/explore.html:225",
+            "path": "templates/explore.html:229",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-footer\"' templates/explore.html"
           }
         }
@@ -2290,6 +2330,56 @@
           }
         },
         {
+          "id": "trends-model-window",
+          "label": "Model-only record section",
+          "kind": "section",
+          "description": "Week-by-week tables with no betting line: inside the 50% window, 50% width, inside the 68% window, 68% width, per stat.",
+          "locate": {
+            "path": "templates/trends.html:216",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-model-window\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-mqw-tables",
+          "label": "Model-only record tables",
+          "kind": "table",
+          "description": "Container the four model-only tables are drawn into by renderMqBox(\"mqw\", ...).",
+          "locate": {
+            "path": "templates/trends.html:219",
+            "grep": "grep -n -F -- 'data-inspect-id=\"trends-mqw-tables\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-mq-table-width",
+          "label": "68% window width table",
+          "kind": "table",
+          "description": "Week-by-week table in the model-only record section. 68% window width table.",
+          "locate": {
+            "path": "templates/trends.html:312",
+            "grep": "grep -n -F -- '\"trends-mq-table-width\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-mq-table-width50",
+          "label": "50% window width table",
+          "kind": "table",
+          "description": "Week-by-week table in the model-only record section. 50% window width table.",
+          "locate": {
+            "path": "templates/trends.html:311",
+            "grep": "grep -n -F -- '\"trends-mq-table-width50\"' templates/trends.html"
+          }
+        },
+        {
+          "id": "trends-mq-table-cov50",
+          "label": "Inside 50% window table",
+          "kind": "table",
+          "description": "Week-by-week table in the model-only record section. Inside 50% window table.",
+          "locate": {
+            "path": "templates/trends.html:310",
+            "grep": "grep -n -F -- '\"trends-mq-table-cov50\"' templates/trends.html"
+          }
+        },
+        {
           "id": "trends-mq-tables",
           "label": "Model quality tables",
           "kind": "layout",
@@ -2305,17 +2395,17 @@
           "kind": "table",
           "description": "Rel MAE per stat per week plus the season. Below 1.0 (green) beats a plain career average. Italic = under 30 players. Id is set from the M list in renderMq().",
           "locate": {
-            "path": "templates/trends.html:302",
+            "path": "templates/trends.html:308",
             "grep": "grep -n -F -- '\"trends-mq-table-rel\"' templates/trends.html"
           }
         },
         {
           "id": "trends-mq-table-cov",
-          "label": "Within 1 sd by week",
+          "label": "Inside 68% window table",
           "kind": "table",
-          "description": "Share of players inside mu +/- sd, per stat per week plus the season. Target about 68%. Id is set from the M list in renderMq().",
+          "description": "Week-by-week share of results inside the 68% window (within 1 sd). Model-only record section.",
           "locate": {
-            "path": "templates/trends.html:303",
+            "path": "templates/trends.html:309",
             "grep": "grep -n -F -- '\"trends-mq-table-cov\"' templates/trends.html"
           }
         },
@@ -2325,7 +2415,7 @@
           "kind": "table",
           "description": "Brier score of the raw model probability against the line, per stat per week. 0.25 is a coin flip. Weeks before 6 have no stored probability. Completions has no line. Id is set from the M list in renderMq().",
           "locate": {
-            "path": "templates/trends.html:304",
+            "path": "templates/trends.html:313",
             "grep": "grep -n -F -- '\"trends-mq-table-brier\"' templates/trends.html"
           }
         },
@@ -2335,7 +2425,7 @@
           "kind": "layout",
           "description": "Section that holds the four dumbbell charts.",
           "locate": {
-            "path": "templates/trends.html:216",
+            "path": "templates/trends.html:221",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-charts\"' templates/trends.html"
           }
         },
@@ -2345,7 +2435,7 @@
           "kind": "chart",
           "description": "Dumbbell chart of target share (WR, TE) and carry share (RB). Top 10 moves. Dot colour is the outlook.",
           "locate": {
-            "path": "templates/trends.html:280",
+            "path": "templates/trends.html:285",
             "grep": "grep -n -F -- 'id:\"trends-chart-usage\"' templates/trends.html"
           }
         },
@@ -2355,7 +2445,7 @@
           "kind": "list-row",
           "description": "One player in the usage chart. A click opens the player tray.",
           "locate": {
-            "path": "templates/trends.html:280",
+            "path": "templates/trends.html:285",
             "grep": "grep -n -F -- 'rowId:\"trends-chart-usage-row\"' templates/trends.html"
           }
         },
@@ -2365,7 +2455,7 @@
           "kind": "button",
           "description": "Shows all rows of the usage chart.",
           "locate": {
-            "path": "templates/trends.html:280",
+            "path": "templates/trends.html:285",
             "grep": "grep -n -F -- 'moreId:\"trends-chart-usage-more\"' templates/trends.html"
           }
         },
@@ -2375,7 +2465,7 @@
           "kind": "chart",
           "description": "Dumbbell chart of offense snap share.",
           "locate": {
-            "path": "templates/trends.html:281",
+            "path": "templates/trends.html:286",
             "grep": "grep -n -F -- 'id:\"trends-chart-snap\"' templates/trends.html"
           }
         },
@@ -2385,7 +2475,7 @@
           "kind": "list-row",
           "description": "One player in the snap share chart.",
           "locate": {
-            "path": "templates/trends.html:281",
+            "path": "templates/trends.html:286",
             "grep": "grep -n -F -- 'rowId:\"trends-chart-snap-row\"' templates/trends.html"
           }
         },
@@ -2395,7 +2485,7 @@
           "kind": "button",
           "description": "Shows all rows of the snap share chart.",
           "locate": {
-            "path": "templates/trends.html:281",
+            "path": "templates/trends.html:286",
             "grep": "grep -n -F -- 'moreId:\"trends-chart-snap-more\"' templates/trends.html"
           }
         },
@@ -2405,7 +2495,7 @@
           "kind": "chart",
           "description": "Dumbbell chart of carries and targets inside the 10, per game.",
           "locate": {
-            "path": "templates/trends.html:282",
+            "path": "templates/trends.html:287",
             "grep": "grep -n -F -- 'id:\"trends-chart-rz\"' templates/trends.html"
           }
         },
@@ -2415,7 +2505,7 @@
           "kind": "list-row",
           "description": "One player in the inside-10 chart.",
           "locate": {
-            "path": "templates/trends.html:282",
+            "path": "templates/trends.html:287",
             "grep": "grep -n -F -- 'rowId:\"trends-chart-rz-row\"' templates/trends.html"
           }
         },
@@ -2425,7 +2515,7 @@
           "kind": "button",
           "description": "Shows all rows of the inside-10 chart.",
           "locate": {
-            "path": "templates/trends.html:282",
+            "path": "templates/trends.html:287",
             "grep": "grep -n -F -- 'moreId:\"trends-chart-rz-more\"' templates/trends.html"
           }
         },
@@ -2435,7 +2525,7 @@
           "kind": "chart",
           "description": "Dumbbell chart of week-over-week rank moves. Left is better. No history rate.",
           "locate": {
-            "path": "templates/trends.html:283",
+            "path": "templates/trends.html:288",
             "grep": "grep -n -F -- 'id:\"trends-chart-rank\"' templates/trends.html"
           }
         },
@@ -2445,7 +2535,7 @@
           "kind": "list-row",
           "description": "One player in the rank movers chart.",
           "locate": {
-            "path": "templates/trends.html:283",
+            "path": "templates/trends.html:288",
             "grep": "grep -n -F -- 'rowId:\"trends-chart-rank-row\"' templates/trends.html"
           }
         },
@@ -2455,7 +2545,7 @@
           "kind": "button",
           "description": "Shows all rows of the rank movers chart.",
           "locate": {
-            "path": "templates/trends.html:283",
+            "path": "templates/trends.html:288",
             "grep": "grep -n -F -- 'moreId:\"trends-chart-rank-more\"' templates/trends.html"
           }
         },
@@ -2465,7 +2555,7 @@
           "kind": "link",
           "description": "Link in the rank movers hint to the full rankings.",
           "locate": {
-            "path": "templates/trends.html:283",
+            "path": "templates/trends.html:288",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-rankings-link\"' templates/trends.html"
           }
         },
@@ -2475,7 +2565,7 @@
           "kind": "layout",
           "description": "Section with the By player and By pattern list.",
           "locate": {
-            "path": "templates/trends.html:220",
+            "path": "templates/trends.html:225",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-list\"' templates/trends.html"
           }
         },
@@ -2485,7 +2575,7 @@
           "kind": "control",
           "description": "Switch between By player and By pattern. The choice is kept in localStorage.",
           "locate": {
-            "path": "templates/trends.html:223",
+            "path": "templates/trends.html:228",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-view-switch\"' templates/trends.html"
           }
         },
@@ -2495,7 +2585,7 @@
           "kind": "button",
           "description": "Shows the list with one row for each player.",
           "locate": {
-            "path": "templates/trends.html:224",
+            "path": "templates/trends.html:229",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-view-player\"' templates/trends.html"
           }
         },
@@ -2505,7 +2595,7 @@
           "kind": "button",
           "description": "Shows the hold-rate cards.",
           "locate": {
-            "path": "templates/trends.html:225",
+            "path": "templates/trends.html:230",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-view-pattern\"' templates/trends.html"
           }
         },
@@ -2515,7 +2605,7 @@
           "kind": "list",
           "description": "One row for each player, with all signals as chips. Top 12 first.",
           "locate": {
-            "path": "templates/trends.html:331",
+            "path": "templates/trends.html:341",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-player-list\"' templates/trends.html"
           }
         },
@@ -2525,7 +2615,7 @@
           "kind": "list-row",
           "description": "One player. A click opens the player tray.",
           "locate": {
-            "path": "templates/trends.html:334",
+            "path": "templates/trends.html:344",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-player-row\"' templates/trends.html"
           }
         },
@@ -2535,7 +2625,7 @@
           "kind": "button",
           "description": "Shows every player in the list.",
           "locate": {
-            "path": "templates/trends.html:335",
+            "path": "templates/trends.html:345",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-player-more\"' templates/trends.html"
           }
         },
@@ -2545,7 +2635,7 @@
           "kind": "layout",
           "description": "Pattern cards with a past hold rate of 60.0% or more. Open by default.",
           "locate": {
-            "path": "templates/trends.html:341",
+            "path": "templates/trends.html:351",
             "grep": "grep -n -F -- 'id:\"trends-lane-hold\"' templates/trends.html"
           }
         },
@@ -2555,7 +2645,7 @@
           "kind": "layout",
           "description": "Pattern cards with a past hold rate of 40.0% or less. Open by default.",
           "locate": {
-            "path": "templates/trends.html:342",
+            "path": "templates/trends.html:352",
             "grep": "grep -n -F -- 'id:\"trends-lane-fade\"' templates/trends.html"
           }
         },
@@ -2565,7 +2655,7 @@
           "kind": "layout",
           "description": "Pattern cards with every other rate. Closed by default.",
           "locate": {
-            "path": "templates/trends.html:343",
+            "path": "templates/trends.html:353",
             "grep": "grep -n -F -- 'id:\"trends-lane-watch\"' templates/trends.html"
           }
         },
@@ -2575,7 +2665,7 @@
           "kind": "button",
           "description": "Opens and closes the Watch group.",
           "locate": {
-            "path": "templates/trends.html:343",
+            "path": "templates/trends.html:353",
             "grep": "grep -n -F -- 'toggleId:\"trends-lane-watch-toggle\"' templates/trends.html"
           }
         },
@@ -2585,7 +2675,7 @@
           "kind": "card",
           "description": "One kind of change, such as Snap share, WR risers. Big hold rate, bar, player chips, numbers table.",
           "locate": {
-            "path": "templates/trends.html:368",
+            "path": "templates/trends.html:378",
             "grep": "grep -n -F -- '\"trends-pattern-card\"' templates/trends.html"
           }
         },
@@ -2595,7 +2685,7 @@
           "kind": "button",
           "description": "A player and change inside a pattern card. A click opens the player tray.",
           "locate": {
-            "path": "templates/trends.html:368",
+            "path": "templates/trends.html:378",
             "grep": "grep -n -F -- '\"trends-pattern-chip\"' templates/trends.html"
           }
         },
@@ -2605,7 +2695,7 @@
           "kind": "layout",
           "description": "Section with the team pass-share chart.",
           "locate": {
-            "path": "templates/trends.html:231",
+            "path": "templates/trends.html:236",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-teams\"' templates/trends.html"
           }
         },
@@ -2615,7 +2705,7 @@
           "kind": "chart",
           "description": "Dumbbell chart of team pass share, last 3 games against the baseline.",
           "locate": {
-            "path": "templates/trends.html:385",
+            "path": "templates/trends.html:395",
             "grep": "grep -n -F -- '\"trends-team-chart\"' templates/trends.html"
           }
         },
@@ -2625,7 +2715,7 @@
           "kind": "list-row",
           "description": "One team. A click opens the tray with the team numbers.",
           "locate": {
-            "path": "templates/trends.html:385",
+            "path": "templates/trends.html:395",
             "grep": "grep -n -F -- '\"trends-team-row\"' templates/trends.html"
           }
         },
@@ -2635,7 +2725,7 @@
           "kind": "disclosure",
           "description": "Closed table with pass share, points per game, outlook and next game for each team.",
           "locate": {
-            "path": "templates/trends.html:234",
+            "path": "templates/trends.html:239",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-team-numbers\"' templates/trends.html"
           }
         },
@@ -2645,7 +2735,7 @@
           "kind": "layout",
           "description": "Section with the defense map and the tables.",
           "locate": {
-            "path": "templates/trends.html:236",
+            "path": "templates/trends.html:241",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-dvp\"' templates/trends.html"
           }
         },
@@ -2655,7 +2745,7 @@
           "kind": "chart",
           "description": "32 defenses for each position as coloured cells, toughest first.",
           "locate": {
-            "path": "templates/trends.html:240",
+            "path": "templates/trends.html:245",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-dvp-map\"' templates/trends.html"
           }
         },
@@ -2665,7 +2755,7 @@
           "kind": "value",
           "description": "One defense. The tooltip has rank, yards per game, last week rank and games.",
           "locate": {
-            "path": "templates/trends.html:394",
+            "path": "templates/trends.html:404",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-dvp-cell\"' templates/trends.html"
           }
         },
@@ -2675,7 +2765,7 @@
           "kind": "disclosure",
           "description": "Closed tables with the 5 toughest and 5 softest defenses for each position.",
           "locate": {
-            "path": "templates/trends.html:241",
+            "path": "templates/trends.html:246",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-dvp-numbers\"' templates/trends.html"
           }
         },
@@ -2685,7 +2775,7 @@
           "kind": "overlay",
           "description": "Tray from the right with every signal for one player or team. Shell and CSS are TRAY_CSS from nflprops/tray.py. Closes with the x, Esc or a click outside.",
           "locate": {
-            "path": "templates/trends.html:408",
+            "path": "templates/trends.html:418",
             "grep": "grep -n -F -- 'dataset.inspectId=\"trends-tray\"' templates/trends.html"
           }
         },
@@ -2695,7 +2785,7 @@
           "kind": "button",
           "description": "Closes the tray.",
           "locate": {
-            "path": "templates/trends.html:433",
+            "path": "templates/trends.html:443",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-tray-close\"' templates/trends.html"
           }
         },
@@ -2705,7 +2795,7 @@
           "kind": "card",
           "description": "One signal in the tray: last 3, before, change, sample, outlook bar, n and merged cases.",
           "locate": {
-            "path": "templates/trends.html:423",
+            "path": "templates/trends.html:433",
             "grep": "grep -n -F -- 'data-inspect-id=\"trends-tray-signal\"' templates/trends.html"
           }
         }
@@ -2754,7 +2844,7 @@
           "kind": "button",
           "description": "Star toggle (empty star unmarked, filled star marked) from the shared script scripts/marks.js. Marks are stored on the server (data/marks.json via /api/marks), so every page, origin and machine shows the same set. The key is season|week|player|stat. One per leg row inside an expanded Results group.",
           "locate": {
-            "path": "templates/explore.html:727",
+            "path": "templates/explore.html:751",
             "grep": "grep -n -F -- '\"mark-star-explore\"' templates/explore.html"
           }
         },
@@ -2913,7 +3003,7 @@
           "kind": "layout",
           "description": "Full-width column (LAYOUT_CSS) that holds the Game lines page.",
           "locate": {
-            "path": "templates/lines.html:36",
+            "path": "templates/lines.html:37",
             "grep": "grep -n -F -- 'data-inspect-id=\"lines-wrap\"' templates/lines.html"
           }
         },
@@ -2923,7 +3013,7 @@
           "kind": "text",
           "description": "Small line above the title.",
           "locate": {
-            "path": "templates/lines.html:38",
+            "path": "templates/lines.html:39",
             "grep": "grep -n -F -- 'data-inspect-id=\"lines-eyebrow\"' templates/lines.html"
           }
         },
@@ -2933,7 +3023,7 @@
           "kind": "text",
           "description": "Page title, Game lines.",
           "locate": {
-            "path": "templates/lines.html:39",
+            "path": "templates/lines.html:40",
             "grep": "grep -n -F -- 'data-inspect-id=\"lines-title\"' templates/lines.html"
           }
         },
@@ -2943,7 +3033,7 @@
           "kind": "text",
           "description": "Entertainment-only note: the model does not beat the closing line, and game lines are kept apart from props and TD picks.",
           "locate": {
-            "path": "templates/lines.html:41",
+            "path": "templates/lines.html:42",
             "grep": "grep -n -F -- 'data-inspect-id=\"lines-disclaimer\"' templates/lines.html"
           }
         },
@@ -2953,7 +3043,7 @@
           "kind": "layout",
           "description": "Holds the week picker.",
           "locate": {
-            "path": "templates/lines.html:44",
+            "path": "templates/lines.html:45",
             "grep": "grep -n -F -- 'data-inspect-id=\"lines-controls\"' templates/lines.html"
           }
         },
@@ -2963,7 +3053,7 @@
           "kind": "select",
           "description": "Chooses which frozen week the Predictions table shows. Defaults to the newest week.",
           "locate": {
-            "path": "templates/lines.html:46",
+            "path": "templates/lines.html:47",
             "grep": "grep -n -F -- 'data-inspect-id=\"lines-week-select\"' templates/lines.html"
           }
         },
@@ -2973,7 +3063,7 @@
           "kind": "text",
           "description": "Fit cutoff and error spreads for the picked week. Says when a week was rebuilt after the fact.",
           "locate": {
-            "path": "templates/lines.html:48",
+            "path": "templates/lines.html:49",
             "grep": "grep -n -F -- 'data-inspect-id=\"lines-week-note\"' templates/lines.html"
           }
         },
@@ -2983,7 +3073,7 @@
           "kind": "text",
           "description": "Heading over the games table.",
           "locate": {
-            "path": "templates/lines.html:49",
+            "path": "templates/lines.html:50",
             "grep": "grep -n -F -- 'data-inspect-id=\"lines-games-heading\"' templates/lines.html"
           }
         },
@@ -2993,7 +3083,7 @@
           "kind": "table",
           "description": "One row per game: predicted score for each team (whole points, unrounded on hover), model spread and total next to the book line, home win chance (model and market), the lean on each, and the result with HIT/MISS once final. Drawn by drawGames().",
           "locate": {
-            "path": "templates/lines.html:50",
+            "path": "templates/lines.html:51",
             "grep": "grep -n -F -- 'data-inspect-id=\"lines-games-table\"' templates/lines.html"
           }
         },
@@ -3003,7 +3093,7 @@
           "kind": "text",
           "description": "Heading over the season record table.",
           "locate": {
-            "path": "templates/lines.html:51",
+            "path": "templates/lines.html:52",
             "grep": "grep -n -F -- 'data-inspect-id=\"lines-record-heading\"' templates/lines.html"
           }
         },
@@ -3013,7 +3103,7 @@
           "kind": "text",
           "description": "Explains Adjust (weekly refit) against No adjust (one fit before the season) and what lower means.",
           "locate": {
-            "path": "templates/lines.html:52",
+            "path": "templates/lines.html:53",
             "grep": "grep -n -F -- 'data-inspect-id=\"lines-record-note\"' templates/lines.html"
           }
         },
@@ -3023,8 +3113,108 @@
           "kind": "table",
           "description": "Per-week and season rows: margin, total and per-team score error against the closing line, spread and total hit rate, and Brier score, for Adjust and No adjust. Drawn by drawRecord().",
           "locate": {
-            "path": "templates/lines.html:53",
+            "path": "templates/lines.html:54",
             "grep": "grep -n -F -- 'data-inspect-id=\"lines-record-table\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-tally-heading",
+          "label": "W-L-P heading",
+          "kind": "text",
+          "description": "Heading over the win-loss-push tallies.",
+          "locate": {
+            "path": "templates/lines.html:55",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-tally-heading\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-tally-note",
+          "label": "W-L-P note",
+          "kind": "text",
+          "description": "Defines each category, pushes, the value-pick margin and paper units.",
+          "locate": {
+            "path": "templates/lines.html:56",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-tally-note\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-tally-table",
+          "label": "W-L-P by category table",
+          "kind": "table",
+          "description": "Per week and season: spread, total, moneyline (straight up) and moneyline value picks as W-L-P, each its own record, Adjust beside No adjust, plus paper units for value picks. Drawn by drawTally().",
+          "locate": {
+            "path": "templates/lines.html:57",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-tally-table\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-ml-heading",
+          "label": "Moneyline heading",
+          "kind": "text",
+          "description": "Heading over the moneyline stats.",
+          "locate": {
+            "path": "templates/lines.html:58",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-ml-heading\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-ml-note",
+          "label": "Moneyline note",
+          "kind": "text",
+          "description": "Explains the de-vigged closing moneyline benchmark.",
+          "locate": {
+            "path": "templates/lines.html:59",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-ml-note\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-ml-table",
+          "label": "Moneyline Brier and log loss table",
+          "kind": "table",
+          "description": "Per week and season: win chance Brier and log loss for the market, Adjust and No adjust. Drawn by drawMl().",
+          "locate": {
+            "path": "templates/lines.html:60",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-ml-table\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-calib-table",
+          "label": "Calibration table",
+          "kind": "table",
+          "description": "Model home win chance in five buckets: games, what the model said, how often home won, what the market said.",
+          "locate": {
+            "path": "templates/lines.html:61",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-calib-table\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-window-heading",
+          "label": "Model-only record heading",
+          "kind": "text",
+          "description": "Heading over the model-only record panel.",
+          "locate": {
+            "path": "templates/lines.html:62",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-window-heading\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-window-note",
+          "label": "Model-only record note",
+          "kind": "text",
+          "description": "Says the panel uses no betting line and what the 50% and 68% windows are.",
+          "locate": {
+            "path": "templates/lines.html:63",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-window-note\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-window-table",
+          "label": "Model-only record tables",
+          "kind": "table",
+          "description": "Two tables, the 50% window and the 68% window. Per week and season: share of home score, away score, margin and total that landed inside the window, and the mean window width in points, for Adjust and No adjust. No betting line is used. Drawn by drawWindows().",
+          "locate": {
+            "path": "templates/lines.html:64",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-window-table\"' templates/lines.html"
           }
         },
         {
@@ -3033,7 +3223,7 @@
           "kind": "text",
           "description": "Fine print: predictions freeze once, lean is a record not a pick, how win chance is built.",
           "locate": {
-            "path": "templates/lines.html:54",
+            "path": "templates/lines.html:65",
             "grep": "grep -n -F -- 'data-inspect-id=\"lines-footer\"' templates/lines.html"
           }
         }

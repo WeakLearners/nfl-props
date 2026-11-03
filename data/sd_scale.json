@@ -12,5 +12,12 @@
  "passing_yards": 0.971,
  "receiving_yards": 1.091,
  "receptions": 1.064,
- "rushing_yards": 1.038
+ "rushing_yards": 1.038,
+ "p50": {
+  "completions": 0.726,
+  "passing_yards": 0.655,
+  "receiving_yards": 0.593,
+  "receptions": 0.625,
+  "rushing_yards": 0.685
+ }
 }

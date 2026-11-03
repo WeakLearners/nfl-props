@@ -239,7 +239,7 @@ TRAY_JS = r"""
       if(/\bbd-caution\b/.test(b[0])) out.push("This is a Caution matchup: a top-15% "+pos+" against one of the 5 toughest defenses to the position.");
     });
     var eng="model";
-    out.push("The "+eng+" puts the middle of the range at "+f1(d.mu)+" "+unit+", with most games between "+f1(d.lo)+" and "+f1(d.hi)+".");
+    out.push("The "+eng+" puts the middle of the range at "+f1(d.mu)+" "+unit+", with about half of games between "+f1(d.lo)+" and "+f1(d.hi)+".");
     if(d.line!=null&&d.mp!=null&&d.bp!=null){
       var mp=Math.round(d.mp*100), bp=Math.round(d.bp*100);
       out.push("It clears "+d.line+" in "+mp+"% of outcomes, against "+bp+"% implied by the "+(d.price>0?"+":"")+d.price+" price.");

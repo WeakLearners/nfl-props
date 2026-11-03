@@ -74,9 +74,40 @@ def main():
         from nflprops.odds import name_key
         from nflprops.badges import card_line, get_badges, player_badges
         chips = chip_lookup(name_key), name_key, get_badges(), player_badges, (int(sea), int(wk))
+    if "--only" in sys.argv:
+        # --only 2026:8 limits the run to one week and changes nothing but the template and the window.
+        sea, wk = sys.argv[sys.argv.index("--only") + 1].split(":")
+        files = [f for f in files if f.name.startswith(f"report_{sea}_w{wk}_")]
     if not files:
         print("no reports on disk")
         return 0
+
+    only = None
+    if "--only" in sys.argv:
+        sea, wk = sys.argv[sys.argv.index("--only") + 1].split(":")
+        only = (int(sea), int(wk))
+    wxd_cache = {}
+
+    def wx_deltas(season, week):
+        """(player key, stat) -> mu with weather minus mu without, for one week. Computed once."""
+        if (season, week) in wxd_cache:
+            return wxd_cache[(season, week)]
+        sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / "scripts"))
+        from nflprops import spread as SP
+        from nflprops.odds import name_key
+        from vol_predict import phase3_vol
+        sl = SP.slate_rows(season, week)
+        ids = {name_key(r.player): r.player_id for r in sl.drop_duplicates("player_id").itertuples()}
+        on = phase3_vol(season, week).set_index("player_id")
+        off = phase3_vol(season, week, weather="off").set_index("player_id")
+        out = {}
+        for k, pid in ids.items():
+            for st in ("passing_yards", "rushing_yards", "receiving_yards", "receptions"):
+                c = f"p3_{st}"
+                if pid in on.index and pid in off.index and c in on.columns:
+                    out[(k, st)] = float(on.at[pid, c] - off.at[pid, c])
+        wxd_cache[(season, week)] = out
+        return out
 
     changed = same = failed = 0
     for f in files:
@@ -87,6 +118,31 @@ def main():
             failed += 1
             continue
 
+        # The template now draws the 50% window (WINDOW_DISPLAY). A saved report holds the 68% lo/hi,
+        # so convert once, from the saved sd, and mark the rows (w = 50). sd and every probability stay.
+        rows = json.loads(got["data"])
+        if rows and not all(r.get("w") == 50 for r in rows):
+            sys.path.insert(0, str(ROOT))
+            from nflprops import engine_source as ES
+            a, b = ES.sd_scale_display(), ES.sd_scale()
+            for r in rows:
+                half = r["sd"] * a[r["s"]] / b[r["s"]]
+                r["lo"], r["hi"], r["w"] = round(max(0.0, r["mu"] - half), 1), round(r["mu"] + half, 1), 50
+            got = dict(got, data=json.dumps(rows))
+        # Kickoff weather line and the "wx" marks (only for the week named by --only; other files keep what they had).
+        if only and f.name.startswith(f"report_{only[0]}_w{only[1]}_"):
+            sys.path.insert(0, str(ROOT))
+            from nflprops.weather import game_summary
+            from nflprops.odds import name_key
+            meta = json.loads(got["meta"])
+            m = re.match(r"report_(\d{4})_w(\d+)_([A-Z]+)-([A-Z]+)\.html", f.name)
+            meta["wx"] = game_summary(f"{m.group(1)}_{int(m.group(2)):02d}_{m.group(3)}_{m.group(4)}")
+            got = dict(got, meta=json.dumps(meta))
+            d = wx_deltas(only[0], only[1])
+            rows = json.loads(got["data"])
+            for r in rows:
+                r["wxd"] = round(d.get((name_key(r["p"]), r["s"]), 0.0), 1)
+            got = dict(got, data=json.dumps(rows))
         if chips:
             rows = json.loads(got["data"])
             for r in rows:

@@ -41,7 +41,7 @@ SHIPPING = ROOT / "data" / "shipping"
 STATS = ["targets", "carries", "receiving_yards", "rushing_yards", "passing_yards"]
 
 
-def phase3_vol(season, week):
+def phase3_vol(season, week, weather=None):
     """P3 projection per rostered player for each shipped vol/yards stat.
     Empty frame (not an error) if artifacts are missing -- same convention
     as scripts/td/write_markers.py's phase3_combined()."""
@@ -52,6 +52,9 @@ def phase3_vol(season, week):
         return pd.DataFrame(columns=["player_id"] + [f"p3_{s}" for s in STATS] + ["p3_receptions"])
 
     pf = pregame_features(season, week)
+    if weather:
+        from nflprops.weather import apply_to_features
+        pf = apply_to_features(pf, weather)
     if pf.empty:
         return pd.DataFrame(columns=["player_id"] + [f"p3_{s}" for s in STATS] + ["p3_receptions"])
     # include_passing=True so the passing_yards artifact's own columns (which

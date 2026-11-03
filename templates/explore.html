@@ -174,6 +174,10 @@
       <summary class="top-h">Model quality &middot; projections vs actuals, no betting line</summary>
       <div id="mq" data-inspect-id="explore-mq-table"></div>
     </details>
+    <details class="top" id="mqwbox" open data-inspect-id="explore-model-window">
+      <summary class="top-h">Model-only record &middot; inside the model&rsquo;s own window, no betting line</summary>
+      <div id="mqw" data-inspect-id="explore-mqw-table"></div>
+    </details>
     <div class="pg-aside ex-side" data-inspect-id="explore-side">
   <details class="top" id="topbox" open data-inspect-id="explore-top5">
     <summary class="top-h">Top 5 groups &middot; 20+ legs</summary>
@@ -638,16 +642,36 @@
       var w = wk.filter(function (r) { return r.stat === nm[0]; })[0] || {};
       var lo = s.n < 30, lp = s.priced_n < 30, lw = (w.n || 0) < 30;
       return "<tr><td>" + nm[1] + "</td>" + c(s.n, lo) + c(f(s.bias, 1), lo) + c(f(s.mae, 1), lo) + c(f(s.rel_mae, 3), lo) +
-        c(p(s.cov68), lo) + c(s.priced_n, lp) + c(f(s.brier_raw, 3), lp) + c(f(s.auc_raw, 2), lp) +
-        c(f(w.rel_mae, 3), lw, "wk") + c(p(w.cov68), lw) + "</tr>";
+        c(s.priced_n, lp) + c(f(s.brier_raw, 3), lp) + c(f(s.auc_raw, 2), lp) +
+        c(f(w.rel_mae, 3), lw, "wk") + "</tr>";
     }).join("");
-    el.innerHTML = '<table><colgroup><col style="width:150px"><col><col><col><col><col><col><col><col><col><col></colgroup><thead><tr>' +
-      "<th>Season to date</th><th>Players</th><th>Bias</th><th>MAE</th><th>Rel MAE</th><th>Within 1 sd</th>" +
-      '<th>Priced legs</th><th>Brier raw</th><th>AUC raw</th><th class="wk">Wk ' + wkN + ' rel MAE</th><th>Wk ' + wkN + " within 1 sd</th>" +
+    el.innerHTML = '<table><colgroup><col style="width:150px"><col><col><col><col><col><col><col><col><col></colgroup><thead><tr>' +
+      "<th>Season to date</th><th>Players</th><th>Bias</th><th>MAE</th><th>Rel MAE</th>" +
+      '<th>Priced legs</th><th>Brier raw</th><th>AUC raw</th><th class="wk">Wk ' + wkN + ' rel MAE</th>' +
       "</tr></thead><tbody>" + body + "</tbody></table>" +
       '<p class="mq-note">Rel MAE = the model\u2019s average miss / the miss of a plain career average for the same players (below 1.0 is better). ' +
-      "Within 1 sd target is about 68%. Brier: 0.25 is a coin flip. AUC: 0.5 is a coin flip. Italic = under 30. " +
+      "Brier: 0.25 is a coin flip. AUC: 0.5 is a coin flip. Italic = under 30. " +
       'Week-by-week: <a href="/trends.html" data-inspect-id="explore-mq-trend-link">Trends page</a>. Betting results start below.</p>';
+  }
+
+  // Model-only record: no betting line anywhere in this table.
+  function renderMqw() {
+    var rows = D.mq || [], el = document.getElementById("mqw");
+    var ss = rows.filter(function (r) { return r.scope === "season"; });
+    if (!ss.length) { el.innerHTML = '<p class="mq-note">No graded projections yet.</p>'; return; }
+    var wkN = ss[0].week;
+    var wk = rows.filter(function (r) { return r.scope === "week" && r.week === wkN; });
+    var NAMES = [["passing_yards", "Passing yards"], ["completions", "Completions"], ["rushing_yards", "Rushing yards"],
+                 ["receiving_yards", "Receiving yards"], ["receptions", "Receptions"]];
+    function f(v, d) { return v == null ? "&ndash;" : Number(v).toFixed(d); }
+    function p(v) { return v == null ? "&ndash;" : (v * 100).toFixed(0) + "%"; }
+    var body = NAMES.map(function (nm) {
+      var s = ss.filter(function (r) { return r.stat === nm[0]; })[0]; if (!s) return "";
+      var w = wk.filter(function (r) { return r.stat === nm[0]; })[0] || {};
+      return "<tr><td>" + nm[1] + "</td><td>" + s.n + "</td><td>" + p(s.cov68) + "</td><td>" + f(s.width, 1) + "</td><td>" + p(w.cov68) + "</td><td>" + f(w.width, 1) + "</td></tr>";
+    }).join("");
+    el.innerHTML = "<table><thead><tr><th>Season to date</th><th>Players</th><th>Inside 50% window</th><th>50% width</th><th>Inside 68% window</th><th>68% width</th><th>Wk " + wkN + " in 50%</th><th>Wk " + wkN + " 50% width</th><th>Wk " + wkN + " in 68%</th><th>Wk " + wkN + " 68% width</th></tr></thead><tbody>" + body + "</tbody></table>" +
+      '<p class="mq-note">Uses no betting line. Inside = share of results that landed within the model\u2019s own range (mu \u00b1 scale \u00d7 sd). The 50% window is the one on the cards: it lands inside about half the time. The 68% window is the one the probabilities use. Each scale is refit each week. Width = full range in yards or catches. The same coverage with a smaller width means a tighter model. Week by week: <a href="/trends.html">Trends page</a>.</p>';
   }
 
   function render() {
@@ -658,7 +682,7 @@
       (D.pending[kind.value] ? " · " + D.pending[kind.value] + " still waiting on a final score, " +
         "season-wide -- not scoped to the group or filter above" : "") +
       ((D.void || {})[kind.value] ? " · " + D.void[kind.value] + " void (player didn't play), left out" : "");
-    renderTop(legs); renderTeams(legs); renderUp(); renderMq();
+    renderTop(legs); renderTeams(legs); renderUp(); renderMq(); renderMqw();
     if (!legs.length) { out.innerHTML = '<p class="empty">No graded legs match.</p>'; return; }
     // (g, s) pairs, default order first -- groups() already carries the
     // category's own natural/by-size order, which sortState === null falls

@@ -225,6 +225,17 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
     pr["applied"] = False
     pr["new_proj"] = [base if st == "completions" else (r[f"p3_{st}"] if f"p3_{st}" in r.index else np.nan)
                       for (_, r), st, base in zip(pr.iterrows(), pr.stat, pr.base_mu)]
+    # How far the weather inputs moved each projection: the model with its weather columns minus the
+    # same model with them missing. Display only; mu already includes the weather.
+    try:
+        _off = phase3_vol(season, week, weather="off")
+        pr = pr.merge(_off.rename(columns={c: c + "_off" for c in _off.columns if c != "player_id"}),
+                      on="player_id", how="left")
+        pr["wxd"] = [0.0 if st == "completions" or pd.isna(r.get(f"p3_{st}_off")) or pd.isna(r.get(f"p3_{st}"))
+                     else float(r[f"p3_{st}"] - r[f"p3_{st}_off"])
+                     for (_, r), st in zip(pr.iterrows(), pr.stat)]
+    except Exception:  # noqa: BLE001
+        pr["wxd"] = 0.0
     pr = pr[pr.new_proj.notna()].copy()
     pr["proj"] = pr.new_proj
     # Weekly projection bias (calibration.json mu_bias): added to mu before ANY
@@ -237,8 +248,11 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
     # mu +/- sd covers about 68% of games (data/sd_scale.json). No 1.10 inflation.
     _sc = ES.sd_scale()
     pr["sd_adj"] = pr.sd * pr.stat.map(_sc)
-    pr["lo"] = (pr.proj - pr.sd_adj).clip(lower=0)
-    pr["hi"] = pr.proj + pr.sd_adj
+    # The window on the card is the WINDOW_DISPLAY (50%) one: its own scale, refit the same way
+    # (data/sd_scale.json "p50"). sd_adj above stays the 68% basis of every probability and edge.
+    pr["sd_win"] = pr.sd * pr.stat.map(ES.sd_scale_display())
+    pr["lo"] = (pr.proj - pr.sd_win).clip(lower=0)
+    pr["hi"] = pr.proj + pr.sd_win
 
     if not lines.empty:
         cols = ["player_key", "stat", "line", "price"] + (["ladder"] if "ladder" in lines.columns else [])
@@ -323,7 +337,7 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
             "tm": r.team, "vs": r.opponent, "s": r.stat,
             "mu": round(float(r.proj), 1),
             **({"mu_raw": round(float(r.mu_raw), 1)} if use_rung else {}), "sd": round(float(r.sd_adj), 1),
-            "lo": round(float(r.lo), 1), "hi": round(float(r.hi), 1),
+            "lo": round(float(r.lo), 1), "hi": round(float(r.hi), 1), "w": 50, "wxd": round(float(r.wxd), 1),
             "dr": (card_line(bdata, r.opponent, r.position, r.stat)
                    if season == bdata["season"] and week == bdata["slate_week"] else None),
             "def": None if pd.isna(r.raw_def) else round(float(r.raw_def), 2),
@@ -361,6 +375,11 @@ def render(rows, away, home, team_a, week, season, kick=None, same_game=True,
     if qb_notes:
         corr = ("<strong>" + "</strong><br><strong>".join(qb_notes) + "</strong><br>" + corr)
     meta = {"teamA": team_a, "nameA": away, "nameB": home, "corrnote": corr}
+    try:
+        from .weather import game_summary
+        meta["wx"] = game_summary(f"{season}_{int(week):02d}_{away}_{home}")
+    except Exception:  # noqa: BLE001 -- a report without weather beats no report
+        meta["wx"] = None
     tpl = (ROOT / "templates" / "report.html").read_text()
     head = f'<h1>{away} <span class="at">at</span> {home}</h1>'
     # Kickoff time, not just the weekday. A Sunday slate has games at 1:00,

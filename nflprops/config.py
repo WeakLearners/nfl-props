@@ -78,3 +78,18 @@ def save_board(season, week, teams, payload) -> None:
         (boards_dir / name).write_text(_json.dumps(payload))
     except Exception as e:
         print(f"  ! could not save raw board ({season} W{week} {'-'.join(teams)}): {e}")
+
+# Window coverage targets, the one place to change them (Sean, 2026-11-02: a tight window that holds
+# about this often beats a wide one that holds 95%). A window is mu +/- scale*sd. Each scale is refit
+# weekly from out-of-sample misses so the share of results inside it sits at the target.
+#   WINDOW_DISPLAY  the window shown on the pages: lands inside about half the time
+#   WINDOW_RECORD   the window the model-only record is built on (and the basis of the line-based
+#                   probabilities for props); both windows are kept in the record
+# Props (scripts/fit_sd_scale.py) and game lines (scripts/game_lines_week.py) both read these.
+WINDOW_DISPLAY = 0.50
+WINDOW_RECORD = 0.683
+COVERAGE_TARGET = WINDOW_RECORD   # old name, kept for the first version of the code
+
+# Game lines, paper "value" picks: the model's win chance must beat the de-vigged moneyline chance by at
+# least this much for the game to count as a value pick. Entertainment only; 1 unit flat at closing odds.
+VALUE_MARGIN = 0.05

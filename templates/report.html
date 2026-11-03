@@ -226,6 +226,7 @@
     overflow:hidden; text-overflow:ellipsis}
   .pk-slot.none{color:var(--ink-3)}
   .pk-pct{font-weight:600}
+  .wxm{font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.04em; color:var(--accent); border:1px solid color-mix(in srgb,var(--accent) 40%,transparent); border-radius:2px; padding:0 3px; margin-left:6px}
   .pk-pct.hi{color:var(--good)} .pk-pct.mid{color:var(--ink)} .pk-pct.lo{color:var(--bad)}
   /* Trend triangles before a shortlist name: set so the
      18px group centre is on the centre of the 14px capitals (7px over the baseline). The
@@ -373,8 +374,8 @@
     __HEADLINE__
   </header>
   <p class="sub">Projected production for each team's featured players. The curve is the
-    full range of plausible outcomes; the shaded band is the middle ~68%, where roughly two
-    of every three games land. The solid upright rule marks the number FanDuel is pricing.
+    full range of plausible outcomes; the shaded band is the 50% window, which lands inside about half
+    the time. The solid upright rule marks the number FanDuel is pricing.
     From week 8 on it is the rung the card chose, priced
     &minus;200 to &minus;110, where the model beats the book by the most.</p>
   <p class="sub"><strong>Ordered by how close that number sits to the curve's peak.</strong>
@@ -382,10 +383,12 @@
     down, the gap widens &mdash; a number well left of the peak is one the card thinks clears
     more often than the price suggests, and vice versa.</p>
 
+  <p class="sub" id="wxline" data-inspect-id="report-weather" hidden></p>
+
   <div class="legend" data-inspect-id="legend">
     <span class="key"><span class="swatch" style="background:var(--den)"></span><span id="teamA"></span></span>
     <span class="key"><span class="swatch" style="background:var(--kc)"></span><span id="teamB"></span></span>
-    <span class="key"><span class="swatch band-key"></span>middle ~68% of outcomes</span>
+    <span class="key"><span class="swatch band-key"></span>50% window &mdash; lands inside about half the time</span>
     <span class="key"><span class="swatch" style="background:none;border-top:2px dashed var(--ink-3);height:0"></span>the card's expected number (team colour)</span>
     <span class="key"><span class="swatch" style="background:none;border-left:2px solid var(--ink);width:0;height:14px"></span>the number FanDuel is pricing</span>
     <span class="key" data-inspect-id="legend-actual"><span class="swatch" style="background:none;border-left:2px solid var(--good);width:0;height:14px"></span>what he actually did &mdash; <em class="lg-good">green</em> cleared the number, <em class="lg-bad">red</em> did not, grey means none was offered</span>
@@ -660,7 +663,7 @@ STATS.forEach(([key,label,unit])=>{
           +mk('<span class="role '+(d.tm===META.teamA?'a':'b')+'" data-inspect-id="card-role-badge">'+d.role+'</span>',d,"card-rank-chip","card-badge")+'</div>'
         +'<div class="fig-row"><span class="fig" data-inspect-id="card-expected">'
           +fmt(d.mu)+'</span>'+result(d)+'</div>'
-        +'<div class="rng" data-inspect-id="card-range">'+fmt(d.lo)+' – '+fmt(d.hi)+'</div></div>'
+        +'<div class="rng" data-inspect-id="card-range">'+fmt(d.lo)+' – '+fmt(d.hi)+wxMark(d)+'</div></div>'
       +'<div class="card-flags" data-inspect-id="card-flags">'+history(d)
         +(d.pick?'<span class="pick-badge" data-inspect-id="card-pick-badge">pick '+d.pick+'</span>':'')
         +(isTD?'<span class="td-badge" data-inspect-id="card-td-badge"'
@@ -668,7 +671,7 @@ STATS.forEach(([key,label,unit])=>{
           +'<span class="td-phase3" data-inspect-id="card-td-prob">'+Math.round(TD.conf*100)+'%</span>':'')
         +'</div></div>'
       +'<svg data-inspect-id="card-curve" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+d.p+' '+label
-      +': expected '+fmt(d.mu)+', middle range '+fmt(d.lo)+' to '+fmt(d.hi)+'">'
+      +': expected '+fmt(d.mu)+', 50% window '+fmt(d.lo)+' to '+fmt(d.hi)+'">'
       +'<path d="'+c.band+'" fill="'+fill+'"></path>'
       +'<path class="curve" d="'+c.path+'" stroke="'+col+'"></path>'
       +'<line class="meanline" x1="'+c.X(d.mu).toFixed(1)+'" y1="'+(H-10)+'" x2="'
@@ -825,6 +828,7 @@ document.getElementById("teamB").textContent = META.nameB;
     h.insertBefore(document.createTextNode(" "),tB); h.insertBefore(home,tB);
   }
 })();
+function wxMark(d){ const w=d.wxd||0; return Math.abs(w)>=Math.max(0.03*d.mu,0.05)?' <span class="wxm" data-inspect-id="card-weather-mark" title="Weather moved this projection by '+(w>0?'+':'')+w.toFixed(1)+'">wx '+(w>0?'+':'')+w.toFixed(1)+'</span>':''; }
 const picks = DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick);
 document.getElementById("nlegs").textContent = picks.length;
 const payAll = picks.reduce((a,d)=>a*(d.price<0?1+100/(-d.price):1+d.price/100),1);
@@ -832,6 +836,19 @@ const jointAll = picks.reduce((a,d)=>a*Math.min(d.mp,d.bp),1);
 document.getElementById("pay").textContent = payAll.toFixed(2)+"\u00d7";
 document.getElementById("joint").textContent = Math.round(jointAll*100)+"%";
 document.getElementById("corrnote").innerHTML = META.corrnote;
+
+// Kickoff weather for the game. A forecast is what the model saw ~3 h before kickoff; "actual" is measured.
+(function(){
+  const x=META.wx, el=document.getElementById("wxline"); if(!x||!el) return;
+  if(x.indoors){ el.hidden=false; el.textContent="Kickoff weather: indoors, no weather."; return; }
+  if(x.temp_f==null||x.kind==null) return;
+  const mm=x.precip_mm==null?null:x.precip_mm, heavy=mm!=null&&mm>=1;
+  const rain=mm==null?"":(mm<0.05?" · dry":" · "+(heavy?"heavy rain ":"rain ")+mm.toFixed(1)+" mm/h")+(x.kind==="forecast"&&x.precip_prob!=null?" ("+Math.round(x.precip_prob)+"% chance)":"");
+  el.hidden=false;
+  el.innerHTML="<strong>Kickoff weather ("+(x.kind==="forecast"?"forecast":"actual")+"):</strong> "+Math.round(x.temp_f)+"\u00b0F · wind "+Math.round(x.wind_mph)+" mph (gust "+Math.round(x.gust_mph)+")"+rain
+    +(x.roof_unknown?" · roof may close":"")+(x.pulled_at?" <span style='color:var(--ink-3)'>pulled "+x.pulled_at+"</span>":"")
+    +". The projections already use it; a <span class='wxm'>wx</span> mark on a card means weather moved that projection.";
+})();
 
 // Assumed $1 parlay on the whole shortlist. Shown only when every leg is graded
 // (final game, stat line found, a number offered), the same gate as the result

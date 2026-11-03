@@ -16,7 +16,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from nflprops import engine_source as ES, report as R, spread as SP
 
 GOLD = json.loads((ROOT / "tests" / "fixtures" / "w7_new_rows.json").read_text())
-KEYS = ("mu", "sd", "lo", "hi", "pe", "sp", "role", "tm", "vs", "def", "app")
+# lo and hi are the 50% window since 2026-11-02 (the golden rows hold the old 68% window); see test below.
+KEYS = ("mu", "sd", "pe", "sp", "role", "tm", "vs", "def", "app")
 
 
 class NewPathRows(unittest.TestCase):
@@ -29,6 +30,11 @@ class NewPathRows(unittest.TestCase):
                 r = got[(g["p"], g["s"])]
                 for k in KEYS:
                     self.assertEqual(r[k], g[k], (game, g["p"], g["s"], k))
+                # the displayed window: sd (68% basis) rescaled to the 50% window, same mu
+                f = ES.sd_scale_display()[g["s"]] / ES.sd_scale()[g["s"]]
+                self.assertEqual(r["w"], 50)
+                self.assertAlmostEqual(r["hi"], g["mu"] + g["sd"] * f, delta=0.2, msg=(game, g["p"], g["s"]))
+                self.assertAlmostEqual(r["lo"], max(0.0, g["mu"] - g["sd"] * f), delta=0.2, msg=(game, g["p"], g["s"]))
 
     def test_every_row_has_a_finite_mu_and_sd(self):
         rows, _, _ = R.build(2026, 7, ["CLE", "TEN"], pd.DataFrame(), rung_choice=False)

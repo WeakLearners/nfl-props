@@ -210,8 +210,13 @@ __TRAY_CSS__
   <div class="pg-content">
     <section class="sec" data-inspect-id="trends-model-quality">
       <h2>Model quality by week <span class="sub">projections vs actuals &middot; no betting line</span></h2>
-      <p class="fine">How good the projections were, week by week. Italic means fewer than 30 players or legs. Rel MAE is the model's average miss divided by the miss of a plain career average for the same players: below 1.0 beats it. Within 1 sd is the share of players inside the stated range (target about 68%). Brier is the model's raw probability score against the line: 0.25 is a coin flip, lower is better. Weeks 1 to 7 are scored again on the current model, as of each week, so the rows are comparable. An orange rule on the left of a cell would mark a week where a stat's model path changed, so a step there is a switch and not drift.</p>
+      <p class="fine">How good the projections were, week by week. Italic means fewer than 30 players or legs. Rel MAE is the model's average miss divided by the miss of a plain career average for the same players: below 1.0 beats it. Brier is the model's raw probability score against the line: 0.25 is a coin flip, lower is better. Weeks 1 to 7 are scored again on the current model, as of each week, so the rows are comparable. An orange rule on the left of a cell would mark a week where a stat's model path changed, so a step there is a switch and not drift.</p>
       <div id="mq" data-inspect-id="trends-mq-tables"></div>
+    </section>
+    <section class="sec" data-inspect-id="trends-model-window">
+      <h2>Model-only record <span class="sub">inside the window &middot; no betting line</span></h2>
+      <p class="fine">Does not use any line. Two windows, both mu &plusmn; scale &times; sd, each with its own scale refit each week so its share sits at its target: the 50% window shown on the cards (lands inside about half the time) and the 68% window the probabilities are built on. Targets are <code>WINDOW_DISPLAY</code> and <code>WINDOW_RECORD</code> in nflprops/config.py. Window width is the full range in the stat's own units: yards, catches. Coverage near 68% with a width that shrinks over the weeks means the model is getting tighter. Source: data/model_quality.csv.</p>
+      <div id="mqw" data-inspect-id="trends-mqw-tables"></div>
     </section>
     <section class="sec" data-inspect-id="trends-charts">
       <h2>Biggest moves <span class="sub">last 3 games vs the baseline &middot; largest changes first</span></h2>
@@ -293,15 +298,20 @@ function renderCharts(){
 
 /* ---- model quality by week ---- */
 var MQ=D.mq||[], MQS=[["passing_yards","Passing yards"],["completions","Completions"],["rushing_yards","Rushing yards"],["receiving_yards","Receiving yards"],["receptions","Receptions"]];
-function renderMq(){
-  var box=document.getElementById("mq"); if(!box) return;
+function renderMq(){ renderMqBox("mq",["rel_mae","brier_raw"]); renderMqBox("mqw",["cov50","width50","cov68","width"]); }
+function renderMqBox(boxId,pick){
+  var box=document.getElementById(boxId); if(!box) return;
   var wk=MQ.filter(function(r){return r.scope==="week";}), ss=MQ.filter(function(r){return r.scope==="season";});
   MQS.forEach(function(s){var prev=null; wk.filter(function(r){return r.stat===s[0];}).sort(function(a,b){return a.week-b.week;}).forEach(function(r){if(prev!==null&&r.engine!==prev) r.sw=true; prev=r.engine;});});
   var weeks=[]; wk.forEach(function(r){if(weeks.indexOf(r.week)<0) weeks.push(r.week);}); weeks.sort(function(a,b){return a-b;});
   if(!weeks.length){box.innerHTML='<p class="fine">No graded weeks yet.</p>'; return;}
   var M=[["rel_mae","Rel MAE","naive_n",function(v){return v.toFixed(3);},function(v){return v<1?"up":"dn";},"trends-mq-table-rel"],
-         ["cov68","Within 1 sd","cov_n",function(v){return (v*100).toFixed(0)+"%";},null,"trends-mq-table-cov"],
+         ["cov68","Inside the 68% window (within 1 sd)","cov_n",function(v){return (v*100).toFixed(0)+"%";},null,"trends-mq-table-cov"],
+         ["cov50","Inside the 50% window","cov_n",function(v){return (v*100).toFixed(0)+"%";},null,"trends-mq-table-cov50"],
+         ["width50","50% window width, full range (stat units)","cov_n",function(v){return v.toFixed(1);},null,"trends-mq-table-width50"],
+         ["width","68% window width, full range (stat units)","cov_n",function(v){return v.toFixed(1);},null,"trends-mq-table-width"],
          ["brier_raw","Brier, raw probability","priced_n",function(v){return v.toFixed(3);},function(v){return v<0.25?"up":"dn";},"trends-mq-table-brier"]];
+  M=M.filter(function(m){return pick.indexOf(m[0])>=0;});
   box.innerHTML=M.map(function(m,i){
     var head='<tr><th>Stat</th>'+weeks.map(function(w){return "<th>W"+w+"</th>";}).join("")+'<th class="sea">Season</th></tr>';
     var body=MQS.map(function(s){
