@@ -478,7 +478,7 @@ html body .wrap[data-page="report"] .glp .pf-v{font:500 var(--t-data)/var(--lh-d
 /* Game page review fixes */
 html body .wrap[data-page="report"] > .legend{grid-row:auto; justify-self:stretch}
 html body .wrap[data-page="report"] .two{grid-template-columns:minmax(0,1fr) 320px}
-html body .wrap[data-page="report"] #picklist, html body .wrap[data-page="report"] .pk-head{--pk-cols:minmax(max-content,1fr) minmax(max-content,.6fr) minmax(max-content,.9fr) 196px 92px}
+html body .wrap[data-page="report"] #picklist, html body .wrap[data-page="report"] .pk-head{--pk-cols:minmax(max-content,1fr) minmax(max-content,1fr) minmax(max-content,1fr) 196px 92px}
 html body .wrap[data-page="report"] .glp .pf-v{flex-wrap:nowrap}
 html body .wrap[data-page="report"] .glp-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 html body .wrap[data-page="report"] .pk-slotcell b, html body .wrap[data-page="report"] .pk-slotcell em{color:var(--ink)}
@@ -486,7 +486,7 @@ html body .wrap[data-page="report"] .fgrp .frng{width:84px}
 html body .wrap[data-page="report"] :is(.frng,.freset):is(:focus-visible,:hover){border-color:var(--accent); color:var(--ink)}
 html body .wrap[data-page="report"] h1 .at{text-transform:lowercase; font-size:var(--t-h3)}
 html body .wrap[data-page="report"] .glp-grid{grid-template-columns:1fr 1fr}
-html body .wrap[data-page="report"] .glp .pf-v{flex-wrap:wrap}
+html body .wrap[data-page="report"] .glp .pf-v{flex-wrap:nowrap; white-space:nowrap}
 html body .wrap[data-page="report"] > .legend{grid-row:span 2}
 html body .wrap[data-page="report"]{grid-template-rows:auto auto auto 1fr}
 html body .wrap[data-page="report"] > .sub{align-self:start}
@@ -513,7 +513,7 @@ html body .wrap[data-page="report"] .two > .glp .glp-grid{grid-template-columns:
 html body .wrap[data-page="report"] .pk-nm{overflow:visible; text-overflow:clip; flex:none}
 html body .wrap[data-page="report"] #picklist li > *{overflow:visible; text-overflow:clip}
 @media (max-width:1320px){
-  html body .wrap[data-page="report"] #picklist, html body .wrap[data-page="report"] .pk-head{--pk-cols:minmax(max-content,1fr) minmax(max-content,.7fr) 196px 92px}
+  html body .wrap[data-page="report"] #picklist, html body .wrap[data-page="report"] .pk-head{--pk-cols:minmax(max-content,1fr) minmax(max-content,1fr) 196px 92px}
   html body .wrap[data-page="report"] :is(.pk-slotcell,.pk-head .h-info){display:none}
 }
 /* Cards reflow by content width. */
