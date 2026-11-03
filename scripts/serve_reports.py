@@ -2134,11 +2134,14 @@ def report_fixes(html, has_hist, has_acts, tr):
         mm = re.search(pat, html, re.S)
         if mm:
             moved.append(re.sub(r'<p class="[^"]*"[^>]*>', "<p>", mm.group(0).strip(), 1))
+            if "Ordered by how close" in moved[-1]:
+                moved[-1] = ("<p><strong>Order of the cards.</strong> Cards are grouped by stat. Inside each stat they follow role depth: "
+                             "QB, RB, WR, TE, then the depth number. The away team comes first on a tie, then the higher projection.</p>")
             html = html.replace(mm.group(0), "", 1)
     if moved and 'id="wxline"' in html:
         html = html.replace('<p class="sub" id="wxline"',
             '<p class="sub" data-inspect-id="report-intro">Each card shows one player stat. The curve is the range of likely results. '
-            'Cards closest to the peak come first.</p>\n  <p class="sub" id="wxline"', 1)
+            'Cards are grouped by stat and ordered by role: QB, RB, WR, TE, then depth.</p>\n  <p class="sub" id="wxline"', 1)
     html = html.replace('<footer data-inspect-id="footer-notes">', '<footer id="how-to-read" data-inspect-id="footer-notes">' + "".join(moved), 1)
     if has_acts:
         html = html.replace('<span class="h-models">Models</span>',
@@ -2209,13 +2212,25 @@ CARD_JS = """<script>
   document.querySelectorAll("#fbar .fgrp").forEach(function(g){ var k=g.querySelector(".fgrp-k"); if(k&&k.textContent==="Market") mg=g; });
   if(mg){ chips=[].slice.call(mg.querySelectorAll(".fchip")); mg.hidden=true; }
   function pressed(){ return chips.filter(function(b){return b.getAttribute("aria-pressed")==="true";}); }
-  function paint(){ var p=pressed(), on=p.length===0?"":p.length===1?p[0].textContent:null; [].slice.call(tabs.children).forEach(function(t){ t.classList.toggle("on", t.dataset.k===on); }); }
+  function paint(){ one.classList.toggle("single",pressed().length>0); var p=pressed(), on=p.length===0?"":p.length===1?p[0].textContent:null; [].slice.call(tabs.children).forEach(function(t){ t.classList.toggle("on", t.dataset.k===on); }); }
   function mk(text,k){ var b=document.createElement("button"); b.type="button"; b.textContent=text; b.dataset.k=k;
     b.addEventListener("click",function(){ chips.forEach(function(c){ var want=k&&c.textContent===k; if((c.getAttribute("aria-pressed")==="true")!==!!want) c.click(); }); paint(); }); tabs.appendChild(b); }
   mk("All markets","");
   order.forEach(function(l){ var c=cards.filter(function(x){return x.dataset.mlabel===l;})[0]; if(c) mk(l,String(c.dataset.stat).replace(/_/g," ")); });
+  // Group by stat, then order by role depth: QB, RB, WR, TE, then the depth number. Away team first on a tie, then projection.
+  var AWAY="__AWAY__", PR={QB:0,RB:1,WR:2,TE:3};
+  function rk(c){ var r=((c.querySelector(".role")||{}).textContent||"").trim(), m=r.match(/^([A-Z]+)(\\d+)$/); return m?[PR[m[1]]!==undefined?PR[m[1]]:8, +m[2]]:[9,99]; }
+  var heads=[];
+  order.forEach(function(l){
+    var h=document.createElement("div"); h.className="stat-h"; h.textContent=l; h.dataset.inspectId="stat-heading"; h.dataset.l=l; one.appendChild(h); heads.push(h);
+    cards.filter(function(x){return x.dataset.mlabel===l;}).sort(function(a,b){
+      var ra=rk(a), rb=rk(b); return ra[0]-rb[0]||ra[1]-rb[1]||((a.dataset.team===AWAY?0:1)-(b.dataset.team===AWAY?0:1))||(parseFloat(b.dataset.mu)-parseFloat(a.dataset.mu));
+    }).forEach(function(c){ one.appendChild(c); });
+  });
+  function refresh(){ heads.forEach(function(h){ var any=false, n=h.nextElementSibling; while(n&&!n.classList.contains("stat-h")){ if(!n.hidden) any=true; n=n.nextElementSibling; } if(h.hidden===any) h.hidden=!any; }); }
+  new MutationObserver(refresh).observe(one,{attributes:true,attributeFilter:["hidden"],subtree:true});
   var sp=document.createElement("div"); sp.hidden=true;
-  sec.appendChild(tabs); sec.appendChild(sp); sec.appendChild(one); paint(); if(order.length<2) tabs.hidden=true;
+  sec.appendChild(tabs); sec.appendChild(sp); sec.appendChild(one); paint(); refresh(); if(order.length<2) tabs.hidden=true;
   var rs=document.getElementById("freset"); if(rs) rs.addEventListener("click",paint);
 })();
 </script>"""
@@ -2410,7 +2425,7 @@ class Handler(SimpleHTTPRequestHandler):
                     html = re.sub(r'(<h1>)([^<]+?) (<span class="at">at</span>) ([^<]+)(</h1>)',
                                   lambda mm: f'{mm.group(1)}<span class="gh-side ga">{la}{mm.group(2)}</span> {mm.group(3)} <span class="gh-side gb">{lb}{mm.group(4)}</span>{mm.group(5)}', html, 1)
                 html = report_fixes(html, bool(hist), bool(acts), {"a": (tr or {}).get(m.group(3)), "b": (tr or {}).get(m.group(4))})
-                html += "\n" + CARD_JS + "\n" + TRAY_HTML  # player tray: after the report script, which defines DATA
+                html += "\n" + CARD_JS.replace("__AWAY__", m.group(3)) + "\n" + TRAY_HTML  # player tray: after the report script, which defines DATA
         body = (with_theme(html) +
                 '\n<script src="/_inspector.js"></script>\n').encode()
         self._send(body, "text/html; charset=utf-8")

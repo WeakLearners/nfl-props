@@ -633,3 +633,9 @@ html body .logo-line .tlogo.sm{height:18px; width:18px; margin:0 var(--s1) 0 0; 
 html body .logo-line .tlogo.sm:first-child{margin-left:0}
 html body h1 .tlogo{height:44px; width:44px}
 html body .wrap[data-page="report"] :is(.card,.grid,.one-grid)[hidden], html body .wrap[data-page="report"] #sections [hidden]{display:none !important}
+
+/* Stat headings inside the one card grid. */
+html body .wrap[data-page="report"] .one-grid > .stat-h{grid-column:1/-1; font:600 var(--t-h2)/var(--lh-h2) var(--f-display); text-transform:uppercase; color:var(--ink);
+  border-bottom:1px solid var(--line); padding-bottom:var(--s2); margin-top:var(--s5)}
+html body .wrap[data-page="report"] .one-grid > .stat-h:first-child{margin-top:0}
+html body .wrap[data-page="report"] .one-grid.single > .stat-h, html body .wrap[data-page="report"] .one-grid .pc-mkt{display:none}
