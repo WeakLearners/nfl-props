@@ -880,7 +880,7 @@
           "kind": "section",
           "description": "Full game lines detail on the game page: score, spread, total, leans, win chance, flags, 50% window. Built per request by page_html() in nflprops/gamelines_view.py.",
           "locate": {
-            "path": "nflprops/gamelines_view.py:229",
+            "path": "nflprops/gamelines_view.py:258",
             "grep": "grep -n -F -- 'report-gamelines' nflprops/gamelines_view.py"
           }
         }
@@ -899,7 +899,7 @@
           "kind": "layout",
           "description": "Full-width column (LAYOUT_CSS) holding the whole listing.",
           "locate": {
-            "path": "scripts/serve_reports.py:258",
+            "path": "scripts/serve_reports.py:271",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-wrap\"' scripts/serve_reports.py"
           }
         },
@@ -909,7 +909,7 @@
           "kind": "text",
           "description": "Small monospace line above the title, matching the eyebrow on a report.",
           "locate": {
-            "path": "scripts/serve_reports.py:260",
+            "path": "scripts/serve_reports.py:273",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-eyebrow\"' scripts/serve_reports.py"
           }
         },
@@ -919,7 +919,7 @@
           "kind": "heading",
           "description": "The open week ('Week 4'), in the same condensed face as a report's matchup headline. TABS_JS sets it from the selected tab.",
           "locate": {
-            "path": "scripts/serve_reports.py:261",
+            "path": "scripts/serve_reports.py:274",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-title\"' scripts/serve_reports.py"
           }
         },
@@ -929,7 +929,7 @@
           "kind": "text",
           "description": "Explains the ordering, the TD marker, and that no edge is being claimed.",
           "locate": {
-            "path": "scripts/serve_reports.py:264",
+            "path": "scripts/serve_reports.py:277",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-subtitle\"' scripts/serve_reports.py"
           }
         },
@@ -939,7 +939,7 @@
           "kind": "nav",
           "description": "Row of week tabs, reading left to right in the order the weeks were played. Arrow keys move between them, Home and End jump to the first and last.",
           "locate": {
-            "path": "scripts/serve_reports.py:587",
+            "path": "scripts/serve_reports.py:649",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-tablist\"' scripts/serve_reports.py"
           }
         },
@@ -949,18 +949,28 @@
           "kind": "text",
           "description": "Season-to-date assumed $1 parlay record and net, above the week tabs. Fully graded games only; hover lists each week. Net pill is good at zero or above, bad below. Entertainment only.",
           "locate": {
-            "path": "scripts/serve_reports.py:585",
+            "path": "scripts/serve_reports.py:647",
             "grep": "grep -n -F -- '\"index-season-parlay\"' scripts/serve_reports.py"
           }
         },
         {
-          "id": "index-week-parlay",
-          "label": "Week $1 parlays",
-          "kind": "text",
-          "description": "Assumed $1 parlay record and net for one week, first line of the week panel. Says 'n of m games graded' when games are still open. Hover lists each game. Same parlay rule as the game page.",
+          "id": "index-sum-props",
+          "label": "Week props summary box",
+          "kind": "panel",
+          "description": "Week page box above the card grid: the short-list $1 parlay record (n of m won), the net, and the games not yet graded. Hover lists each game. Props only, separate from game lines.",
           "locate": {
-            "path": "scripts/serve_reports.py:551",
-            "grep": "grep -n -F -- '\"index-week-parlay\"' scripts/serve_reports.py"
+            "path": "scripts/serve_reports.py:596",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-sum-props\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "index-sum-gl",
+          "label": "Week game lines summary box",
+          "kind": "panel",
+          "description": "Week page box beside the props box: the game-lines W-L-P for winner, spread and total. Game lines only, no number joins it to props.",
+          "locate": {
+            "path": "scripts/serve_reports.py:609",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-sum-gl\"' scripts/serve_reports.py"
           }
         },
         {
@@ -969,7 +979,7 @@
           "kind": "button",
           "description": "One week's tab, with that week's game count beside the label. The newest week sits on the right and is the one selected on load.",
           "locate": {
-            "path": "scripts/serve_reports.py:562",
+            "path": "scripts/serve_reports.py:624",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-week-tab\"' scripts/serve_reports.py"
           }
         },
@@ -979,7 +989,7 @@
           "kind": "layout",
           "description": "The card grid for one week. Every panel but the selected one carries the hidden attribute.",
           "locate": {
-            "path": "scripts/serve_reports.py:567",
+            "path": "scripts/serve_reports.py:629",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-week-panel\"' scripts/serve_reports.py"
           }
         },
@@ -989,7 +999,7 @@
           "kind": "card",
           "description": "One game's card, linking through to its report. Built on the same anatomy as a report's player card: label and badge on top, an oversized figure, a range line, then a dotted comparison row.",
           "locate": {
-            "path": "scripts/serve_reports.py:452",
+            "path": "scripts/serve_reports.py:487",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-row\"' scripts/serve_reports.py"
           }
         },
@@ -999,7 +1009,7 @@
           "kind": "text",
           "description": "The away-at-home pairing in the card's top row, where a player card puts the player's name.",
           "locate": {
-            "path": "scripts/serve_reports.py:453",
+            "path": "scripts/serve_reports.py:485",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-game-label\"' scripts/serve_reports.py"
           }
         },
@@ -1009,7 +1019,7 @@
           "kind": "badge",
           "description": "Accent-coloured weekday, e.g. SUN. Sits where a player card puts the position badge. Absent when no schedule row exists.",
           "locate": {
-            "path": "scripts/serve_reports.py:512",
+            "path": "scripts/serve_reports.py:551",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-day-badge\"' scripts/serve_reports.py"
           }
         },
@@ -1019,7 +1029,7 @@
           "kind": "value",
           "description": "Kickoff time as the card's headline figure, where a player card puts its projection. Falls back to 'kickoff unknown' rather than the file's timestamp.",
           "locate": {
-            "path": "scripts/serve_reports.py:517",
+            "path": "scripts/serve_reports.py:556",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-kickoff\"' scripts/serve_reports.py"
           }
         },
@@ -1029,7 +1039,7 @@
           "kind": "value",
           "description": "Timezone and date under the figure, where a player card puts its range.",
           "locate": {
-            "path": "scripts/serve_reports.py:518",
+            "path": "scripts/serve_reports.py:557",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-kickoff-date\"' scripts/serve_reports.py"
           }
         },
@@ -1039,7 +1049,7 @@
           "kind": "text",
           "description": "Replaces the tabs and panels entirely when no reports have been generated yet.",
           "locate": {
-            "path": "scripts/serve_reports.py:572",
+            "path": "scripts/serve_reports.py:634",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-empty\"' scripts/serve_reports.py"
           }
         },
@@ -1049,7 +1059,7 @@
           "kind": "layout",
           "description": "All the games that kick off at one time, e.g. every Sunday 1:00 PM game. A Sunday is four separate sittings, and one undivided grid hid that.",
           "locate": {
-            "path": "scripts/serve_reports.py:515",
+            "path": "scripts/serve_reports.py:554",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-slot\"' scripts/serve_reports.py"
           }
         },
@@ -1059,7 +1069,7 @@
           "kind": "heading",
           "description": "Day and time for one block, with its game count. Quieter than a week tab, louder than a card.",
           "locate": {
-            "path": "scripts/serve_reports.py:516",
+            "path": "scripts/serve_reports.py:555",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-slot-label\"' scripts/serve_reports.py"
           }
         },
@@ -1069,7 +1079,7 @@
           "kind": "card",
           "description": "Dashed, dimmed, non-clickable card for a scheduled game that has no report yet.",
           "locate": {
-            "path": "scripts/serve_reports.py:456",
+            "path": "scripts/serve_reports.py:495",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-row-pending\"' scripts/serve_reports.py"
           }
         },
@@ -1079,7 +1089,7 @@
           "kind": "text",
           "description": "The matchup on a pending card, in the dimmed weight.",
           "locate": {
-            "path": "scripts/serve_reports.py:458",
+            "path": "scripts/serve_reports.py:494",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-game-label-pending\"' scripts/serve_reports.py"
           }
         },
@@ -1089,7 +1099,7 @@
           "kind": "badge",
           "description": "Hollow dashed \"N/A\" pill on a pending card, in the same slot and the same 18px box the hit tally uses once the game is reported and played. Full wording is in its title attribute.",
           "locate": {
-            "path": "scripts/serve_reports.py:459",
+            "path": "scripts/serve_reports.py:498",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-no-report\"' scripts/serve_reports.py"
           }
         },
@@ -1099,7 +1109,7 @@
           "kind": "badge",
           "description": "How every priced leg on the page did, shortlisted or not, once the game finished, like \"19/28\". Same size and style as the shortlist pill, row 1 at the card's right edge. Green at 75% or more, red below. Anytime TD not counted. Full wording in its title attribute.",
           "locate": {
-            "path": "scripts/serve_reports.py:437",
+            "path": "scripts/serve_reports.py:468",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-hits-all\"' scripts/serve_reports.py"
           }
         },
@@ -1109,7 +1119,7 @@
           "kind": "text",
           "description": "Small muted \"Short list\" fine print on row 2 of a graded card, left, under the team names. Names the shortlist pill at the right edge. Omitted when the game has no shortlist legs.",
           "locate": {
-            "path": "scripts/serve_reports.py:446",
+            "path": "scripts/serve_reports.py:475",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-hits-label\"' scripts/serve_reports.py"
           }
         },
@@ -1119,7 +1129,7 @@
           "kind": "badge",
           "description": "How the game's shortlisted picks did once it finished, as a bare fraction like \"5/6\". Row 2 of a graded card, under the all-predictions pill with right edges aligned. Green at 75% or more, red below. Omitted when the game has no shortlist legs. The full wording is in its title attribute. Absent while a game is still being played.",
           "locate": {
-            "path": "scripts/serve_reports.py:448",
+            "path": "scripts/serve_reports.py:478",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-hits\"' scripts/serve_reports.py"
           }
         },
@@ -1129,7 +1139,7 @@
           "kind": "layout",
           "description": "Thin rule that starts the game lines block on a card. Title holds the line and the lean.",
           "locate": {
-            "path": "nflprops/gamelines_view.py:148",
+            "path": "nflprops/gamelines_view.py:147",
             "grep": "grep -n -F -- 'index-gl' nflprops/gamelines_view.py"
           }
         },
@@ -1139,7 +1149,7 @@
           "kind": "stat",
           "description": "Model home win chance on the card.",
           "locate": {
-            "path": "nflprops/gamelines_view.py:149",
+            "path": "nflprops/gamelines_view.py:147",
             "grep": "grep -n -F -- 'index-gl-win' nflprops/gamelines_view.py"
           }
         },
@@ -1149,7 +1159,7 @@
           "kind": "stat",
           "description": "Model spread for the home team. After the game: HIT, MISS or PUSH against the closing spread.",
           "locate": {
-            "path": "nflprops/gamelines_view.py:150",
+            "path": "nflprops/gamelines_view.py:151",
             "grep": "grep -n -F -- 'index-gl-spread' nflprops/gamelines_view.py"
           }
         },
@@ -1159,7 +1169,7 @@
           "kind": "stat",
           "description": "Model total. After the game: HIT, MISS or PUSH against the closing total.",
           "locate": {
-            "path": "nflprops/gamelines_view.py:151",
+            "path": "nflprops/gamelines_view.py:162",
             "grep": "grep -n -F -- 'index-gl-total' nflprops/gamelines_view.py"
           }
         },
@@ -1169,7 +1179,7 @@
           "kind": "stat",
           "description": "Predicted score; the final score after the game.",
           "locate": {
-            "path": "nflprops/gamelines_view.py:152",
+            "path": "nflprops/gamelines_view.py:172",
             "grep": "grep -n -F -- 'index-gl-score' nflprops/gamelines_view.py"
           }
         }
@@ -1188,7 +1198,7 @@
           "kind": "layout",
           "description": "Full-width column (LAYOUT_CSS) holding the whole slate page.",
           "locate": {
-            "path": "scripts/serve_reports.py:1095",
+            "path": "scripts/serve_reports.py:1157",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-wrap\"' scripts/serve_reports.py"
           }
         },
@@ -1198,7 +1208,7 @@
           "kind": "text",
           "description": "Season and week above the title.",
           "locate": {
-            "path": "scripts/serve_reports.py:1097",
+            "path": "scripts/serve_reports.py:1159",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-eyebrow\"' scripts/serve_reports.py"
           }
         },
@@ -1208,7 +1218,7 @@
           "kind": "text",
           "description": "The page's H1: \"The Slate\".",
           "locate": {
-            "path": "scripts/serve_reports.py:1098",
+            "path": "scripts/serve_reports.py:1160",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-title\"' scripts/serve_reports.py"
           }
         },
@@ -1218,7 +1228,7 @@
           "kind": "text",
           "description": "Explains what Model, Book and the gap figure mean.",
           "locate": {
-            "path": "scripts/serve_reports.py:1101",
+            "path": "scripts/serve_reports.py:1163",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-subtitle\"' scripts/serve_reports.py"
           }
         },
@@ -1228,7 +1238,7 @@
           "kind": "layout",
           "description": "One section per day-part: every leg from the games kicking off in that sitting.",
           "locate": {
-            "path": "scripts/serve_reports.py:1172",
+            "path": "scripts/serve_reports.py:1234",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-window\"' scripts/serve_reports.py"
           }
         },
@@ -1238,7 +1248,7 @@
           "kind": "text",
           "description": "Day chip, part of day, kickoff times, and the game/leg counts.",
           "locate": {
-            "path": "scripts/serve_reports.py:1173",
+            "path": "scripts/serve_reports.py:1235",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-window-label\"' scripts/serve_reports.py"
           }
         },
@@ -1248,7 +1258,7 @@
           "kind": "badge",
           "description": "Accent-filled weekday chip on a sitting heading.",
           "locate": {
-            "path": "scripts/serve_reports.py:1174",
+            "path": "scripts/serve_reports.py:1236",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-day-badge\"' scripts/serve_reports.py"
           }
         },
@@ -1258,7 +1268,7 @@
           "kind": "text",
           "description": "The kickoff times pooled into this sitting, e.g. \"4:05, 4:25 PM ET\".",
           "locate": {
-            "path": "scripts/serve_reports.py:1176",
+            "path": "scripts/serve_reports.py:1238",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-window-times\"' scripts/serve_reports.py"
           }
         },
@@ -1268,7 +1278,7 @@
           "kind": "layout",
           "description": "One of the three rankings inside a sitting: heading, note, table.",
           "locate": {
-            "path": "scripts/serve_reports.py:921",
+            "path": "scripts/serve_reports.py:983",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-table\"' scripts/serve_reports.py"
           }
         },
@@ -1278,7 +1288,7 @@
           "kind": "text",
           "description": "\"Most likely to happen\", \"Shortest odds\", or \"Longest odds\".",
           "locate": {
-            "path": "scripts/serve_reports.py:922",
+            "path": "scripts/serve_reports.py:984",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-table-title\"' scripts/serve_reports.py"
           }
         },
@@ -1288,7 +1298,7 @@
           "kind": "text",
           "description": "One line saying what the ranking is sorted by.",
           "locate": {
-            "path": "scripts/serve_reports.py:923",
+            "path": "scripts/serve_reports.py:985",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-table-note\"' scripts/serve_reports.py"
           }
         },
@@ -1298,7 +1308,7 @@
           "kind": "row",
           "description": "One shortlisted leg: player, team/role, game, line, price, payout, model and book probability, and the gap between them.",
           "locate": {
-            "path": "scripts/serve_reports.py:882",
+            "path": "scripts/serve_reports.py:944",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-leg\"' scripts/serve_reports.py"
           }
         },
@@ -1308,7 +1318,7 @@
           "kind": "badge",
           "description": "Outline chip like #12 WR after the depth role, inside the .mk group in the leg meta line. Built by markers_html() from chips.json (written by write_rankings). Absent below the ranking floor. Not the depth chart.",
           "locate": {
-            "path": "scripts/serve_reports.py:880",
+            "path": "scripts/serve_reports.py:942",
             "grep": "grep -n -F -- '\"slate-rank-chip\"' scripts/serve_reports.py"
           }
         },
@@ -1318,7 +1328,7 @@
           "kind": "badge",
           "description": "Badge from nflprops/badges.py (data/ratings/badges.json): ▲/▼ trend, or Big day / Caution matchup. Sits after the rank chip, never replaces it. Hover title gives the numbers. Absent for almost everyone. Built by bd_html in scripts/serve_reports.py. Matchup badge only for this week's game.",
           "locate": {
-            "path": "scripts/serve_reports.py:880",
+            "path": "scripts/serve_reports.py:942",
             "grep": "grep -n -F -- '\"slate-badge\"' scripts/serve_reports.py"
           }
         },
@@ -1328,7 +1338,7 @@
           "kind": "text",
           "description": "Shown when no reports have been generated at all.",
           "locate": {
-            "path": "scripts/serve_reports.py:1203",
+            "path": "scripts/serve_reports.py:1265",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-empty\"' scripts/serve_reports.py"
           }
         },
@@ -1338,7 +1348,7 @@
           "kind": "text",
           "description": "Shown when reports exist but none of their games has a schedule row to pool by.",
           "locate": {
-            "path": "scripts/serve_reports.py:1215",
+            "path": "scripts/serve_reports.py:1277",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-empty-unscheduled\"' scripts/serve_reports.py"
           }
         },
@@ -1348,7 +1358,7 @@
           "kind": "text",
           "description": "Slate note: prices are what the report held and move afterwards.",
           "locate": {
-            "path": "scripts/serve_reports.py:1108",
+            "path": "scripts/serve_reports.py:1170",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-footer\"' scripts/serve_reports.py"
           }
         },
@@ -1358,7 +1368,7 @@
           "kind": "nav",
           "description": "Tab strip, one week per tab, newest selected on load.",
           "locate": {
-            "path": "scripts/serve_reports.py:1233",
+            "path": "scripts/serve_reports.py:1295",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-tablist\"' scripts/serve_reports.py"
           }
         },
@@ -1368,7 +1378,7 @@
           "kind": "tab",
           "description": "Opens one week's sittings. The count is that week's shortlisted legs.",
           "locate": {
-            "path": "scripts/serve_reports.py:1224",
+            "path": "scripts/serve_reports.py:1286",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-week-tab\"' scripts/serve_reports.py"
           }
         },
@@ -1378,7 +1388,7 @@
           "kind": "layout",
           "description": "All sittings for one week. Every week but the newest ships hidden.",
           "locate": {
-            "path": "scripts/serve_reports.py:1229",
+            "path": "scripts/serve_reports.py:1291",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-week-panel\"' scripts/serve_reports.py"
           }
         },
@@ -1388,7 +1398,7 @@
           "kind": "badge",
           "description": "How the whole sitting's picks did, e.g. \"5/6 hit\". Same two tones as the listing badge.",
           "locate": {
-            "path": "scripts/serve_reports.py:1156",
+            "path": "scripts/serve_reports.py:1218",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-window-hits\"' scripts/serve_reports.py"
           }
         },
@@ -1398,7 +1408,7 @@
           "kind": "badge",
           "description": "The number the player actually put up, in its own Actual column directly after the leg. Green beat the line, red did not. One fixed width whatever the number, so the colour blocks stay a column down the page. The column is rendered only when at least one leg that week has been graded.",
           "locate": {
-            "path": "scripts/serve_reports.py:876",
+            "path": "scripts/serve_reports.py:938",
             "grep": "grep -n -F -- 'data-inspect-id=\"slate-leg-result\"' scripts/serve_reports.py"
           }
         }
@@ -1417,7 +1427,7 @@
           "kind": "layout",
           "description": "Full-width column (LAYOUT_CSS) holding the whole explore page.",
           "locate": {
-            "path": "templates/explore.html:167",
+            "path": "templates/explore.html:181",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-wrap\"' templates/explore.html"
           }
         },
@@ -1427,7 +1437,7 @@
           "kind": "layout",
           "description": "Table and grading note. From 1280px wide the table is on the left and the grading note is a side column on the right. One column below that.",
           "locate": {
-            "path": "templates/explore.html:223",
+            "path": "templates/explore.html:237",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-grid\"' templates/explore.html"
           }
         },
@@ -1437,7 +1447,7 @@
           "kind": "list",
           "description": "Box at the top of the page, above the Top 5 boxes. Season-to-date projection quality per stat: players, bias, MAE, Rel MAE (model miss / plain career average miss, below 1.0 is better), share inside mu +/- 1 sd, priced legs, raw Brier, raw AUC, plus the latest week's Rel MAE and within-1-sd. Read from data/model_quality.csv (window.__EXPLORE__.mq, set in explore_html()). Counts under 30 are italic. It does not follow the Picks / Group by controls and does not mix bet products: it measures projections, not bets. A <details> box, open by default.",
           "locate": {
-            "path": "templates/explore.html:173",
+            "path": "templates/explore.html:187",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-model-quality\"' templates/explore.html"
           }
         },
@@ -1447,7 +1457,7 @@
           "kind": "box",
           "description": "Own box next to Model quality: per stat, share of results inside the 50% window and the 68% window, and the mean width of each, season to date and for the latest week. No betting line. Window half-widths come from data/sd_scale.json.",
           "locate": {
-            "path": "templates/explore.html:177",
+            "path": "templates/explore.html:191",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-model-window\"' templates/explore.html"
           }
         },
@@ -1457,7 +1467,7 @@
           "kind": "table",
           "description": "The table inside the model-only record box. Drawn by renderMqw().",
           "locate": {
-            "path": "templates/explore.html:179",
+            "path": "templates/explore.html:193",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-mqw-table\"' templates/explore.html"
           }
         },
@@ -1467,7 +1477,7 @@
           "kind": "table",
           "description": "Model quality table: bias, MAE, rel MAE, priced legs, Brier raw, AUC raw. The within-window numbers moved to the model-only record box.",
           "locate": {
-            "path": "templates/explore.html:175",
+            "path": "templates/explore.html:189",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-mq-table\"' templates/explore.html"
           }
         },
@@ -1477,7 +1487,7 @@
           "kind": "link",
           "description": "Link under the Model quality table to the week-by-week view on the Trends page.",
           "locate": {
-            "path": "templates/explore.html:654",
+            "path": "templates/explore.html:695",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-mq-trend-link\"' templates/explore.html"
           }
         },
@@ -1487,7 +1497,7 @@
           "kind": "layout",
           "description": "Holds the three list boxes: Top 5 groups, Top 5 teams, Bottom 5 teams. From 900px wide they share one row as three equal columns. Below that they stack. It is the whole intro row: the page has no intro paragraph.",
           "locate": {
-            "path": "templates/explore.html:181",
+            "path": "templates/explore.html:195",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-side\"' templates/explore.html"
           }
         },
@@ -1497,7 +1507,7 @@
           "kind": "layout",
           "description": "Holds the summary, the controls and the table.",
           "locate": {
-            "path": "templates/explore.html:224",
+            "path": "templates/explore.html:238",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-main\"' templates/explore.html"
           }
         },
@@ -1507,7 +1517,7 @@
           "kind": "text",
           "description": "'Graded picks' kicker above the title.",
           "locate": {
-            "path": "templates/explore.html:169",
+            "path": "templates/explore.html:183",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-eyebrow\"' templates/explore.html"
           }
         },
@@ -1517,7 +1527,7 @@
           "kind": "heading",
           "description": "'Results'.",
           "locate": {
-            "path": "templates/explore.html:170",
+            "path": "templates/explore.html:184",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-title\"' templates/explore.html"
           }
         },
@@ -1527,7 +1537,7 @@
           "kind": "layout",
           "description": "Holds the Picks select, the Group by select and the Search input. The chip row sits just under it. The row sits above the results table, below the summary line.",
           "locate": {
-            "path": "templates/explore.html:197",
+            "path": "templates/explore.html:211",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-controls\"' templates/explore.html"
           }
         },
@@ -1537,7 +1547,7 @@
           "kind": "input",
           "description": "Scopes the whole page: all legs with a book line (default; picked or not, graded by the same rule), the shortlist subset the model actually picked, or anytime-TD picks. TD picks are never pooled with the others - a different model, one per game. Pending counts are per option. Persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:200",
+            "path": "templates/explore.html:214",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-kind\"' templates/explore.html"
           }
         },
@@ -1547,7 +1557,7 @@
           "kind": "input",
           "description": "Chooses the category the graded legs are cut by: stat, position, depth role, week, kickoff window, price band, model confidence band, model vs book, opponent defense (model-used) (the report's def multiplier: 1.0 = league average for that position; only covers passing yards, completions and rushing yards -- rushing at half weight -- since DEF_WEIGHT is 0 for receiving yards and receptions, and those legs are left out of this grouping), shortlist rank, team, opponent, player. The choice persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:208",
+            "path": "templates/explore.html:222",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-group-by\"' templates/explore.html"
           }
         },
@@ -1557,7 +1567,7 @@
           "kind": "input",
           "description": "Type a player, team, stat, week or any other value. Typing a prefix of marked or starred offers Starred only: legs with a star, kept live as stars change. Suggestions come from graded legs and this week's legs; a row reads (N) graded plus this week count. The same chips also filter the This week table. Matches the value label (case-insensitive) across every Group by category. Up/Down moves, Enter adds, Esc closes, Backspace on an empty input removes the last chip.",
           "locate": {
-            "path": "templates/explore.html:213",
+            "path": "templates/explore.html:227",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-search\"' templates/explore.html"
           }
         },
@@ -1567,7 +1577,7 @@
           "kind": "list",
           "description": "Dropdown under the search input. At most 8 rows: category, value, and leg count in the current Picks scope. Prefix matches first, then by leg count. Player rows show the team. Values already chosen as chips are left out.",
           "locate": {
-            "path": "templates/explore.html:214",
+            "path": "templates/explore.html:228",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-search-suggest\"' templates/explore.html"
           }
         },
@@ -1577,7 +1587,7 @@
           "kind": "button",
           "description": "Toggle right after the search input. Adds or removes the same Starred only chip as the search row, and shows the count of starred legs for the current week only (this week's upcoming legs, or the latest graded week between weeks) in the current Picks scope. Stars on past weeks stay stored but never match. Pressed (accent colour) while the chip exists, so removing the chip turns it off.",
           "locate": {
-            "path": "templates/explore.html:218",
+            "path": "templates/explore.html:232",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-starred-only\"' templates/explore.html"
           }
         },
@@ -1587,7 +1597,7 @@
           "kind": "list",
           "description": "One chip per chosen value, plus Clear all. Same category = OR, different categories = AND. A chip that matches no legs stays and shows (0). The x on a chip removes it. Persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:221",
+            "path": "templates/explore.html:235",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-chips\"' templates/explore.html"
           }
         },
@@ -1597,7 +1607,7 @@
           "kind": "table",
           "description": "Second table under the graded results: this week's legs whose game is not final, plus waiting anytime-TD picks. Driven by the Picks select and the same search chips. Heading reads This week (Week N) and the match count. Sorted by kickoff, shortlist rank, player. No result column. Not part of the summary or Top/Teams boxes.",
           "locate": {
-            "path": "templates/explore.html:735",
+            "path": "templates/explore.html:776",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-upcoming\"' templates/explore.html"
           }
         },
@@ -1607,7 +1617,7 @@
           "kind": "row",
           "description": "One upcoming leg: star, trend badge, player link, team, role and game, then line and stat, then price.",
           "locate": {
-            "path": "templates/explore.html:738",
+            "path": "templates/explore.html:779",
             "grep": "grep -n -F -- '\"explore-upcoming-leg\"' templates/explore.html"
           }
         },
@@ -1617,7 +1627,7 @@
           "kind": "button",
           "description": "Star toggle from scripts/marks.js on an upcoming leg row. Marks are stored on the server. Key season|week|player|stat.",
           "locate": {
-            "path": "templates/explore.html:738",
+            "path": "templates/explore.html:779",
             "grep": "grep -n -F -- '\"mark-star-upcoming\"' templates/explore.html"
           }
         },
@@ -1627,7 +1637,7 @@
           "kind": "text",
           "description": "Hits/graded, hit rate vs needed, and flat $100 return for the current filter; plus how many legs are still waiting on a final score -- that count is season-wide, not scoped to the current Picks/Group by/Only selection. Also counts void legs (game final but the player has no stat line - he didn't play, a book would void it), also season-wide.",
           "locate": {
-            "path": "templates/explore.html:225",
+            "path": "templates/explore.html:239",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-summary\"' templates/explore.html"
           }
         },
@@ -1637,7 +1647,7 @@
           "kind": "list",
           "description": "The five best hit rates across every Group by option at once (Player, Team and Opponent excluded, because those list teams; the two team boxes cover them), for the current Picks/Only selection. A group needs 20+ graded legs; a group equal to the whole current set is skipped, and so is one with the exact same legs as a group already listed (Position QB vs Depth role QB1). Clicking a row switches Group by to that option. Sits in the intro row as a <details> box, first of three equal columns, left of the two team boxes; clicking its heading collapses it, and the open/closed state is saved with the rest of the view.",
           "locate": {
-            "path": "templates/explore.html:182",
+            "path": "templates/explore.html:196",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-top5\"' templates/explore.html"
           }
         },
@@ -1647,7 +1657,7 @@
           "kind": "list",
           "description": "The five teams with the best hit rate, grouped by the player's team, for the current Picks/Only selection. A team needs 20+ graded legs. Same box, header row and row shape as Top 5 groups. With fewer than ten qualifying teams it takes the larger half, so no team shows in both team boxes. Its open/closed state is saved with the view.",
           "locate": {
-            "path": "templates/explore.html:186",
+            "path": "templates/explore.html:200",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-teams-top\"' templates/explore.html"
           }
         },
@@ -1657,7 +1667,7 @@
           "kind": "list",
           "description": "The five teams with the lowest hit rate, lowest first. Same rules and shape as Top 5 teams. Open/closed state saved with the view.",
           "locate": {
-            "path": "templates/explore.html:190",
+            "path": "templates/explore.html:204",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-teams-bottom\"' templates/explore.html"
           }
         },
@@ -1667,7 +1677,7 @@
           "kind": "row",
           "description": "Label is the Group by name and the group, for example Stat - Receptions. It shortens with an ellipsis; the title tooltip shows the full text. Click switches Group by to that option. Built by boxRows() in the page script.",
           "locate": {
-            "path": "templates/explore.html:595",
+            "path": "templates/explore.html:636",
             "grep": "grep -n -F -- '\"explore-top5-row\"' templates/explore.html"
           }
         },
@@ -1677,7 +1687,7 @@
           "kind": "row",
           "description": "Click switches Group by to Team, the same as a Top 5 row. It does not set the Only filter. Built by boxRows() through teamRows().",
           "locate": {
-            "path": "templates/explore.html:602",
+            "path": "templates/explore.html:643",
             "grep": "grep -n -F -- '\"explore-teams-row\"' templates/explore.html"
           }
         },
@@ -1687,7 +1697,7 @@
           "kind": "layout",
           "description": "Receives the grouped table, rendered by render() in the page script.",
           "locate": {
-            "path": "templates/explore.html:226",
+            "path": "templates/explore.html:240",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-table\"' templates/explore.html"
           }
         },
@@ -1697,7 +1707,7 @@
           "kind": "table",
           "description": "One row per group: legs, hits, hit rate with a bar (tick = needed), needed, $100 each. Built at runtime. Every header is a sort button (see explore-sort-header) -- 1st click sorts the rows descending by that column's raw number (A-Z for the label column), 2nd click ascending, 3rd click back to the category's own default order; nulls (a group with no priced legs, shown as — for Needed/$100 each) always sort last. Re-sorting collapses any expanded group. The active sort resets when Group by or Picks changes and otherwise persists in localStorage 'nflprops-explore'.",
           "locate": {
-            "path": "templates/explore.html:720",
+            "path": "templates/explore.html:761",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-groups\"' templates/explore.html"
           }
         },
@@ -1707,7 +1717,7 @@
           "kind": "button",
           "description": "One shared id for all six header buttons (group label, Legs, Hits, Hit rate, Needed, $100 each) -- the anchor is the template string that builds all six, not a single element. Keyboard-operable (a real <button>); aria-sort lives on the parent <th>, not the button. Shows a trailing ▼/▲ on the active column only; inactive headers show no arrow. Styled to inherit the th's mono/10px/uppercase look with no browser button chrome.",
           "locate": {
-            "path": "templates/explore.html:718",
+            "path": "templates/explore.html:759",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-sort-header\"' templates/explore.html"
           }
         },
@@ -1717,7 +1727,7 @@
           "kind": "row",
           "description": "Click or Enter expands the legs in that group. Greyed (tr.thin) under 10 legs. Row order is the active column sort when one is set (see explore-sort-header), otherwise the category's default: team/opponent/player/depth role by size, the rest natural band order.",
           "locate": {
-            "path": "templates/explore.html:702",
+            "path": "templates/explore.html:743",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-group-row\"' templates/explore.html"
           }
         },
@@ -1727,7 +1737,7 @@
           "kind": "row",
           "description": "Inserted under a group row by toggle(); lists each leg newest week first.",
           "locate": {
-            "path": "templates/explore.html:749",
+            "path": "templates/explore.html:790",
             "grep": "grep -n -F -- '\"explore-group-legs\"' templates/explore.html"
           }
         },
@@ -1737,7 +1747,7 @@
           "kind": "row",
           "description": "Player (links to its report), team role, week and game; the line, price, and the actual number as a HIT/MISS pill.",
           "locate": {
-            "path": "templates/explore.html:751",
+            "path": "templates/explore.html:792",
             "grep": "grep -n -F -- '\"explore-leg\"' templates/explore.html"
           }
         },
@@ -1747,7 +1757,7 @@
           "kind": "badge",
           "description": "Outline chip like #12 WR after the depth role, inside the .mk group in the leg meta line. Built by mk() / rkChip(l,id) from the rk and rkt fields serve_reports adds to each leg. Absent below the floor.",
           "locate": {
-            "path": "templates/explore.html:540",
+            "path": "templates/explore.html:581",
             "grep": "grep -n -F -- '\"explore-rank-chip\"' templates/explore.html"
           }
         },
@@ -1757,7 +1767,7 @@
           "kind": "badge",
           "description": "Badge from nflprops/badges.py (data/ratings/badges.json): ▲/▼ trend, or Big day / Caution matchup. Sits after the rank chip, never replaces it. Hover title gives the numbers. Absent for almost everyone. Built by bdBadges(l,id) from the bd field serve_reports adds to each leg. Matchup badge only on legs from the badge week.",
           "locate": {
-            "path": "templates/explore.html:539",
+            "path": "templates/explore.html:580",
             "grep": "grep -n -F -- '\"explore-badge\"' templates/explore.html"
           }
         },
@@ -1767,7 +1777,7 @@
           "kind": "text",
           "description": "Grading rule (same as the listing: actual beats the line, final games only), the under-ten caveat, and which stats the opponent-defense grouping covers.",
           "locate": {
-            "path": "templates/explore.html:229",
+            "path": "templates/explore.html:243",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-footer\"' templates/explore.html"
           }
         },
@@ -1777,7 +1787,7 @@
           "kind": "section",
           "description": "Season record for game lines: W-L-P by category, model-only 50% and 68% record, error and Brier, moneyline. Separate from props.",
           "locate": {
-            "path": "templates/explore.html:257",
+            "path": "templates/explore.html:253",
             "grep": "grep -n -F -- 'explore-gamelines' templates/explore.html"
           }
         },
@@ -1787,7 +1797,7 @@
           "kind": "card",
           "description": "W-L-P by category box in the Game lines block.",
           "locate": {
-            "path": "templates/explore.html:262",
+            "path": "templates/explore.html:258",
             "grep": "grep -n -F -- 'explore-gl-tally' templates/explore.html"
           }
         },
@@ -1797,7 +1807,7 @@
           "kind": "card",
           "description": "Model-only record box in the Game lines block.",
           "locate": {
-            "path": "templates/explore.html:267",
+            "path": "templates/explore.html:263",
             "grep": "grep -n -F -- 'explore-gl-window' templates/explore.html"
           }
         },
@@ -1807,7 +1817,7 @@
           "kind": "card",
           "description": "Record against the closing line box in the Game lines block.",
           "locate": {
-            "path": "templates/explore.html:272",
+            "path": "templates/explore.html:268",
             "grep": "grep -n -F -- 'explore-gl-record' templates/explore.html"
           }
         },
@@ -1817,7 +1827,7 @@
           "kind": "card",
           "description": "Moneyline box in the Game lines block.",
           "locate": {
-            "path": "templates/explore.html:277",
+            "path": "templates/explore.html:273",
             "grep": "grep -n -F -- 'explore-gl-ml' templates/explore.html"
           }
         }
@@ -2944,7 +2954,7 @@
           "kind": "button",
           "description": "Star toggle (empty star unmarked, filled star marked) from the shared script scripts/marks.js. Marks are stored on the server (data/marks.json via /api/marks), so every page, origin and machine shows the same set. The key is season|week|player|stat. Built on the server by star_html() for each slate leg.",
           "locate": {
-            "path": "scripts/serve_reports.py:885",
+            "path": "scripts/serve_reports.py:947",
             "grep": "grep -n -F -- '\"mark-star-slate\"' scripts/serve_reports.py"
           }
         },
@@ -2954,7 +2964,7 @@
           "kind": "button",
           "description": "Star toggle (empty star unmarked, filled star marked) from the shared script scripts/marks.js. Marks are stored on the server (data/marks.json via /api/marks), so every page, origin and machine shows the same set. The key is season|week|player|stat. One per leg row inside an expanded Results group.",
           "locate": {
-            "path": "templates/explore.html:751",
+            "path": "templates/explore.html:792",
             "grep": "grep -n -F -- '\"mark-star-explore\"' templates/explore.html"
           }
         },
@@ -2974,7 +2984,7 @@
           "kind": "layout",
           "description": "Two-row header spliced into every page by with_chrome(): brand and three sections on row 1, the section's pages and the results stamp on row 2. site_nav() takes this id as a parameter.",
           "locate": {
-            "path": "scripts/serve_reports.py:1861",
+            "path": "scripts/serve_reports.py:1914",
             "grep": "grep -n -F -- 'inspect_id=\"site-nav\"' scripts/serve_reports.py"
           }
         },
@@ -2984,7 +2994,7 @@
           "kind": "link",
           "description": "'NFL Props', links to /.",
           "locate": {
-            "path": "scripts/serve_reports.py:1873",
+            "path": "scripts/serve_reports.py:1926",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-nav-brand\"' scripts/serve_reports.py"
           }
         },
@@ -2994,7 +3004,7 @@
           "kind": "link",
           "description": "Week section (Games and Slate). Active on /, /slate and every report.",
           "locate": {
-            "path": "scripts/serve_reports.py:1831",
+            "path": "scripts/serve_reports.py:1885",
             "grep": "grep -n -F -- '\"site-nav-week\"' scripts/serve_reports.py"
           }
         },
@@ -3004,7 +3014,7 @@
           "kind": "link",
           "description": "Players section (Rankings and Trends).",
           "locate": {
-            "path": "scripts/serve_reports.py:1832",
+            "path": "scripts/serve_reports.py:1886",
             "grep": "grep -n -F -- '\"site-nav-players\"' scripts/serve_reports.py"
           }
         },
@@ -3014,7 +3024,7 @@
           "kind": "link",
           "description": "Results section, /explore.",
           "locate": {
-            "path": "scripts/serve_reports.py:1834",
+            "path": "scripts/serve_reports.py:1888",
             "grep": "grep -n -F -- '\"site-nav-results\"' scripts/serve_reports.py"
           }
         },
@@ -3024,7 +3034,7 @@
           "kind": "layout",
           "description": "Pages of the current section, separated by a dot. Empty for Results.",
           "locate": {
-            "path": "scripts/serve_reports.py:1875",
+            "path": "scripts/serve_reports.py:1929",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-subnav\"' scripts/serve_reports.py"
           }
         },
@@ -3034,7 +3044,7 @@
           "kind": "link",
           "description": "Games, / . Current on the home page only.",
           "locate": {
-            "path": "scripts/serve_reports.py:1836",
+            "path": "scripts/serve_reports.py:1889",
             "grep": "grep -n -F -- '\"site-subnav-games\"' scripts/serve_reports.py"
           }
         },
@@ -3044,7 +3054,7 @@
           "kind": "link",
           "description": "Slate, /slate.",
           "locate": {
-            "path": "scripts/serve_reports.py:1837",
+            "path": "scripts/serve_reports.py:1890",
             "grep": "grep -n -F -- '\"site-subnav-slate\"' scripts/serve_reports.py"
           }
         },
@@ -3054,7 +3064,7 @@
           "kind": "link",
           "description": "Rankings, /rankings.html.",
           "locate": {
-            "path": "scripts/serve_reports.py:1838",
+            "path": "scripts/serve_reports.py:1891",
             "grep": "grep -n -F -- '\"site-subnav-rankings\"' scripts/serve_reports.py"
           }
         },
@@ -3064,7 +3074,7 @@
           "kind": "link",
           "description": "Top-bar section Trends, /trends.html. Moved out of the Players row on 2026-10-04.",
           "locate": {
-            "path": "scripts/serve_reports.py:1833",
+            "path": "scripts/serve_reports.py:1887",
             "grep": "grep -n -F -- '\"site-nav-trends\"' scripts/serve_reports.py"
           }
         },
@@ -3074,7 +3084,7 @@
           "kind": "text",
           "description": "How far the season's results go, 'Wk 4 · 2/16 final'. From results_stamp(), one read-only query per request. Empty if the query fails.",
           "locate": {
-            "path": "scripts/serve_reports.py:1876",
+            "path": "scripts/serve_reports.py:1928",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-stamp\"' scripts/serve_reports.py"
           }
         },
@@ -3084,7 +3094,7 @@
           "kind": "text",
           "description": "One-line standing disclaimer spliced after every page by with_chrome().",
           "locate": {
-            "path": "scripts/serve_reports.py:2019",
+            "path": "scripts/serve_reports.py:2073",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-footer\"' scripts/serve_reports.py"
           }
         }
