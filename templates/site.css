@@ -576,3 +576,27 @@ html body .wrap[data-page="report"] .fbar .fgrp .frng{width:78px}
 html body .wrap[data-page="report"] .fbar .fgrp[hidden]{display:none}
 @media (min-width:1500px){html body .wrap[data-page="report"] .two > .glp .glp-grid{grid-template-columns:1fr}}
 @media (max-width:1100px){html body .wrap[data-page="report"] h1{font-size:32px; line-height:36px} html body .wrap[data-page="report"] h1 .gh-sc{font-size:40px; line-height:40px}}
+
+/* ---- Card polish: one-line chips, identity line, hero captions, footer at the bottom ---- */
+html body .wrap[data-page="report"] .one-grid > .card{grid-template-rows:repeat(6,auto) 1fr}
+html body .wrap[data-page="report"] .one-grid .card-id{flex-wrap:nowrap}
+html body .wrap[data-page="report"] .one-grid .card-id .name{white-space:nowrap}
+html body .wrap[data-page="report"] .one-grid .pc-idl{grid-column:1/-1; order:2; display:flex; flex-wrap:wrap; align-items:center; gap:var(--s1) var(--s2);
+  font:400 var(--t-data)/var(--lh-data) var(--f-body); color:var(--ink-3)}
+html body .wrap[data-page="report"] .one-grid .pc-vs{color:var(--ink-3)}
+html body .wrap[data-page="report"] .one-grid .card .card-id{order:1}
+html body .wrap[data-page="report"] .one-grid .card .card-flags{order:1; grid-row:auto}
+html body .wrap[data-page="report"] .one-grid .card .pc-idl{order:2}
+html body .wrap[data-page="report"] .one-grid .hero-c{display:flex; flex-direction:column; gap:2px}
+html body .wrap[data-page="report"] .one-grid .hero-c > small{font:500 var(--t-label)/var(--lh-label) var(--f-body); text-transform:uppercase; letter-spacing:.06em; color:var(--ink-3)}
+html body .wrap[data-page="report"] .one-grid .hero-c:last-child{margin-left:auto; text-align:right; align-items:flex-end}
+html body .wrap[data-page="report"] .one-grid .rng{display:flex; align-items:center; gap:var(--s2); flex-wrap:nowrap; white-space:nowrap}
+html body .wrap[data-page="report"] .one-grid .wxm{white-space:nowrap; margin-left:auto}
+html body .wrap[data-page="report"] .one-grid .td-badge, html body .wrap[data-page="report"] .one-grid .pick-badge{white-space:nowrap}
+html body .wrap[data-page="report"] .one-grid .pc-foot{grid-column:1/-1; order:7; align-self:end; display:flex; flex-wrap:wrap; align-items:center; gap:var(--s1) var(--s4);
+  border-top:1px solid var(--line-soft); padding-top:var(--s3)}
+html body .wrap[data-page="report"] .one-grid .pc-foot > .cmp{border:0; padding:0; margin:0; display:contents}
+html body .wrap[data-page="report"] .one-grid .pc-foot .matchup{margin:0; color:var(--ink-3); font-size:var(--t-data)}
+html body .wrap[data-page="report"] .one-grid .pc-foot .matchup .dot{display:none}
+html body .wrap[data-page="report"] .one-grid .card .cmp,html body .wrap[data-page="report"] .one-grid .card .matchup{order:0}
+html body .wrap[data-page="report"] .fbar .fgrp .frng{width:84px}

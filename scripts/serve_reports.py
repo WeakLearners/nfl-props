@@ -2167,6 +2167,30 @@ CARD_JS = """<script>
     var cl=c.querySelector(".cmp-line"), fr=c.querySelector(".fig-row");
     if(cl&&fr&&c.dataset.line){ var px=cl.querySelector(".px"); cl.textContent="o"+c.dataset.line; if(px) cl.appendChild(px); fr.appendChild(cl); }
     var z=c.querySelector(".cmp-z"); if(z){ c.title=z.textContent; z.remove(); }
+    // Identity line: swatch, role, rank, opponent. Name row keeps only the name and the star.
+    var idn=c.querySelector(".card-id"), idl=document.createElement("div"); idl.className="pc-idl";
+    [].slice.call(idn.children).forEach(function(k){ if(!k.classList.contains("name")&&!k.classList.contains("mk-star")) idl.appendChild(k); });
+    var mt=c.querySelector(".matchup"), mtx=mt?mt.textContent:"", mm=mtx.match(/vs (\w+) (\d+\w\w of 32) vs (\w+)/);
+    if(mm){ var v=document.createElement("span"); v.className="pc-vs"; v.textContent="vs "+mm[1]; idl.appendChild(v); }
+    idn.insertAdjacentElement("afterend",idl);
+    // Hero captions.
+    if(fr){
+      var kids=[].slice.call(fr.children), fg=fr.querySelector(".fig"), ln=fr.querySelector(".cmp-line");
+      var rest=kids.filter(function(k){return k!==fg&&k!==ln;});
+      function cap(t,els){ var d=document.createElement("div"); d.className="hero-c"; els.forEach(function(e){d.appendChild(e);}); var sm=document.createElement("small"); sm.textContent=t; d.appendChild(sm); return d; }
+      fr.textContent="";
+      if(fg) fr.appendChild(cap("Projection",[fg]));
+      if(rest.length) fr.appendChild(cap("Actual",rest));
+      if(ln) fr.appendChild(cap("Line",[ln]));
+    }
+    // Footer: model, book and opponent rank on one line. Full text goes to the hover.
+    var cmp=c.querySelector(".cmp"), foot=document.createElement("div"); foot.className="pc-foot";
+    if(cmp) foot.appendChild(cmp);
+    if(mt){ if(mm){ mt.title=mtx.trim(); mt.textContent=mm[1]+" "+mm[2]+" vs "+mm[3]; } foot.appendChild(mt); }
+    c.appendChild(foot);
+    // One-line TD chip.
+    var tb=c.querySelector(".td-badge"), tp=c.querySelector(".td-phase3");
+    if(tb&&tp){ tb.textContent="TD "+tp.textContent; tp.remove(); }
     one.appendChild(c);
   });
   [].slice.call(sec.children).forEach(function(n){ if(n!==one) n.remove(); });
