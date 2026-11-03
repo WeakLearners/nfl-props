@@ -600,3 +600,9 @@ html body .wrap[data-page="report"] .one-grid .pc-foot .matchup{margin:0; color:
 html body .wrap[data-page="report"] .one-grid .pc-foot .matchup .dot{display:none}
 html body .wrap[data-page="report"] .one-grid .card .cmp,html body .wrap[data-page="report"] .one-grid .card .matchup{order:0}
 html body .wrap[data-page="report"] .fbar .fgrp .frng{width:84px}
+
+/* Header order: away name, score, at, score, home name. Dividers sit on the inner side. */
+html body .wrap[data-page="report"] h1 .gh-side{display:inline-flex; align-items:center; gap:var(--s3); white-space:nowrap}
+html body .wrap[data-page="report"] h1 .gh-side.ga .gh-sc{border-left:2px solid var(--line); border-right:0; padding:0 0 0 var(--s3); margin:0}
+html body .wrap[data-page="report"] h1 .gh-side.gb .gh-sc{border-right:2px solid var(--line); border-left:0; padding:0 var(--s3) 0 0; margin:0}
+html body .wrap[data-page="report"] h1 .gh-side .gh-sc.w{border-color:var(--accent)}

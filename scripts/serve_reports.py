@@ -2153,6 +2153,7 @@ def report_fixes(html, has_hist, has_acts, tr):
 # per-market sections. Serve time only: the report files on disk keep their own layout.
 CARD_JS = """<script>
 (function(){
+  var h1=document.querySelector("header h1"), tb0=h1&&h1.querySelector(".trk.b"); if(tb0) h1.appendChild(tb0);
   var sec=document.getElementById("sections"); if(!sec||!sec.querySelector(".card")) return;
   var label={}, order=[], cur=null;
   [].slice.call(sec.children).forEach(function(n){
@@ -2356,8 +2357,8 @@ class Handler(SimpleHTTPRequestHandler):
                         if g0.get("home_score") is not None and g0.get("away_score") is not None:
                             aw, hw = int(g0["away_score"]), int(g0["home_score"])
                             html = re.sub(r'(<h1>)([^<]+?) (<span class="at">at</span>) ([^<]+)(</h1>)',
-                                          lambda mm: (f'{mm.group(1)}{mm.group(2)} <span class="gh-sc{" w" if aw > hw else ""}">{aw}</span> '
-                                                      f'{mm.group(3)} {mm.group(4)} <span class="gh-sc{" w" if hw > aw else ""}">{hw}</span>{mm.group(5)}'),
+                                          lambda mm: (f'{mm.group(1)}<span class="gh-side ga">{mm.group(2)} <span class="gh-sc{" w" if aw > hw else ""}">{aw}</span></span> '
+                                                      f'{mm.group(3)} <span class="gh-side gb"><span class="gh-sc{" w" if hw > aw else ""}">{hw}</span> {mm.group(4)}</span>{mm.group(5)}'),
                                           html, 1)
                 except Exception as e:  # noqa: BLE001 -- the report works without game lines
                     sys.stderr.write(f"game lines section skipped: {e}\n")
