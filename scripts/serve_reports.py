@@ -2153,7 +2153,13 @@ def report_fixes(html, has_hist, has_acts, tr):
 # per-market sections. Serve time only: the report files on disk keep their own layout.
 CARD_JS = """<script>
 (function(){
-  var h1=document.querySelector("header h1"), tb0=h1&&h1.querySelector(".trk.b"); if(tb0) h1.appendChild(tb0);
+  var h1=document.querySelector("header h1");
+  if(h1){
+    var ta=h1.querySelector(".trk.a"), tb0=h1.querySelector(".trk.b"), ga=h1.querySelector(".gh-side.ga"), gb=h1.querySelector(".gh-side.gb"), at=h1.querySelector(".at");
+    if(ta&&ga) ga.insertBefore(ta,ga.firstChild);
+    if(tb0&&gb){ var sc=gb.querySelector(".gh-sc"); gb.insertBefore(tb0, sc?sc.nextSibling:gb.firstChild); }
+    if(at) at.textContent="@";
+  }
   var sec=document.getElementById("sections"); if(!sec||!sec.querySelector(".card")) return;
   var label={}, order=[], cur=null;
   [].slice.call(sec.children).forEach(function(n){
@@ -2369,10 +2375,10 @@ class Handler(SimpleHTTPRequestHandler):
                 la, lb = team_logo(m.group(3)), team_logo(m.group(4))
                 if 'class="gh-side ga"' in html:
                     html = html.replace('<span class="gh-side ga">', '<span class="gh-side ga">' + la, 1)
-                    html = re.sub(r'(<span class="gh-side gb">.*?)(</span></h1>)', lambda mm: mm.group(1) + lb + mm.group(2), html, 1, flags=re.S)
+                    html = re.sub(r'(<span class="gh-side gb"><span class="gh-sc[^>]*>\d+</span> )', lambda mm: mm.group(1) + lb, html, 1)
                 else:
                     html = re.sub(r'(<h1>)([^<]+?) (<span class="at">at</span>) ([^<]+)(</h1>)',
-                                  lambda mm: f'{mm.group(1)}<span class="gh-side ga">{la}{mm.group(2)}</span> {mm.group(3)} <span class="gh-side gb">{mm.group(4)}{lb}</span>{mm.group(5)}', html, 1)
+                                  lambda mm: f'{mm.group(1)}<span class="gh-side ga">{la}{mm.group(2)}</span> {mm.group(3)} <span class="gh-side gb">{lb}{mm.group(4)}</span>{mm.group(5)}', html, 1)
                 html = report_fixes(html, bool(hist), bool(acts), {"a": (tr or {}).get(m.group(3)), "b": (tr or {}).get(m.group(4))})
                 html += "\n" + CARD_JS + "\n" + TRAY_HTML  # player tray: after the report script, which defines DATA
         body = (with_theme(html) +
