@@ -6,7 +6,7 @@
   <key>ProgramArguments</key>
   <array>
     <string>/bin/sh</string><string>-c</string>
-    <string>/Users/Sean/Code/nfl-props/.venv/bin/python /Users/Sean/Code/nfl-props/scripts/grade_game.py --no-refresh; /Users/Sean/Code/nfl-props/.venv/bin/python /Users/Sean/Code/nfl-props/scripts/grade_week.py</string>
+    <string>/Users/Sean/Code/nfl-props/scripts/run_week.sh</string>
   </array>
   <key>WorkingDirectory</key><string>/Users/Sean/Code/nfl-props</string>
   <!-- Tuesday 09:00. Monday night finishes near midnight and Pro Football

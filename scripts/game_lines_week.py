@@ -84,6 +84,8 @@ def _rows(df, sd_m, sd_t, train_through, reconstructed, windows):
             "mu_home": round(r.mu_home, 2), "mu_away": round(r.mu_away, 2),
             "pred_margin": round(r.pred_margin, 2), "pred_total": round(r.pred_total, 2),
             "p_home": round(float(G.win_prob(r.pred_margin, sd_m)), 4),
+            "wx_used": {"source": r.w_src, "forecast_pulled_at": r.w_pulled,
+                        "heavy_rain_flag": int(r.w_heavy)},
             "home_qb": r.home_qb_name, "away_qb": r.away_qb_name,
             "home_qb_out": int(r.home_qb_out), "away_qb_out": int(r.away_qb_out),
             "spread_at_freeze": None if pd.isna(r.spread_line) else float(r.spread_line),

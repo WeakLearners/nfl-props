@@ -92,4 +92,4 @@ COVERAGE_TARGET = WINDOW_RECORD   # old name, kept for the first version of the 
 
 # Game lines, paper "value" picks: the model's win chance must beat the de-vigged moneyline chance by at
 # least this much for the game to count as a value pick. Entertainment only; 1 unit flat at closing odds.
-VALUE_MARGIN = 0.05
+VALUE_MARGIN = 0.10   # 0.05 through game-lines model v3; 0.10 from v4 (Sean, 2026-11-02)

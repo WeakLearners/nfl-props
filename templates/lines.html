@@ -109,7 +109,9 @@
   }
   function wxNote(w) {
     var fc = w.games.filter(function (g) { return g.wx && g.wx.kind === "forecast"; });
-    if (fc.length) return " Kickoff weather is a forecast pulled " + fc[0].wx.pulled_at + "; it moves until the game. The model uses only a heavy-rain flag (1 mm/h or more).";
+    var used = w.games.map(function (g) { return g.wx_used && g.wx_used.forecast_pulled_at; }).filter(Boolean).sort();
+    var usedTxt = used.length ? " The frozen prediction used forecasts pulled " + (used[0] === used[used.length - 1] ? used[0] : used[0] + " to " + used[used.length - 1]) + "; a later pull is shown here but never changes the frozen numbers." : "";
+    if (fc.length) return " Kickoff weather shown is the forecast pulled " + fc[0].wx.pulled_at + "; it moves until the game. The model uses only a heavy-rain flag (1 mm/h or more)." + usedTxt;
     return " Kickoff weather is the measured value.";
   }
   function drawGames() {

@@ -41,7 +41,7 @@ SHIPPING = ROOT / "data" / "shipping"
 STATS = ["targets", "carries", "receiving_yards", "rushing_yards", "passing_yards"]
 
 
-def phase3_vol(season, week, weather=None):
+def phase3_vol(season, week, weather="cache"):
     """P3 projection per rostered player for each shipped vol/yards stat.
     Empty frame (not an error) if artifacts are missing -- same convention
     as scripts/td/write_markers.py's phase3_combined()."""

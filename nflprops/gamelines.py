@@ -20,7 +20,7 @@ QB_WINDOW = 8        # the usual starter = most common starter in the last 8 gam
 QB_MIN_STARTS = 3    # fewer starts than this and the team has no usual starter
 
 # Chosen on 2024-2025 out-of-fold games (scripts/fit_game_lines.py), never on 2026.
-MODEL_VERSION = "v3-heavy-rain-windows"   # bump when PARAMS or the model code change; frozen files are kept per version
+MODEL_VERSION = "v4-value-10"   # bump when PARAMS or the model code change; frozen files are kept per version
 PARAMS = {"alpha": 10.0, "half_life": 20.0, "qb": True, "rest": False, "wx": ("heavy",)}
 
 
@@ -65,6 +65,7 @@ def _weather_cols(g, use_forecast=None):
     w = W.load()[["game_id", "applies", "temp_f", "wind_mph", "precip_mm"]]
     g = g.merge(w, on="game_id", how="left")
     g["w_src"] = np.where(g["temp_f"].notna(), "measured", "none")
+    g["w_pulled"] = None
     if use_forecast:
         fc = W.forecasts_made()
         g = g.merge(fc, on="game_id", how="left")
@@ -73,6 +74,7 @@ def _weather_cols(g, use_forecast=None):
         g.loc[has, "wind_mph"] = g.loc[has, "fc_wind_mph"]
         g.loc[has, "temp_f"] = g.loc[has, "fc_temp_f"]
         g.loc[has, "w_src"] = "forecast"
+        g["w_pulled"] = np.where(has, g["fc_pulled_at"], None)
     ok = g["temp_f"].notna()
     g["w_wind"] = np.where(ok, (g["wind_mph"] - 10).clip(lower=0) / 10, 0.0)
     g["w_rain"] = np.where(ok, g["precip_mm"].clip(upper=3), 0.0)

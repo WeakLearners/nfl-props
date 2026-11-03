@@ -16,7 +16,14 @@ LOG="$ROOT/logs/weather-fetch.log"
 
 echo "=== $(date -u '+%Y-%m-%d %H:%M:%S') UTC ===" >> "$LOG"
 "$PY" "$ROOT/scripts/build_game_spine.py" >> "$LOG" 2>&1 || echo "SPINE REBUILD FAILED" >> "$LOG"
-"$PY" "$ROOT/scripts/fetch_weather.py" forecast >> "$LOG" 2>&1 || echo "FORECAST FETCH FAILED" >> "$LOG"
+# One weather source since 2026-11-02: the Open-Meteo cache (nflprops/weather.py). The old
+# fetch_weather.py forecast step is retired. Every hour: forecasts for games within 6 hours.
+# Thursday 12:00, Saturday 12:00 and Sunday 08:00 (local): a full pull for the coming week.
+"$PY" "$ROOT/scripts/fetch_game_weather.py" --near >> "$LOG" 2>&1 || echo "NEAR FETCH FAILED" >> "$LOG"
+DOW=$(date +%u); HR=$(date +%H)
+if { [ "$DOW" = 4 ] && [ "$HR" = 12 ]; } || { [ "$DOW" = 6 ] && [ "$HR" = 12 ]; } || { [ "$DOW" = 7 ] && [ "$HR" = 08 ]; }; then
+  "$PY" "$ROOT/scripts/fetch_game_weather.py" >> "$LOG" 2>&1 || echo "FULL FETCH FAILED" >> "$LOG"
+fi
 
 # keep the log from growing without bound
 tail -n 2000 "$LOG" > "$LOG.tmp" && mv "$LOG.tmp" "$LOG"
