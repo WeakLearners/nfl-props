@@ -1237,6 +1237,7 @@ def slate_html():
 # ------------------------------------------------------------- explore page
 
 EXPLORE_TPL = os.path.join(BASE, "templates", "explore.html")
+LINES_TPL = os.path.join(BASE, "templates", "lines.html")
 # Only what the page groups or prints. The report blob carries the model's
 # whole distribution per leg; none of it is needed to count hits.
 # "app" is report.py's own DEF_WEIGHT(stat) > 0 flag -- whether the opponent
@@ -1473,6 +1474,15 @@ def explore_html():
     body = open(EXPLORE_TPL, encoding="utf-8").read()
     return (head.replace(CHARSET, CHARSET + f"\n<script>window.__EXPLORE__={blob};</script>", 1)
             + body)
+
+
+def lines_page_html():
+    """Game Lines: spread, total and win probability. Its own page, never pooled with props."""
+    from nflprops.gamelines_view import lines_blob
+    blob = json.dumps(lines_blob()).replace("</", "<\\/")
+    head = HEAD.replace("NFL Props \u2014 reports", "NFL Props \u00b7 Game lines").format()
+    body = open(LINES_TPL, encoding="utf-8").read()
+    return head.replace(CHARSET, CHARSET + f"\n<script>window.__LINES__={blob};</script>", 1) + body
 
 
 # ------------------------------------------------------------- theme toggle
@@ -1821,7 +1831,8 @@ CHROME_CSS = """<style>
 SECTIONS = (("week", "Week", "/", "site-nav-week"),
             ("players", "Players", "/rankings.html", "site-nav-players"),
             ("trends", "Trends", "/trends.html", "site-nav-trends"),
-            ("results", "Results", "/explore", "site-nav-results"))
+            ("results", "Results", "/explore", "site-nav-results"),
+            ("lines", "Game lines", "/lines", "site-nav-lines"))
 SUBPAGES = {"week": (("games", "Games", "/", "site-subnav-games"),
                      ("slate", "Slate", "/slate", "site-subnav-slate")),
             "players": (("rankings", "Rankings", "/rankings.html", "site-subnav-rankings"),)}
@@ -2236,6 +2247,13 @@ class Handler(SimpleHTTPRequestHandler):
             # Built per request from the reports on disk and the results in
             # the database, like the slate. Nothing is stored for it.
             html = with_chrome(explore_html(), "results", None, "NFL Props \u00b7 Results")
+            body = (with_theme(html) + '\n<script src="/_inspector.js"></script>\n').encode()
+            self._send(body, "text/html; charset=utf-8")
+            return
+
+        if path in ("/lines", "/lines/", "/lines.html"):
+            # Built per request from frozen predictions and the schedules table.
+            html = with_chrome(lines_page_html(), "lines", None, "NFL Props \u00b7 Game lines")
             body = (with_theme(html) + '\n<script src="/_inspector.js"></script>\n').encode()
             self._send(body, "text/html; charset=utf-8")
             return

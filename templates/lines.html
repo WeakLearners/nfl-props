@@ -1,0 +1,145 @@
+  /* Game lines: one week of games in a table, then the season record.
+     Same tokens and type as the other pages. Spreads are written for the
+     home team: BAL +10.0 means BAL is the underdog by 10. */
+  h2{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:24px;
+    text-transform:uppercase; letter-spacing:.02em; margin:36px 0 8px}
+  .controls{display:flex; flex-wrap:wrap; gap:14px 22px; margin:18px 0 0}
+  .ctl{display:flex; flex-direction:column; gap:5px}
+  .ctl label{font-family:"IBM Plex Mono",monospace; font-size:10px;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3)}
+  .ctl select{background:var(--surface); color:var(--ink); border:1px solid var(--line);
+    border-radius:3px; padding:6px 10px; font:500 14px/1.2 "Public Sans",sans-serif}
+  .tablewrap{overflow-x:auto; margin-top:12px}
+  table.gl{border-collapse:collapse; width:100%; font-size:14px}
+  table.gl th,table.gl td{padding:7px 10px; text-align:left; white-space:nowrap;
+    border-bottom:1px solid var(--line-soft)}
+  table.gl th{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--ink-3); font-weight:500; border-bottom:1px solid var(--ink)}
+  table.gl td.num,table.gl th.num{text-align:right; font-family:"IBM Plex Mono",monospace;
+    font-variant-numeric:tabular-nums}
+  table.gl td.gm{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:19px}
+  table.gl td.gm .qb{font-family:"IBM Plex Mono",monospace; font-weight:400; font-size:10px;
+    color:var(--bad); letter-spacing:.04em; margin-left:6px}
+  table.gl td.dim{color:var(--ink-3)}
+  table.gl tr.grp td{border-bottom:0; padding-top:18px; font-family:"IBM Plex Mono",monospace;
+    font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3)}
+  .pill{display:inline-flex; align-items:center; height:18px; padding:0 6px; border-radius:2px;
+    font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600; letter-spacing:.04em;
+    color:var(--surface)}
+  .pill.good{background:var(--good)} .pill.bad{background:var(--bad)}
+  .pill.push{background:none; color:var(--ink-3); border:1px dashed var(--line)}
+  .best{color:var(--good)} .worst{color:var(--bad)}
+  .note{color:var(--ink-2); font-size:13.5px; margin:8px 0 0; max-width:96ch}
+  footer{margin-top:44px; padding-top:16px; border-top:1px solid var(--line);
+    color:var(--ink-3); font-size:12.5px; max-width:96ch}
+</style>
+<div class="wrap" data-inspect-id="lines-wrap">
+  <header>
+    <p class="eyebrow" data-inspect-id="lines-eyebrow">Spread, total and win chance</p>
+    <h1 data-inspect-id="lines-title">Game lines</h1>
+  </header>
+  <p class="note" data-inspect-id="lines-disclaimer"><strong>Entertainment only.</strong>
+    This model does not beat the closing line, and nothing here claims an edge. It is kept apart
+    from the player props and the touchdown picks on purpose.</p>
+  <div class="controls" data-inspect-id="lines-controls">
+    <div class="ctl"><label for="wk">Week</label>
+      <select id="wk" data-inspect-id="lines-week-select"></select></div>
+  </div>
+  <p class="note" id="wk-note" data-inspect-id="lines-week-note"></p>
+  <h2 data-inspect-id="lines-games-heading">Predictions</h2>
+  <div class="tablewrap" data-inspect-id="lines-games-table"><table class="gl" id="games"></table></div>
+  <h2 data-inspect-id="lines-record-heading">Record against the closing line</h2>
+  <p class="note" id="rec-note" data-inspect-id="lines-record-note"></p>
+  <div class="tablewrap" data-inspect-id="lines-record-table"><table class="gl" id="record"></table></div>
+  <footer data-inspect-id="lines-footer">Each week's predictions are frozen the first time they
+    are made and are never rewritten by a later refit. The spread is the model's margin for the
+    home team. A lean is the side the model prefers against the current line; it is a record,
+    not a pick. Win chance comes from the margin and the model's own error spread. The market
+    win chance is the moneyline with the book's margin removed.</footer>
+</div>
+<script>
+(function () {
+  var D = window.__LINES__ || {weeks: {}, backtest: null};
+  var weeks = Object.keys(D.weeks).map(Number).sort(function (a, b) { return b - a; });
+  var sel = document.getElementById("wk");
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;"}[c]; }); }
+  function f1(x) { return x == null ? "&ndash;" : (Math.round(x * 10) / 10).toFixed(1); }
+  function pct(x) { return x == null ? "&ndash;" : (x * 100).toFixed(0) + "%"; }
+  // spread written for the home team: margin m (home points minus away) -> "BAL -3.5" / "BAL +3.5"
+  function sp(team, m) { return m == null ? "&ndash;" : esc(team) + " " + (m > 0 ? "-" : "+") + Math.abs(m).toFixed(1); }
+  function devig(h, a) {
+    if (h == null || a == null) return null;
+    function imp(o) { return o < 0 ? -o / (-o + 100) : 100 / (o + 100); }
+    return imp(h) / (imp(h) + imp(a));
+  }
+  function pill(r) { return r === 0 ? '<span class="pill push">PUSH</span>' : '<span class="pill ' + (r > 0 ? "good" : "bad") + '">' + (r > 0 ? "HIT" : "MISS") + "</span>"; }
+
+  sel.innerHTML = weeks.map(function (w) { return '<option value="' + w + '">Week ' + w + (w === D.currentWeek ? " (this week)" : "") + "</option>"; }).join("");
+  sel.value = D.currentWeek;
+  sel.onchange = drawGames;
+
+  function drawGames() {
+    var w = D.weeks[sel.value], t = document.getElementById("games");
+    document.getElementById("wk-note").textContent = w
+      ? "Fit on games through " + w.train_through + ". Margin spread " + w.sd_margin.toFixed(1) + " points, total spread " + w.sd_total.toFixed(1) + "."
+        + " Scores are rounded to whole points, so a score margin or total can differ from the spread or total beside it by up to 1 point. Hover a score for the unrounded numbers."
+        + (w.reconstructed ? " This week was played before the page existed, so it was rebuilt with the same rule, using only games before it." : "")
+      : "";
+    if (!w) { t.innerHTML = ""; return; }
+    var h = "<thead><tr><th>Game</th><th class='num'>Model score</th><th class='num'>Model spread</th><th class='num'>Line</th><th class='num'>Model total</th><th class='num'>Line</th>" +
+      "<th class='num'>Home win: model</th><th class='num'>Market</th><th>Spread lean</th><th>Total lean</th><th class='num'>Final</th><th>Spread</th><th>Total</th></tr></thead><tbody>";
+    var lastDay = null;
+    w.games.forEach(function (g) {
+      if (g.gameday !== lastDay) { lastDay = g.gameday; h += '<tr class="grp"><td colspan="13">' + esc(g.gameday) + "</td></tr>"; }
+      var played = g.home_score != null && g.away_score != null;
+      var margin = played ? g.home_score - g.away_score : null, total = played ? g.home_score + g.away_score : null;
+      var line = g.spread_line == null ? null : g.spread_line;      // home margin the book expects
+      var side = line == null ? null : g.pred_margin - line;
+      var lean = side == null || side === 0 ? "&ndash;" : (side > 0 ? sp(g.home, line) : sp(g.away, -line));
+      var tl = g.total_line, ts = tl == null ? null : g.pred_total - tl;
+      var tlean = ts == null || ts === 0 ? "&ndash;" : (ts > 0 ? "Over " : "Under ") + tl.toFixed(1);
+      var sres = "", tres = "";
+      if (played && side != null && side !== 0) sres = pill((margin - line === 0) ? 0 : ((margin - line > 0) === (side > 0) ? 1 : -1));
+      if (played && ts != null && ts !== 0) tres = pill((total - tl === 0) ? 0 : ((total - tl > 0) === (ts > 0) ? 1 : -1));
+      var q = (g.home_qb_out ? '<span class="qb">' + esc(g.home) + " QB out</span>" : "") + (g.away_qb_out ? '<span class="qb">' + esc(g.away) + " QB out</span>" : "");
+      h += "<tr><td class='gm'>" + esc(g.away) + " @ " + esc(g.home) + q + "</td>" +
+        "<td class='num' title='" + esc(g.away) + " " + g.mu_away.toFixed(1) + " &ndash; " + esc(g.home) + " " + g.mu_home.toFixed(1) + "'>" + esc(g.away) + " " + Math.round(g.mu_away) + "&ndash;" + esc(g.home) + " " + Math.round(g.mu_home) + "</td>" +
+        "<td class='num'>" + sp(g.home, g.pred_margin) + "</td><td class='num dim'>" + sp(g.home, line) + "</td>" +
+        "<td class='num'>" + f1(g.pred_total) + "</td><td class='num dim'>" + f1(tl) + "</td>" +
+        "<td class='num'>" + pct(g.p_home) + "</td><td class='num dim'>" + pct(devig(g.home_moneyline, g.away_moneyline)) + "</td>" +
+        "<td>" + lean + "</td><td>" + tlean + "</td>" +
+        "<td class='num'>" + (played ? g.away_score + "&ndash;" + g.home_score : "") + "</td><td>" + sres + "</td><td>" + tres + "</td></tr>";
+    });
+    t.innerHTML = h + "</tbody>";
+  }
+
+  function drawRecord() {
+    var b = D.backtest, t = document.getElementById("record");
+    if (!b) { t.innerHTML = ""; return; }
+    var by = {};
+    b.weeks.forEach(function (r) { (by[r.week] = by[r.week] || {})[r.model] = r; });
+    var wk = Object.keys(by).map(Number).sort(function (a, b) { return a - b; });
+    document.getElementById("rec-note").innerHTML =
+      "Weeks 1&ndash;" + wk[wk.length - 1] + ", " + b.season + ". <b>Adjust</b> refits each week on every game played so far. " +
+      "<b>No adjust</b> is one fit on seasons before " + b.season + ", used for every week. Error is the average miss in points (team score error is the miss for each team's own points; the line's score comes from its spread and total); lower is better. " +
+      "Brier scores the win chance; lower is better.";
+    var h = "<thead><tr><th>Week</th><th class='num'>Games</th><th class='num'>Margin error: line</th><th class='num'>Adjust</th><th class='num'>No adjust</th>" +
+      "<th class='num'>Total error: line</th><th class='num'>Adjust</th><th class='num'>No adjust</th><th class='num'>Spread hit: adjust</th><th class='num'>No adjust</th>" +
+      "<th class='num'>Total hit: adjust</th><th class='num'>No adjust</th><th class='num'>Team score error: line</th><th class='num'>Adjust</th><th class='num'>No adjust</th><th class='num'>Brier: market</th><th class='num'>Adjust</th><th class='num'>No adjust</th></tr></thead><tbody>";
+    function row(label, a, n, bl) {
+      var hit = function (m, k, kn) { return m && m[kn] ? (m[k] * 100).toFixed(0) + "% (" + Math.round(m[k] * m[kn]) + "/" + m[kn] + ")" : "&ndash;"; };
+      return "<tr><td>" + label + "</td><td class='num'>" + a.n + "</td>" +
+        "<td class='num dim'>" + f1(a.mae_margin_line) + "</td><td class='num'>" + f1(a.mae_margin_model) + "</td><td class='num'>" + f1(n.mae_margin_model) + "</td>" +
+        "<td class='num dim'>" + f1(a.mae_total_line) + "</td><td class='num'>" + f1(a.mae_total_model) + "</td><td class='num'>" + f1(n.mae_total_model) + "</td>" +
+        "<td class='num'>" + hit(a, "ats_hit", "ats_n") + "</td><td class='num'>" + hit(n, "ats_hit", "ats_n") + "</td>" +
+        "<td class='num'>" + hit(a, "ou_hit", "ou_n") + "</td><td class='num'>" + hit(n, "ou_hit", "ou_n") + "</td>" +
+        "<td class='num dim'>" + f1(a.mae_score_line) + "</td><td class='num'>" + f1(a.mae_score_model) + "</td><td class='num'>" + f1(n.mae_score_model) + "</td>" +
+        "<td class='num dim'>" + (a.brier_market == null ? "&ndash;" : a.brier_market.toFixed(3)) + "</td><td class='num'>" + a.brier_model.toFixed(3) + "</td><td class='num'>" + n.brier_model.toFixed(3) + "</td></tr>";
+    }
+    wk.forEach(function (w) { if (by[w].adjust && by[w].no_adjust) h += row("Week " + w, by[w].adjust, by[w].no_adjust); });
+    h += row("<b>Season</b>", b.cumulative.adjust, b.cumulative.no_adjust);
+    t.innerHTML = h + "</tbody>";
+  }
+  drawGames(); drawRecord();
+})();
+</script>

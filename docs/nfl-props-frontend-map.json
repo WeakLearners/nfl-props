@@ -2774,7 +2774,7 @@
           "kind": "layout",
           "description": "Two-row header spliced into every page by with_chrome(): brand and three sections on row 1, the section's pages and the results stamp on row 2. site_nav() takes this id as a parameter.",
           "locate": {
-            "path": "scripts/serve_reports.py:1850",
+            "path": "scripts/serve_reports.py:1861",
             "grep": "grep -n -F -- 'inspect_id=\"site-nav\"' scripts/serve_reports.py"
           }
         },
@@ -2784,7 +2784,7 @@
           "kind": "link",
           "description": "'NFL Props', links to /.",
           "locate": {
-            "path": "scripts/serve_reports.py:1862",
+            "path": "scripts/serve_reports.py:1873",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-nav-brand\"' scripts/serve_reports.py"
           }
         },
@@ -2794,7 +2794,7 @@
           "kind": "link",
           "description": "Week section (Games and Slate). Active on /, /slate and every report.",
           "locate": {
-            "path": "scripts/serve_reports.py:1821",
+            "path": "scripts/serve_reports.py:1831",
             "grep": "grep -n -F -- '\"site-nav-week\"' scripts/serve_reports.py"
           }
         },
@@ -2804,7 +2804,7 @@
           "kind": "link",
           "description": "Players section (Rankings and Trends).",
           "locate": {
-            "path": "scripts/serve_reports.py:1822",
+            "path": "scripts/serve_reports.py:1832",
             "grep": "grep -n -F -- '\"site-nav-players\"' scripts/serve_reports.py"
           }
         },
@@ -2814,8 +2814,18 @@
           "kind": "link",
           "description": "Results section, /explore.",
           "locate": {
-            "path": "scripts/serve_reports.py:1824",
+            "path": "scripts/serve_reports.py:1834",
             "grep": "grep -n -F -- '\"site-nav-results\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "site-nav-lines",
+          "label": "Game lines section link",
+          "kind": "link",
+          "description": "Game lines section, /lines.",
+          "locate": {
+            "path": "scripts/serve_reports.py:1835",
+            "grep": "grep -n -F -- '\"site-nav-lines\"' scripts/serve_reports.py"
           }
         },
         {
@@ -2824,7 +2834,7 @@
           "kind": "layout",
           "description": "Pages of the current section, separated by a dot. Empty for Results.",
           "locate": {
-            "path": "scripts/serve_reports.py:1864",
+            "path": "scripts/serve_reports.py:1875",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-subnav\"' scripts/serve_reports.py"
           }
         },
@@ -2834,7 +2844,7 @@
           "kind": "link",
           "description": "Games, / . Current on the home page only.",
           "locate": {
-            "path": "scripts/serve_reports.py:1825",
+            "path": "scripts/serve_reports.py:1836",
             "grep": "grep -n -F -- '\"site-subnav-games\"' scripts/serve_reports.py"
           }
         },
@@ -2844,7 +2854,7 @@
           "kind": "link",
           "description": "Slate, /slate.",
           "locate": {
-            "path": "scripts/serve_reports.py:1826",
+            "path": "scripts/serve_reports.py:1837",
             "grep": "grep -n -F -- '\"site-subnav-slate\"' scripts/serve_reports.py"
           }
         },
@@ -2854,7 +2864,7 @@
           "kind": "link",
           "description": "Rankings, /rankings.html.",
           "locate": {
-            "path": "scripts/serve_reports.py:1827",
+            "path": "scripts/serve_reports.py:1838",
             "grep": "grep -n -F -- '\"site-subnav-rankings\"' scripts/serve_reports.py"
           }
         },
@@ -2864,7 +2874,7 @@
           "kind": "link",
           "description": "Top-bar section Trends, /trends.html. Moved out of the Players row on 2026-10-04.",
           "locate": {
-            "path": "scripts/serve_reports.py:1823",
+            "path": "scripts/serve_reports.py:1833",
             "grep": "grep -n -F -- '\"site-nav-trends\"' scripts/serve_reports.py"
           }
         },
@@ -2874,7 +2884,7 @@
           "kind": "text",
           "description": "How far the season's results go, 'Wk 4 · 2/16 final'. From results_stamp(), one read-only query per request. Empty if the query fails.",
           "locate": {
-            "path": "scripts/serve_reports.py:1865",
+            "path": "scripts/serve_reports.py:1876",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-stamp\"' scripts/serve_reports.py"
           }
         },
@@ -2884,8 +2894,147 @@
           "kind": "text",
           "description": "One-line standing disclaimer spliced after every page by with_chrome().",
           "locate": {
-            "path": "scripts/serve_reports.py:2008",
+            "path": "scripts/serve_reports.py:2019",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-footer\"' scripts/serve_reports.py"
+          }
+        }
+      ]
+    },
+    {
+      "id": "lines-page",
+      "label": "Game lines",
+      "category": "generated-page",
+      "file": "templates/lines.html",
+      "description": "Spread, total and home win chance for each game, from nflprops/gamelines.py. Built per request by lines_page_html() in scripts/serve_reports.py from the frozen weekly predictions (data/gamelines/frozen/) joined to live lines and scores, and from data/gamelines/backtest_2026.json. Served at /lines. A separate section on purpose: game lines are never pooled with props or TD picks. Entertainment only.",
+      "uiElements": [
+        {
+          "id": "lines-wrap",
+          "label": "Page container",
+          "kind": "layout",
+          "description": "Full-width column (LAYOUT_CSS) that holds the Game lines page.",
+          "locate": {
+            "path": "templates/lines.html:36",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-wrap\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-eyebrow",
+          "label": "Eyebrow",
+          "kind": "text",
+          "description": "Small line above the title.",
+          "locate": {
+            "path": "templates/lines.html:38",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-eyebrow\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-title",
+          "label": "Title",
+          "kind": "text",
+          "description": "Page title, Game lines.",
+          "locate": {
+            "path": "templates/lines.html:39",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-title\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-disclaimer",
+          "label": "Disclaimer",
+          "kind": "text",
+          "description": "Entertainment-only note: the model does not beat the closing line, and game lines are kept apart from props and TD picks.",
+          "locate": {
+            "path": "templates/lines.html:41",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-disclaimer\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-controls",
+          "label": "Controls row",
+          "kind": "layout",
+          "description": "Holds the week picker.",
+          "locate": {
+            "path": "templates/lines.html:44",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-controls\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-week-select",
+          "label": "Week picker",
+          "kind": "select",
+          "description": "Chooses which frozen week the Predictions table shows. Defaults to the newest week.",
+          "locate": {
+            "path": "templates/lines.html:46",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-week-select\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-week-note",
+          "label": "Week note",
+          "kind": "text",
+          "description": "Fit cutoff and error spreads for the picked week. Says when a week was rebuilt after the fact.",
+          "locate": {
+            "path": "templates/lines.html:48",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-week-note\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-games-heading",
+          "label": "Predictions heading",
+          "kind": "text",
+          "description": "Heading over the games table.",
+          "locate": {
+            "path": "templates/lines.html:49",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-games-heading\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-games-table",
+          "label": "Predictions table",
+          "kind": "table",
+          "description": "One row per game: predicted score for each team (whole points, unrounded on hover), model spread and total next to the book line, home win chance (model and market), the lean on each, and the result with HIT/MISS once final. Drawn by drawGames().",
+          "locate": {
+            "path": "templates/lines.html:50",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-games-table\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-record-heading",
+          "label": "Record heading",
+          "kind": "text",
+          "description": "Heading over the season record table.",
+          "locate": {
+            "path": "templates/lines.html:51",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-record-heading\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-record-note",
+          "label": "Record note",
+          "kind": "text",
+          "description": "Explains Adjust (weekly refit) against No adjust (one fit before the season) and what lower means.",
+          "locate": {
+            "path": "templates/lines.html:52",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-record-note\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-record-table",
+          "label": "Record table",
+          "kind": "table",
+          "description": "Per-week and season rows: margin, total and per-team score error against the closing line, spread and total hit rate, and Brier score, for Adjust and No adjust. Drawn by drawRecord().",
+          "locate": {
+            "path": "templates/lines.html:53",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-record-table\"' templates/lines.html"
+          }
+        },
+        {
+          "id": "lines-footer",
+          "label": "Footer",
+          "kind": "text",
+          "description": "Fine print: predictions freeze once, lean is a record not a pick, how win chance is built.",
+          "locate": {
+            "path": "templates/lines.html:54",
+            "grep": "grep -n -F -- 'data-inspect-id=\"lines-footer\"' templates/lines.html"
           }
         }
       ]
