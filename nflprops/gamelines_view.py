@@ -122,6 +122,12 @@ def _pill(r, cls="score", na_text="N/A"):
     return f'<span class="{cls} {"good" if r > 0 else "bad"}">{"HIT" if r > 0 else "MISS"}</span>'
 
 
+def logo(abbr, cls=""):
+    """Team logo from the local static folder. A missing file becomes a plain square, never a broken image."""
+    return (f'<img class="tlogo {cls}" src="/static/logos/{abbr}.png" alt="" loading="lazy" '
+            "onerror=\"this.replaceWith(Object.assign(document.createElement('i'),{className:'tlogo-sw'}))\">")
+
+
 def card_html(g):
     """Card parts: (final-score line, GAME LINES block). Rows show the bet the pill grades."""
     r = grade(g)
@@ -164,8 +170,8 @@ def card_html(g):
     if r["played"]:
         aw, hw = int(g["away_score"]), int(g["home_score"])
         final = ('<div class="sb" data-inspect-id="index-gl-score">'
-                 f'<span class="t{" w" if aw > hw else ""}">{away}</span><span class="sc{" w" if aw > hw else ""}">{aw}</span>'
-                 f'<span class="t{" w" if hw > aw else ""}">{home}</span><span class="sc{" w" if hw > aw else ""}">{hw}</span></div>')
+                 f'<span class="t{" w" if aw > hw else ""}">{logo(away, "sm")}{away}</span><span class="sc{" w" if aw > hw else ""}">{aw}</span>'
+                 f'<span class="t{" w" if hw > aw else ""}">{logo(home, "sm")}{home}</span><span class="sc{" w" if hw > aw else ""}">{hw}</span></div>')
     else:
         score = row("Model score", f"{_rnd(g['mu_away'])}-{_rnd(g['mu_home'])}", "index-gl-score",
                     "", f"Model score: {away} {_rnd(g['mu_away'])}, {home} {_rnd(g['mu_home'])}.")

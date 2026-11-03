@@ -620,3 +620,10 @@ html body .wrap[data-page="report"] .one-grid .hero-c:nth-child(2) > :first-chil
 html body .wrap[data-page="report"] .one-grid .fig-none{font:500 var(--t-data)/var(--lh-h2) var(--f-mono); color:var(--ink-3)}
 html body .wrap[data-page="report"] .one-grid .card-id .mk-star{order:1}
 html body .wrap[data-page="report"] .one-grid .card-id .pc-caution{order:2}
+
+/* Team logos. Header: as tall as the name line box. Cards: 20px. */
+html body .tlogo,html body .tlogo-sw{display:inline-block; flex:none; height:var(--lh-display); width:var(--lh-display); object-fit:contain}
+html body .tlogo.sm,html body .tlogo-sw.sm{height:20px; width:20px; margin-right:var(--s2); vertical-align:middle}
+html body .tlogo-sw{height:12px; width:12px; border-radius:2px; background:var(--ink-3); align-self:center}
+html body .wrap[data-page="report"] h1 .gh-side{gap:var(--s3)}
+html body .wrap[data-page="games"] .card .sb .t{display:flex; align-items:center}

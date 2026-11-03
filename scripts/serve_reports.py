@@ -2365,6 +2365,14 @@ class Handler(SimpleHTTPRequestHandler):
                                           html, 1)
                 except Exception as e:  # noqa: BLE001 -- the report works without game lines
                     sys.stderr.write(f"game lines section skipped: {e}\n")
+                from nflprops.gamelines_view import logo as team_logo
+                la, lb = team_logo(m.group(3)), team_logo(m.group(4))
+                if 'class="gh-side ga"' in html:
+                    html = html.replace('<span class="gh-side ga">', '<span class="gh-side ga">' + la, 1)
+                    html = re.sub(r'(<span class="gh-side gb">.*?)(</span></h1>)', lambda mm: mm.group(1) + lb + mm.group(2), html, 1, flags=re.S)
+                else:
+                    html = re.sub(r'(<h1>)([^<]+?) (<span class="at">at</span>) ([^<]+)(</h1>)',
+                                  lambda mm: f'{mm.group(1)}<span class="gh-side ga">{la}{mm.group(2)}</span> {mm.group(3)} <span class="gh-side gb">{mm.group(4)}{lb}</span>{mm.group(5)}', html, 1)
                 html = report_fixes(html, bool(hist), bool(acts), {"a": (tr or {}).get(m.group(3)), "b": (tr or {}).get(m.group(4))})
                 html += "\n" + CARD_JS + "\n" + TRAY_HTML  # player tray: after the report script, which defines DATA
         body = (with_theme(html) +
@@ -2374,6 +2382,14 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         # Query string first: everything below matches on the bare path.
         path, _, _query = self.path.partition("?")
+
+        if path.startswith("/static/logos/") and re.fullmatch(r"/static/logos/[A-Z]{2,3}\.png", path):
+            f = os.path.join(BASE, path.lstrip("/"))
+            if os.path.isfile(f):
+                self._send(open(f, "rb").read(), "image/png")
+            else:
+                self.send_error(404)
+            return
 
         if path == "/_inspector.js":
             self._send(open(INSPECTOR, "rb").read(),

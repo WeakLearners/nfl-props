@@ -37,3 +37,6 @@ data/report_state.json
 # Site-wide recommendation marks (server-side state, per machine)
 data/marks.json
 data/.marks-*.tmp
+
+# NFL team logos: trademarked, fetched locally by scripts/fetch_logos.sh, never committed (repo is public)
+static/logos/
