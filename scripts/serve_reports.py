@@ -2149,6 +2149,43 @@ def report_fixes(html, has_hist, has_acts, tr):
     return html[:k + 8] + REPORT_FIX_CSS + html[k + 8:] if k >= 0 else html
 
 
+# One card grid with market tabs, built on the page after the report script has drawn the
+# per-market sections. Serve time only: the report files on disk keep their own layout.
+CARD_JS = """<script>
+(function(){
+  var sec=document.getElementById("sections"); if(!sec||!sec.querySelector(".card")) return;
+  var label={}, order=[], cur=null;
+  [].slice.call(sec.children).forEach(function(n){
+    if(n.tagName==="H2"){ var u=n.querySelector(".unit"); cur=n.textContent.replace(u?u.textContent:"","").trim(); }
+    else if(n.classList.contains("grid")) n.querySelectorAll(".card").forEach(function(c){ c.dataset.mlabel=cur; });
+  });
+  var one=document.createElement("div"); one.className="grid one-grid"; one.dataset.inspectId="stat-grid";
+  var cards=[].slice.call(sec.querySelectorAll(".card"));
+  cards.forEach(function(c){
+    var m=document.createElement("div"); m.className="pc-mkt"; m.textContent=c.dataset.mlabel||""; c.insertBefore(m,c.firstChild);
+    if(order.indexOf(c.dataset.mlabel)<0) order.push(c.dataset.mlabel);
+    var cl=c.querySelector(".cmp-line"), fr=c.querySelector(".fig-row");
+    if(cl&&fr&&c.dataset.line){ var px=cl.querySelector(".px"); cl.textContent="o"+c.dataset.line; if(px) cl.appendChild(px); fr.appendChild(cl); }
+    var z=c.querySelector(".cmp-z"); if(z){ c.title=z.textContent; z.remove(); }
+    one.appendChild(c);
+  });
+  [].slice.call(sec.children).forEach(function(n){ if(n!==one) n.remove(); });
+  var tabs=document.createElement("nav"); tabs.className="seg mkt-tabs"; tabs.setAttribute("aria-label","Market"); tabs.dataset.inspectId="market-tabs";
+  var chips=[], mg=null;
+  document.querySelectorAll("#fbar .fgrp").forEach(function(g){ var k=g.querySelector(".fgrp-k"); if(k&&k.textContent==="Market") mg=g; });
+  if(mg){ chips=[].slice.call(mg.querySelectorAll(".fchip")); mg.hidden=true; }
+  function pressed(){ return chips.filter(function(b){return b.getAttribute("aria-pressed")==="true";}); }
+  function paint(){ var p=pressed(), on=p.length===1?p[0].textContent:""; [].slice.call(tabs.children).forEach(function(t){ t.classList.toggle("on", t.dataset.k===on); }); }
+  function mk(text,k){ var b=document.createElement("button"); b.type="button"; b.textContent=text; b.dataset.k=k;
+    b.addEventListener("click",function(){ chips.forEach(function(c){ var want=k&&c.textContent===k; if((c.getAttribute("aria-pressed")==="true")!==!!want) c.click(); }); paint(); }); tabs.appendChild(b); }
+  mk("All markets","");
+  order.forEach(function(l){ var c=cards.filter(function(x){return x.dataset.mlabel===l;})[0]; if(c) mk(l,String(c.dataset.stat).replace(/_/g," ")); });
+  var sp=document.createElement("div"); sp.hidden=true;
+  sec.appendChild(tabs); sec.appendChild(sp); sec.appendChild(one); paint();
+})();
+</script>"""
+
+
 class Handler(SimpleHTTPRequestHandler):
     # Tailscale Serve proxies in front of this. An HTTP/1.0 server behind a
     # 1.1 proxy is a known way to get a request that never returns, so speak
@@ -2300,7 +2337,7 @@ class Handler(SimpleHTTPRequestHandler):
                 except Exception as e:  # noqa: BLE001 -- the report works without game lines
                     sys.stderr.write(f"game lines section skipped: {e}\n")
                 html = report_fixes(html, bool(hist), bool(acts), {"a": (tr or {}).get(m.group(3)), "b": (tr or {}).get(m.group(4))})
-                html += "\n" + TRAY_HTML  # player tray: after the report script, which defines DATA
+                html += "\n" + CARD_JS + "\n" + TRAY_HTML  # player tray: after the report script, which defines DATA
         body = (with_theme(html) +
                 '\n<script src="/_inspector.js"></script>\n').encode()
         self._send(body, "text/html; charset=utf-8")

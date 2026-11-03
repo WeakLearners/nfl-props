@@ -541,3 +541,35 @@ html body #nfli-btn[data-bar][data-on="1"]{background:var(--accent); color:var(-
 /* Games / Slate beside the page title. */
 html body .wrap[data-page] header{position:relative}
 html body .wrap[data-page] .view-seg{position:absolute; right:0; bottom:var(--s1)}
+
+/* ---- One card grid with market tabs; player card zones (audit 5.3) ---- */
+html body .wrap[data-page="report"] .mkt-tabs{margin:var(--s4) 0 var(--s3)}
+html body .wrap[data-page="report"] .mkt-tabs > button{font:500 var(--t-data)/1 var(--f-body); color:var(--ink-3); background:none; border:0;
+  padding:var(--s2) var(--s3); cursor:pointer; white-space:nowrap}
+html body .wrap[data-page="report"] .mkt-tabs > button.on{background:var(--surface-2); color:var(--ink); box-shadow:inset 0 -2px 0 var(--accent)}
+html body .wrap[data-page="report"] .one-grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:var(--s3); margin-top:0}
+html body .wrap[data-page="report"] .one-grid > .card{display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:var(--s2); row-gap:var(--s2); align-content:start; padding:var(--s4)}
+html body .wrap[data-page="report"] .one-grid > .card > :is(.card-top,.card-main){display:contents}
+html body .wrap[data-page="report"] .one-grid > .card > .pc-mkt{grid-column:1/-1; font:500 var(--t-label)/var(--lh-label) var(--f-body); text-transform:uppercase; letter-spacing:.06em; color:var(--ink-3)}
+html body .wrap[data-page="report"] .one-grid .card-id{grid-column:1; flex-direction:row; flex-wrap:wrap; align-items:center; gap:var(--s1) var(--s2)}
+html body .wrap[data-page="report"] .one-grid .card-flags{grid-column:2; grid-row:2; align-items:flex-end}
+html body .wrap[data-page="report"] .one-grid .fig-row{grid-column:1/-1; display:flex; align-items:baseline; gap:var(--s5)}
+html body .wrap[data-page="report"] .one-grid .fig-row .cmp-line{margin-left:auto; font:500 var(--t-data)/var(--lh-data) var(--f-mono); color:var(--ink)}
+html body .wrap[data-page="report"] .one-grid .card > svg{grid-column:1/-1; order:3}
+html body .wrap[data-page="report"] .one-grid .rng{grid-column:1/-1; order:4; margin:0}
+html body .wrap[data-page="report"] .one-grid .rng::before{content:"50% window "; color:var(--ink-3)}
+html body .wrap[data-page="report"] .one-grid .cmp{grid-column:1/-1; order:5; border-top:1px solid var(--line-soft); padding-top:var(--s3)}
+html body .wrap[data-page="report"] .one-grid .cmp .cmp-sep{display:none}
+html body .wrap[data-page="report"] .one-grid .matchup{grid-column:1/-1; order:6}
+html body .wrap[data-page="report"] .one-grid .matchup .muted-note{display:none}
+html body .wrap[data-page="report"] .one-grid .card > .pc-mkt{order:0}
+html body .wrap[data-page="report"] .one-grid .card .card-id{order:1}
+html body .wrap[data-page="report"] .one-grid .card .card-flags{order:2; grid-row:auto}
+html body .wrap[data-page="report"] .one-grid .card .fig-row{order:3}
+html body .wrap[data-page="report"] .one-grid .card > svg{order:4}
+html body .wrap[data-page="report"] .one-grid .card .rng{order:5}
+html body .wrap[data-page="report"] .one-grid .card .cmp{order:6}
+html body .wrap[data-page="report"] .one-grid .card .matchup{order:7}
+/* Filter bar: compact ranges, one row where width allows. */
+html body .wrap[data-page="report"] .fbar{gap:var(--s2) var(--s4); padding:var(--s3) var(--s4)}
+html body .wrap[data-page="report"] .fbar .fgrp .frng{width:68px}
