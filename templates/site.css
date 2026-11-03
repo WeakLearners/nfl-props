@@ -459,3 +459,8 @@ html body .wrap[data-page] .gap.up{color:var(--ink-2)}
 html body .wrap[data-page="rankings"] .dfn-grid td.num:last-child{padding-right:calc(var(--s2) + 1.1em)}
 /* Game-page range filters: the dash must not touch the inputs. */
 html body .wrap[data-page] .fgrp:not(:has(.fchip)){gap:var(--s1)}
+
+/* Week card props badges: the meter carries the picture, so the badge is plain text. */
+html body .wrap[data-page="games"] .card.graded > .score:not(.na){background:none; padding:0; height:auto; justify-self:end}
+html body .wrap[data-page="games"] .card.graded > .score.good{color:var(--good)}
+html body .wrap[data-page="games"] .card.graded > .score.bad{color:var(--bad)}

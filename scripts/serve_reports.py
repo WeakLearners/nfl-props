@@ -377,6 +377,13 @@ def td_markers():
     return out
 
 
+def card_top(kick, final):
+    """First line of a game card: kickoff day and time, then the state of the game."""
+    when = f"{datetime.strptime(kick, '%Y-%m-%d %H:%M'):%a %-I:%M %p}".upper() if kick else "Kickoff unknown"
+    return (f'<div class="card-top"><span class="kick" data-inspect-id="index-kick">{when}</span>'
+            f'<span class="state">{"Final" if final else "Not played"}</span></div>')
+
+
 def index_html():
     try:
         files = [f for f in os.listdir(ROOT) if f.endswith(".html")]
@@ -385,11 +392,12 @@ def index_html():
     kicks = kickoffs()
     records = {}
     try:
-        from nflprops.gamelines_view import card_html as gl_card, index_by_game, lines_blob
+        from nflprops.gamelines_view import card_html as gl_card, grade as gl_grade, index_by_game, lines_blob
         gl_idx = index_by_game(lines_blob())
     except Exception as e:  # noqa: BLE001 -- cards still render without game lines
         sys.stderr.write(f"game lines unavailable: {e}\n")
         gl_idx, gl_card = {}, None
+        gl_grade = None
 
     # The week is the schedule's 16 games, not the 14 that happen to have a
     # report. A missing game used to be invisible, so a half-built week looked
@@ -454,6 +462,7 @@ def index_html():
                 def tone_of(h, total):
                     return "good" if total and h * 4 >= total * 3 else "bad"
                 score = (f'<span class="hits-label">All legs</span>'
+                         f'<span class="hits-meter" style="--p:{100 * all_h / all_n:.0f}%"></span>'
                          f'<span class="score {tone_of(all_h, all_n)}"'
                          f' data-inspect-id="index-hits-all"'
                          f' title="{all_h} of {all_n} predictions hit'
@@ -463,6 +472,7 @@ def index_html():
                 if n:
                     score += ('<span class="hits-label"'
                               ' data-inspect-id="index-hits-label">Short list</span>'
+                              f'<span class="hits-meter" style="--p:{100 * hits / n:.0f}%"></span>'
                               f'<span class="score {tone_of(hits, n)}"'
                               f' data-inspect-id="index-hits"'
                               f' title="{hits} of {n} shortlisted picks hit'
@@ -470,9 +480,10 @@ def index_html():
             away_t, home_t = label.split(" @ ")
             glg = gl_idx.get((season, week, away_t, home_t))
             final, glb = gl_card(glg[0]) if glg else ("", "")
+            top = card_top(kick, final)
             note = "" if score else f'<span class="note">{"no picks" if got is not None or final else "not played"}</span>'
             row = (f'<a class="card graded" data-inspect-id="index-row" href="/{f}">'
-                   f'<span class="name" data-inspect-id="index-game-label">{label}</span>'
+                   f'{top}<span class="name" data-inspect-id="index-game-label">{label}</span>'
                    f'{final}<div class="sec"><span>Props</span>{note}</div>{score}{glb}</a>')
         else:
             away_t, home_t = label.split(" @ ")
@@ -480,7 +491,7 @@ def index_html():
             final, glb = gl_card(glg[0]) if glg else ("", "")
             row = (f'<div class="card none graded" data-inspect-id="index-row-pending"'
                    f' aria-disabled="true">'
-                   f'<span class="name" data-inspect-id="index-game-label-pending">{label}</span>'
+                   f'{card_top(kick, final)}<span class="name" data-inspect-id="index-game-label-pending">{label}</span>'
                    f'{final}<div class="sec" data-inspect-id="index-no-report"'
                    f' title="This game has no report yet"><span>Props</span>'
                    f'<span class="note">no report</span></div>{glb}</div>')
@@ -571,9 +582,32 @@ def index_html():
         return ptallies[(season, week)]
 
     def week_parlay(season, week):
+        """Two separate boxes: props parlays, and game lines. No number joins them."""
         t = week_tallies(season, week)
         per = [f"{g}: {r['state']} {money(r['profit'])}" for g, r in sorted(t[4].items())]
-        return parlay_line(f"Week {week}", [t], per, "index-week-parlay")
+        tip = html.escape("Assumed $1 parlay on every short list. Entertainment only.\n" + "\n".join(per))
+        box = ""
+        if t[0]:
+            net = round(t[3], 2)
+            left = f'<span class="sum-i dim">{t[1] - t[0]} not graded</span>' if t[0] != t[1] else ""
+            box = (f'<div class="sum-box" data-inspect-id="index-sum-props" title="{tip}"><span class="sum-k">Props</span>'
+                   f'<span class="sum-i">Short list parlays <b>{t[2]}</b> of <b>{t[0]}</b> won</span>'
+                   f'<span class="sum-i">Net <b class="{"good" if net >= 0 else "bad"}">{money(net)}</b></span>{left}</div>')
+        cnt = {"mres": [0, 0, 0], "sres": [0, 0, 0], "tres": [0, 0, 0]}
+        for (sn, wk, _a, _h), (g, _w) in gl_idx.items():
+            if (sn, wk) == (season, week):
+                r = gl_grade(g)
+                for k in cnt:
+                    if r[k] is not None:
+                        cnt[k][0 if r[k] > 0 else 1 if r[k] < 0 else 2] += 1
+        def wl(c):
+            return f"{c[0]}\u2013{c[1]}" + (f"\u2013{c[2]}" if c[2] else "")
+        if any(sum(c) for c in cnt.values()):
+            box += ('<div class="sum-box" data-inspect-id="index-sum-gl"><span class="sum-k">Game lines</span>'
+                    f'<span class="sum-i">Winner <b>{wl(cnt["mres"])}</b></span>'
+                    f'<span class="sum-i">Spread <b>{wl(cnt["sres"])}</b></span>'
+                    f'<span class="sum-i">Total <b>{wl(cnt["tres"])}</b></span></div>')
+        return f'<div class="sum-row">{box}</div>' if box else ""
 
     tabs, panels = [], []
     for n, ((season, week), slots) in enumerate(ordered):
