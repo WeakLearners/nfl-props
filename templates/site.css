@@ -472,7 +472,7 @@ html body .wrap[data-page] .parlays b{font:500 var(--t-data)/1 var(--f-mono)}
 html body .wrap[data-page="report"] .two{display:grid; grid-template-columns:minmax(0,1fr); gap:var(--s3); align-items:start; margin-top:var(--s5)}
 html body .wrap[data-page="report"] .two > .picks{margin:0}
 html body .wrap[data-page="report"] .two > .glp{margin:0; background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:var(--s4)}
-html body .wrap[data-page="report"] .glp .glp-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+html body .wrap[data-page="report"] .glp .glp-grid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
 html body .wrap[data-page="report"] .glp .pf-v{font:500 var(--t-data)/var(--lh-data) var(--f-mono); flex-wrap:wrap}
 
 /* Game page review fixes */
@@ -498,7 +498,7 @@ html body .wrap[data-page="results"] #mqbox table{width:100%}
 
 /* ---- Responsive: content decides. Stacked by default, side by side only when there is room. ---- */
 html body .wrap[data-page="report"] .two{grid-template-columns:minmax(0,1fr)}
-html body .wrap[data-page="report"] .two > .glp .glp-grid{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+html body .wrap[data-page="report"] .two > .glp .glp-grid{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
 @media (min-width:1500px){
   html body .wrap[data-page="report"] .two{grid-template-columns:minmax(0,1fr) 320px}
   html body .wrap[data-page="report"] .two > .glp .glp-grid{grid-template-columns:1fr 1fr}
@@ -537,3 +537,7 @@ html body #nfli-btn[data-bar]{position:static; width:auto; height:28px; padding:
   font:500 var(--t-label)/26px var(--f-body); letter-spacing:.06em}
 html body #nfli-btn[data-bar]:hover{color:var(--ink); border-color:var(--ink-3)}
 html body #nfli-btn[data-bar][data-on="1"]{background:var(--accent); color:var(--surface); border-color:var(--accent)}
+
+/* Games / Slate beside the page title. */
+html body .wrap[data-page] header{position:relative}
+html body .wrap[data-page] .view-seg{position:absolute; right:0; bottom:var(--s1)}

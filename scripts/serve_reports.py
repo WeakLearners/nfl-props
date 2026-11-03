@@ -1920,7 +1920,7 @@ def site_nav(section, page, inspect_id="site-nav"):
     sub = '<span class="sep">\u00b7</span>'.join(
         f'<a href="{href}"{" class=on" if key == page else ""}'
         f' data-inspect-id="{iid}">{label}</a>'
-        for key, label, href, iid in SUBPAGES.get(section, ()))
+        for key, label, href, iid in SUBPAGES.get(section, ()) if len(SUBPAGES.get(section, ())) < 2)
     return (f'<div class="sn" role="navigation" aria-label="Site" data-inspect-id="{inspect_id}">'
             f'<div class="sn-row sn-top">'
             f'<a class="sn-brand" href="/" data-inspect-id="site-nav-brand">NFL Props</a>'
@@ -2086,6 +2086,12 @@ def with_chrome(html, section, page, title):
     # The marks script goes in the head so window.markStar exists before any page script runs.
     html = TITLE_TAG.sub(lambda _: f'<title>{title}</title>\n<script src="/_marks.js"></script>', html, 1)
     key = page or ("report" if section == "week" else section)
+    subs = SUBPAGES.get(section, ())
+    if page and len(subs) > 1:
+        seg = ('<nav class="seg view-seg" aria-label="View" data-inspect-id="site-subnav">'
+               + "".join(f'<a href="{h}"{" class=on" if k == page else ""} data-inspect-id="{i}">{l}</a>'
+                         for k, l, h, i in subs) + "</nav>")
+        html = html.replace("</h1>", "</h1>" + seg, 1)
     html = WRAP_OPEN.sub(
         lambda m: m.group(0)[:-1] + f' data-page="{key}">' + "\n"
                   + CHROME_CSS + LAYOUT_CSS + f"<style>{BADGE_CSS}</style>" + site_nav(section, page),
