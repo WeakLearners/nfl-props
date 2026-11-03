@@ -532,11 +532,11 @@ html body .wrap[data-page="report"] h1 .at{align-self:center}
 /* ---- Sticky bar; inspect button lives in the bar ---- */
 html body .wrap[data-page] > .sn{position:sticky; top:0; z-index:50}
 html body .wrap[data-page] :is([id],a[name]){scroll-margin-top:calc(var(--bar-h) + var(--s3))}
-html body #nfli-btn[data-bar]{position:static; width:auto; height:28px; padding:0 var(--s2); border-radius:var(--r);
+html body .insp-btn[data-slot]{position:static; width:auto; height:28px; padding:0 var(--s2); border-radius:var(--r);
   box-shadow:none; background:var(--surface); color:var(--ink-3); border:1px solid var(--line);
   font:500 var(--t-label)/26px var(--f-body); letter-spacing:.06em}
-html body #nfli-btn[data-bar]:hover{color:var(--ink); border-color:var(--ink-3)}
-html body #nfli-btn[data-bar][data-on="1"]{background:var(--accent); color:var(--surface); border-color:var(--accent)}
+html body .insp-btn[data-slot]:hover{color:var(--ink); border-color:var(--ink-3)}
+html body .insp-btn[data-slot][data-on="1"]{background:var(--accent); color:var(--surface); border-color:var(--accent)}
 
 /* Games / Slate beside the page title. */
 html body .wrap[data-page] header{position:relative}

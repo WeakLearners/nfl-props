@@ -35,7 +35,25 @@ BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT = os.path.join(BASE, "reports")
 DB = os.path.join(BASE, "data", "nflprops.db")
 MAP = os.path.join(BASE, "docs", "nfl-props-frontend-map.json")
-INSPECTOR = os.path.join(BASE, "scripts", "inspector.js")
+# Inspect mode: the shared inspector-kit (canonical copy in the second-brain
+# inspector-mode skill, assets/inspector-kit.js) plus this app's settings.
+# Never edit inspector-kit.js here. Copy the new version from the skill.
+INSPECTOR = os.path.join(BASE, "scripts", "inspector-kit.js")
+INSPECTOR_INIT = """
+window.InspectorKit.create({
+  mapUrl: "/_frontend-map.json",
+  storageKey: "nflprops.inspector.on",
+  repo: "the nfl-props repo",
+  button: document.querySelector(".sn-right") || "float",
+  tickets: { url: "https://seans-mac-mini.tail4b4f99.ts.net:8793/api/tickets", app: "nfl-props" },
+  theme: {
+    accent: "var(--accent, #eb6834)", bg: "var(--surface, #fcfcfb)", fg: "var(--ink, #14140f)",
+    muted: "var(--ink-3, #84827a)", border: "var(--line, #e2e0d9)",
+    font: "'Public Sans', ui-sans-serif, system-ui, sans-serif",
+    mono: "'IBM Plex Mono', ui-monospace, monospace"
+  }
+});
+"""
 MARKS_JS = os.path.join(BASE, "scripts", "marks.js")
 PORT = int(os.environ.get("NFLPROPS_WEB_PORT", "8792"))
 
@@ -2443,7 +2461,7 @@ class Handler(SimpleHTTPRequestHandler):
             return
 
         if path == "/_inspector.js":
-            self._send(open(INSPECTOR, "rb").read(),
+            self._send(open(INSPECTOR, "rb").read() + INSPECTOR_INIT.encode(),
                        "application/javascript; charset=utf-8")
             return
         if path == "/_marks.js":
