@@ -612,3 +612,11 @@ html body .wrap[data-page="report"] h1 :is(.trk.a,.trk.b){height:var(--lh-displa
 html body .wrap[data-page="report"] h1 .trk .trk-in{height:auto; gap:2px}
 html body .wrap[data-page="report"] h1 .trk b{font:600 var(--t-h2)/1 var(--f-mono); font-variant-numeric:tabular-nums}
 html body .wrap[data-page="report"] h1 .trk i{font:500 var(--t-data)/1 var(--f-mono); font-variant-numeric:tabular-nums; margin-top:0; opacity:1; color:var(--ink-2)}
+
+/* Hero row: three fixed columns, so PROJECTION is always on the left. */
+html body .wrap[data-page="report"] .one-grid .fig-row{display:grid; grid-template-columns:1fr 1fr 1fr; align-items:end}
+html body .wrap[data-page="report"] .one-grid .hero-c:nth-child(2){align-items:center; text-align:center}
+html body .wrap[data-page="report"] .one-grid .hero-c:nth-child(2) > :first-child{justify-self:center}
+html body .wrap[data-page="report"] .one-grid .fig-none{font:500 var(--t-data)/var(--lh-h2) var(--f-mono); color:var(--ink-3)}
+html body .wrap[data-page="report"] .one-grid .card-id .mk-star{order:1}
+html body .wrap[data-page="report"] .one-grid .card-id .pc-caution{order:2}
