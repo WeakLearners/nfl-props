@@ -1937,7 +1937,7 @@ LAYOUT_CSS = """<style>
     .wrap[data-page="games"] .slot:first-child{margin-top:12px}
     .wrap[data-page="games"] .slot-h{border-bottom:0; padding:12px 0 0}
     .wrap[data-page="games"] .slot .rows{margin-top:0;
-      grid-template-columns:repeat(auto-fill,minmax(168px,1fr))}
+      grid-template-columns:repeat(auto-fill,minmax(176px,1fr))}
   }
 
   /* Slate: the three rankings of a sitting side by side when 600px each fits. */
