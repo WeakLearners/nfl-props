@@ -20,6 +20,19 @@ GOLD = json.loads((ROOT / "tests" / "fixtures" / "w7_new_rows.json").read_text()
 KEYS = ("mu", "sd", "pe", "sp", "role", "tm", "vs", "def", "app")
 
 
+_REAL_SCALE_PATH = ES.SCALE_PATH
+
+
+def setUpModule():
+    # The golden rows are tied to the sd scale fitted through week 7. The nightly refit rewrites
+    # data/sd_scale.json (week 8 on 2026-11-03: passing_yards 0.971 -> 1.0), so pin the week-7 copy.
+    ES.SCALE_PATH = ROOT / "tests" / "fixtures" / "sd_scale_w7.json"
+
+
+def tearDownModule():
+    ES.SCALE_PATH = _REAL_SCALE_PATH
+
+
 class NewPathRows(unittest.TestCase):
     def test_week7_rows_match_the_golden_rows(self):
         for game, gold in GOLD.items():

@@ -1,0 +1,23 @@
+{
+ "fitted_through_week": 7,
+ "season": 2026,
+ "n": {
+  "completions": 177,
+  "passing_yards": 177,
+  "receiving_yards": 948,
+  "receptions": 948,
+  "rushing_yards": 490
+ },
+ "completions": 1.086,
+ "passing_yards": 0.971,
+ "receiving_yards": 1.091,
+ "receptions": 1.064,
+ "rushing_yards": 1.038,
+ "p50": {
+  "completions": 0.726,
+  "passing_yards": 0.655,
+  "receiving_yards": 0.593,
+  "receptions": 0.625,
+  "rushing_yards": 0.685
+ }
+}
