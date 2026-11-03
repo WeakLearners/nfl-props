@@ -179,7 +179,7 @@ PAGE_CSS = """<style>
   .glp-grid > div{display:flex; flex-direction:column; gap:2px}
   .glp-grid .sub2{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-3)}
   .glp .pf-v{display:flex; align-items:center; gap:8px}
-  .glp .flag{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600; color:var(--bad);
+  .glp .flag{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600; color:var(--ink-2);
     letter-spacing:.04em; margin-right:12px}
   .glp .pill{display:inline-flex; align-items:center; height:18px; padding:0 6px; border-radius:2px;
     font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600; letter-spacing:.04em; color:var(--surface)}

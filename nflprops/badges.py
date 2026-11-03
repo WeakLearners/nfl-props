@@ -383,11 +383,9 @@ BADGE_CSS = """
   .role{font-weight:600; letter-spacing:.06em; color:var(--surface)}
   /* Team colours from nflprops/teams.py (served per report). Home: solid, white letters.
      Away: white, team-colour border and letters. */
-  .role.a{background:#fff; color:var(--away,var(--den)); border:1px solid var(--away,var(--den))}
-  .role.b{background:var(--home,var(--kc)); color:#fff}
+  .role.a{background:none; color:var(--ink); border:1px solid var(--away,var(--den))}
+  .role.b{background:none; color:var(--ink); border:1px solid var(--home,var(--kc))}
   /* Dark mode: a faint edge, so a black or navy home badge does not merge into the card. */
-  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .role.b{box-shadow:inset 0 0 0 1px rgba(255,255,255,.28)}}
-  :root[data-theme="dark"] .role.b{box-shadow:inset 0 0 0 1px rgba(255,255,255,.28)}
   .rk{font-weight:500; color:var(--ink-2); background:transparent;
     border:1px solid var(--ink-3); box-shadow:none; cursor:help}
   .bd{font-weight:600; border:1px solid currentColor; cursor:help}
@@ -410,6 +408,6 @@ BADGE_CSS = """
   /* Trend arrow left of a name: a space after it. */
   .tr-lead{margin-right:6px}
   /* Matchup: solid fills. Big day red with white letters, Caution yellow with black letters. */
-  .bd-big{color:#fff; background:var(--bad); border-color:var(--bad)}
+  .bd-big{color:var(--surface); background:var(--ink); border-color:var(--ink)}
   .bd-caution{color:#000; background:#ffd60a; border-color:#ffd60a}
 """

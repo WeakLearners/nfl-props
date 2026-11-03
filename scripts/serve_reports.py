@@ -275,7 +275,10 @@ PAGE = HEAD + """
   </header>
   <div class="pg-intro"><div class="pg-lede">
   <p class="sub" data-inspect-id="index-subtitle">Games sit in kickoff order.
-    TD marks the likeliest scorer. Nothing here claims an edge.</p>
+    TD marks the likeliest scorer. These are not betting tips.</p>
+  <p class="sub" data-inspect-id="index-key">A leg is one player prop: one player, one stat, over one number.
+    The short list is the few legs in each game that the model thinks are most likely to hit.
+    A badge is green when 75% or more of its legs hit. It is red when fewer hit.</p>
   </div></div>
 {tabs}
 {rows}
@@ -456,14 +459,14 @@ def index_html():
                          f' title="{all_h} of {all_n} predictions hit'
                          f' ({100 * all_h / all_n:.0f}%), every leg on the page,'
                          f' shortlisted or not. Anytime TD is not counted.">'
-                         f'{all_h}/{all_n}</span>')
+                         f'{all_h}/{all_n} \u00b7 {100 * all_h / all_n:.0f}%</span>')
                 if n:
                     score += ('<span class="hits-label"'
                               ' data-inspect-id="index-hits-label">Short list</span>'
                               f'<span class="score {tone_of(hits, n)}"'
                               f' data-inspect-id="index-hits"'
                               f' title="{hits} of {n} shortlisted picks hit'
-                              f' ({100 * hits / n:.0f}%)">{hits}/{n}</span>')
+                              f' ({100 * hits / n:.0f}%)">{hits}/{n} \u00b7 {100 * hits / n:.0f}%</span>')
             away_t, home_t = label.split(" @ ")
             glg = gl_idx.get((season, week, away_t, home_t))
             final, glb = gl_card(glg[0]) if glg else ("", "")
@@ -554,12 +557,12 @@ def index_html():
         total = sum(t[1] for t in tallies)
         won = sum(t[2] for t in tallies)
         net = round(sum(t[3] for t in tallies), 2)
-        part = "" if done == total else f" ({done} of {total} games graded)"
+        part = "" if done == total else (f" {total - done} game is not final." if total - done == 1 else f" {total - done} games are not final.")
         tone = "good" if net >= 0 else "bad"
         tip = ("Assumed $1 parlay on every shortlist leg, fully graded games only. "
                "Entertainment only, no edge claimed.\n" + "\n".join(per))
         return (f'<div class="parlays" data-inspect-id="{cid}" title="{html.escape(tip)}">'
-                f'<span>{label} $1 parlays: {won} of {done} won{part} (staked ${done})</span>'
+                f'<span>{label}: each game\u2019s short list is one $1 parlay. {won} of {done} won.{part}</span>'
                 f'<span class="score {tone}">net {money(net)}</span></div>')
 
     def week_tallies(season, week):
@@ -2051,6 +2054,41 @@ def with_chrome(html, section, page, title):
         html, 1)
     return html + "\n" + SITE_FOOTER
 
+# Game-page fixes spliced per request, so no report file is rewritten.
+REPORT_FIX_CSS = """<style>
+  .key.how a, a.key{color:var(--ink-2)}
+  @media (min-width:561px){.pk-head .h-models{display:grid; grid-template-columns:136px 46px; column-gap:12px}}
+  h1 .trk.b{background:none; color:var(--ink); border:1px solid var(--home,var(--kc)); box-shadow:none}
+  .hist.sample{display:inline-flex; gap:3px; vertical-align:middle; margin-right:4px}
+</style>"""
+
+
+def report_fixes(html, has_hist, has_acts, tr):
+    """Legend keys for the history dots and the team rank box, a link to the notes, an Actual header."""
+    i = html.find('<div class="legend" data-inspect-id="legend">')
+    j = html.find("</div>", i) if i >= 0 else -1
+    if j >= 0:
+        keys = ""
+        if has_hist:
+            keys += ('<span class="key" data-inspect-id="legend-history"><span class="hist sample">'
+                     '<span class="hdot hit"></span><span class="hdot miss"></span><span class="hdot none"></span>'
+                     '<span class="hdot"></span></span>last 5 calls on this player and stat, newest at left: '
+                     'green cleared, red fell short, grey had no number, hollow had no call</span>')
+        t = next((x for x in (tr or {}).values() if x), None)
+        if t:
+            keys += ('<span class="key" data-inspect-id="legend-rank">'
+                     f'<b>#{t["rank"]} &middot; {t["rate"] * 100:.1f}%</b>&nbsp;beside a team name: the team\u2019s hit rate '
+                     'on all legs, and its rank of all teams (1 is best)</span>')
+        if 'data-inspect-id="footer-notes"' in html:
+            keys += '<a class="key" href="#how-to-read" data-inspect-id="legend-how-to-read">How to read a card &darr;</a>'
+        html = html[:j] + keys + html[j:]
+    html = html.replace('<footer data-inspect-id="footer-notes">', '<footer id="how-to-read" data-inspect-id="footer-notes">', 1)
+    if has_acts:
+        html = html.replace('<span class="h-models">Models</span>',
+                            '<span class="h-models"><span>Model</span><span>Actual</span></span>', 1)
+    k = html.find("</style>")
+    return html[:k + 8] + REPORT_FIX_CSS + html[k + 8:] if k >= 0 else html
+
 
 class Handler(SimpleHTTPRequestHandler):
     # Tailscale Serve proxies in front of this. An HTTP/1.0 server behind a
@@ -2160,6 +2198,9 @@ class Handler(SimpleHTTPRequestHandler):
         if name == "rankings.html":
             html = with_chrome(html, "players", "rankings", "NFL Props \u00b7 Rankings")
         elif name == "trends.html":
+            for gone in (" Targets are <code>WINDOW_DISPLAY</code> and <code>WINDOW_RECORD</code> in nflprops/config.py.",
+                         " Source: data/model_quality.csv."):
+                html = html.replace(gone, "")
             html = with_chrome(html, "trends", "trends", "NFL Props \u00b7 Trends")
         else:
             title = f"NFL Props \u00b7 {m.group(3)} @ {m.group(4)}" if m else "NFL Props"
@@ -2172,6 +2213,7 @@ class Handler(SimpleHTTPRequestHandler):
                 # current. Per request: the ranking takes about 0.1s, so no cache
                 # that could go stale. A file opened without the server has no
                 # __TEAMRANK__ and shows no badges.
+                tr = None
                 try:
                     legs = explore_legs()[0]
                     tr = team_ranking(legs)
@@ -2188,6 +2230,7 @@ class Handler(SimpleHTTPRequestHandler):
                         html = html.replace('<div class="fbar"', gl_page(*hit) + '\n  <div class="fbar"', 1)
                 except Exception as e:  # noqa: BLE001 -- the report works without game lines
                     sys.stderr.write(f"game lines section skipped: {e}\n")
+                html = report_fixes(html, bool(hist), bool(acts), {"a": (tr or {}).get(m.group(3)), "b": (tr or {}).get(m.group(4))})
                 html += "\n" + TRAY_HTML  # player tray: after the report script, which defines DATA
         body = (with_theme(html) +
                 '\n<script src="/_inspector.js"></script>\n').encode()
