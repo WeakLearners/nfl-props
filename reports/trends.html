@@ -51,7 +51,7 @@
   .chips button,.tbtn{font-family:"IBM Plex Mono",monospace; font-size:12px; padding:6px 12px; border:1px solid var(--line);
     background:var(--surface); color:var(--ink-2); border-radius:3px; cursor:pointer}
   .chips button[aria-pressed="true"]{border-color:var(--den); color:var(--den)}
-  .tbtn{margin-top:8px; font-size:11.5px; padding:4px 10px}
+  .tbtn{margin-top:8px; font-size:11px; padding:4px 10px}
   .tbtn:hover{border-color:var(--ink-3); color:var(--ink)}
 
   /* Outlook marks. --c is the outlook colour. */
@@ -59,7 +59,7 @@
   .dot{display:inline-block; width:9px; height:9px; border-radius:50%; background:var(--c); flex:none}
   .ol.watch .dot,.ol.none .dot{background:transparent; border:1.5px solid var(--ink-3)}
   .pill{display:inline-flex; align-items:center; gap:6px; height:20px; padding:0 8px; border:1px solid var(--c); border-radius:2px;
-    font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; white-space:nowrap; color:var(--ink)}
+    font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase; white-space:nowrap; color:var(--ink)}
   .legend{display:flex; flex-direction:column; gap:8px; font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-2)}
   .legend .lh{color:var(--ink-3); text-transform:uppercase; letter-spacing:.1em; font-size:10px}
   .legend span{display:inline-flex; align-items:center; gap:8px}
@@ -71,11 +71,11 @@
   .ph{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:20px; line-height:1.1; text-transform:uppercase; letter-spacing:.04em; margin:0 0 4px; display:flex; align-items:baseline; gap:12px}
   .ph .sub{margin-left:auto; font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.06em; text-transform:none; color:var(--ink-3); font-weight:400}
   .hint a{color:var(--ink-2); text-decoration:underline}
-  .hint{font-size:12.5px; color:var(--ink-3); margin:0 0 8px; max-width:64ch}
+  .hint{font-size:12px; color:var(--ink-3); margin:0 0 8px; max-width:64ch}
   .dr{display:grid; grid-template-columns:170px minmax(0,1fr) 64px; gap:12px; align-items:center; height:28px; width:100%;
     background:none; border:0; padding:0 4px; text-align:left; cursor:pointer; border-radius:2px}
   .dr:hover{background:var(--line-soft)}
-  .dr .nm{display:flex; gap:6px; align-items:baseline; min-width:0; font-size:13.5px; font-weight:500}
+  .dr .nm{display:flex; gap:6px; align-items:baseline; min-width:0; font-size:13px; font-weight:500}
   .dr .nm span:first-child{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
   .dr .nm .tm{font-size:10px; flex:none}
   .dr .pl{position:relative; height:100%; background:linear-gradient(var(--line-soft),var(--line-soft)) center/100% 1px no-repeat}
@@ -100,8 +100,8 @@
   .pr .who b{font-weight:600; font-size:16px} .pr .who .tm{margin-left:8px}
   .chipsr{display:flex; gap:8px; flex-wrap:wrap}
   .chip{display:inline-flex; align-items:center; gap:7px; height:26px; padding:0 10px; border:1px solid var(--line); border-radius:2px;
-    background:var(--surface); font-size:12.5px; white-space:nowrap}
-  .chip .k{color:var(--ink-3); font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase}
+    background:var(--surface); font-size:12px; white-space:nowrap}
+  .chip .k{color:var(--ink-3); font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase}
   .chip b{font-family:"IBM Plex Mono",monospace; font-weight:500}
   .nx{font-size:13px; color:var(--ink-2)} .nx small{display:block; color:var(--ink-3); font-size:12px}
   @media (max-width:1300px){.pr{grid-template-columns:30px minmax(170px,1fr) minmax(0,2.4fr)}.pr .nx{display:none}}
@@ -111,19 +111,19 @@
   .lane-h{display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:4px 16px; align-items:baseline; border-bottom:2px solid var(--c); padding-bottom:8px; margin-bottom:16px}
   .lane-h h3{margin:0; font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:30px; text-transform:uppercase; letter-spacing:.04em; display:flex; align-items:center; gap:10px}
   .lane-h h3 .dot{width:14px; height:14px}
-  .lane-h p{margin:0; color:var(--ink-2); font-size:13.5px}
+  .lane-h p{margin:0; color:var(--ink-2); font-size:13px}
   .cnt{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-3); letter-spacing:.06em; text-transform:uppercase}
   .wbtn{display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:none; border:0; border-bottom:2px solid var(--ink-3); padding:0 0 8px; cursor:pointer}
   .wbtn .car{font-size:14px; color:var(--ink-3); transition:transform .15s} .wbtn[aria-expanded="true"] .car{transform:rotate(90deg)}
   .wbtn h3{margin:0; font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:30px; text-transform:uppercase; letter-spacing:.04em}
-  .wbtn .d{color:var(--ink-2); font-size:13.5px; margin-left:12px}
+  .wbtn .d{color:var(--ink-2); font-size:13px; margin-left:12px}
   .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,400px),1fr)); gap:16px; align-items:start}
   .pc{border:1px solid var(--line); background:var(--surface); border-radius:3px; padding:16px 16px 12px; display:flex; flex-direction:column; gap:10px; border-top:3px solid var(--c)}
   .pc-h{display:flex; justify-content:space-between; align-items:baseline; gap:12px}
   .pc-t{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:20px; text-transform:uppercase; letter-spacing:.03em; line-height:1.1}
   .pc-t span{color:var(--ink-3); font-weight:500}
   .pc-p{font-family:"Barlow Condensed",sans-serif; font-size:40px; font-weight:600; line-height:1}
-  .pc-p small{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.06em; color:var(--ink-3); text-transform:uppercase; font-weight:400; margin-left:6px}
+  .pc-p small{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.06em; color:var(--ink-3); text-transform:uppercase; font-weight:400; margin-left:6px}
   .gbar{position:relative; height:6px; background:var(--line-soft); border-radius:2px; margin:6px 0 18px}
   .gbar i{position:absolute; left:0; top:0; bottom:0; background:var(--c); border-radius:2px}
   .gbar u{position:absolute; top:-3px; bottom:-3px; width:1px; background:var(--ink-3)}
@@ -149,7 +149,7 @@
   /* Teams and defenses */
   .teamwrap{max-width:820px}
   .mqt{border-collapse:collapse; width:100%; max-width:820px; font-family:"IBM Plex Mono",monospace; font-size:12px; font-variant-numeric:tabular-nums}
-  .mqt th{font-weight:500; color:var(--ink-3); text-align:right; padding:4px 8px; border-bottom:1px solid var(--line); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase}
+  .mqt th{font-weight:500; color:var(--ink-3); text-align:right; padding:4px 8px; border-bottom:1px solid var(--line); font-size:10px; letter-spacing:.06em; text-transform:uppercase}
   .mqt td{text-align:right; padding:5px 8px; border-bottom:1px solid var(--line-soft)}
   .mqt th:first-child,.mqt td:first-child{text-align:left; font-family:"Public Sans",sans-serif; color:var(--ink-2); font-size:13px; text-transform:none; letter-spacing:0}
   .mqt .lown{color:var(--ink-3); font-style:italic}
@@ -160,9 +160,9 @@
   .hm .pp{font-family:"Barlow Condensed",sans-serif; font-size:22px; font-weight:600}
   .cells{display:grid; grid-template-columns:repeat(16,minmax(0,1fr)); gap:3px}
   .cell{height:44px; border-radius:2px; color:var(--ink); background:color-mix(in srgb,var(--den) var(--p),var(--surface)); display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1.15; cursor:default}
-  .cell b{font-family:"IBM Plex Mono",monospace; font-size:11.5px; font-weight:600}
+  .cell b{font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600}
   .cell small{font-family:"IBM Plex Mono",monospace; font-size:10px; opacity:.8}
-  .hmax{display:flex; justify-content:space-between; font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--ink-3); margin:0 0 8px 52px; letter-spacing:.06em; text-transform:uppercase}
+  .hmax{display:flex; justify-content:space-between; font-family:"IBM Plex Mono",monospace; font-size:10px; color:var(--ink-3); margin:0 0 8px 52px; letter-spacing:.06em; text-transform:uppercase}
   @media (max-width:1500px){.cell small{display:none}}
   .dvp{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:24px; margin-top:12px}
   @media (max-width:1700px){.dvp{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -174,7 +174,7 @@
   .ptray .tt-sig{border-top:1px solid var(--line); margin-top:20px; padding-top:12px}
   .ptray .tt-sig h3{margin:0 0 8px; border:0; padding:0; display:flex; justify-content:space-between; align-items:baseline; gap:12px; color:var(--ink-2)}
   .ptray .tt-sig h3 b{font-family:"Barlow Condensed",sans-serif; font-size:30px; font-weight:600; letter-spacing:0}
-  .ptray .kv{display:flex; justify-content:space-between; gap:12px; padding:5px 0; border-bottom:1px solid var(--line-soft); font-size:13.5px}
+  .ptray .kv{display:flex; justify-content:space-between; gap:12px; padding:5px 0; border-bottom:1px solid var(--line-soft); font-size:13px}
   .ptray .kv span:first-child{color:var(--ink-3)}
   .ptray .kv b{font-family:"IBM Plex Mono",monospace; font-weight:500; text-align:right; white-space:normal}
   .ptray .gauge{position:relative; height:10px; margin:30px 0 6px; border-radius:2px;
@@ -184,7 +184,7 @@
   .ptray .gl{position:relative; height:14px; font-family:"IBM Plex Mono",monospace; font-size:10px; color:var(--ink-3)}
   .ptray .gl span{position:absolute; transform:translateX(-50%); white-space:nowrap}
   .ptray .gl span:first-child{transform:none} .ptray .gl span:last-child{transform:translateX(-100%)}
-  .ptray .small{font-size:12.5px; color:var(--ink-3); margin:8px 0 0}
+  .ptray .small{font-size:12px; color:var(--ink-3); margin:8px 0 0}
 
   /* Shortlist names open the tray; only here, because the tray exists only on served pages. */
   #picklist .pk-nm[data-p]{cursor:pointer}
@@ -237,7 +237,7 @@
 
 </style><div class="wrap" data-inspect-id="trends-wrap">
   <header data-inspect-id="trends-header">
-    <p class="eyebrow" data-inspect-id="trends-data-through">Trends use games through 2026 Week 8 &middot; built Tue 2026-11-03 10:16</p>
+    <p class="eyebrow" data-inspect-id="trends-data-through">Trends use games through 2026 Week 8 &middot; built Tue 2026-11-03 14:36</p>
     <h1>Trends and insights</h1>
   </header>
   <div class="pg-intro"><div class="pg-lede">
