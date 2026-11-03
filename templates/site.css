@@ -521,3 +521,10 @@ html body .wrap[data-page="report"] .grid{grid-template-columns:repeat(auto-fill
 html body .wrap[data-page="games"] .panel:not([hidden]):has(.card .kick){grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
 html body .wrap[data-page] :is(.fbar,.filter,.pg-controls){flex-wrap:wrap}
 
+
+/* Game header: the score is the loudest thing. Names step down, score is a heavy tabular figure. */
+html body .wrap[data-page="report"] h1{display:flex; flex-wrap:wrap; align-items:center; gap:var(--s2) var(--s4)}
+html body .wrap[data-page="report"] h1 .gh-sc{font:600 56px/56px var(--f-mono); font-variant-numeric:tabular-nums;
+  color:var(--ink-2); padding:0 var(--s3); border-left:2px solid var(--line); margin-right:var(--s3)}
+html body .wrap[data-page="report"] h1 .gh-sc.w{color:var(--ink); border-left-color:var(--accent)}
+html body .wrap[data-page="report"] h1 .at{align-self:center}
