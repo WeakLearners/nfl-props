@@ -189,7 +189,7 @@ PAGE = HEAD + """
      coloured text — at this size text alone read as a footnote. */
   .score{{
     margin-left:auto; display:inline-flex; align-items:center;
-    height:18px; padding:0 6px; border-radius:2px;
+    height:16px; padding:0 5px; border-radius:2px;
     font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
     letter-spacing:.04em; line-height:1; white-space:nowrap;
     font-variant-numeric:tabular-nums; color:var(--surface);
@@ -201,16 +201,22 @@ PAGE = HEAD + """
      no shortlist legs has only row 1. */
   .card.graded{{display:grid; grid-template-columns:1fr auto; row-gap:4px; column-gap:6px}}
   .card.graded .score{{margin-left:0; justify-self:end}}
-  /* Game lines block on a card: its own rows under a thin rule, never pooled with the props pills. */
-  .gl-rule{{grid-column:1/-1; border-top:1px solid var(--line-soft); margin-top:2px; height:0}}
-  .gl-rows{{grid-column:1/-1; display:grid; grid-template-columns:1fr auto; column-gap:6px; row-gap:2px}}
-  .gl-v{{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10px; color:var(--ink-2);
-    line-height:18px; text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}}
-  .card.none .gl-v{{color:var(--ink-3)}}
-  .gl-v .score{{margin-left:6px; height:14px; padding:0 4px; font-size:9px; vertical-align:middle}}
+  .card.graded .name{{grid-column:1/-1}}
+  /* Each product on a card has its own labelled block. Nothing is added across them. */
+  .sec{{grid-column:1/-1; display:flex; justify-content:space-between; margin-top:6px;
+    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:9px; font-weight:600;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3)}}
+  .sec .note{{font-weight:400; letter-spacing:.04em; text-transform:none}}
+  .final{{grid-column:1/-1; font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px;
+    color:var(--ink-2); font-variant-numeric:tabular-nums}}
+  .gl-rows{{grid-column:1/-1; display:grid; grid-template-columns:auto 1fr; column-gap:4px; row-gap:2px}}
+  .gl-v{{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px; color:var(--ink);
+    line-height:16px; text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}}
+  .gl-v.dim, .card.none .gl-v{{color:var(--ink-3)}}
+  .gl-v .score{{margin-left:4px; vertical-align:middle}}
   .hits-label{{
     font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10px;
-    letter-spacing:.06em; color:var(--ink-3); line-height:18px;
+    letter-spacing:.06em; color:var(--ink-3); line-height:16px;
   }}
   /* Each kickoff gets its own labelled block, and the label says the whole
      when: day chip, clock time, date. Quieter than a week tab, louder than a
@@ -444,16 +450,13 @@ def index_html():
                 # Both pills use this one rule (Sean, 2026-10-18).
                 def tone_of(h, total):
                     return "good" if total and h * 4 >= total * 3 else "bad"
-                # Row 1: all-predictions pill, right edge, beside the matchup.
-                # Every priced leg on the page, picked or not.
-                score = (f'<span class="score {tone_of(all_h, all_n)}"'
+                score = (f'<span class="hits-label">All legs</span>'
+                         f'<span class="score {tone_of(all_h, all_n)}"'
                          f' data-inspect-id="index-hits-all"'
                          f' title="{all_h} of {all_n} predictions hit'
                          f' ({100 * all_h / all_n:.0f}%), every leg on the page,'
-                         f' shortlisted or not. Anytime TD not counted.">'
+                         f' shortlisted or not. Anytime TD is not counted.">'
                          f'{all_h}/{all_n}</span>')
-                # Row 2 (only when the game has shortlist legs): small label
-                # at left, shortlist pill under the all pill.
                 if n:
                     score += ('<span class="hits-label"'
                               ' data-inspect-id="index-hits-label">Short list</span>'
@@ -463,21 +466,21 @@ def index_html():
                               f' ({100 * hits / n:.0f}%)">{hits}/{n}</span>')
             away_t, home_t = label.split(" @ ")
             glg = gl_idx.get((season, week, away_t, home_t))
-            glb = gl_card(glg[0]) if glg else ""
-            cls = "card graded" if (score or glb) else "card"
-            row = (f'<a class="{cls}" data-inspect-id="index-row" href="/{f}">'
+            final, glb = gl_card(glg[0]) if glg else ("", "")
+            note = "" if score else f'<span class="note">{"no picks" if got is not None or final else "not played"}</span>'
+            row = (f'<a class="card graded" data-inspect-id="index-row" href="/{f}">'
                    f'<span class="name" data-inspect-id="index-game-label">{label}</span>'
-                   f'{score or "<span></span>" if glb else score}{glb}</a>')
+                   f'{final}<div class="sec"><span>Props</span>{note}</div>{score}{glb}</a>')
         else:
             away_t, home_t = label.split(" @ ")
             glg = gl_idx.get((season, week, away_t, home_t))
-            glb = gl_card(glg[0]) if glg else ""
-            row = (f'<div class="card none{" graded" if glb else ""}" data-inspect-id="index-row-pending"'
+            final, glb = gl_card(glg[0]) if glg else ("", "")
+            row = (f'<div class="card none graded" data-inspect-id="index-row-pending"'
                    f' aria-disabled="true">'
                    f'<span class="name" data-inspect-id="index-game-label-pending">{label}</span>'
-                   f'<span class="score na" data-inspect-id="index-no-report"'
-                   f' title="No report generated for this game yet">N/A</span>'
-                   f'{glb}</div>')
+                   f'{final}<div class="sec" data-inspect-id="index-no-report"'
+                   f' title="This game has no report yet"><span>Props</span>'
+                   f'<span class="note">no report</span></div>{glb}</div>')
 
         # The heading for the run of games that kick off together, in three
         # pieces: a day chip, the clock time, and the calendar date. Entries

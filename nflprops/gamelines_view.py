@@ -122,43 +122,54 @@ def _pill(r, cls="score", na_text="N/A"):
     return f'<span class="{cls} {"good" if r > 0 else "bad"}">{"HIT" if r > 0 else "MISS"}</span>'
 
 
-def card_html(g, none=False):
-    """Compact block for an index card: win chance, spread, total, score, results."""
+def card_html(g):
+    """Card parts: (final-score line, GAME LINES block). Rows show the bet the pill grades."""
     r = grade(g)
     home, away = g["home"], g["away"]
-    tip = []
-    if r["line"] is not None:
-        lean = "no lean" if r["side"] == 0 else _sp(home, r["line"]) if r["side"] > 0 else _sp(away, -r["line"])
-        tip.append(f"Spread line {_sp(home, r['line'])}, lean {lean}.")
-    if r["tl"] is not None:
-        lean = "no lean" if r["ts"] == 0 else ("Over " if r["ts"] > 0 else "Under ") + f"{r['tl']:.1f}"
-        tip.append(f"Total line {r['tl']:.1f}, lean {lean}.")
-    tip = _e(" ".join(tip) or "No line posted for this game.", quote=True)
+    mdl_sp = _sp(home, g["pred_margin"])
 
-    def row(label, value, rid, pill="", title=""):
-        t = f' title="{title}"' if title else ""
+    def row(label, value, rid, pill="", title="", dim=False):
+        t = f' title="{_e(title, quote=True)}"' if title else ""
+        c = " dim" if dim else ""
         return (f'<span class="hits-label">{label}</span>'
-                f'<span class="gl-v" data-inspect-id="{rid}"{t}>{value}{pill}</span>')
-    spill = _pill(r["sres"]) if r["played"] and r["side"] != 0 else ""
-    tpill = _pill(r["tres"]) if r["played"] and r["ts"] != 0 else ""
-    if r["played"] and r["line"] is None:
-        spill = _pill(None)
-    if r["played"] and r["tl"] is None:
-        tpill = _pill(None)
-    # Spread and total are written from the side of the lean, so the pill grades the number shown.
-    spread = _sp(away, -g["pred_margin"]) if r["side"] is not None and r["side"] < 0 else _sp(home, g["pred_margin"])
-    total = f"{g['pred_total']:.1f}"
-    if r["ts"]:
-        total = ("O " if r["ts"] > 0 else "U ") + total
-    if r["played"]:
-        label, score = "Final", f"{int(g['away_score'])}-{int(g['home_score'])}"
+                f'<span class="gl-v{c}" data-inspect-id="{rid}"{t}>{value}{pill}</span>')
+
+    def pill(res, show):
+        return _pill(res) if show and res is not None else ""
+    # Winner: the favoured team and its chance.
+    fav, pf = (home, g["p_home"]) if g["p_home"] >= 0.5 else (away, 1 - g["p_home"])
+    win = row("Winner", f"{fav} {pf * 100:.0f}%", "index-gl-win", pill(r["mres"], r["played"] and r["mres"] is not None),
+              f"Model chance that {fav} wins.")
+    # Spread: the line on the lean side, which is the bet the pill grades.
+    if r["line"] is None:
+        spread = row("Spread", "no line", "index-gl-spread", "", f"This game has no spread line. Model {mdl_sp}.", True)
+    elif r["side"] == 0:
+        spread = row("Spread", "no lean", "index-gl-spread", "", f"Model {mdl_sp}. Line {_sp(home, r['line'])}. The model does not lean.", True)
     else:
-        label, score = "Model", f"{_rnd(g['mu_away'])}-{_rnd(g['mu_home'])}"
-    return (f'<div class="gl-rule" data-inspect-id="index-gl"></div><div class="gl-rows">'
-            + row("Win", f"{home} {g['p_home'] * 100:.0f}%", "index-gl-win")
-            + row("Spread", spread, "index-gl-spread", spill, tip)
-            + row("Total", total, "index-gl-total", tpill, tip)
-            + row(label, score, "index-gl-score") + "</div>")
+        if r["side"] > 0:
+            bet, mdl = _sp(home, r["line"]), mdl_sp
+        else:
+            bet, mdl = _sp(away, -r["line"]), _sp(away, -g["pred_margin"])
+        spread = row("Spread", bet, "index-gl-spread", pill(r["sres"], r["played"]),
+                     f"Model {mdl}. Line {bet}.")
+    if r["tl"] is None:
+        total = row("Total", "no line", "index-gl-total", "", f"This game has no total line. Model {g['pred_total']:.1f}.", True)
+    elif r["ts"] == 0:
+        total = row("Total", "no lean", "index-gl-total", "", f"Model {g['pred_total']:.1f}. Line {r['tl']:.1f}. The model does not lean.", True)
+    else:
+        total = row("Total", ("Over " if r["ts"] > 0 else "Under ") + f"{r['tl']:.1f}", "index-gl-total",
+                    pill(r["tres"], r["played"]), f"Model total {g['pred_total']:.1f}. Line {r['tl']:.1f}.")
+    final = ""
+    score = ""
+    if r["played"]:
+        final = (f'<span class="final" data-inspect-id="index-gl-score">Final '
+                 f'{away} {int(g["away_score"])} {home} {int(g["home_score"])}</span>')
+    else:
+        score = row("Model score", f"{_rnd(g['mu_away'])}-{_rnd(g['mu_home'])}", "index-gl-score",
+                    "", f"Model score: {away} {_rnd(g['mu_away'])}, {home} {_rnd(g['mu_home'])}.")
+    block = ('<div class="sec" data-inspect-id="index-gl"><span>Game lines</span></div>'
+             f'<div class="gl-rows">{win}{spread}{total}{score}</div>')
+    return final, block
 
 
 PAGE_CSS = """<style>
