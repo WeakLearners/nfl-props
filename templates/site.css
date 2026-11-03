@@ -478,7 +478,7 @@ html body .wrap[data-page="report"] .glp .pf-v{font:500 var(--t-data)/var(--lh-d
 /* Game page review fixes */
 html body .wrap[data-page="report"] > .legend{grid-row:auto; justify-self:stretch}
 html body .wrap[data-page="report"] .two{grid-template-columns:minmax(0,1fr) 320px}
-html body .wrap[data-page="report"] #picklist, html body .wrap[data-page="report"] .pk-head{--pk-cols:minmax(max-content,1fr) minmax(max-content,1fr) minmax(max-content,1fr) 196px 92px}
+html body .wrap[data-page="report"] #picklist, html body .wrap[data-page="report"] .pk-head{--pk-cols:max-content max-content minmax(max-content,1fr) 196px 92px}
 html body .wrap[data-page="report"] .glp .pf-v{flex-wrap:nowrap}
 html body .wrap[data-page="report"] .glp-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 html body .wrap[data-page="report"] .pk-slotcell b, html body .wrap[data-page="report"] .pk-slotcell em{color:var(--ink)}
@@ -513,7 +513,7 @@ html body .wrap[data-page="report"] .two > .glp .glp-grid{grid-template-columns:
 html body .wrap[data-page="report"] .pk-nm{overflow:visible; text-overflow:clip; flex:none}
 html body .wrap[data-page="report"] #picklist li > *{overflow:visible; text-overflow:clip}
 @media (max-width:1320px){
-  html body .wrap[data-page="report"] #picklist, html body .wrap[data-page="report"] .pk-head{--pk-cols:minmax(max-content,1fr) minmax(max-content,1fr) 196px 92px}
+  html body .wrap[data-page="report"] #picklist, html body .wrap[data-page="report"] .pk-head{--pk-cols:max-content minmax(max-content,1fr) 196px 92px}
   html body .wrap[data-page="report"] :is(.pk-slotcell,.pk-head .h-info){display:none}
 }
 /* Cards reflow by content width. */
@@ -572,4 +572,7 @@ html body .wrap[data-page="report"] .one-grid .card .cmp{order:6}
 html body .wrap[data-page="report"] .one-grid .card .matchup{order:7}
 /* Filter bar: compact ranges, one row where width allows. */
 html body .wrap[data-page="report"] .fbar{gap:var(--s2) var(--s4); padding:var(--s3) var(--s4)}
-html body .wrap[data-page="report"] .fbar .fgrp .frng{width:68px}
+html body .wrap[data-page="report"] .fbar .fgrp .frng{width:78px}
+html body .wrap[data-page="report"] .fbar .fgrp[hidden]{display:none}
+@media (min-width:1500px){html body .wrap[data-page="report"] .two > .glp .glp-grid{grid-template-columns:1fr}}
+@media (max-width:1100px){html body .wrap[data-page="report"] h1{font-size:32px; line-height:36px} html body .wrap[data-page="report"] h1 .gh-sc{font-size:40px; line-height:40px}}

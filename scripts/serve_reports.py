@@ -2175,13 +2175,14 @@ CARD_JS = """<script>
   document.querySelectorAll("#fbar .fgrp").forEach(function(g){ var k=g.querySelector(".fgrp-k"); if(k&&k.textContent==="Market") mg=g; });
   if(mg){ chips=[].slice.call(mg.querySelectorAll(".fchip")); mg.hidden=true; }
   function pressed(){ return chips.filter(function(b){return b.getAttribute("aria-pressed")==="true";}); }
-  function paint(){ var p=pressed(), on=p.length===1?p[0].textContent:""; [].slice.call(tabs.children).forEach(function(t){ t.classList.toggle("on", t.dataset.k===on); }); }
+  function paint(){ var p=pressed(), on=p.length===0?"":p.length===1?p[0].textContent:null; [].slice.call(tabs.children).forEach(function(t){ t.classList.toggle("on", t.dataset.k===on); }); }
   function mk(text,k){ var b=document.createElement("button"); b.type="button"; b.textContent=text; b.dataset.k=k;
     b.addEventListener("click",function(){ chips.forEach(function(c){ var want=k&&c.textContent===k; if((c.getAttribute("aria-pressed")==="true")!==!!want) c.click(); }); paint(); }); tabs.appendChild(b); }
   mk("All markets","");
   order.forEach(function(l){ var c=cards.filter(function(x){return x.dataset.mlabel===l;})[0]; if(c) mk(l,String(c.dataset.stat).replace(/_/g," ")); });
   var sp=document.createElement("div"); sp.hidden=true;
-  sec.appendChild(tabs); sec.appendChild(sp); sec.appendChild(one); paint();
+  sec.appendChild(tabs); sec.appendChild(sp); sec.appendChild(one); paint(); if(order.length<2) tabs.hidden=true;
+  var rs=document.getElementById("freset"); if(rs) rs.addEventListener("click",paint);
 })();
 </script>"""
 

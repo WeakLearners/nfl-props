@@ -232,7 +232,7 @@ def page_html(g, w):
     mkt = ""
     if hm is not None and am is not None:
         imp = lambda o: -o / (-o + 100) if o < 0 else 100 / (o + 100)  # noqa: E731
-        mkt = f" &middot; market {imp(hm) / (imp(hm) + imp(am)) * 100:.0f}%"
+        mkt = f" &middot; mkt {imp(hm) / (imp(hm) + imp(am)) * 100:.0f}%"
     cells.append(cell("Home win chance", f"{home} {g['p_home'] * 100:.0f}%{mkt}", "", pill(r["mres"])))
     if r["played"]:
         cells.append(cell("Final", f"{away} {int(g['away_score'])} &ndash; {home} {int(g['home_score'])}"))
