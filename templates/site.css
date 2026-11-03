@@ -606,3 +606,9 @@ html body .wrap[data-page="report"] h1 .gh-side{display:inline-flex; align-items
 html body .wrap[data-page="report"] h1 .gh-side.ga .gh-sc{border-left:2px solid var(--line); border-right:0; padding:0 0 0 var(--s3); margin:0}
 html body .wrap[data-page="report"] h1 .gh-side.gb .gh-sc{border-right:2px solid var(--line); border-left:0; padding:0 var(--s3) 0 0; margin:0}
 html body .wrap[data-page="report"] h1 .gh-side .gh-sc.w{border-color:var(--accent)}
+
+/* Header rank boxes: as tall as the team name's line box, clearly readable, smaller than the score. */
+html body .wrap[data-page="report"] h1 :is(.trk.a,.trk.b){height:var(--lh-display); min-width:56px; padding:0 var(--s2); display:inline-flex; align-items:center; justify-content:center; overflow:visible}
+html body .wrap[data-page="report"] h1 .trk .trk-in{height:auto; gap:2px}
+html body .wrap[data-page="report"] h1 .trk b{font:600 var(--t-h2)/1 var(--f-mono); font-variant-numeric:tabular-nums}
+html body .wrap[data-page="report"] h1 .trk i{font:500 var(--t-data)/1 var(--f-mono); font-variant-numeric:tabular-nums; margin-top:0; opacity:1; color:var(--ink-2)}
