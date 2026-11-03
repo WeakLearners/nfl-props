@@ -122,14 +122,7 @@
   }
   var btn = mk("nfli-btn", "button");
   btn.textContent = "⌖";               // crosshair
-  // Hidden from visitors. Open any page once with ?inspect=1 to show it in this browser; ?inspect=0 hides it again.
-  (function () {
-    var SHOW = "nflprops.inspector.show", v = null;
-    try { v = (location.search.match(/[?&]inspect=([01])/) || [])[1] || null;
-          if (v) localStorage.setItem(SHOW, v); else v = localStorage.getItem(SHOW); } catch (e) {}
-    if (v !== "1") btn.style.display = "none";
-  })();
-  btn.title = "Inspect mode - hover to locate an element, click to compose a prompt";
+  btn.title = "Inspect mode";
   var box = mk("nfli-box");
   var lab = mk("nfli-lab");
   var bub = mk("nfli-bub");
