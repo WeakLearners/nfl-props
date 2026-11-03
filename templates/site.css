@@ -492,3 +492,6 @@ html body .wrap[data-page="report"]{grid-template-rows:auto auto auto 1fr}
 html body .wrap[data-page="report"] > .sub{align-self:start}
 html body .wrap[data-page="results"] #mq table, html body .wrap[data-page="results"] #mqw table{width:100%}
 html body .wrap[data-page="results"] .gl-block{margin-top:var(--s7)}
+html body .wrap[data-page="trends"] td:is(.up,.dn){color:var(--ink)}
+html body .wrap[data-page="slate"] [data-inspect-id="slate-window-hits"]{background:none}
+html body .wrap[data-page="results"] #mqbox table{width:100%}
