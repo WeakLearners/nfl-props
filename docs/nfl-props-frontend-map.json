@@ -25,6 +25,46 @@
       "description": "The single report template. Placeholders (__DATA__, __META__, __TARGET__, __TITLE__, __EYEBROW__, __HEADLINE__, __TARGET_ABS__) are string-replaced at build time; everything else is drawn client-side from DATA. The likeliest touchdown scorer is not baked in: scripts/serve_reports.py injects window.__TD__ at serve time, and the script tints that player's cards. Results arrive the same way, as window.__ACTUALS__, and only once the game is final. The back and rankings/trends links were removed from the template on 2026-10-04: the site nav (site-chrome) replaces them. Report files built earlier still carry those links (ids report-back, report-rankings-link, report-trends-link), hidden by CSS in CHROME_CSS.",
       "uiElements": [
         {
+          "id": "report-intro",
+          "label": "Game page intro line",
+          "kind": "text",
+          "description": "One short line under the game header: what a card shows and how the cards are ordered (by stat, then role depth). The longer notes sit in How to read a card.",
+          "locate": {
+            "path": "scripts/serve_reports.py:2143",
+            "grep": "grep -n -F -- 'data-inspect-id=\"report-intro\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "legend-history",
+          "label": "Legend: history dots key",
+          "kind": "text",
+          "description": "Legend row for the five history dots on each player card: the last 5 calls on this player and stat, newest at left.",
+          "locate": {
+            "path": "scripts/serve_reports.py:2118",
+            "grep": "grep -n -F -- 'data-inspect-id=\"legend-history\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "legend-rank",
+          "label": "Legend: team rank badge key",
+          "kind": "text",
+          "description": "Legend row that explains the rank badge beside each team name: the hit rate on all legs and its rank of 32.",
+          "locate": {
+            "path": "scripts/serve_reports.py:2124",
+            "grep": "grep -n -F -- 'data-inspect-id=\"legend-rank\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "legend-how-to-read",
+          "label": "Legend: How to read a card link",
+          "kind": "link",
+          "description": "Link at the end of the legend that jumps to the notes at the bottom of the game page.",
+          "locate": {
+            "path": "scripts/serve_reports.py:2128",
+            "grep": "grep -n -F -- 'data-inspect-id=\"legend-how-to-read\"' scripts/serve_reports.py"
+          }
+        },
+        {
           "id": "page-wrap",
           "label": "Page container",
           "kind": "layout",
@@ -894,6 +934,26 @@
       "description": "The listing at /. Built by index_html() from the PAGE constant in this file -- there is no template. Weeks are tabs, left to right as played, newest selected. Cards are split into one block per kickoff time inside a week. Game cards deliberately mirror the player card in templates/report.html; if that card's anatomy moves, move this with it. The tab script is the separate TABS_JS constant, kept out of PAGE so its braces need no escaping.",
       "uiElements": [
         {
+          "id": "index-key",
+          "label": "How to read a card (week page)",
+          "kind": "panel",
+          "description": "Collapsible help on the week page: what All legs, Short list, the 75% tick and the game-lines rows mean.",
+          "locate": {
+            "path": "scripts/serve_reports.py:279",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-key\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "index-kick",
+          "label": "Card kickoff time",
+          "kind": "text",
+          "description": "Top-left line of each week card: day and kickoff time. The right side shows FINAL after the game.",
+          "locate": {
+            "path": "scripts/serve_reports.py:384",
+            "grep": "grep -n -F -- 'data-inspect-id=\"index-kick\"' scripts/serve_reports.py"
+          }
+        },
+        {
           "id": "index-wrap",
           "label": "Listing container",
           "kind": "layout",
@@ -1421,6 +1481,26 @@
       "file": "scripts/serve_reports.py",
       "description": "Served at /explore (nav label and title: Results). Every graded shortlisted leg across every week, grouped by a chosen category with an optional one-category filter. Server side is explore_html() in scripts/serve_reports.py, which grades through grade_legs (same rule as the listing tallies and the slate) and embeds the legs as window.__EXPLORE__; the page itself is templates/explore.html. Legs from games not yet final are counted as pending, never shown -- the pending count is season-wide, not scoped to the current Picks/Group by/Only selection.",
       "uiElements": [
+        {
+          "id": "explore-gamelines-heading",
+          "label": "Game lines section heading",
+          "kind": "text",
+          "description": "Heading of the Game lines record block on Results, separate from the props records.",
+          "locate": {
+            "path": "templates/explore.html:254",
+            "grep": "grep -n -F -- 'data-inspect-id=\"explore-gamelines-heading\"' templates/explore.html"
+          }
+        },
+        {
+          "id": "explore-gamelines-note",
+          "label": "Game lines intro note",
+          "kind": "text",
+          "description": "Short note under the Game lines heading: entertainment only, and each game prediction is on its card and its page.",
+          "locate": {
+            "path": "templates/explore.html:255",
+            "grep": "grep -n -F -- 'data-inspect-id=\"explore-gamelines-note\"' templates/explore.html"
+          }
+        },
         {
           "id": "explore-wrap",
           "label": "Explore container",
