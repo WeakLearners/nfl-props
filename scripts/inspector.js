@@ -123,6 +123,8 @@
   var btn = mk("nfli-btn", "button");
   btn.textContent = "⌖";               // crosshair
   btn.title = "Inspect mode";
+  // In the site bar, beside the theme toggle. Pages without a bar keep the floating button.
+  (function () { var bar = document.querySelector(".sn-right"); if (bar) { bar.appendChild(btn); btn.setAttribute("data-bar", "1"); } })();
   var box = mk("nfli-box");
   var lab = mk("nfli-lab");
   var bub = mk("nfli-bub");
