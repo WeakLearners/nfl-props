@@ -490,3 +490,5 @@ html body .wrap[data-page="report"] .glp .pf-v{flex-wrap:wrap}
 html body .wrap[data-page="report"] > .legend{grid-row:span 2}
 html body .wrap[data-page="report"]{grid-template-rows:auto auto auto 1fr}
 html body .wrap[data-page="report"] > .sub{align-self:start}
+html body .wrap[data-page="results"] #mq table, html body .wrap[data-page="results"] #mqw table{width:100%}
+html body .wrap[data-page="results"] .gl-block{margin-top:var(--s7)}
