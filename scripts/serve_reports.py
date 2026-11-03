@@ -201,6 +201,13 @@ PAGE = HEAD + """
      no shortlist legs has only row 1. */
   .card.graded{{display:grid; grid-template-columns:1fr auto; row-gap:4px; column-gap:6px}}
   .card.graded .score{{margin-left:0; justify-self:end}}
+  /* Game lines block on a card: its own rows under a thin rule, never pooled with the props pills. */
+  .gl-rule{{grid-column:1/-1; border-top:1px solid var(--line-soft); margin-top:2px; height:0}}
+  .gl-rows{{grid-column:1/-1; display:grid; grid-template-columns:1fr auto; column-gap:6px; row-gap:2px}}
+  .gl-v{{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10px; color:var(--ink-2);
+    line-height:18px; text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}}
+  .card.none .gl-v{{color:var(--ink-3)}}
+  .gl-v .score{{margin-left:6px; height:14px; padding:0 4px; font-size:9px; vertical-align:middle}}
   .hits-label{{
     font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10px;
     letter-spacing:.06em; color:var(--ink-3); line-height:18px;
@@ -368,6 +375,12 @@ def index_html():
         files = []
     kicks = kickoffs()
     records = {}
+    try:
+        from nflprops.gamelines_view import card_html as gl_card, index_by_game, lines_blob
+        gl_idx = index_by_game(lines_blob())
+    except Exception as e:  # noqa: BLE001 -- cards still render without game lines
+        sys.stderr.write(f"game lines unavailable: {e}\n")
+        gl_idx, gl_card = {}, None
 
     # The week is the schedule's 16 games, not the 14 that happen to have a
     # report. A missing game used to be invisible, so a half-built week looked
@@ -448,17 +461,23 @@ def index_html():
                               f' data-inspect-id="index-hits"'
                               f' title="{hits} of {n} shortlisted picks hit'
                               f' ({100 * hits / n:.0f}%)">{hits}/{n}</span>')
-            cls = "card graded" if score else "card"
+            away_t, home_t = label.split(" @ ")
+            glg = gl_idx.get((season, week, away_t, home_t))
+            glb = gl_card(glg[0]) if glg else ""
+            cls = "card graded" if (score or glb) else "card"
             row = (f'<a class="{cls}" data-inspect-id="index-row" href="/{f}">'
                    f'<span class="name" data-inspect-id="index-game-label">{label}</span>'
-                   f'{score}</a>')
+                   f'{score or "<span></span>" if glb else score}{glb}</a>')
         else:
-            row = (f'<div class="card none" data-inspect-id="index-row-pending"'
+            away_t, home_t = label.split(" @ ")
+            glg = gl_idx.get((season, week, away_t, home_t))
+            glb = gl_card(glg[0]) if glg else ""
+            row = (f'<div class="card none{" graded" if glb else ""}" data-inspect-id="index-row-pending"'
                    f' aria-disabled="true">'
                    f'<span class="name" data-inspect-id="index-game-label-pending">{label}</span>'
                    f'<span class="score na" data-inspect-id="index-no-report"'
                    f' title="No report generated for this game yet">N/A</span>'
-                   f'</div>')
+                   f'{glb}</div>')
 
         # The heading for the run of games that kick off together, in three
         # pieces: a day chip, the clock time, and the calendar date. Entries
@@ -1237,7 +1256,6 @@ def slate_html():
 # ------------------------------------------------------------- explore page
 
 EXPLORE_TPL = os.path.join(BASE, "templates", "explore.html")
-LINES_TPL = os.path.join(BASE, "templates", "lines.html")
 # Only what the page groups or prints. The report blob carries the model's
 # whole distribution per leg; none of it is needed to count hits.
 # "app" is report.py's own DEF_WEIGHT(stat) > 0 flag -- whether the opponent
@@ -1470,19 +1488,12 @@ def explore_html():
     mq = [r for r in mq if r["season"] == max([x["season"] for x in mq])] if mq else []
     blob = json.dumps({"legs": legs, "pending": pending, "void": void, "upcoming": up, "mq": mq,
                        "upcomingWeek": {"season": sw[0], "week": sw[1]} if sw else None}).replace("</", "<\\/")
+    from nflprops.gamelines_view import lines_blob
+    gl = json.dumps({"backtest": lines_blob()["backtest"]}).replace("</", "<\\/")
     head = HEAD.replace("NFL Props \u2014 reports", "NFL Props \u00b7 Results").format()
     body = open(EXPLORE_TPL, encoding="utf-8").read()
-    return (head.replace(CHARSET, CHARSET + f"\n<script>window.__EXPLORE__={blob};</script>", 1)
+    return (head.replace(CHARSET, CHARSET + f"\n<script>window.__EXPLORE__={blob};window.__GL__={gl};</script>", 1)
             + body)
-
-
-def lines_page_html():
-    """Game Lines: spread, total and win probability. Its own page, never pooled with props."""
-    from nflprops.gamelines_view import lines_blob
-    blob = json.dumps(lines_blob()).replace("</", "<\\/")
-    head = HEAD.replace("NFL Props \u2014 reports", "NFL Props \u00b7 Game lines").format()
-    body = open(LINES_TPL, encoding="utf-8").read()
-    return head.replace(CHARSET, CHARSET + f"\n<script>window.__LINES__={blob};</script>", 1) + body
 
 
 # ------------------------------------------------------------- theme toggle
@@ -1831,8 +1842,7 @@ CHROME_CSS = """<style>
 SECTIONS = (("week", "Week", "/", "site-nav-week"),
             ("players", "Players", "/rankings.html", "site-nav-players"),
             ("trends", "Trends", "/trends.html", "site-nav-trends"),
-            ("results", "Results", "/explore", "site-nav-results"),
-            ("lines", "Game lines", "/lines", "site-nav-lines"))
+            ("results", "Results", "/explore", "site-nav-results"))
 SUBPAGES = {"week": (("games", "Games", "/", "site-subnav-games"),
                      ("slate", "Slate", "/slate", "site-subnav-slate")),
             "players": (("rankings", "Rankings", "/rankings.html", "site-subnav-rankings"),)}
@@ -2168,6 +2178,13 @@ class Handler(SimpleHTTPRequestHandler):
                         + ';window.__PICKSLOT__=' + json.dumps(pick_slot_rates(legs)) + ';</script>', 1)
                 except Exception:
                     pass
+                try:
+                    from nflprops.gamelines_view import index_by_game, lines_blob, page_html as gl_page
+                    hit = index_by_game(lines_blob()).get((int(m.group(1)), int(m.group(2)), m.group(3), m.group(4)))
+                    if hit and '<div class="fbar"' in html:
+                        html = html.replace('<div class="fbar"', gl_page(*hit) + '\n  <div class="fbar"', 1)
+                except Exception as e:  # noqa: BLE001 -- the report works without game lines
+                    sys.stderr.write(f"game lines section skipped: {e}\n")
                 html += "\n" + TRAY_HTML  # player tray: after the report script, which defines DATA
         body = (with_theme(html) +
                 '\n<script src="/_inspector.js"></script>\n').encode()
@@ -2252,10 +2269,9 @@ class Handler(SimpleHTTPRequestHandler):
             return
 
         if path in ("/lines", "/lines/", "/lines.html"):
-            # Built per request from frozen predictions and the schedules table.
-            html = with_chrome(lines_page_html(), "lines", None, "NFL Props \u00b7 Game lines")
-            body = (with_theme(html) + '\n<script src="/_inspector.js"></script>\n').encode()
-            self._send(body, "text/html; charset=utf-8")
+            # The Game lines page is gone: lines live on the cards and game pages,
+            # the season record on Results. Old links land on that record.
+            self._redirect("/explore#explore-gamelines")
             return
 
         if path in ("/", "/index.html"):

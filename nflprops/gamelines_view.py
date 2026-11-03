@@ -57,10 +57,186 @@ def lines_blob(season=2026):
         weeks[wk] = {"games": games, "sd_margin": d["sd_margin"], "sd_total": d["sd_total"],
                      "windows": d.get("windows"), "windows50": d.get("windows50"),
                      "target_record": d.get("target_record"), "target_display": d.get("target_display"),
-                     "train_through": d["train_through"], "reconstructed": d["reconstructed"]}
+                     "train_through": d["train_through"], "reconstructed": d["reconstructed"],
+                     "frozen_at": d.get("frozen_at")}
     try:
         bt = json.loads(BACKTEST.read_text())
     except (FileNotFoundError, ValueError):
         bt = None
     cur = max(weeks) if weeks else None
     return {"season": season, "currentWeek": cur, "weeks": weeks, "backtest": bt}
+
+
+# ---------------------------------------------------------------------------
+# Render helpers for the game cards and game pages. Display only: every number
+# comes from lines_blob() (frozen predictions + live lines), nothing is rewritten.
+from html import escape as _e
+
+
+def index_by_game(blob):
+    """{(season, week, away, home): (game, week_meta)} -- the join key is the team pair."""
+    out = {}
+    for wk, w in blob["weeks"].items():
+        for g in w["games"]:
+            out[(blob["season"], wk, g["away"], g["home"])] = (g, w)
+    return out
+
+
+def _sp(team, m):
+    if abs(m) < 0.05:
+        return f"{team} PK"
+    return f"{team} {'-' if m > 0 else '+'}{abs(m):.1f}"
+
+
+def _rnd(x):
+    return int(x + 0.5)
+
+
+def _res(diff, lean):
+    """+1 hit, -1 miss, 0 push for a result diff against the line and the model's lean."""
+    return 0 if diff == 0 else (1 if (diff > 0) == (lean > 0) else -1)
+
+
+def grade(g):
+    """Lean, line and (after the game) results. Missing pieces stay None."""
+    line, tl = g.get("spread_line"), g.get("total_line")
+    side = None if line is None else g["pred_margin"] - line
+    ts = None if tl is None else g["pred_total"] - tl
+    played = g.get("home_score") is not None and g.get("away_score") is not None
+    margin = g["home_score"] - g["away_score"] if played else None
+    total = g["home_score"] + g["away_score"] if played else None
+    sres = _res(margin - line, side) if played and side not in (None, 0) else None
+    tres = _res(total - tl, ts) if played and ts not in (None, 0) else None
+    mres = None
+    if played and margin != 0 and g["p_home"] != 0.5:
+        mres = 1 if (margin > 0) == (g["p_home"] > 0.5) else -1
+    return {"line": line, "tl": tl, "side": side, "ts": ts, "played": played,
+            "sres": sres, "tres": tres, "mres": mres}
+
+
+def _pill(r, cls="score", na_text="N/A"):
+    if r is None:
+        return f'<span class="{cls} na">{na_text}</span>'
+    if r == 0:
+        return f'<span class="{cls} na">PUSH</span>'
+    return f'<span class="{cls} {"good" if r > 0 else "bad"}">{"HIT" if r > 0 else "MISS"}</span>'
+
+
+def card_html(g, none=False):
+    """Compact block for an index card: win chance, spread, total, score, results."""
+    r = grade(g)
+    home, away = g["home"], g["away"]
+    tip = []
+    if r["line"] is not None:
+        lean = "no lean" if r["side"] == 0 else _sp(home, r["line"]) if r["side"] > 0 else _sp(away, -r["line"])
+        tip.append(f"Spread line {_sp(home, r['line'])}, lean {lean}.")
+    if r["tl"] is not None:
+        lean = "no lean" if r["ts"] == 0 else ("Over " if r["ts"] > 0 else "Under ") + f"{r['tl']:.1f}"
+        tip.append(f"Total line {r['tl']:.1f}, lean {lean}.")
+    tip = _e(" ".join(tip) or "No line posted for this game.", quote=True)
+
+    def row(label, value, rid, pill="", title=""):
+        t = f' title="{title}"' if title else ""
+        return (f'<span class="hits-label">{label}</span>'
+                f'<span class="gl-v" data-inspect-id="{rid}"{t}>{value}{pill}</span>')
+    spill = _pill(r["sres"]) if r["played"] and r["side"] != 0 else ""
+    tpill = _pill(r["tres"]) if r["played"] and r["ts"] != 0 else ""
+    if r["played"] and r["line"] is None:
+        spill = _pill(None)
+    if r["played"] and r["tl"] is None:
+        tpill = _pill(None)
+    # Spread and total are written from the side of the lean, so the pill grades the number shown.
+    spread = _sp(away, -g["pred_margin"]) if r["side"] is not None and r["side"] < 0 else _sp(home, g["pred_margin"])
+    total = f"{g['pred_total']:.1f}"
+    if r["ts"]:
+        total = ("O " if r["ts"] > 0 else "U ") + total
+    if r["played"]:
+        label, score = "Final", f"{int(g['away_score'])}-{int(g['home_score'])}"
+    else:
+        label, score = "Model", f"{_rnd(g['mu_away'])}-{_rnd(g['mu_home'])}"
+    return (f'<div class="gl-rule" data-inspect-id="index-gl"></div><div class="gl-rows">'
+            + row("Win", f"{home} {g['p_home'] * 100:.0f}%", "index-gl-win")
+            + row("Spread", spread, "index-gl-spread", spill, tip)
+            + row("Total", total, "index-gl-total", tpill, tip)
+            + row(label, score, "index-gl-score") + "</div>")
+
+
+PAGE_CSS = """<style>
+  .glp{margin:6px 0 10px}
+  .glp .picks-note{margin-bottom:12px}
+  .glp-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px 28px}
+  .glp-grid > div{display:flex; flex-direction:column; gap:2px}
+  .glp-grid .sub2{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-3)}
+  .glp .pf-v{display:flex; align-items:center; gap:8px}
+  .glp .flag{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600; color:var(--bad);
+    letter-spacing:.04em; margin-right:12px}
+  .glp .pill{display:inline-flex; align-items:center; height:18px; padding:0 6px; border-radius:2px;
+    font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600; letter-spacing:.04em; color:var(--surface)}
+  .glp .pill.good{background:var(--good)} .glp .pill.bad{background:var(--bad)}
+  .glp .pill.push{background:none; color:var(--ink-3); border:1px dashed var(--line)}
+</style>"""
+
+
+def page_html(g, w):
+    """Full-detail Game lines section for a game page."""
+    r = grade(g)
+    home, away = g["home"], g["away"]
+    h = w.get("windows50") or None
+
+    def pm(k):
+        return f" &plusmn;{h[k]['half']:.1f}" if h else ""
+
+    def pill(x):
+        if x is None:
+            return ""
+        return '<span class="pill push">PUSH</span>' if x == 0 else \
+            f'<span class="pill {"good" if x > 0 else "bad"}">{"HIT" if x > 0 else "MISS"}</span>'
+
+    def cell(k, v, sub="", p=""):
+        s = f'<span class="sub2">{sub}</span>' if sub else ""
+        return f'<div><span class="pf-k">{k}</span><span class="pf-v">{v}{p}</span>{s}</div>'
+
+    cells = [cell("Model score", f"{away} {_rnd(g['mu_away'])} &ndash; {home} {_rnd(g['mu_home'])}",
+                  f"&plusmn;{h['away_score']['half']:.1f} / &plusmn;{h['home_score']['half']:.1f}" if h else "")]
+    cells.append(cell("Model spread", _sp(home, g["pred_margin"]) + pm("margin"),
+                      f"line {_sp(home, r['line'])}" if r["line"] is not None else "no line"))
+    if r["line"] is None:
+        pass
+    elif r["side"] == 0:
+        cells.append(cell("Spread lean", "no lean"))
+    else:
+        cells.append(cell("Spread lean", _sp(home, r["line"]) if r["side"] > 0 else _sp(away, -r["line"]),
+                          "", pill(r["sres"])))
+    cells.append(cell("Model total", f"{g['pred_total']:.1f}" + pm("total"),
+                      f"line {r['tl']:.1f}" if r["tl"] is not None else "no line"))
+    if r["tl"] is None:
+        pass
+    elif r["ts"] == 0:
+        cells.append(cell("Total lean", "no lean"))
+    else:
+        cells.append(cell("Total lean", ("Over " if r["ts"] > 0 else "Under ") + f"{r['tl']:.1f}", "", pill(r["tres"])))
+    hm, am = g.get("home_moneyline"), g.get("away_moneyline")
+    mkt = ""
+    if hm is not None and am is not None:
+        imp = lambda o: -o / (-o + 100) if o < 0 else 100 / (o + 100)  # noqa: E731
+        mkt = f" &middot; {imp(hm) / (imp(hm) + imp(am)) * 100:.0f}% market"
+    cells.append(cell("Home win chance", f"{home} {g['p_home'] * 100:.0f}% model{mkt}", "", pill(r["mres"])))
+    if r["played"]:
+        cells.append(cell("Final", f"{away} {int(g['away_score'])} &ndash; {home} {int(g['home_score'])}"))
+    flags = []
+    if g.get("home_qb_out"):
+        flags.append(f"{home} QB out")
+    if g.get("away_qb_out"):
+        flags.append(f"{away} QB out")
+    if (g.get("wx_used") or {}).get("heavy_rain_flag"):
+        flags.append("Heavy rain")
+    fl = ('<div class="pf-wide">' + "".join(f'<span class="flag">{_e(x)}</span>' for x in flags) + "</div>") if flags else ""
+    note = ("The model is fit again each week on earlier games" +
+            (", rebuilt after the game from earlier games only" if w.get("reconstructed") else
+             f", frozen {_e(str(w['frozen_at'])[:10])}" if w.get("frozen_at") else "") +
+            ". " + ("&plusmn; is the 50% window, which lands inside about half the time. " if h else "") +
+            'Season record on <a href="/explore#explore-gamelines">Results</a>.')
+    return (PAGE_CSS + '<section class="glp" data-inspect-id="report-gamelines">'
+            '<h2 class="picks-h">Game lines<span class="unit">entertainment only</span></h2>'
+            f'<div class="glp-grid">{"".join(cells)}</div>{fl}'
+            f'<p class="picks-note" style="margin-top:10px">{note}</p></section>')

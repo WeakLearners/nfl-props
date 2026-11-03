@@ -873,6 +873,16 @@
             "path": "nflprops/tray.py:326",
             "grep": "grep -n -F -- 'data-inspect-id=\"player-tray-opp-summary\"' nflprops/tray.py"
           }
+        },
+        {
+          "id": "report-gamelines",
+          "label": "Game lines section",
+          "kind": "section",
+          "description": "Full game lines detail on the game page: score, spread, total, leans, win chance, flags, 50% window. Built per request by page_html() in nflprops/gamelines_view.py.",
+          "locate": {
+            "path": "nflprops/gamelines_view.py:229",
+            "grep": "grep -n -F -- 'report-gamelines' nflprops/gamelines_view.py"
+          }
         }
       ]
     },
@@ -1111,6 +1121,56 @@
           "locate": {
             "path": "scripts/serve_reports.py:448",
             "grep": "grep -n -F -- 'data-inspect-id=\"index-hits\"' scripts/serve_reports.py"
+          }
+        },
+        {
+          "id": "index-gl",
+          "label": "Game lines rule",
+          "kind": "layout",
+          "description": "Thin rule that starts the game lines block on a card. Title holds the line and the lean.",
+          "locate": {
+            "path": "nflprops/gamelines_view.py:148",
+            "grep": "grep -n -F -- 'index-gl' nflprops/gamelines_view.py"
+          }
+        },
+        {
+          "id": "index-gl-win",
+          "label": "Home win chance row",
+          "kind": "stat",
+          "description": "Model home win chance on the card.",
+          "locate": {
+            "path": "nflprops/gamelines_view.py:149",
+            "grep": "grep -n -F -- 'index-gl-win' nflprops/gamelines_view.py"
+          }
+        },
+        {
+          "id": "index-gl-spread",
+          "label": "Spread row",
+          "kind": "stat",
+          "description": "Model spread for the home team. After the game: HIT, MISS or PUSH against the closing spread.",
+          "locate": {
+            "path": "nflprops/gamelines_view.py:150",
+            "grep": "grep -n -F -- 'index-gl-spread' nflprops/gamelines_view.py"
+          }
+        },
+        {
+          "id": "index-gl-total",
+          "label": "Total row",
+          "kind": "stat",
+          "description": "Model total. After the game: HIT, MISS or PUSH against the closing total.",
+          "locate": {
+            "path": "nflprops/gamelines_view.py:151",
+            "grep": "grep -n -F -- 'index-gl-total' nflprops/gamelines_view.py"
+          }
+        },
+        {
+          "id": "index-gl-score",
+          "label": "Score row",
+          "kind": "stat",
+          "description": "Predicted score; the final score after the game.",
+          "locate": {
+            "path": "nflprops/gamelines_view.py:152",
+            "grep": "grep -n -F -- 'index-gl-score' nflprops/gamelines_view.py"
           }
         }
       ]
@@ -1709,6 +1769,56 @@
           "locate": {
             "path": "templates/explore.html:229",
             "grep": "grep -n -F -- 'data-inspect-id=\"explore-footer\"' templates/explore.html"
+          }
+        },
+        {
+          "id": "explore-gamelines",
+          "label": "Game lines record block",
+          "kind": "section",
+          "description": "Season record for game lines: W-L-P by category, model-only 50% and 68% record, error and Brier, moneyline. Separate from props.",
+          "locate": {
+            "path": "templates/explore.html:257",
+            "grep": "grep -n -F -- 'explore-gamelines' templates/explore.html"
+          }
+        },
+        {
+          "id": "explore-gl-tally",
+          "label": "W-L-P by category box",
+          "kind": "card",
+          "description": "W-L-P by category box in the Game lines block.",
+          "locate": {
+            "path": "templates/explore.html:262",
+            "grep": "grep -n -F -- 'explore-gl-tally' templates/explore.html"
+          }
+        },
+        {
+          "id": "explore-gl-window",
+          "label": "Model-only record box",
+          "kind": "card",
+          "description": "Model-only record box in the Game lines block.",
+          "locate": {
+            "path": "templates/explore.html:267",
+            "grep": "grep -n -F -- 'explore-gl-window' templates/explore.html"
+          }
+        },
+        {
+          "id": "explore-gl-record",
+          "label": "Record against the closing line box",
+          "kind": "card",
+          "description": "Record against the closing line box in the Game lines block.",
+          "locate": {
+            "path": "templates/explore.html:272",
+            "grep": "grep -n -F -- 'explore-gl-record' templates/explore.html"
+          }
+        },
+        {
+          "id": "explore-gl-ml",
+          "label": "Moneyline box",
+          "kind": "card",
+          "description": "Moneyline box in the Game lines block.",
+          "locate": {
+            "path": "templates/explore.html:277",
+            "grep": "grep -n -F -- 'explore-gl-ml' templates/explore.html"
           }
         }
       ]
@@ -2909,16 +3019,6 @@
           }
         },
         {
-          "id": "site-nav-lines",
-          "label": "Game lines section link",
-          "kind": "link",
-          "description": "Game lines section, /lines.",
-          "locate": {
-            "path": "scripts/serve_reports.py:1835",
-            "grep": "grep -n -F -- '\"site-nav-lines\"' scripts/serve_reports.py"
-          }
-        },
-        {
           "id": "site-subnav",
           "label": "Section pages row",
           "kind": "layout",
@@ -2986,245 +3086,6 @@
           "locate": {
             "path": "scripts/serve_reports.py:2019",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-footer\"' scripts/serve_reports.py"
-          }
-        }
-      ]
-    },
-    {
-      "id": "lines-page",
-      "label": "Game lines",
-      "category": "generated-page",
-      "file": "templates/lines.html",
-      "description": "Spread, total and home win chance for each game, from nflprops/gamelines.py. Built per request by lines_page_html() in scripts/serve_reports.py from the frozen weekly predictions (data/gamelines/frozen/) joined to live lines and scores, and from data/gamelines/backtest_2026.json. Served at /lines. A separate section on purpose: game lines are never pooled with props or TD picks. Entertainment only.",
-      "uiElements": [
-        {
-          "id": "lines-wrap",
-          "label": "Page container",
-          "kind": "layout",
-          "description": "Full-width column (LAYOUT_CSS) that holds the Game lines page.",
-          "locate": {
-            "path": "templates/lines.html:37",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-wrap\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-eyebrow",
-          "label": "Eyebrow",
-          "kind": "text",
-          "description": "Small line above the title.",
-          "locate": {
-            "path": "templates/lines.html:39",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-eyebrow\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-title",
-          "label": "Title",
-          "kind": "text",
-          "description": "Page title, Game lines.",
-          "locate": {
-            "path": "templates/lines.html:40",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-title\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-disclaimer",
-          "label": "Disclaimer",
-          "kind": "text",
-          "description": "Entertainment-only note: the model does not beat the closing line, and game lines are kept apart from props and TD picks.",
-          "locate": {
-            "path": "templates/lines.html:42",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-disclaimer\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-controls",
-          "label": "Controls row",
-          "kind": "layout",
-          "description": "Holds the week picker.",
-          "locate": {
-            "path": "templates/lines.html:45",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-controls\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-week-select",
-          "label": "Week picker",
-          "kind": "select",
-          "description": "Chooses which frozen week the Predictions table shows. Defaults to the newest week.",
-          "locate": {
-            "path": "templates/lines.html:47",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-week-select\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-week-note",
-          "label": "Week note",
-          "kind": "text",
-          "description": "Fit cutoff and error spreads for the picked week. Says when a week was rebuilt after the fact.",
-          "locate": {
-            "path": "templates/lines.html:49",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-week-note\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-games-heading",
-          "label": "Predictions heading",
-          "kind": "text",
-          "description": "Heading over the games table.",
-          "locate": {
-            "path": "templates/lines.html:50",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-games-heading\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-games-table",
-          "label": "Predictions table",
-          "kind": "table",
-          "description": "One row per game: predicted score for each team (whole points, unrounded on hover), model spread and total next to the book line, home win chance (model and market), the lean on each, and the result with HIT/MISS once final. Drawn by drawGames().",
-          "locate": {
-            "path": "templates/lines.html:51",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-games-table\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-record-heading",
-          "label": "Record heading",
-          "kind": "text",
-          "description": "Heading over the season record table.",
-          "locate": {
-            "path": "templates/lines.html:52",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-record-heading\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-record-note",
-          "label": "Record note",
-          "kind": "text",
-          "description": "Explains Adjust (weekly refit) against No adjust (one fit before the season) and what lower means.",
-          "locate": {
-            "path": "templates/lines.html:53",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-record-note\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-record-table",
-          "label": "Record table",
-          "kind": "table",
-          "description": "Per-week and season rows: margin, total and per-team score error against the closing line, spread and total hit rate, and Brier score, for Adjust and No adjust. Drawn by drawRecord().",
-          "locate": {
-            "path": "templates/lines.html:54",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-record-table\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-tally-heading",
-          "label": "W-L-P heading",
-          "kind": "text",
-          "description": "Heading over the win-loss-push tallies.",
-          "locate": {
-            "path": "templates/lines.html:55",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-tally-heading\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-tally-note",
-          "label": "W-L-P note",
-          "kind": "text",
-          "description": "Defines each category, pushes, the value-pick margin and paper units.",
-          "locate": {
-            "path": "templates/lines.html:56",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-tally-note\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-tally-table",
-          "label": "W-L-P by category table",
-          "kind": "table",
-          "description": "Per week and season: spread, total, moneyline (straight up) and moneyline value picks as W-L-P, each its own record, Adjust beside No adjust, plus paper units for value picks. Drawn by drawTally().",
-          "locate": {
-            "path": "templates/lines.html:57",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-tally-table\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-ml-heading",
-          "label": "Moneyline heading",
-          "kind": "text",
-          "description": "Heading over the moneyline stats.",
-          "locate": {
-            "path": "templates/lines.html:58",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-ml-heading\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-ml-note",
-          "label": "Moneyline note",
-          "kind": "text",
-          "description": "Explains the de-vigged closing moneyline benchmark.",
-          "locate": {
-            "path": "templates/lines.html:59",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-ml-note\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-ml-table",
-          "label": "Moneyline Brier and log loss table",
-          "kind": "table",
-          "description": "Per week and season: win chance Brier and log loss for the market, Adjust and No adjust. Drawn by drawMl().",
-          "locate": {
-            "path": "templates/lines.html:60",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-ml-table\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-calib-table",
-          "label": "Calibration table",
-          "kind": "table",
-          "description": "Model home win chance in five buckets: games, what the model said, how often home won, what the market said.",
-          "locate": {
-            "path": "templates/lines.html:61",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-calib-table\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-window-heading",
-          "label": "Model-only record heading",
-          "kind": "text",
-          "description": "Heading over the model-only record panel.",
-          "locate": {
-            "path": "templates/lines.html:62",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-window-heading\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-window-note",
-          "label": "Model-only record note",
-          "kind": "text",
-          "description": "Says the panel uses no betting line and what the 50% and 68% windows are.",
-          "locate": {
-            "path": "templates/lines.html:63",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-window-note\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-window-table",
-          "label": "Model-only record tables",
-          "kind": "table",
-          "description": "Two tables, the 50% window and the 68% window. Per week and season: share of home score, away score, margin and total that landed inside the window, and the mean window width in points, for Adjust and No adjust. No betting line is used. Drawn by drawWindows().",
-          "locate": {
-            "path": "templates/lines.html:64",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-window-table\"' templates/lines.html"
-          }
-        },
-        {
-          "id": "lines-footer",
-          "label": "Footer",
-          "kind": "text",
-          "description": "Fine print: predictions freeze once, lean is a record not a pick, how win chance is built.",
-          "locate": {
-            "path": "templates/lines.html:65",
-            "grep": "grep -n -F -- 'data-inspect-id=\"lines-footer\"' templates/lines.html"
           }
         }
       ]

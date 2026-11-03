@@ -163,6 +163,18 @@
     col.c-be{width:62px} col.c-r{width:62px}
     td:first-child{font-size:16px}
   }
+  .tablewrap{overflow-x:auto; margin-top:12px}
+  table.gl{border-collapse:collapse; width:100%; font-size:14px}
+  table.gl th,table.gl td{padding:7px 10px; text-align:left; white-space:nowrap;
+    border-bottom:1px solid var(--line-soft)}
+  table.gl th{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--ink-3); font-weight:500; border-bottom:1px solid var(--ink)}
+  table.gl td.num,table.gl th.num{text-align:right; font-family:"IBM Plex Mono",monospace;
+    font-variant-numeric:tabular-nums}
+  table.gl td.dim,span.dim{color:var(--ink-3)}
+  h3.gl-sub{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin:18px 0 4px}
+  .note{color:var(--ink-2); font-size:13.5px; margin:8px 0 0; max-width:96ch}
+  .gl-block h2{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:22px; text-transform:uppercase; letter-spacing:.04em; margin:36px 0 8px; padding-bottom:6px; border-bottom:1px solid var(--line)}
 </style>
 <div class="wrap" data-inspect-id="explore-wrap">
   <header>
@@ -236,6 +248,33 @@
     weight). It's never applied to receiving yards or receptions, so those legs sit outside
     this grouping rather than being counted against a number that didn't shape them.</footer>
   </div>
+  <section class="gl-block" data-inspect-id="explore-gamelines">
+    <h2 id="explore-gamelines" data-inspect-id="explore-gamelines-heading">Game lines</h2>
+    <p class="note" data-inspect-id="explore-gamelines-note"><strong>Entertainment only.</strong>
+      This model does not beat the closing line, and nothing here claims an edge. Game lines keep their own
+      record, apart from the player props and the touchdown picks. Each game&rsquo;s prediction is on its card and its page.</p>
+    <details class="top" open data-inspect-id="explore-gl-tally">
+      <summary class="top-h">W&ndash;L&ndash;P by category &middot; spread, total, moneyline</summary>
+      <p class="note" id="tally-note"></p>
+      <div class="tablewrap"><table class="gl" id="tally"></table></div>
+    </details>
+    <details class="top" open data-inspect-id="explore-gl-window">
+      <summary class="top-h">Model-only record &middot; 50% and 68% windows, no betting line</summary>
+      <p class="note" id="win-note"></p>
+      <div class="tablewrap"><table class="gl" id="windows"></table></div>
+    </details>
+    <details class="top" data-inspect-id="explore-gl-record">
+      <summary class="top-h">Record against the closing line &middot; error and Brier</summary>
+      <p class="note" id="rec-note"></p>
+      <div class="tablewrap"><table class="gl" id="record"></table></div>
+    </details>
+    <details class="top" data-inspect-id="explore-gl-ml">
+      <summary class="top-h">Moneyline &middot; Brier, log loss, calibration</summary>
+      <p class="note" id="ml-note"></p>
+      <div class="tablewrap"><table class="gl" id="ml"></table></div>
+      <div class="tablewrap"><table class="gl" id="calib"></table></div>
+    </details>
+  </section>
 </div>
 <script>
 (function () {
@@ -829,5 +868,114 @@
   });
   drawChips();
   render();
+})();
+</script>
+<script>
+(function () {
+  var D = window.__GL__ || {backtest: null};
+  function f1(x) { return x == null ? "&ndash;" : (Math.round(x * 10) / 10).toFixed(1); }
+  function pct(x) { return x == null ? "&ndash;" : (x * 100).toFixed(0) + "%"; }
+  function drawRecord() {
+    var b = D.backtest, t = document.getElementById("record");
+    if (!b) { t.innerHTML = ""; return; }
+    var by = {};
+    b.weeks.forEach(function (r) { (by[r.week] = by[r.week] || {})[r.model] = r; });
+    var wk = Object.keys(by).map(Number).sort(function (a, b) { return a - b; });
+    document.getElementById("rec-note").innerHTML =
+      "Weeks 1&ndash;" + wk[wk.length - 1] + ", " + b.season + ". <b>Adjust</b> refits each week on every game played so far. " +
+      "<b>No adjust</b> is one fit on seasons before " + b.season + ", used for every week. Error is the average miss in points (team score error is the miss for each team's own points; the line's score comes from its spread and total); lower is better. " +
+      "Brier scores the win chance; lower is better.";
+    var h = "<thead><tr><th>Week</th><th class='num'>Games</th><th class='num'>Margin error: line</th><th class='num'>Adjust</th><th class='num'>No adjust</th>" +
+      "<th class='num'>Total error: line</th><th class='num'>Adjust</th><th class='num'>No adjust</th><th class='num'>Spread hit: adjust</th><th class='num'>No adjust</th>" +
+      "<th class='num'>Total hit: adjust</th><th class='num'>No adjust</th><th class='num'>Team score error: line</th><th class='num'>Adjust</th><th class='num'>No adjust</th><th class='num'>Brier: market</th><th class='num'>Adjust</th><th class='num'>No adjust</th></tr></thead><tbody>";
+    function row(label, a, n, bl) {
+      var hit = function (m, k, kn) { return m && m[kn] ? (m[k] * 100).toFixed(0) + "% (" + Math.round(m[k] * m[kn]) + "/" + m[kn] + ")" : "&ndash;"; };
+      return "<tr><td>" + label + "</td><td class='num'>" + a.n + "</td>" +
+        "<td class='num dim'>" + f1(a.mae_margin_line) + "</td><td class='num'>" + f1(a.mae_margin_model) + "</td><td class='num'>" + f1(n.mae_margin_model) + "</td>" +
+        "<td class='num dim'>" + f1(a.mae_total_line) + "</td><td class='num'>" + f1(a.mae_total_model) + "</td><td class='num'>" + f1(n.mae_total_model) + "</td>" +
+        "<td class='num'>" + hit(a, "ats_hit", "ats_n") + "</td><td class='num'>" + hit(n, "ats_hit", "ats_n") + "</td>" +
+        "<td class='num'>" + hit(a, "ou_hit", "ou_n") + "</td><td class='num'>" + hit(n, "ou_hit", "ou_n") + "</td>" +
+        "<td class='num dim'>" + f1(a.mae_score_line) + "</td><td class='num'>" + f1(a.mae_score_model) + "</td><td class='num'>" + f1(n.mae_score_model) + "</td>" +
+        "<td class='num dim'>" + (a.brier_market == null ? "&ndash;" : a.brier_market.toFixed(3)) + "</td><td class='num'>" + a.brier_model.toFixed(3) + "</td><td class='num'>" + n.brier_model.toFixed(3) + "</td></tr>";
+    }
+    wk.forEach(function (w) { if (by[w].adjust && by[w].no_adjust) h += row("Week " + w, by[w].adjust, by[w].no_adjust); });
+    h += row("<b>Season</b>", b.cumulative.adjust, b.cumulative.no_adjust);
+    t.innerHTML = h + "</tbody>";
+  }
+  function drawWindows() {
+    var b = D.backtest, t = document.getElementById("windows");
+    if (!b || !b.window_weeks) { t.innerHTML = ""; return; }
+    var tr = Math.round((b.target_record || 0.683) * 1000) / 10, td = Math.round((b.target_display || 0.5) * 1000) / 10;
+    document.getElementById("win-note").innerHTML = "This panel does not use any betting line. It asks one question: how often did the result land inside the model's own window, and how wide was the window? " +
+      "Two windows, each with its own scale refit every week: the " + td + "% window shown on the page (lands inside about half the time) and the " + tr + "% window the win chance is built on. " +
+      "A model that gets better keeps each share near its target while the width shrinks. Width is the full window in points. In brackets: results inside&ndash;outside the window, as a tally. <b>Adjust</b> refits each week; <b>No adjust</b> keeps the window fixed before the season. Source: data/gamelines/backtest_2026.json.";
+    var Q = [["home_score", "Home score"], ["away_score", "Away score"], ["margin", "Margin"], ["total", "Total"]];
+    var by = {};
+    b.window_weeks.forEach(function (r) { (by[r.week] = by[r.week] || {})[r.model] = r; });
+    var h = "";
+    [["w50", td], ["w68", tr]].forEach(function (W) {
+      function pick(r) { return W[0] === "w50" ? r.w50 : r; }
+      h += "<h3 class='gl-sub'>" + W[1] + "% window</h3><table class='gl'><thead><tr><th>Week</th><th class='num'>Games</th>";
+      Q.forEach(function (q) { h += "<th class='num'>" + q[1] + " inside: adjust</th><th class='num'>No adjust</th><th class='num'>Width: adjust</th><th class='num'>No adjust</th>"; });
+      h += "</tr></thead><tbody>";
+      function io(x, g) { var i = Math.round(x.coverage * g); return pct(x.coverage) + " (" + i + "&ndash;" + (g - i) + ")"; }
+      function row(label, a, n, na, nn) {
+        var r = "<tr><td>" + label + "</td><td class='num'>" + na + "</td>";
+        Q.forEach(function (q) {
+          r += "<td class='num'>" + io(a[q[0]], na) + "</td><td class='num dim'>" + io(n[q[0]], na) + "</td>" +
+            "<td class='num'>" + f1(a[q[0]].width) + "</td><td class='num dim'>" + f1(n[q[0]].width) + "</td>";
+        });
+        return r + "</tr>";
+      }
+      Object.keys(by).map(Number).sort(function (x, y) { return x - y; }).forEach(function (w) {
+        h += row("Week " + w, pick(by[w].adjust), pick(by[w].no_adjust), by[w].adjust.n);
+      });
+      var ca = W[0] === "w50" ? b.window50_cumulative.adjust : b.window_cumulative.adjust, cn = W[0] === "w50" ? b.window50_cumulative.no_adjust : b.window_cumulative.no_adjust;
+      h += row("<b>Season</b>", ca, cn, ca.n) + "</tbody></table>";
+    });
+    document.getElementById("windows").parentNode.innerHTML = h;
+  }
+  function wlp(t) { return t ? t[0] + "&ndash;" + t[1] + "&ndash;" + t[2] : "&ndash;"; }
+  function drawTally() {
+    var b = D.backtest, t = document.getElementById("tally");
+    if (!b || !b.tallies) { t.innerHTML = ""; return; }
+    document.getElementById("tally-note").innerHTML = "Each category is its own record, written W&ndash;L&ndash;P (wins, losses, pushes). A push is a tie with the line and is not a win or a loss. Nothing is added across categories. " +
+      "<b>Spread</b> is the model's side against the closing spread. <b>Total</b> is over or under against the closing total. <b>Moneyline</b> is straight up: the model's favourite (win chance above 50%) won or lost. " +
+      "<b>Value picks</b> are games where the model's win chance beats the de-vigged closing chance by " + Math.round(b.value_margin * 100) + " points or more; units are paper units at the closing moneyline, 1 unit flat. Entertainment only. " +
+      "<b>Adjust</b> refits each week; <b>No adjust</b> is one fit before the season.";
+    var cats = [["spread", "Spread"], ["total", "Total"], ["moneyline", "Moneyline (straight up)"], ["value", "Moneyline value picks"]];
+    var h = "<thead><tr><th>Week</th>";
+    cats.forEach(function (c) { h += "<th class='num'>" + c[1] + ": adjust</th><th class='num'>No adjust</th>"; });
+    h += "<th class='num'>Value units: adjust</th><th class='num'>No adjust</th></tr></thead><tbody>";
+    function units(x) { return x == null ? "&ndash;" : (x >= 0 ? "+" : "") + x.toFixed(2); }
+    function row(label, a, n) {
+      var r = "<tr><td>" + label + "</td>";
+      cats.forEach(function (c) { r += "<td class='num'>" + wlp(a[c[0]]) + "</td><td class='num dim'>" + wlp(n[c[0]]) + "</td>"; });
+      return r + "<td class='num'>" + units(a.value_units) + "</td><td class='num dim'>" + units(n.value_units) + "</td></tr>";
+    }
+    var wk = Object.keys(b.tallies.adjust.weeks).map(Number).sort(function (x, y) { return x - y; });
+    wk.forEach(function (w) { h += row("Week " + w, b.tallies.adjust.weeks[w], b.tallies.no_adjust.weeks[w]); });
+    h += row("<b>Season to date</b>", b.tallies.adjust.season, b.tallies.no_adjust.season);
+    t.innerHTML = h + "</tbody>";
+  }
+  function drawMl() {
+    var b = D.backtest; if (!b || !b.tallies) return;
+    document.getElementById("ml-note").innerHTML = "Win chance for the home team against the closing moneyline with the book's margin removed (the benchmark). Brier and log loss: lower is better. Closing moneylines come from the schedules table (nflverse).";
+    var by = {};
+    b.weeks.forEach(function (r) { (by[r.week] = by[r.week] || {})[r.model] = r; });
+    var h = "<thead><tr><th>Week</th><th class='num'>Games</th><th class='num'>Brier: market</th><th class='num'>Adjust</th><th class='num'>No adjust</th><th class='num'>Log loss: market</th><th class='num'>Adjust</th><th class='num'>No adjust</th></tr></thead><tbody>";
+    function row(label, a, n) { return "<tr><td>" + label + "</td><td class='num'>" + a.n + "</td><td class='num dim'>" + a.brier_market.toFixed(3) + "</td><td class='num'>" + a.brier_model.toFixed(3) + "</td><td class='num'>" + n.brier_model.toFixed(3) + "</td><td class='num dim'>" + a.logloss_market.toFixed(3) + "</td><td class='num'>" + a.logloss_model.toFixed(3) + "</td><td class='num'>" + n.logloss_model.toFixed(3) + "</td></tr>"; }
+    Object.keys(by).map(Number).sort(function (x, y) { return x - y; }).forEach(function (w) { h += row("Week " + w, by[w].adjust, by[w].no_adjust); });
+    h += row("<b>Season to date</b>", b.cumulative.adjust, b.cumulative.no_adjust);
+    document.getElementById("ml").innerHTML = h + "</tbody>";
+    var c = "<thead><tr><th>Model home win chance</th><th class='num'>Games: adjust</th><th class='num'>Model said</th><th class='num'>Home won</th><th class='num'>Market said</th><th class='num'>Games: no adjust</th><th class='num'>Model said</th><th class='num'>Home won</th></tr></thead><tbody>";
+    b.calibration.adjust.forEach(function (x, i) {
+      var y = b.calibration.no_adjust[i];
+      c += "<tr><td>" + Math.round(x.lo * 100) + "&ndash;" + Math.round(x.hi * 100) + "%</td><td class='num'>" + x.n + "</td><td class='num'>" + pct(x.pred) + "</td><td class='num'>" + pct(x.actual) + "</td><td class='num dim'>" + pct(x.market) + "</td>" +
+        "<td class='num'>" + y.n + "</td><td class='num'>" + pct(y.pred) + "</td><td class='num'>" + pct(y.actual) + "</td></tr>";
+    });
+    document.getElementById("calib").innerHTML = c + "</tbody>";
+  }
+  drawRecord(); drawTally(); drawMl(); drawWindows();
 })();
 </script>
