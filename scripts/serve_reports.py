@@ -557,7 +557,7 @@ def index_html():
         total = sum(t[1] for t in tallies)
         won = sum(t[2] for t in tallies)
         net = round(sum(t[3] for t in tallies), 2)
-        part = "" if done == total else (f" {total - done} game is not final." if total - done == 1 else f" {total - done} games are not final.")
+        part = "" if done == total else (f" {total - done} game is not graded." if total - done == 1 else f" {total - done} games are not graded.")
         tone = "good" if net >= 0 else "bad"
         tip = ("Assumed $1 parlay on every shortlist leg, fully graded games only. "
                "Entertainment only, no edge claimed.\n" + "\n".join(per))
@@ -1434,7 +1434,7 @@ def player_lines(season, name, team, weeks):
     Read from the reports already on disk (the card line, closest to -300, that
     the report held at the time) and graded by grade_legs, the same rule as the
     listing: the real number must beat the line, so there is no push. hit is
-    None while the game is not final. A week with no report or no line for a
+    None while the game is not graded. A week with no report or no line for a
     stat has no entry. No odds call is made.
     """
     key = name_key(name) if name_key else None
@@ -2058,7 +2058,8 @@ def with_chrome(html, section, page, title):
 REPORT_FIX_CSS = """<style>
   .key.how a, a.key{color:var(--ink-2)}
   @media (min-width:561px){.pk-head .h-models{display:grid; grid-template-columns:136px 46px; column-gap:12px}}
-  h1 .trk.b{background:none; color:var(--ink); border:1px solid var(--home,var(--kc)); box-shadow:none}
+  html body h1 .trk.b{background:none; color:var(--ink); border:1px solid var(--home,var(--kc)); box-shadow:none}
+  .key b{white-space:nowrap; flex:none}
   .hist.sample{display:inline-flex; gap:3px; vertical-align:middle; margin-right:4px}
 </style>"""
 

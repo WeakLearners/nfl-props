@@ -164,7 +164,6 @@
     td:first-child{font-size:16px}
   }
   .tablewrap{margin-top:12px}
-  table.gl th{white-space:normal}
   table.gl{border-collapse:collapse; width:100%; font-size:14px}
   table.gl th,table.gl td{padding:7px 10px; text-align:left; white-space:nowrap;
     border-bottom:1px solid var(--line-soft)}
@@ -175,6 +174,8 @@
   table.gl td.dim,span.dim{color:var(--ink-3)}
   h3.gl-sub{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin:18px 0 4px}
   .note{color:var(--ink-2); font-size:13.5px; margin:8px 0 0; max-width:96ch}
+  table.gl th{white-space:normal}
+  table.gl th[colspan]{text-align:center}
   .gl-block h2{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:22px; text-transform:uppercase; letter-spacing:.04em; margin:36px 0 8px; padding-bottom:6px; border-bottom:1px solid var(--line)}
 </style>
 <div class="wrap" data-inspect-id="explore-wrap">
@@ -878,7 +879,7 @@
   function pct(x) { return x == null ? "&ndash;" : (x * 100).toFixed(0) + "%"; }
   function wlp(t) { return t ? t[0] + "&ndash;" + t[1] + "&ndash;" + t[2] : "&ndash;"; }
   var FIT = " The table shows the model that is fit again each week. The last row shows the model that is not fit again, for the whole season.";
-  var NOADJ = "Season, no adjust";
+  var NOADJ = "No adjust";
   function byWeek(arr) { var by = {}; arr.forEach(function (r) { (by[r.week] = by[r.week] || {})[r.model] = r; }); return by; }
   function weeksOf(by) { return Object.keys(by).map(Number).sort(function (x, y) { return x - y; }); }
   function drawRecord() {
@@ -905,7 +906,7 @@
   function drawWindows() {
     var b = D.backtest, t = document.getElementById("windows");
     if (!b || !b.window_weeks) { t.innerHTML = ""; return; }
-    var tr = Math.round((b.target_record || 0.683) * 100), td = Math.round((b.target_display || 0.5) * 100);
+    var tr = Math.round((b.target_record || 0.683) * 1000) / 10, td = Math.round((b.target_display || 0.5) * 1000) / 10;
     document.getElementById("win-note").innerHTML = "This panel uses no betting line. It asks how often the result landed inside the model&rsquo;s own window, and how wide the window was. " +
       "There are two windows: the " + td + "% window on the pages (lands inside about half the time) and the " + tr + "% window that the win chance uses. " +
       "A better model keeps each share near its target while the width gets smaller. Width is the full window in points. In brackets: results inside and outside the window." + FIT;
