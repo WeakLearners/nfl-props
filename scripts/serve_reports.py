@@ -2121,7 +2121,19 @@ def report_fixes(html, has_hist, has_acts, tr):
         if 'data-inspect-id="footer-notes"' in html:
             keys += '<a class="key" href="#how-to-read" data-inspect-id="legend-how-to-read">How to read a card &darr;</a>'
         html = html[:j] + keys + html[j:]
-    html = html.replace('<footer data-inspect-id="footer-notes">', '<footer id="how-to-read" data-inspect-id="footer-notes">', 1)
+    # Long intro prose moves into the notes at the bottom. The top keeps one short line.
+    moved = []
+    for pat in (r'<p class="sub">Projected production.*?</p>\s*', r'<p class="sub"><strong>Ordered by.*?</p>\s*',
+                r'<p class="picks-note"[^>]*>.*?</p>\s*'):
+        mm = re.search(pat, html, re.S)
+        if mm:
+            moved.append(re.sub(r'<p class="[^"]*"[^>]*>', "<p>", mm.group(0).strip(), 1))
+            html = html.replace(mm.group(0), "", 1)
+    if moved and 'id="wxline"' in html:
+        html = html.replace('<p class="sub" id="wxline"',
+            '<p class="sub" data-inspect-id="report-intro">Each card shows one player stat. The curve is the range of likely results. '
+            'Cards closest to the peak come first.</p>\n  <p class="sub" id="wxline"', 1)
+    html = html.replace('<footer data-inspect-id="footer-notes">', '<footer id="how-to-read" data-inspect-id="footer-notes">' + "".join(moved), 1)
     if has_acts:
         html = html.replace('<span class="h-models">Models</span>',
                             '<span class="h-models"><span>Model</span><span>Actual</span></span>', 1)
