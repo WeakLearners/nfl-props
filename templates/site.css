@@ -389,7 +389,7 @@ html body .wrap[data-page] .sum-box{display:flex; flex-wrap:wrap; align-items:ba
 html body .wrap[data-page] .sum-box .sum-k{min-width:84px; font:500 var(--t-label)/var(--lh-label) var(--f-body);
   letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3)}
 html body .wrap[data-page] .sum-box b{font:500 var(--t-data)/1 var(--f-mono); color:var(--ink)}
-html body .wrap[data-page] .sum-box .dim{margin-left:auto; color:var(--ink-3)}
+html body .wrap[data-page] .sum-box .dim{color:var(--ink-3)}
 /* Slot heading (until M4) and the slate's sitting heading. */
 html body .wrap[data-page] :is(.slot-h,.win-h){font-family:var(--f-display); letter-spacing:.02em}
 html body .wrap[data-page] .slot-h{font-size:var(--t-h3); line-height:var(--lh-h3)}
@@ -462,5 +462,8 @@ html body .wrap[data-page] .fgrp:not(:has(.fchip)){gap:var(--s1)}
 
 /* Week card props badges: the meter carries the picture, so the badge is plain text. */
 html body .wrap[data-page="games"] .card.graded > .score:not(.na){background:none; padding:0; height:auto; justify-self:end}
-html body .wrap[data-page="games"] .card.graded > .score.good{color:var(--good)}
-html body .wrap[data-page="games"] .card.graded > .score.bad{color:var(--bad)}
+html body .wrap[data-page="games"] .card.graded > .score:not(.na){color:var(--ink-2)}
+html body .wrap[data-page="games"] .card.graded > .score b{color:var(--ink); font-weight:600; margin-left:var(--s1)}
+html body .wrap[data-page] .parlays b.good{color:var(--good)}
+html body .wrap[data-page] .parlays b.bad{color:var(--bad)}
+html body .wrap[data-page] .parlays b{font:500 var(--t-data)/1 var(--f-mono)}

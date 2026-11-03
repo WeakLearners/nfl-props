@@ -95,7 +95,7 @@ HEAD = """<!doctype html><meta charset="utf-8">
     font-size:clamp(34px,6vw,56px); line-height:.95; letter-spacing:-.01em;
     margin:0; text-transform:uppercase;
   }}
-  .sub{{color:var(--ink-2); margin:14px 0 0; max-width:64ch; font-size:14.5px}}
+  .sub{{color:var(--ink-2); margin:14px 0 0; max-width:64ch; font-size:14px}}
 """
 
 # The listing's own furniture: week tabs, kickoff blocks, game cards. The
@@ -119,7 +119,7 @@ PAGE = HEAD + """
   .tab[aria-selected="true"]{{color:var(--ink); border-bottom-color:var(--ink)}}
   .tab:focus-visible{{outline:2px solid var(--accent); outline-offset:-2px}}
   .tab .n{{
-    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10.5px;
+    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10px;
     font-weight:400; letter-spacing:.1em; color:var(--ink-3);
     font-variant-numeric:tabular-nums;
   }}
@@ -250,7 +250,7 @@ PAGE = HEAD + """
   .slot-time.unknown{{font-size:13px; color:var(--ink-3); font-weight:400}}
   .slot-date{{
     font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
-    font-size:11.5px; font-weight:400; letter-spacing:0; line-height:18px;
+    font-size:11px; font-weight:400; letter-spacing:0; line-height:18px;
     text-transform:none; color:var(--ink-2);
   }}
   .slot-h .n{{
@@ -262,7 +262,7 @@ PAGE = HEAD + """
   .rows{{margin-top:12px}}
   .empty{{color:var(--ink-3); font-style:italic; margin-top:20px}}
   footer{{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
-    color:var(--ink-3); font-size:12.5px; max-width:68ch}}
+    color:var(--ink-3); font-size:12px; max-width:68ch}}
   @media (max-width:560px){{
     a.row{{padding:11px 12px; gap:10px}}
     .g{{font-size:18px}}
@@ -276,9 +276,10 @@ PAGE = HEAD + """
   <div class="pg-intro"><div class="pg-lede">
   <p class="sub" data-inspect-id="index-subtitle">Games sit in kickoff order.
     TD marks the likeliest scorer. These are not betting tips.</p>
-  <p class="sub" data-inspect-id="index-key">A leg is one player prop: one player, one stat, over one number.
+  <details class="help" data-inspect-id="index-key"><summary>How to read a card</summary>
+    <p>A leg is one player prop: one player, one stat, over one number.
     The short list is the few legs in each game that the model thinks are most likely to hit.
-    A badge is green when 75% or more of its legs hit. It is red when fewer hit.</p>
+    The bar shows the share of legs that hit. The tick marks 75%. The bar is green at 75% or more and red below.</p></details>
   </div></div>
 {tabs}
 {rows}
@@ -468,7 +469,7 @@ def index_html():
                          f' title="{all_h} of {all_n} predictions hit'
                          f' ({100 * all_h / all_n:.0f}%), every leg on the page,'
                          f' shortlisted or not. Anytime TD is not counted.">'
-                         f'{all_h}/{all_n} \u00b7 {100 * all_h / all_n:.0f}%</span>')
+                         f'{all_h}/{all_n} <b>{100 * all_h / all_n:.0f}%</b></span>')
                 if n:
                     score += ('<span class="hits-label"'
                               ' data-inspect-id="index-hits-label">Short list</span>'
@@ -476,22 +477,24 @@ def index_html():
                               f'<span class="score {tone_of(hits, n)}"'
                               f' data-inspect-id="index-hits"'
                               f' title="{hits} of {n} shortlisted picks hit'
-                              f' ({100 * hits / n:.0f}%)">{hits}/{n} \u00b7 {100 * hits / n:.0f}%</span>')
+                              f' ({100 * hits / n:.0f}%)">{hits}/{n} <b>{100 * hits / n:.0f}%</b></span>')
             away_t, home_t = label.split(" @ ")
             glg = gl_idx.get((season, week, away_t, home_t))
             final, glb = gl_card(glg[0]) if glg else ("", "")
             top = card_top(kick, final)
+            name_html = "" if final else f'<span class="name" data-inspect-id="index-game-label">{label}</span>'
             note = "" if score else f'<span class="note">{"no picks" if got is not None or final else "not played"}</span>'
             row = (f'<a class="card graded" data-inspect-id="index-row" href="/{f}">'
-                   f'{top}<span class="name" data-inspect-id="index-game-label">{label}</span>'
+                   f'{top}{name_html}'
                    f'{final}<div class="sec"><span>Props</span>{note}</div>{score}{glb}</a>')
         else:
             away_t, home_t = label.split(" @ ")
             glg = gl_idx.get((season, week, away_t, home_t))
             final, glb = gl_card(glg[0]) if glg else ("", "")
+            name_html = "" if final else f'<span class="name" data-inspect-id="index-game-label-pending">{label}</span>'
             row = (f'<div class="card none graded" data-inspect-id="index-row-pending"'
                    f' aria-disabled="true">'
-                   f'{card_top(kick, final)}<span class="name" data-inspect-id="index-game-label-pending">{label}</span>'
+                   f'{card_top(kick, final)}{name_html}'
                    f'{final}<div class="sec" data-inspect-id="index-no-report"'
                    f' title="This game has no report yet"><span>Props</span>'
                    f'<span class="note">no report</span></div>{glb}</div>')
@@ -574,7 +577,7 @@ def index_html():
                "Entertainment only, no edge claimed.\n" + "\n".join(per))
         return (f'<div class="parlays" data-inspect-id="{cid}" title="{html.escape(tip)}">'
                 f'<span>{label}: each game\u2019s short list is one $1 parlay. {won} of {done} won.{part}</span>'
-                f'<span class="score {tone}">net {money(net)}</span></div>')
+                f'<span>Net <b class="{tone}">{money(net)}</b></span></div>')
 
     def week_tallies(season, week):
         if (season, week) not in ptallies:
@@ -1007,7 +1010,7 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
   .tab[aria-selected="true"]{{color:var(--ink); border-bottom-color:var(--ink)}}
   .tab:focus-visible{{outline:2px solid var(--accent); outline-offset:-2px}}
   .tab .n{{
-    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10.5px;
+    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10px;
     font-weight:400; letter-spacing:.1em; color:var(--ink-3);
     font-variant-numeric:tabular-nums;
   }}
@@ -1056,7 +1059,7 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
     margin:0; font-family:"Barlow Condensed",Impact,sans-serif; font-weight:600;
     font-size:16px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-2);
   }}
-  .note{{margin:2px 0 8px; font-size:12.5px; color:var(--ink-3); max-width:64ch}}
+  .note{{margin:2px 0 8px; font-size:12px; color:var(--ink-3); max-width:64ch}}
   .scroll{{overflow-x:auto}}
   /* Fixed layout means the widths below are obeyed instead of being treated
      as a suggestion the longest cell can overrule. Below 600px the sitting
@@ -1093,7 +1096,7 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
   .who a:hover{{color:var(--accent)}}
   .meta{{
     display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-    font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+    font-family:"IBM Plex Mono",monospace; font-size:10px;
     color:var(--ink-3); letter-spacing:.02em; margin-top:1px; font-weight:400;
   }}
   .who .meta{{display:flex; flex-wrap:wrap; align-items:center; column-gap:6px; row-gap:2px;
@@ -1101,17 +1104,17 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
   .who .meta .mk{{margin-left:0}}
   .who .meta .gm{{white-space:nowrap}}
   .stat{{
-    font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--ink-2);
+    font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-2);
     white-space:nowrap;
   }}
   .num{{
     text-align:right; font-family:"IBM Plex Mono",monospace;
     font-variant-numeric:tabular-nums; white-space:nowrap;
   }}
-  td.num{{font-size:14.5px; font-weight:500}}
+  td.num{{font-size:14px; font-weight:500}}
   td.num .meta{{text-align:right}}
   .gap{{
-    display:block; font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+    display:block; font-family:"IBM Plex Mono",monospace; font-size:10px;
     font-weight:400; margin-top:1px;
   }}
   .gap.up{{color:var(--accent)}}
@@ -1146,7 +1149,7 @@ SLATE_PAGE = HEAD.replace("NFL Props — reports", "NFL Props — slate") + """
   .score.bad{{background:var(--bad)}}
   .empty{{color:var(--ink-3); font-style:italic; margin-top:20px}}
   footer{{margin-top:44px; padding-top:16px; border-top:1px solid var(--line);
-    color:var(--ink-3); font-size:12.5px; max-width:68ch}}
+    color:var(--ink-3); font-size:12px; max-width:68ch}}
   @media (max-width:560px){{
     .win-h{{font-size:19px}}
   }}
@@ -1860,12 +1863,12 @@ CHROME_CSS = """<style>
   .sn-top .sn-links{display:flex; gap:16px}
   .sn a.sn-brand{font-family:"Barlow Condensed",Impact,sans-serif; font-weight:700;
     font-size:18px; letter-spacing:.02em; color:var(--ink)}
-  .sn-sub{font-size:10.5px; padding-bottom:4px}
+  .sn-sub{font-size:10px; padding-bottom:4px}
   .sn-sub a{padding:6px 0}
   .sn-sub .sep{color:var(--ink-3); margin:0 6px}
-  .sn-stamp{color:var(--ink-3); font-size:10.5px; font-variant-numeric:tabular-nums;
+  .sn-stamp{color:var(--ink-3); font-size:10px; font-variant-numeric:tabular-nums;
     display:inline-block; padding:6px 0}
-  .sf{color:var(--ink-3); font-size:12.5px}
+  .sf{color:var(--ink-3); font-size:12px}
   .sf p{margin:0; padding-top:16px; border-top:1px solid var(--line); max-width:none;
     padding-right:max(0px, calc(100% - 72ch))}
   /* Links the old pages carry for themselves. The nav replaces them. The
@@ -1943,7 +1946,7 @@ LAYOUT_CSS = """<style>
   .wrap[data-page] header{margin-bottom:0}
   .pg-intro{display:grid; grid-template-columns:minmax(0,72ch) minmax(0,1fr);
     column-gap:48px; row-gap:16px; align-items:start; margin:16px 0 0}
-  .pg-lede p{margin:0 0 8px; max-width:72ch; font-size:14.5px; line-height:1.55;
+  .pg-lede p{margin:0 0 8px; max-width:72ch; font-size:14px; line-height:1.55;
     color:var(--ink-2)}
   .pg-lede p:last-child{margin-bottom:0}
   .pg-lede strong{color:var(--ink)}

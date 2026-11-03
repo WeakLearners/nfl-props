@@ -162,8 +162,10 @@ def card_html(g):
     final = ""
     score = ""
     if r["played"]:
-        final = (f'<span class="final" data-inspect-id="index-gl-score">Final '
-                 f'{away} {int(g["away_score"])} {home} {int(g["home_score"])}</span>')
+        aw, hw = int(g["away_score"]), int(g["home_score"])
+        final = ('<div class="sb" data-inspect-id="index-gl-score">'
+                 f'<span class="t{" w" if aw > hw else ""}">{away}</span><span class="sc{" w" if aw > hw else ""}">{aw}</span>'
+                 f'<span class="t{" w" if hw > aw else ""}">{home}</span><span class="sc{" w" if hw > aw else ""}">{hw}</span></div>')
     else:
         score = row("Model score", f"{_rnd(g['mu_away'])}-{_rnd(g['mu_home'])}", "index-gl-score",
                     "", f"Model score: {away} {_rnd(g['mu_away'])}, {home} {_rnd(g['mu_home'])}.")
