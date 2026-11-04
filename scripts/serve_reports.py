@@ -2198,7 +2198,7 @@ CARD_JS = """<script>
     // Identity line: swatch, role, rank, opponent. Name row keeps only the name and the star.
     var idn=c.querySelector(".card-id"), idl=document.createElement("div"); idl.className="pc-idl";
     [].slice.call(idn.children).forEach(function(k){ if(!k.classList.contains("name")&&!k.classList.contains("mk-star")) idl.appendChild(k); });
-    var mt=c.querySelector(".matchup"), mtx=mt?mt.textContent:"", mm=mtx.match(/vs (\w+) (\d+\w\w of 32) vs (\w+)/);
+    var mt=c.querySelector(".matchup"), mtx=mt?mt.textContent:"", mm=mtx.match(/vs (\\w+) (\\d+\\w\\w of 32) vs (\\w+)/);
     if(mm){ var v=document.createElement("span"); v.className="pc-vs"; v.textContent="vs "+mm[1]; idl.appendChild(v); }
     idn.insertAdjacentElement("afterend",idl);
     var cau=[].filter.call(idl.querySelectorAll("*"),function(k){return k.children.length===0&&k.textContent.trim()==="Caution";})[0], fl=idn;
