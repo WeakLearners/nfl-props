@@ -13,5 +13,5 @@ cd "$ROOT" || exit 1
 for step in "scripts/grade_game.py --no-refresh" "scripts/fit_sd_scale.py" "scripts/grade_week.py" \
             "scripts/fetch_game_weather.py" "scripts/game_lines_week.py"; do
   echo "=== $(date -u '+%Y-%m-%d %H:%M:%S') UTC  $step"
-  "$PY" $step || echo "STEP FAILED: $step"
+  "$PY" ${=step} || echo "STEP FAILED: $step"
 done
