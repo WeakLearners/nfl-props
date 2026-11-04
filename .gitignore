@@ -5,6 +5,8 @@ __pycache__/
 
 # Rebuildable from nflverse in ~7s.
 data/*.db
+# SQLite rollback journal. Transient; the checkpoint loop committed it 8 times on 11-03/04.
+data/*.db-journal
 # Pre-migration safety backups (e.g. decision #39's features.db.bak-2026-09-24)
 # -- large, local-only, never a source of truth.
 data/*.db.bak-*
