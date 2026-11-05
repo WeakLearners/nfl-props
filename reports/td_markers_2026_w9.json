@@ -1,0 +1,212 @@
+{
+ "ARI-SEA": {
+  "basis": "model+book_vig",
+  "book_p": 0.426,
+  "conf": 0.416,
+  "model_p": 0.416,
+  "phase3": {
+   "p_combined": 0.369,
+   "p_rec": 0.048,
+   "p_rush": 0.337
+  },
+  "player": "Zach Charbonnet",
+  "position": "RB",
+  "team": "SEA"
+ },
+ "BUF-MIN": {
+  "basis": "model+book_vig",
+  "book_p": 0.535,
+  "conf": 0.499,
+  "model_p": 0.499,
+  "phase3": {
+   "p_combined": 0.448,
+   "p_rec": 0.13,
+   "p_rush": 0.366
+  },
+  "player": "James Cook",
+  "position": "RB",
+  "team": "BUF"
+ },
+ "CIN-ATL": {
+  "basis": "model+book_vig",
+  "book_p": 0.722,
+  "conf": 0.549,
+  "model_p": 0.549,
+  "phase3": {
+   "p_combined": 0.453,
+   "p_rec": 0.102,
+   "p_rush": 0.391
+  },
+  "player": "Bijan Robinson",
+  "position": "RB",
+  "team": "ATL"
+ },
+ "CLE-NO": {
+  "basis": "model+book_vig",
+  "book_p": 0.385,
+  "conf": 0.379,
+  "model_p": 0.379,
+  "phase3": {
+   "p_combined": 0.365,
+   "p_rec": 0.251,
+   "p_rush": 0.152
+  },
+  "player": "Chris Olave",
+  "position": "WR",
+  "team": "NO"
+ },
+ "DAL-IND": {
+  "basis": "model+book_vig",
+  "book_p": 0.697,
+  "conf": 0.585,
+  "model_p": 0.585,
+  "phase3": {
+   "p_combined": 0.382,
+   "p_rec": 0.086,
+   "p_rush": 0.324
+  },
+  "player": "Javonte Williams",
+  "position": "RB",
+  "team": "DAL"
+ },
+ "DEN-CAR": {
+  "basis": "model+book_vig",
+  "book_p": 0.535,
+  "conf": 0.359,
+  "model_p": 0.359,
+  "phase3": {
+   "p_combined": 0.335,
+   "p_rec": 0.068,
+   "p_rush": 0.287
+  },
+  "player": "Chuba Hubbard",
+  "position": "RB",
+  "team": "CAR"
+ },
+ "DET-MIA": {
+  "basis": "model+book_vig",
+  "book_p": 0.796,
+  "conf": 0.574,
+  "model_p": 0.574,
+  "phase3": {
+   "p_combined": 0.512,
+   "p_rec": 0.206,
+   "p_rush": 0.386
+  },
+  "player": "Jahmyr Gibbs",
+  "position": "RB",
+  "team": "DET"
+ },
+ "GB-NE": {
+  "basis": "model+book_vig",
+  "book_p": 0.556,
+  "conf": 0.404,
+  "model_p": 0.404,
+  "phase3": {
+   "p_combined": 0.386,
+   "p_rec": 0.079,
+   "p_rush": 0.334
+  },
+  "player": "Rhamondre Stevenson",
+  "position": "RB",
+  "team": "NE"
+ },
+ "HOU-LAC": {
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.465,
+  "model_p": 0.465,
+  "phase3": {
+   "p_combined": 0.269,
+   "p_rec": 0.016,
+   "p_rush": 0.258
+  },
+  "player": "David Montgomery",
+  "position": "RB",
+  "team": "HOU"
+ },
+ "JAX-BAL": {
+  "basis": "model+book_vig",
+  "book_p": 0.435,
+  "conf": 0.426,
+  "model_p": 0.426,
+  "phase3": {
+   "p_combined": 0.371,
+   "p_rec": 0.021,
+   "p_rush": 0.358
+  },
+  "player": "Derrick Henry",
+  "position": "RB",
+  "team": "BAL"
+ },
+ "LA-WAS": {
+  "basis": "model+book_vig",
+  "book_p": 0.615,
+  "conf": 0.516,
+  "model_p": 0.516,
+  "phase3": {
+   "p_combined": 0.468,
+   "p_rec": 0.158,
+   "p_rush": 0.368
+  },
+  "player": "Kyren Williams",
+  "position": "RB",
+  "team": "LA"
+ },
+ "LV-SF": {
+  "basis": "model+book_vig",
+  "book_p": 0.762,
+  "conf": 0.546,
+  "model_p": 0.546,
+  "phase3": {
+   "p_combined": 0.551,
+   "p_rec": 0.292,
+   "p_rush": 0.366
+  },
+  "player": "Christian McCaffrey",
+  "position": "RB",
+  "team": "SF"
+ },
+ "NYG-PHI": {
+  "basis": "model+book_vig",
+  "book_p": 0.476,
+  "conf": 0.409,
+  "model_p": 0.409,
+  "phase3": {
+   "p_combined": 0.427,
+   "p_rec": 0.142,
+   "p_rush": 0.333
+  },
+  "player": "Cam Skattebo",
+  "position": "RB",
+  "team": "NYG"
+ },
+ "NYJ-KC": {
+  "basis": "model+book_vig",
+  "book_p": 0.697,
+  "conf": 0.61,
+  "model_p": 0.61,
+  "phase3": {
+   "p_combined": 0.454,
+   "p_rec": 0.111,
+   "p_rush": 0.386
+  },
+  "player": "Kenneth Walker III",
+  "position": "RB",
+  "team": "KC"
+ },
+ "TB-CHI": {
+  "basis": "model+book_vig",
+  "book_p": 0.661,
+  "conf": 0.606,
+  "model_p": 0.606,
+  "phase3": {
+   "p_combined": 0.386,
+   "p_rec": 0.075,
+   "p_rush": 0.336
+  },
+  "player": "D'Andre Swift",
+  "position": "RB",
+  "team": "CHI"
+ }
+}

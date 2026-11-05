@@ -12139,6 +12139,16 @@
     "next": "vs DET"
    },
    {
+    "name": "John Metchie III",
+    "team": "CAR",
+    "pos": "WR",
+    "rank": 97,
+    "prev": 91,
+    "move": -6,
+    "games": 29,
+    "next": "vs DEN"
+   },
+   {
     "name": "Konata Mumpfield",
     "team": "LA",
     "pos": "WR",
@@ -12306,16 +12316,6 @@
     "prev": 35,
     "move": -5,
     "games": 28,
-    "next": "vs DEN"
-   },
-   {
-    "name": "John Metchie III",
-    "team": "CAR",
-    "pos": "WR",
-    "rank": 97,
-    "prev": 92,
-    "move": -5,
-    "games": 29,
     "next": "vs DEN"
    },
    {
@@ -13279,16 +13279,6 @@
     "next": "at MIA"
    },
    {
-    "name": "Marquise Brown",
-    "team": "PHI",
-    "pos": "WR",
-    "rank": 93,
-    "prev": 91,
-    "move": -2,
-    "games": 21,
-    "next": "vs NYG"
-   },
-   {
     "name": "Dohnte Meyers",
     "team": "CIN",
     "pos": "WR",
@@ -13767,6 +13757,16 @@
     "move": -1,
     "games": 14,
     "next": "vs DAL"
+   },
+   {
+    "name": "Marquise Brown",
+    "team": "PHI",
+    "pos": "WR",
+    "rank": 93,
+    "prev": 92,
+    "move": -1,
+    "games": 21,
+    "next": "vs NYG"
    },
    {
     "name": "David Sills",
