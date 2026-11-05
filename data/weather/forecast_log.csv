@@ -111,3 +111,4 @@ game_id,pulled_at,temp_k,wind_k,gust_k,precip_k,prob_k,humidity_k,source
 2026_09_LV_SF,2026-11-05 17:45Z,71.7,5.1,5.8,0.0,0.0,39.0,open-meteo
 2026_09_LA_WAS,2026-11-05 17:45Z,60.7,12.6,19.0,0.0,0.0,46.0,open-meteo
 2026_09_JAX_BAL,2026-11-05 19:45Z,67.1,4.0,8.5,0.0,28.0,91.0,open-meteo
+2026_09_JAX_BAL,2026-11-05 20:45Z,67.4,2.7,9.4,0.0,28.0,89.0,open-meteo
