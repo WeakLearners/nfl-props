@@ -385,11 +385,11 @@ TRAY_JS = r"""
     if(nm){pickOpen(nm); return;}
     var card=e.target.closest&&e.target.closest(".card");
     if(!card||e.target.closest("a,button,summary")) return;
-    var grid=card.closest(".grid"), h=grid&&grid.previousElementSibling;
     var nameEl=card.querySelector(".name");
-    if(!h||!nameEl) return;
-    var label=(h.firstChild&&h.firstChild.textContent||"").trim();
-    var st=STATS.filter(function(x){return x[1]===label;})[0];
+    if(!nameEl) return;
+    // The card carries its own stat key. The old lookup read the heading before the grid,
+    // which broke when cards were grouped by stat in one grid (d5fe146).
+    var st=STATS.filter(function(x){return x[0]===card.dataset.stat;})[0];
     var p=nameEl.textContent.replace(/[▲▼]/g,"").trim();
     var d=st&&DATA.filter(function(x){return x.p===p&&x.s===st[0];})[0];
     if(d) open(d,card);
