@@ -115,3 +115,4 @@ game_id,pulled_at,temp_k,wind_k,gust_k,precip_k,prob_k,humidity_k,source
 2026_09_JAX_BAL,2026-11-05 21:45Z,67.6,2.7,13.6,0.0,27.0,90.0,open-meteo
 2026_09_JAX_BAL,2026-11-05 22:45Z,67.6,2.7,13.6,0.0,28.0,90.0,open-meteo
 2026_09_JAX_BAL,2026-11-05 23:45Z,68.6,3.8,13.2,0.0,23.0,91.0,open-meteo
+2026_09_JAX_BAL,2026-11-06 00:45Z,68.6,3.8,13.2,0.0,22.0,91.0,open-meteo
