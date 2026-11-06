@@ -85,7 +85,7 @@
  },
  "DET-MIA": {
   "basis": "model+book_vig",
-  "book_p": 0.796,
+  "book_p": 0.8,
   "conf": 0.574,
   "model_p": 0.574,
   "phase3": {
@@ -99,13 +99,13 @@
  },
  "GB-NE": {
   "basis": "model+book_vig",
-  "book_p": 0.556,
-  "conf": 0.404,
-  "model_p": 0.404,
+  "book_p": 0.545,
+  "conf": 0.392,
+  "model_p": 0.392,
   "phase3": {
-   "p_combined": 0.386,
-   "p_rec": 0.079,
-   "p_rush": 0.334
+   "p_combined": 0.371,
+   "p_rec": 0.073,
+   "p_rush": 0.321
   },
   "player": "Rhamondre Stevenson",
   "position": "RB",
@@ -117,9 +117,9 @@
   "conf": 0.465,
   "model_p": 0.465,
   "phase3": {
-   "p_combined": 0.269,
+   "p_combined": 0.259,
    "p_rec": 0.016,
-   "p_rush": 0.258
+   "p_rush": 0.247
   },
   "player": "David Montgomery",
   "position": "RB",
@@ -127,13 +127,13 @@
  },
  "JAX-BAL": {
   "basis": "model+book_vig",
-  "book_p": 0.435,
+  "book_p": 0.444,
   "conf": 0.426,
   "model_p": 0.426,
   "phase3": {
-   "p_combined": 0.371,
-   "p_rec": 0.021,
-   "p_rush": 0.358
+   "p_combined": 0.369,
+   "p_rec": 0.023,
+   "p_rush": 0.354
   },
   "player": "Derrick Henry",
   "position": "RB",
@@ -169,7 +169,7 @@
  },
  "NYG-PHI": {
   "basis": "model+book_vig",
-  "book_p": 0.476,
+  "book_p": 0.524,
   "conf": 0.409,
   "model_p": 0.409,
   "phase3": {
