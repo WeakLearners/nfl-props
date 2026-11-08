@@ -337,6 +337,12 @@
     background:var(--bg); border:1px solid var(--line); border-radius:3px; padding:2px 6px}
   .frng:focus-visible{outline:2px solid var(--den); outline-offset:2px}
   .fdash{color:var(--ink-3); font-size:11px}
+  .chip{all:unset; box-sizing:border-box; cursor:pointer; display:inline-flex; gap:6px;
+    align-items:center; padding:3px 9px; border:1px solid var(--line); border-radius:3px;
+    background:var(--surface); font:500 13px/1.2 "Public Sans",sans-serif; color:var(--ink)}
+  .chip:hover{border-color:var(--ink-3)}
+  .chip[aria-pressed=true]{color:var(--accent); border-color:var(--accent)}
+  .chip:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
   .fcount{margin-left:auto; font-size:12px; color:var(--ink-3)}
   .card[hidden],h2[hidden],.grid[hidden]{display:none}
   table{border-collapse:collapse; width:100%; font-size:13px}
@@ -410,6 +416,7 @@
   </section>
 
   <div class="fbar" id="fbar" data-inspect-id="filter-bar">
+    <button type="button" class="chip" id="f-starred" aria-pressed="false" data-inspect-id="filter-starred">&#9733; Starred only</button>
     <div class="fgrp" data-inspect-id="filter-range-model" title="The big number on the card: projected yards or catches."><span class="fgrp-k">Projection</span>
       <input type="number" class="frng" id="f-model-min" data-inspect-id="filter-model-min" placeholder="e.g. 50" step="any" aria-label="Projection minimum">
       <span class="fdash">&ndash;</span>
@@ -723,6 +730,17 @@ STATS.forEach(([key,label,unit])=>{
       RNG.forEach(([r])=>(saved[r]||[]).forEach((v,i)=>{ if(i<2&&v!=null&&isFinite(v)) rin[r][i].value=v; }));
     }
   }catch(e){}
+  const starBtn=document.getElementById("f-starred");
+  let starOn=false;
+  try{ const sv=JSON.parse(localStorage.getItem(KEY)||"null"); if(sv&&sv.starred===true) starOn=true; }catch(e){}
+  // Same key the card star uses (scripts/marks.js decorateReport): season|week|name text|stat.
+  function isStarred(c){
+    if(!window.markHas||!window.markReportCtx||!window.markKey) return false;
+    const x=window.markReportCtx(); if(!x) return false;
+    const nm=c.querySelector(".card-id .name"); if(!nm) return false;
+    const t=[...nm.childNodes].filter(n=>n.nodeType===3).pop(); if(!t) return false;
+    return window.markHas(window.markKey(x.season,x.week,t.textContent,c.dataset.stat));
+  }
   const chips=[];
   GROUPS.forEach(([g,name])=>{
     const vals=[...new Set(cards.map(c=>c.dataset[g]))];
@@ -740,6 +758,7 @@ STATS.forEach(([key,label,unit])=>{
   });
   function apply(){
     let shown=0;
+    starBtn.setAttribute("aria-pressed",starOn?"true":"false");
     chips.forEach(([g,v,b])=>b.setAttribute("aria-pressed",sel[g].has(v)?"true":"false"));
     cards.forEach(c=>{
       let ok=GROUPS.every(([g])=>!sel[g].size||sel[g].has(c.dataset[g]));
@@ -748,6 +767,7 @@ STATS.forEach(([key,label,unit])=>{
         const raw=c.dataset[k]; if(raw===undefined){ ok=false; return; }
         const v=+raw; if((lo!=null&&v<lo)||(hi!=null&&v>hi)) ok=false;
       });
+      if(starOn&&!isStarred(c)) ok=false;
       c.hidden=!ok; if(ok) shown++;
     });
     sections.querySelectorAll(".grid").forEach(gr=>{
@@ -756,15 +776,17 @@ STATS.forEach(([key,label,unit])=>{
     });
     count.textContent="Showing "+shown+" of "+cards.length+" cards";
     const anyR=RNG.some(([r])=>rng(r).some(x=>x!=null));
-    const any=anyR||GROUPS.some(([g])=>sel[g].size);
+    const any=starOn||anyR||GROUPS.some(([g])=>sel[g].size);
     reset.hidden=!any;
     try{
-      const o={}; GROUPS.forEach(([g])=>o[g]=[...sel[g]]); RNG.forEach(([r])=>o[r]=rng(r));
+      const o={}; GROUPS.forEach(([g])=>o[g]=[...sel[g]]); RNG.forEach(([r])=>o[r]=rng(r)); if(starOn) o.starred=true;
       if(any) localStorage.setItem(KEY,JSON.stringify(o)); else localStorage.removeItem(KEY);
     }catch(e){}
   }
   RNG.forEach(([r])=>rin[r].forEach(i=>i.addEventListener("input",apply)));
-  reset.addEventListener("click",()=>{ GROUPS.forEach(([g])=>sel[g].clear()); RNG.forEach(([r])=>rin[r].forEach(i=>{i.value="";})); apply(); });
+  starBtn.addEventListener("click",()=>{ starOn=!starOn; apply(); });
+  document.addEventListener("marks-changed",()=>{ if(starOn) apply(); });
+  reset.addEventListener("click",()=>{ starOn=false; GROUPS.forEach(([g])=>sel[g].clear()); RNG.forEach(([r])=>rin[r].forEach(i=>{i.value="";})); apply(); });
   apply();
 })();
 
