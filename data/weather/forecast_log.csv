@@ -137,3 +137,4 @@ game_id,pulled_at,temp_k,wind_k,gust_k,precip_k,prob_k,humidity_k,source
 2026_09_ARI_SEA,2026-11-07 17:46Z,53.6,11.3,19.5,0.0,23.0,76.0,open-meteo
 2026_09_LV_SF,2026-11-07 17:46Z,66.3,7.7,11.6,0.0,0.0,70.0,open-meteo
 2026_09_LA_WAS,2026-11-07 17:46Z,59.2,9.9,17.9,0.0,0.0,41.0,open-meteo
+2026_09_CIN_ATL,2026-11-08 08:46Z,58.2,4.8,11.6,0.0,15.0,61.0,open-meteo
