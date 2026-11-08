@@ -1,7 +1,7 @@
 {
  "ARI-SEA": {
   "basis": "model+book_vig",
-  "book_p": 0.426,
+  "book_p": 0.435,
   "conf": 0.416,
   "model_p": 0.416,
   "phase3": {
@@ -155,7 +155,7 @@
  },
  "LV-SF": {
   "basis": "model+book_vig",
-  "book_p": 0.744,
+  "book_p": 0.75,
   "conf": 0.546,
   "model_p": 0.546,
   "phase3": {
