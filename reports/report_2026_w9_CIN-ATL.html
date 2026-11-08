@@ -107,9 +107,6 @@
     margin:0; text-wrap:balance; text-transform:uppercase;
   }
   h1 .at{color:var(--ink-3); font-weight:500}
-  /* Team record as of kickoff, right of the name. Muted, mono, small; wraps with the name at phone width. */
-  h1 .rec{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.3em; font-weight:500; letter-spacing:.04em;
-    color:var(--ink-3); margin-left:.4em; white-space:nowrap; vertical-align:.18em}
   /* Team rank badge in the headline, left of each team name. Its box spans the
      capital height: .74em is about the cap height of Barlow Condensed 700, and
      overflow:hidden makes an inline-block's baseline its bottom edge, so the bottom
@@ -380,7 +377,7 @@
 <div class="wrap" data-inspect-id="page-wrap">
   <header data-inspect-id="page-header">
     <p class="eyebrow" data-inspect-id="eyebrow">Sunday 9:30 AM ET · Week 9 · 2026</p>
-    <h1>Cincinnati Bengals <span class="rec" data-inspect-id="header-record">5-2</span> <span class="at">at</span> Atlanta Falcons <span class="rec" data-inspect-id="header-record">3-5</span></h1>
+    <h1>Cincinnati Bengals <span class="rec" data-inspect-id="header-record" style="color:var(--ink-3);margin-left:.4em;white-space:nowrap">(5-2)</span> <span class="at">at</span> Atlanta Falcons <span class="rec" data-inspect-id="header-record" style="color:var(--ink-3);margin-left:.4em;white-space:nowrap">(3-5)</span></h1>
   </header>
   <p class="sub">Projected production for each team's featured players. The curve is the
     full range of plausible outcomes; the shaded band is the 50% window, which lands inside about half

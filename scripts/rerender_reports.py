@@ -59,7 +59,37 @@ def render(tpl, got):
                .replace("__TARGET_ABS__", str(abs(int(got["target"])))))
 
 
+def headers_only(write):
+    """--headers: rewrite only the <h1> of every report (team records as of kickoff). Nothing else is touched."""
+    sys.path.insert(0, str(ROOT))
+    from nflprops.records import headline
+    changed = same = failed = 0
+    for f in sorted(REPORTS.glob("report_*.html")):
+        html = f.read_text(encoding="utf-8")
+        fm = re.match(r"report_(\d{4})_w(\d+)_([A-Z]+)-([A-Z]+)\.html", f.name)
+        m = HEADLINE_RE.search(html)
+        if not fm or not m:
+            print(f"SKIP  {f.name}: no header found"); failed += 1; continue
+        plain = re.sub(r' <span class="rec"[^>]*>.*?</span>', "", m.group(1))
+        hm = re.match(r'<h1>(.*?) <span class="at">at</span> (.*?)</h1>$', plain, re.S)
+        if not hm:
+            print(f"SKIP  {f.name}: header has an unexpected shape"); failed += 1; continue
+        new = headline(hm.group(1), hm.group(2), int(fm.group(1)), int(fm.group(2)), fm.group(3), fm.group(4))
+        out = html[:m.start()] + new + html[m.end():]
+        # Drop the stylesheet rule an earlier build added; the span carries its own style now.
+        out = re.sub(r"  /\* Team record as of kickoff.*?vertical-align:\.18em\}\n", "", out, flags=re.S)
+        if out == html:
+            same += 1; continue
+        if write:
+            f.write_text(out, encoding="utf-8")
+        changed += 1
+    print(f"{changed} headers {'rewritten' if write else 'to rewrite'}, {same} already current, {failed} skipped")
+    return 1 if failed else 0
+
+
 def main():
+    if "--headers" in sys.argv:
+        return headers_only("--write" in sys.argv)
     write = "--write" in sys.argv
     tpl = TPL.read_text()
     files = sorted(REPORTS.glob("report_*.html"))
