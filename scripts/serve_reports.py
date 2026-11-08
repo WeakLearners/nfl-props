@@ -2095,6 +2095,29 @@ WRAP_OPEN = re.compile(r'<div class="wrap"[^>]*>')
 TITLE_TAG = re.compile(r"<title>.*?</title>", re.S)
 
 
+# The report <h1> is "Away (5-2) at Home (4-4)"; the record span is optional (reports saved before it existed have none).
+_REC = r'((?: <span class="rec"[^>]*>[^<]*</span>)?)'
+H1_RE = re.compile(r'(<h1>)([^<]+?)' + _REC + r' (<span class="at">at</span>) ([^<]+?)' + _REC + r'(</h1>)')
+
+
+def header_scores(html, aw, hw):
+    """Wrap each side of the h1 in a gh-side span and add the final score. The record stays with its team."""
+    return H1_RE.sub(
+        lambda m: (f'{m.group(1)}<span class="gh-side ga">{m.group(2)}{m.group(3)} <span class="gh-sc{" w" if aw > hw else ""}">{aw}</span></span> '
+                   f'{m.group(4)} <span class="gh-side gb"><span class="gh-sc{" w" if hw > aw else ""}">{hw}</span> {m.group(5)}{m.group(6)}</span>{m.group(7)}'),
+        html, 1)
+
+
+def header_logos(html, la, lb):
+    """Put a team logo before each name. Works on a header already wrapped by header_scores, or on a plain one."""
+    if 'class="gh-side ga"' in html:
+        html = html.replace('<span class="gh-side ga">', '<span class="gh-side ga">' + la, 1)
+        return re.sub(r'(<span class="gh-side gb"><span class="gh-sc[^>]*>\d+</span> )', lambda mm: mm.group(1) + lb, html, 1)
+    return H1_RE.sub(
+        lambda m: (f'{m.group(1)}<span class="gh-side ga">{la}{m.group(2)}{m.group(3)}</span> {m.group(4)} '
+                   f'<span class="gh-side gb">{lb}{m.group(5)}{m.group(6)}</span>{m.group(7)}'), html, 1)
+
+
 def with_chrome(html, section, page, title):
     """Splice the site header, footer and title into a page, per request.
 
@@ -2428,20 +2451,12 @@ class Handler(SimpleHTTPRequestHandler):
                         g0 = hit[0]
                         if g0.get("home_score") is not None and g0.get("away_score") is not None:
                             aw, hw = int(g0["away_score"]), int(g0["home_score"])
-                            html = re.sub(r'(<h1>)([^<]+?) (<span class="at">at</span>) ([^<]+)(</h1>)',
-                                          lambda mm: (f'{mm.group(1)}<span class="gh-side ga">{mm.group(2)} <span class="gh-sc{" w" if aw > hw else ""}">{aw}</span></span> '
-                                                      f'{mm.group(3)} <span class="gh-side gb"><span class="gh-sc{" w" if hw > aw else ""}">{hw}</span> {mm.group(4)}</span>{mm.group(5)}'),
-                                          html, 1)
+                            html = header_scores(html, aw, hw)
                 except Exception as e:  # noqa: BLE001 -- the report works without game lines
                     sys.stderr.write(f"game lines section skipped: {e}\n")
                 from nflprops.gamelines_view import logo as team_logo
                 la, lb = team_logo(m.group(3)), team_logo(m.group(4))
-                if 'class="gh-side ga"' in html:
-                    html = html.replace('<span class="gh-side ga">', '<span class="gh-side ga">' + la, 1)
-                    html = re.sub(r'(<span class="gh-side gb"><span class="gh-sc[^>]*>\d+</span> )', lambda mm: mm.group(1) + lb, html, 1)
-                else:
-                    html = re.sub(r'(<h1>)([^<]+?) (<span class="at">at</span>) ([^<]+)(</h1>)',
-                                  lambda mm: f'{mm.group(1)}<span class="gh-side ga">{la}{mm.group(2)}</span> {mm.group(3)} <span class="gh-side gb">{lb}{mm.group(4)}</span>{mm.group(5)}', html, 1)
+                html = header_logos(html, la, lb)
                 html = report_fixes(html, bool(hist), bool(acts), {"a": (tr or {}).get(m.group(3)), "b": (tr or {}).get(m.group(4))})
                 html += "\n" + CARD_JS.replace("__AWAY__", m.group(3)) + "\n" + TRAY_HTML  # player tray: after the report script, which defines DATA
         body = (with_theme(html) +
