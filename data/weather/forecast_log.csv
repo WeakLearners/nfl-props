@@ -140,3 +140,4 @@ game_id,pulled_at,temp_k,wind_k,gust_k,precip_k,prob_k,humidity_k,source
 2026_09_CIN_ATL,2026-11-08 08:46Z,58.2,4.8,11.6,0.0,15.0,61.0,open-meteo
 2026_09_CIN_ATL,2026-11-08 09:46Z,59.1,4.1,11.4,0.0,3.0,59.0,open-meteo
 2026_09_CIN_ATL,2026-11-08 10:46Z,59.1,4.1,11.4,0.0,3.0,59.0,open-meteo
+2026_09_CIN_ATL,2026-11-08 11:46Z,59.1,4.1,11.4,0.0,3.0,59.0,open-meteo
