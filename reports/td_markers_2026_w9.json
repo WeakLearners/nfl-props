@@ -15,12 +15,12 @@
  },
  "BUF-MIN": {
   "basis": "model+book_vig",
-  "book_p": 0.535,
-  "conf": 0.499,
-  "model_p": 0.499,
+  "book_p": 0.524,
+  "conf": 0.476,
+  "model_p": 0.476,
   "phase3": {
-   "p_combined": 0.448,
-   "p_rec": 0.13,
+   "p_combined": 0.447,
+   "p_rec": 0.128,
    "p_rush": 0.366
   },
   "player": "James Cook",
@@ -29,9 +29,9 @@
  },
  "CIN-ATL": {
   "basis": "model+book_vig",
-  "book_p": 0.722,
-  "conf": 0.549,
-  "model_p": 0.549,
+  "book_p": 0.756,
+  "conf": 0.563,
+  "model_p": 0.563,
   "phase3": {
    "p_combined": 0.453,
    "p_rec": 0.102,
@@ -42,22 +42,22 @@
   "team": "ATL"
  },
  "CLE-NO": {
-  "basis": "model+book_vig",
-  "book_p": 0.385,
-  "conf": 0.379,
-  "model_p": 0.379,
+  "basis": "model_only",
+  "book_p": null,
+  "conf": 0.361,
+  "model_p": 0.361,
   "phase3": {
-   "p_combined": 0.365,
-   "p_rec": 0.251,
-   "p_rush": 0.152
+   "p_combined": 0.256,
+   "p_rec": 0.034,
+   "p_rush": 0.229
   },
-  "player": "Chris Olave",
-  "position": "WR",
+  "player": "Kendre Miller",
+  "position": "RB",
   "team": "NO"
  },
  "DAL-IND": {
   "basis": "model+book_vig",
-  "book_p": 0.697,
+  "book_p": 0.677,
   "conf": 0.585,
   "model_p": 0.585,
   "phase3": {
@@ -71,7 +71,7 @@
  },
  "DEN-CAR": {
   "basis": "model+book_vig",
-  "book_p": 0.535,
+  "book_p": 0.545,
   "conf": 0.359,
   "model_p": 0.359,
   "phase3": {
@@ -85,12 +85,12 @@
  },
  "DET-MIA": {
   "basis": "model+book_vig",
-  "book_p": 0.8,
-  "conf": 0.574,
-  "model_p": 0.574,
+  "book_p": 0.787,
+  "conf": 0.563,
+  "model_p": 0.563,
   "phase3": {
-   "p_combined": 0.512,
-   "p_rec": 0.206,
+   "p_combined": 0.511,
+   "p_rec": 0.203,
    "p_rush": 0.386
   },
   "player": "Jahmyr Gibbs",
@@ -99,7 +99,7 @@
  },
  "GB-NE": {
   "basis": "model+book_vig",
-  "book_p": 0.545,
+  "book_p": 0.535,
   "conf": 0.392,
   "model_p": 0.392,
   "phase3": {
@@ -112,16 +112,16 @@
   "team": "NE"
  },
  "HOU-LAC": {
-  "basis": "model_only",
-  "book_p": null,
-  "conf": 0.465,
-  "model_p": 0.465,
+  "basis": "model+book_vig",
+  "book_p": 0.476,
+  "conf": 0.383,
+  "model_p": 0.383,
   "phase3": {
-   "p_combined": 0.259,
-   "p_rec": 0.016,
-   "p_rush": 0.247
+   "p_combined": 0.334,
+   "p_rec": 0.085,
+   "p_rush": 0.272
   },
-  "player": "David Montgomery",
+  "player": "Woody Marks",
   "position": "RB",
   "team": "HOU"
  },
@@ -141,12 +141,12 @@
  },
  "LA-WAS": {
   "basis": "model+book_vig",
-  "book_p": 0.615,
-  "conf": 0.516,
-  "model_p": 0.516,
+  "book_p": 0.592,
+  "conf": 0.514,
+  "model_p": 0.514,
   "phase3": {
-   "p_combined": 0.468,
-   "p_rec": 0.158,
+   "p_combined": 0.473,
+   "p_rec": 0.166,
    "p_rush": 0.368
   },
   "player": "Kyren Williams",
@@ -155,12 +155,12 @@
  },
  "LV-SF": {
   "basis": "model+book_vig",
-  "book_p": 0.762,
+  "book_p": 0.75,
   "conf": 0.546,
   "model_p": 0.546,
   "phase3": {
-   "p_combined": 0.551,
-   "p_rec": 0.292,
+   "p_combined": 0.507,
+   "p_rec": 0.222,
    "p_rush": 0.366
   },
   "player": "Christian McCaffrey",
@@ -169,16 +169,16 @@
  },
  "NYG-PHI": {
   "basis": "model+book_vig",
-  "book_p": 0.524,
-  "conf": 0.409,
-  "model_p": 0.409,
+  "book_p": 0.333,
+  "conf": 0.305,
+  "model_p": 0.305,
   "phase3": {
-   "p_combined": 0.427,
-   "p_rec": 0.142,
-   "p_rush": 0.333
+   "p_combined": 0.483,
+   "p_rec": 0.326,
+   "p_rush": 0.233
   },
-  "player": "Cam Skattebo",
-  "position": "RB",
+  "player": "Malik Nabers",
+  "position": "WR",
   "team": "NYG"
  },
  "NYJ-KC": {
@@ -187,8 +187,8 @@
   "conf": 0.61,
   "model_p": 0.61,
   "phase3": {
-   "p_combined": 0.454,
-   "p_rec": 0.111,
+   "p_combined": 0.441,
+   "p_rec": 0.09,
    "p_rush": 0.386
   },
   "player": "Kenneth Walker III",
@@ -197,7 +197,7 @@
  },
  "TB-CHI": {
   "basis": "model+book_vig",
-  "book_p": 0.661,
+  "book_p": 0.655,
   "conf": 0.606,
   "model_p": 0.606,
   "phase3": {
