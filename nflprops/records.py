@@ -68,6 +68,6 @@ def headline(away_name, home_name, season, week, away_abbr, home_abbr):
     except Exception:  # noqa: BLE001 -- a header without records beats no report
         ra = rh = None
     # Inline style: old saved reports carry an older stylesheet, and the header is the only part rewritten in them.
-    st = "color:var(--ink-3);margin-left:.4em;white-space:nowrap"
+    st = "font-weight:400;white-space:nowrap"
     rec = lambda r: f' <span class="rec" data-inspect-id="header-record" style="{st}">({escape(r)})</span>' if r else ""  # noqa: E731
     return f'<h1>{away_name}{rec(ra)} <span class="at">at</span> {home_name}{rec(rh)}</h1>'
