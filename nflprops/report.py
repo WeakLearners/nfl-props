@@ -362,6 +362,26 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
     return rows, pr.loc[short.index], qb_notes
 
 
+def _headline(away, home, season, week):
+    from .records import headline
+    try:
+        from .db import team_abbr_map
+        ab = team_abbr_map()
+        return headline(away, home, season, week, ab.get(away), ab.get(home))
+    except Exception:  # noqa: BLE001
+        return f'<h1>{away} <span class="at">at</span> {home}</h1>'
+
+
+def _headline(away, home, season, week):
+    from .records import headline
+    try:
+        from .db import team_abbr_map
+        ab = team_abbr_map()
+        return headline(away, home, season, week, ab.get(away), ab.get(home))
+    except Exception:  # noqa: BLE001 -- a header without records beats no report
+        return f'<h1>{away} <span class="at">at</span> {home}</h1>'
+
+
 def render(rows, away, home, team_a, week, season, kick=None, same_game=True,
            target=DEFAULT_TARGET, qb_notes=None):
     corr = ("All of these are same-game legs, so they move together &mdash; a shootout "
@@ -381,7 +401,7 @@ def render(rows, away, home, team_a, week, season, kick=None, same_game=True,
     except Exception:  # noqa: BLE001 -- a report without weather beats no report
         meta["wx"] = None
     tpl = (ROOT / "templates" / "report.html").read_text()
-    head = f'<h1>{away} <span class="at">at</span> {home}</h1>'
+    head = _headline(away, home, season, week)
     # Kickoff time, not just the weekday. A Sunday slate has games at 1:00,
     # 4:05, 4:25 and 8:20, and "Sunday" cannot tell you which one you have
     # open. The listing sorts by this same time, read from the schedules

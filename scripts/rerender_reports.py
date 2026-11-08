@@ -143,6 +143,17 @@ def main():
             for r in rows:
                 r["wxd"] = round(d.get((name_key(r["p"]), r["s"]), 0.0), 1)
             got = dict(got, data=json.dumps(rows))
+        # Team records in the header, for the week named by --week or --only. Other weeks keep their header.
+        wk_sel = chips[4] if chips else only
+        fm = re.match(r"report_(\d{4})_w(\d+)_([A-Z]+)-([A-Z]+)\.html", f.name)
+        if wk_sel and fm and (int(fm.group(1)), int(fm.group(2))) == tuple(wk_sel):
+            sys.path.insert(0, str(ROOT))
+            from nflprops.records import headline
+            plain = re.sub(r' <span class="rec"[^>]*>.*?</span>', "", got["headline"])
+            hm = re.match(r'<h1>(.*?) <span class="at">at</span> (.*?)</h1>$', plain, re.S)
+            if hm:
+                got = dict(got, headline=headline(hm.group(1), hm.group(2), int(fm.group(1)), int(fm.group(2)),
+                                                  fm.group(3), fm.group(4)))
         if chips:
             rows = json.loads(got["data"])
             for r in rows:
