@@ -80,7 +80,6 @@
   .dr .nm .lg{flex:none; width:16px; height:16px; align-self:center; display:inline-flex; align-items:center; justify-content:center}
   .dr .nm .lg img,.dr .nm .lg i{width:16px; height:16px; object-fit:contain; display:block}
   .dr .nm .lg i{width:10px; height:10px; border-radius:2px; background:var(--ink-3)}
-  .dr .nm .tm{font-size:10px; flex:none}
   .dr .pl{position:relative; height:100%; background:linear-gradient(var(--line-soft),var(--line-soft)) center/100% 1px no-repeat}
   .dr .ln{position:absolute; top:50%; height:2px; margin-top:-1px; background:var(--ink-3); opacity:.7}
   .dr .b{position:absolute; top:50%; width:9px; height:9px; margin:-4.5px 0 0 -4.5px; border-radius:50%; border:1.5px solid var(--ink-3); background:var(--surface)}
@@ -90,7 +89,7 @@
   .ax{display:grid; grid-template-columns:170px minmax(0,1fr) 64px; gap:12px; padding:0 4px; margin-top:4px}
   .ax .scale{display:flex; justify-content:space-between; font-family:"IBM Plex Mono",monospace; font-size:10px; color:var(--ink-3)}
   .ax .cap{font-family:"IBM Plex Mono",monospace; font-size:10px; color:var(--ink-3); letter-spacing:.06em; text-transform:uppercase}
-  @media (max-width:1500px){.dr,.ax{grid-template-columns:130px minmax(0,1fr) 58px}.dr .nm .tm{display:none}}
+  @media (max-width:1500px){.dr,.ax{grid-template-columns:130px minmax(0,1fr) 58px}}
 
   /* List: by player */
   .sw{display:flex; align-items:center; gap:12px; margin:0 0 12px}
@@ -281,7 +280,7 @@ function chart(rows,id,rowId){
   var x=function(v){return (v/mx*100)+"%";};
   var body=rows.map(function(r){
     return '<button type="button" class="dr ol '+r.cls+'" data-k="'+esc(keyOf(r))+'" data-inspect-id="'+rowId+'" style="--c:'+colr(r)+'">'+
-      '<span class="nm">'+logoSlot(r.team)+'<span class="n">'+esc(r.nm)+'</span>'+(r.sig==="team"?"":'<span class="tm">'+r.team+'</span>')+'</span>'+
+      '<span class="nm">'+logoSlot(r.team)+'<span class="n">'+esc(r.nm)+'</span>'+'</span>'+
       '<span class="pl"><i class="ln" style="left:'+x(Math.min(a(r),b(r)))+';width:'+x(Math.abs(a(r)-b(r)))+'"></i><i class="b" style="left:'+x(a(r))+'"></i><i class="a" style="left:'+x(b(r))+'"></i></span>'+
       '<span class="v '+(r.dir==="rise"?"up":"dn")+'">'+esc(r.dl.replace(" per game","/g").replace(" pts",""))+'</span></button>';}).join("");
   var ticks=(isR?[0,mx/2,mx].map(function(v){return "#"+Math.max(1,v);}):[0,mx/2,mx].map(function(v){return v+(rows[0]&&rows[0].sig!=="rz"?"%":"");}));
