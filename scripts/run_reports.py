@@ -177,11 +177,16 @@ def auto(N_PICKS, DRY):
         if RP.report_path(sw[0], sw[1], a, h).exists() or e.id in st["games"]:
             handled.add(e.id)
 
-    due = SC.plan(ev, now, set(st["posted"]), handled)
+    pids = st.setdefault("posted_ids", {})
+    due = SC.plan(ev, now, set(st["posted"]), handled, posted_ids=pids)
     if not due:
         print("auto: nothing due"); return
     rem, wrote = None, False
     for key, sit, todo in due:
+        # A posted sitting keeps the key it was posted under, even when the
+        # API has moved the first kickoff since (that made a second post).
+        pkey = SC.posted_key(sit, set(st["posted"]), pids)
+        key = pkey or key
         fresh = []
         for e in todo.itertuples():
             if e.id not in meta:
@@ -192,7 +197,7 @@ def auto(N_PICKS, DRY):
                 st["games"][e.id] = item
                 fresh.append(item)
                 wrote = True
-        if key in st["posted"]:
+        if pkey:
             # Sitting already posted without these games (lines came late).
             # Post only the new ones; the sitting key stays as it is.
             if fresh and not DRY:
@@ -213,6 +218,7 @@ def auto(N_PICKS, DRY):
                 print(post(blocks=digest_blocks(ready, title, rem),
                            text=f"Production ranges — W{week} {key}"))
                 st["posted"][key] = now.isoformat()
+                pids.update({i: key for i in sit.id})
         else:
             print(f"sitting {key}: {len(ready)}/{len(sit)} ready, waiting")
         if not DRY:

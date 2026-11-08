@@ -49,14 +49,31 @@ def sitting_key(s):
     return s.ct.min().strftime("%Y%m%dT%H%MZ")
 
 
-def plan(ev, now, posted, handled_ids, horizon_h=HORIZON_H):
+def posted_key(s, posted, posted_ids=None):
+    """The key a sitting was posted under, or None if it is not posted yet.
+
+    The Odds API moves a game's kickoff by a few minutes close to the start, so
+    the key (the first kickoff) can change after the post. The event ids do not
+    change. `posted_ids` maps an event id to the key it was posted under.
+    """
+    key = sitting_key(s)
+    if key in posted:
+        return key
+    for i in s.id:
+        if posted_ids and i in posted_ids:
+            return posted_ids[i]
+    return None
+
+
+def plan(ev, now, posted, handled_ids, horizon_h=HORIZON_H, posted_ids=None):
     """Sittings due now. Returns a list of (key, all_games, todo_games).
 
     ev           upcoming events (columns id, ct)
     now          pd.Timestamp, tz-aware
     posted       set of sitting keys already posted to Slack
     handled_ids  event ids that already have a report (never refetched)
-    A sitting not in `posted` appears even with no todo games, so the caller can
+    posted_ids   dict of event id -> key it was posted under (see posted_key)
+    A sitting not posted appears even with no todo games, so the caller can
     post a built-but-unposted sitting. A posted sitting appears only while a
     game of it still has no report.
     """
@@ -68,7 +85,7 @@ def plan(ev, now, posted, handled_ids, horizon_h=HORIZON_H):
         todo = s[~s.id.isin(handled_ids)]
         # A posted sitting is done, unless a game still has no report (its
         # lines were not up at post time). That game keeps being tried.
-        if key in posted and todo.empty:
+        if posted_key(s, posted, posted_ids) and todo.empty:
             continue
         due.append((key, s, todo))
     return due
