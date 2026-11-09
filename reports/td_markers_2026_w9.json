@@ -15,12 +15,12 @@
  },
  "BUF-MIN": {
   "basis": "model+book_vig",
-  "book_p": 0.524,
-  "conf": 0.476,
-  "model_p": 0.476,
+  "book_p": 0.512,
+  "conf": 0.512,
+  "model_p": 0.628,
   "phase3": {
-   "p_combined": 0.447,
-   "p_rec": 0.128,
+   "p_combined": 0.45,
+   "p_rec": 0.134,
    "p_rush": 0.366
   },
   "player": "James Cook",
