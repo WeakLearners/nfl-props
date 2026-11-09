@@ -244,6 +244,7 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
     pr["mu_raw"] = pr.proj
     if use_rung:
         pr["proj"] = pr.proj + pr.stat.map(CAL.bias_for)
+        pr["proj"] = [CAL.rush_fix(pos, st, mu) for pos, st, mu in zip(pr.position, pr.stat, pr.proj)]
     # Spread: the per-player sd (spread.py), scaled per stat on out-of-fold residuals so that
     # mu +/- sd covers about 68% of games (data/sd_scale.json). No 1.10 inflation.
     _sc = ES.sd_scale()

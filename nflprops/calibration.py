@@ -48,6 +48,23 @@ def bias_for(stat):
     return mu_bias().get(stat, 0.0)
 
 
+# Rushing fixes from projects/nfl-props/auto/rushing-fix-backtest.md (weeks 1-7, leave-one-week-out):
+# a fullback is projected 5.3 rushing yards and gets 0.1, so his rushing mu is set to 0 (helped in
+# 7 of 7 weeks). A QB runs about 2.8 yards less than projected (helped in 6 of 7 weeks).
+QB_RUSH_SHIFT = -2.8
+
+
+def rush_fix(position, stat, mu):
+    """Rushing mu after the FB and QB fixes. Other positions and stats pass through."""
+    if stat != "rushing_yards":
+        return mu
+    if position == "FB":
+        return 0.0
+    if position == "QB":
+        return max(0.0, mu + QB_RUSH_SHIFT)
+    return mu
+
+
 def shrink_bias(mean_err, n):
     """Shrink a mean (actual - mu) toward 0: b * n / (n + 50)."""
     return mean_err * n / (n + BIAS_SHRINK_N)

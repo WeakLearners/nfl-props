@@ -95,5 +95,19 @@ class BiasTests(unittest.TestCase):
             self.assertEqual(a["mu"], b["mu"])
 
 
+
+
+class RushFixTests(unittest.TestCase):
+    def test_fb_rushing_is_zero_and_qb_is_shifted(self):
+        self.assertEqual(CAL.rush_fix("FB", "rushing_yards", 5.3), 0.0)
+        self.assertAlmostEqual(CAL.rush_fix("QB", "rushing_yards", 20.0), 17.2)
+        self.assertEqual(CAL.rush_fix("QB", "rushing_yards", 1.0), 0.0)
+
+    def test_other_rows_pass_through(self):
+        self.assertEqual(CAL.rush_fix("RB", "rushing_yards", 55.0), 55.0)
+        self.assertEqual(CAL.rush_fix("QB", "passing_yards", 250.0), 250.0)
+        self.assertEqual(CAL.rush_fix("FB", "receptions", 2.0), 2.0)
+
+
 if __name__ == "__main__":
     unittest.main()
