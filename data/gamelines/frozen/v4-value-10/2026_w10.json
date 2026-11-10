@@ -1,0 +1,386 @@
+{
+ "windows": {
+  "home_score": {
+   "sd": 9.467,
+   "scale": 0.991,
+   "half": 9.383
+  },
+  "away_score": {
+   "sd": 9.347,
+   "scale": 1.024,
+   "half": 9.571
+  },
+  "margin": {
+   "sd": 13.28,
+   "scale": 0.966,
+   "half": 12.828
+  },
+  "total": {
+   "sd": 13.327,
+   "scale": 0.991,
+   "half": 13.21
+  }
+ },
+ "windows50": {
+  "home_score": {
+   "sd": 9.467,
+   "scale": 0.67,
+   "half": 6.345
+  },
+  "away_score": {
+   "sd": 9.347,
+   "scale": 0.682,
+   "half": 6.376
+  },
+  "margin": {
+   "sd": 13.28,
+   "scale": 0.617,
+   "half": 8.195
+  },
+  "total": {
+   "sd": 13.327,
+   "scale": 0.662,
+   "half": 8.827
+  }
+ },
+ "target_record": 0.683,
+ "target_display": 0.5,
+ "sd_margin": 13.28,
+ "sd_total": 13.327,
+ "train_through": "2026 wk 9",
+ "params": {
+  "alpha": 10.0,
+  "half_life": 20.0,
+  "qb": true,
+  "rest": false,
+  "wx": [
+   "heavy"
+  ]
+ },
+ "reconstructed": false,
+ "frozen_at": "2026-11-10T14:02:40+00:00",
+ "games": [
+  {
+   "game_id": "2026_10_WAS_NYG",
+   "away": "WAS",
+   "home": "NYG",
+   "gameday": "2026-11-12",
+   "gametime": "20:15",
+   "mu_home": 22.0,
+   "mu_away": 23.86,
+   "pred_margin": -1.86,
+   "pred_total": 45.86,
+   "p_home": 0.4443,
+   "wx_used": {
+    "source": "forecast",
+    "forecast_pulled_at": "2026-11-10 14:02Z",
+    "heavy_rain_flag": 0
+   },
+   "home_qb": "J.J. McCarthy",
+   "away_qb": "Jayden Daniels",
+   "home_qb_out": 1,
+   "away_qb_out": 0,
+   "spread_at_freeze": 2.5,
+   "total_at_freeze": 41.5
+  },
+  {
+   "game_id": "2026_10_NE_DET",
+   "away": "NE",
+   "home": "DET",
+   "gameday": "2026-11-15",
+   "gametime": "09:30",
+   "mu_home": 26.84,
+   "mu_away": 23.77,
+   "pred_margin": 3.07,
+   "pred_total": 50.61,
+   "p_home": 0.5914,
+   "wx_used": {
+    "source": "none",
+    "forecast_pulled_at": NaN,
+    "heavy_rain_flag": 0
+   },
+   "home_qb": "Jared Goff",
+   "away_qb": "Drake Maye",
+   "home_qb_out": 0,
+   "away_qb_out": 0,
+   "spread_at_freeze": 2.5,
+   "total_at_freeze": 51.5
+  },
+  {
+   "game_id": "2026_10_KC_ATL",
+   "away": "KC",
+   "home": "ATL",
+   "gameday": "2026-11-15",
+   "gametime": "13:00",
+   "mu_home": 20.65,
+   "mu_away": 23.3,
+   "pred_margin": -2.64,
+   "pred_total": 43.95,
+   "p_home": 0.4211,
+   "wx_used": {
+    "source": "forecast",
+    "forecast_pulled_at": "2026-11-10 14:02Z",
+    "heavy_rain_flag": 0
+   },
+   "home_qb": "Michael Penix Jr.",
+   "away_qb": "Patrick Mahomes",
+   "home_qb_out": 0,
+   "away_qb_out": 0,
+   "spread_at_freeze": -3.5,
+   "total_at_freeze": 45.5
+  },
+  {
+   "game_id": "2026_10_HOU_CLE",
+   "away": "HOU",
+   "home": "CLE",
+   "gameday": "2026-11-15",
+   "gametime": "13:00",
+   "mu_home": 19.92,
+   "mu_away": 22.85,
+   "pred_margin": -2.93,
+   "pred_total": 42.77,
+   "p_home": 0.4127,
+   "wx_used": {
+    "source": "forecast",
+    "forecast_pulled_at": "2026-11-10 14:02Z",
+    "heavy_rain_flag": 0
+   },
+   "home_qb": "Deshaun Watson",
+   "away_qb": "C.J. Stroud",
+   "home_qb_out": 0,
+   "away_qb_out": 0,
+   "spread_at_freeze": -4.5,
+   "total_at_freeze": 39.5
+  },
+  {
+   "game_id": "2026_10_MIN_GB",
+   "away": "MIN",
+   "home": "GB",
+   "gameday": "2026-11-15",
+   "gametime": "13:00",
+   "mu_home": 20.83,
+   "mu_away": 20.55,
+   "pred_margin": 0.28,
+   "pred_total": 41.38,
+   "p_home": 0.5083,
+   "wx_used": {
+    "source": "forecast",
+    "forecast_pulled_at": "2026-11-10 14:02Z",
+    "heavy_rain_flag": 0
+   },
+   "home_qb": "Jordan Love",
+   "away_qb": "Kyler Murray",
+   "home_qb_out": 0,
+   "away_qb_out": 0,
+   "spread_at_freeze": 4.5,
+   "total_at_freeze": 41.5
+  },
+  {
+   "game_id": "2026_10_MIA_IND",
+   "away": "MIA",
+   "home": "IND",
+   "gameday": "2026-11-15",
+   "gametime": "13:00",
+   "mu_home": 25.35,
+   "mu_away": 22.73,
+   "pred_margin": 2.62,
+   "pred_total": 48.08,
+   "p_home": 0.5781,
+   "wx_used": {
+    "source": "forecast",
+    "forecast_pulled_at": "2026-11-10 14:02Z",
+    "heavy_rain_flag": 0
+   },
+   "home_qb": "Daniel Jones",
+   "away_qb": "Malik Willis",
+   "home_qb_out": 0,
+   "away_qb_out": 0,
+   "spread_at_freeze": 2.5,
+   "total_at_freeze": 40.5
+  },
+  {
+   "game_id": "2026_10_CAR_NO",
+   "away": "CAR",
+   "home": "NO",
+   "gameday": "2026-11-15",
+   "gametime": "13:00",
+   "mu_home": 24.18,
+   "mu_away": 21.66,
+   "pred_margin": 2.52,
+   "pred_total": 45.84,
+   "p_home": 0.5751,
+   "wx_used": {
+    "source": "none",
+    "forecast_pulled_at": NaN,
+    "heavy_rain_flag": 0
+   },
+   "home_qb": "Tyler Shough",
+   "away_qb": "Bryce Young",
+   "home_qb_out": 0,
+   "away_qb_out": 0,
+   "spread_at_freeze": 1.5,
+   "total_at_freeze": 47.5
+  },
+  {
+   "game_id": "2026_10_BUF_NYJ",
+   "away": "BUF",
+   "home": "NYJ",
+   "gameday": "2026-11-15",
+   "gametime": "13:00",
+   "mu_home": 20.91,
+   "mu_away": 29.57,
+   "pred_margin": -8.66,
+   "pred_total": 50.48,
+   "p_home": 0.2571,
+   "wx_used": {
+    "source": "forecast",
+    "forecast_pulled_at": "2026-11-10 14:02Z",
+    "heavy_rain_flag": 0
+   },
+   "home_qb": "Geno Smith",
+   "away_qb": "Josh Allen",
+   "home_qb_out": 0,
+   "away_qb_out": 0,
+   "spread_at_freeze": -8.5,
+   "total_at_freeze": 50.5
+  },
+  {
+   "game_id": "2026_10_JAX_TEN",
+   "away": "JAX",
+   "home": "TEN",
+   "gameday": "2026-11-15",
+   "gametime": "13:00",
+   "mu_home": 18.61,
+   "mu_away": 26.8,
+   "pred_margin": -8.19,
+   "pred_total": 45.41,
+   "p_home": 0.2687,
+   "wx_used": {
+    "source": "forecast",
+    "forecast_pulled_at": "2026-11-10 14:02Z",
+    "heavy_rain_flag": 0
+   },
+   "home_qb": "Cam Ward",
+   "away_qb": "Trevor Lawrence",
+   "home_qb_out": 0,
+   "away_qb_out": 0,
+   "spread_at_freeze": -10.5,
+   "total_at_freeze": 46.5
+  },
+  {
+   "game_id": "2026_10_LA_ARI",
+   "away": "LA",
+   "home": "ARI",
+   "gameday": "2026-11-15",
+   "gametime": "16:05",
+   "mu_home": 18.62,
+   "mu_away": 28.06,
+   "pred_margin": -9.43,
+   "pred_total": 46.68,
+   "p_home": 0.2387,
+   "wx_used": {
+    "source": "forecast",
+    "forecast_pulled_at": "2026-11-10 14:02Z",
+    "heavy_rain_flag": 0
+   },
+   "home_qb": "Gardner Minshew",
+   "away_qb": "Matthew Stafford",
+   "home_qb_out": 1,
+   "away_qb_out": 0,
+   "spread_at_freeze": -9.5,
+   "total_at_freeze": 40.5
+  },
+  {
+   "game_id": "2026_10_SEA_LV",
+   "away": "SEA",
+   "home": "LV",
+   "gameday": "2026-11-15",
+   "gametime": "16:05",
+   "mu_home": 20.54,
+   "mu_away": 23.61,
+   "pred_margin": -3.07,
+   "pred_total": 44.15,
+   "p_home": 0.4087,
+   "wx_used": {
+    "source": "none",
+    "forecast_pulled_at": NaN,
+    "heavy_rain_flag": 0
+   },
+   "home_qb": "Kirk Cousins",
+   "away_qb": "Sam Darnold",
+   "home_qb_out": 0,
+   "away_qb_out": 1,
+   "spread_at_freeze": -3.5,
+   "total_at_freeze": 43.5
+  },
+  {
+   "game_id": "2026_10_SF_DAL",
+   "away": "SF",
+   "home": "DAL",
+   "gameday": "2026-11-15",
+   "gametime": "16:25",
+   "mu_home": 25.3,
+   "mu_away": 28.36,
+   "pred_margin": -3.07,
+   "pred_total": 53.66,
+   "p_home": 0.4087,
+   "wx_used": {
+    "source": "forecast",
+    "forecast_pulled_at": "2026-11-10 14:02Z",
+    "heavy_rain_flag": 0
+   },
+   "home_qb": "Dak Prescott",
+   "away_qb": "Brock Purdy",
+   "home_qb_out": 0,
+   "away_qb_out": 0,
+   "spread_at_freeze": -3.5,
+   "total_at_freeze": 55.5
+  },
+  {
+   "game_id": "2026_10_PIT_CIN",
+   "away": "PIT",
+   "home": "CIN",
+   "gameday": "2026-11-15",
+   "gametime": "20:20",
+   "mu_home": 25.45,
+   "mu_away": 23.45,
+   "pred_margin": 2.0,
+   "pred_total": 48.9,
+   "p_home": 0.56,
+   "wx_used": {
+    "source": "forecast",
+    "forecast_pulled_at": "2026-11-10 14:02Z",
+    "heavy_rain_flag": 0
+   },
+   "home_qb": "Joe Burrow",
+   "away_qb": "Aaron Rodgers",
+   "home_qb_out": 0,
+   "away_qb_out": 0,
+   "spread_at_freeze": 3.5,
+   "total_at_freeze": 48.5
+  },
+  {
+   "game_id": "2026_10_LAC_BAL",
+   "away": "LAC",
+   "home": "BAL",
+   "gameday": "2026-11-16",
+   "gametime": "20:15",
+   "mu_home": 22.28,
+   "mu_away": 21.6,
+   "pred_margin": 0.67,
+   "pred_total": 43.88,
+   "p_home": 0.5202,
+   "wx_used": {
+    "source": "forecast",
+    "forecast_pulled_at": "2026-11-10 14:02Z",
+    "heavy_rain_flag": 0
+   },
+   "home_qb": "Tyler Huntley",
+   "away_qb": "Justin Herbert",
+   "home_qb_out": 1,
+   "away_qb_out": 0,
+   "spread_at_freeze": 5.5,
+   "total_at_freeze": 38.5
+  }
+ ]
+}

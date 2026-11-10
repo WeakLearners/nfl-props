@@ -1,23 +1,23 @@
 {
- "fitted_through_week": 8,
+ "fitted_through_week": 9,
  "season": 2026,
  "n": {
-  "completions": 205,
-  "passing_yards": 205,
-  "receiving_yards": 1094,
-  "receptions": 1094,
-  "rushing_yards": 566
+  "completions": 234,
+  "passing_yards": 234,
+  "receiving_yards": 1247,
+  "receptions": 1247,
+  "rushing_yards": 642
  },
- "completions": 1.167,
- "passing_yards": 1.0,
- "receiving_yards": 1.085,
- "receptions": 1.066,
- "rushing_yards": 1.061,
+ "completions": 1.118,
+ "passing_yards": 0.999,
+ "receiving_yards": 1.058,
+ "receptions": 1.051,
+ "rushing_yards": 1.047,
  "p50": {
-  "completions": 0.757,
-  "passing_yards": 0.683,
-  "receiving_yards": 0.694,
-  "receptions": 0.735,
-  "rushing_yards": 0.751
+  "completions": 0.726,
+  "passing_yards": 0.66,
+  "receiving_yards": 0.687,
+  "receptions": 0.724,
+  "rushing_yards": 0.73
  }
 }
