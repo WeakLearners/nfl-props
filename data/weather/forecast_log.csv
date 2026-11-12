@@ -248,3 +248,4 @@ game_id,pulled_at,temp_k,wind_k,gust_k,precip_k,prob_k,humidity_k,source
 2026_10_WAS_NYG,2026-11-12 17:48Z,50.1,11.2,24.4,2.5,66.0,94.0,open-meteo
 2026_10_BUF_NYJ,2026-11-12 17:48Z,46.6,13.5,18.8,0.0,0.0,52.0,open-meteo
 2026_10_LA_ARI,2026-11-12 17:48Z,72.6,2.8,2.2,0.0,0.0,34.0,open-meteo
+2026_10_WAS_NYG,2026-11-12 20:50Z,48.4,13.8,34.2,0.0,69.0,89.0,open-meteo
