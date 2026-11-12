@@ -9,6 +9,7 @@ reports are never touched. The old-path values stay in the file as mu_pub, sd_pu
 import pandas as pd
 
 from .config import DATA_DIR
+from .odds import name_key
 
 PATH = DATA_DIR / "rescored.csv"
 _CACHE = {"mtime": None, "df": None}
@@ -32,6 +33,30 @@ def max_week(season):
 
 
 def index(season):
+    """Rows keyed by (week, name_key(player), stat). Look up with key(week, player, stat)."""
     d = load()
     d = d[d.season == season]
-    return d.set_index(["week", "player", "stat"])
+    return d.assign(pk=d.player.map(name_key)).set_index(["week", "pk", "stat"])
+
+
+def key(week, player, stat):
+    """The lookup key for index(): the player name is normalized, so 'Estimé' finds 'Estime'."""
+    return (week, name_key(player), stat)
+
+
+def join_on_name(left, right, how, label):
+    """Join two frames on (week, player, stat) with a normalized player key.
+
+    Prints how many rows on each side have no match, so a lost row is visible. `right` must have
+    unique (week, player, stat) keys after normalization (the caller drops duplicates).
+    """
+    l = left.assign(_pk=left.player.map(name_key))
+    r = right.assign(_pk=right.player.map(name_key)).drop(columns=["player"])
+    r = r.drop_duplicates(["week", "_pk", "stat"])
+    m = l.merge(r, on=["week", "_pk", "stat"], how=how)
+    lk = set(zip(l.week, l._pk, l.stat))
+    rk = set(zip(r.week, r._pk, r.stat))
+    only_l = int(sum(1 for k in zip(l.week, l._pk, l.stat) if k not in rk))
+    only_r = len(rk - lk)
+    print(f"join {label}: {len(lk & rk)} keys matched, {only_l} left rows with no match, {only_r} right rows with no match")
+    return m.drop(columns=["_pk"])

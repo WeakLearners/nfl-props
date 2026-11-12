@@ -160,7 +160,7 @@ def _rescore(legs):
     ix = RS.index(CURRENT_SEASON)
     out = []
     for l in legs:
-        k = (l.get("week"), l.get("p"), l.get("s"))
+        k = RS.key(l.get("week"), l.get("p"), l.get("s"))
         if l.get("season", CURRENT_SEASON) == CURRENT_SEASON and k in ix.index and l.get("line") is not None:
             r = ix.loc[k]
             r = r.iloc[0] if isinstance(r, pd.DataFrame) else r

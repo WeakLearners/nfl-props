@@ -68,8 +68,9 @@ if __name__ == "__main__":
     # Fit on the rows that get a card (the report's player pool), not on every rostered player.
     # On the whole roster the cards' coverage came out 63% for receiving yards at the 68% scale.
     from nflprops import model_quality as MQ
+    from nflprops import rescored as RS
     pub = MQ.collect(a.season, weeks)[["week", "player", "stat"]].drop_duplicates()
-    df = df.merge(pub, on=["week", "player", "stat"], how="inner")
+    df = RS.join_on_name(df, pub, "inner", "fit pool vs published cards")
     df["u"] = (df.actual - df.mu_new).abs() / df.sd_new
     scale = {s: round(float(np.quantile(g.u, WINDOW_RECORD)), 3) for s, g in df.groupby("stat")}
     scale50 = {s: round(float(np.quantile(g.u, WINDOW_DISPLAY)), 3) for s, g in df.groupby("stat")}

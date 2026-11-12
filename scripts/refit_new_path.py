@@ -22,6 +22,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 from nflprops import calibration as CAL, engine_source as ES  # noqa: E402
 from nflprops.config import CURRENT_SEASON  # noqa: E402
+from nflprops.odds import name_key  # noqa: E402
 import fit_sd_scale as F  # noqa: E402
 import grade_week as W  # noqa: E402
 
@@ -35,10 +36,11 @@ def new_path_inputs(season=CURRENT_SEASON, weeks=None):
 
 def rescored_legs(legs, df):
     """Graded legs with mu, sd and the raw probability replaced by the new path's. Unmatched legs drop."""
-    ix = df.set_index(["week", "player", "stat"])
+    from nflprops.rescored import key
+    ix = df.assign(pk=df.player.map(name_key)).set_index(["week", "pk", "stat"])
     out = []
     for l in legs:
-        k = (l["week"], l["p"], l["s"])
+        k = key(l["week"], l["p"], l["s"])
         if k not in ix.index or l.get("line") is None:
             continue
         r = ix.loc[k]

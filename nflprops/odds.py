@@ -7,6 +7,7 @@ is anytime-TD, added 2026-09-20. Do not
 call this in a loop while iterating -- cache to disk instead.
 """
 import json
+import unicodedata
 import urllib.request
 from statistics import NormalDist
 
@@ -194,6 +195,10 @@ def name_key(name):
     # Periods are DELETED, not spaced: the book writes "D.J. Moore" where
     # nflverse has "DJ Moore", and spacing the period makes those two names
     # disagree forever. Same for T.J., A.J., J.K.
-    s = name.lower().replace(".", "").replace("'", "").replace("-", " ")
+    # Accents are removed (NFKD, then drop the combining marks): the old data said "Audric Estimé",
+    # the database now says "Estime", and the join lost the player with no warning.
+    s = unicodedata.normalize("NFKD", name)
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    s = s.lower().replace(".", "").replace("'", "").replace("\u2019", "").replace("-", " ")
     s = _SUFFIX.sub(" ", s)
     return " ".join(s.split())

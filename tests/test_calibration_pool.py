@@ -35,8 +35,9 @@ class RescoreTests(unittest.TestCase):
     def test_rescored_leg_takes_new_mu_sd_and_probability(self):
         import pandas as pd
         from nflprops import rescored as RS
+        from nflprops.odds import name_key
         d = pd.DataFrame([{"season": 2026, "week": 3, "player": "A B", "stat": "receptions", "mu": 5.0, "sd": 1.0, "actual": 6}])
-        ix = d.set_index(["week", "player", "stat"])
+        ix = d.assign(pk=d.player.map(name_key)).set_index(["week", "pk", "stat"])
         legs = [{"p": "A B", "s": "receptions", "week": 3, "season": 2026, "line": 5.0, "mp": 0.9, "mp_raw": 0.9, "bp": 0.6, "hit": True},
                 {"p": "C D", "s": "receptions", "week": 3, "season": 2026, "line": 5.0, "mp": 0.9, "bp": 0.6, "hit": True},
                 {"p": "E F", "s": "receptions", "week": 9, "season": 2026, "line": 5.0, "mp": 0.7, "bp": 0.6, "hit": True}]

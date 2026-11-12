@@ -65,8 +65,11 @@ def raw_prob(d):
     return d.get("mp_raw") if d.get("mp_raw") is not None else d.get("mp")
 
 
-def collect(season, weeks):
-    """One row per projected player-stat in finished games, with the actual and the naive."""
+def collect(season, weeks, use_rescored=True):
+    """One row per projected player-stat in finished games, with the actual and the naive.
+
+    use_rescored=False keeps the published (old-path) mu and sd. scripts/rescore_weeks.py needs that,
+    or it would copy the last rescore into the mu_pub columns."""
     import sys
     sc = str(ROOT / "scripts")
     if sc not in sys.path:
@@ -74,7 +77,7 @@ def collect(season, weeks):
     import grade_game as G
     from statistics import NormalDist
     from . import calibration as CAL, rescored as RS
-    rescored_ix = RS.index(season)
+    rescored_ix = RS.index(season) if use_rescored else RS.index(season).iloc[0:0]
     _f = CAL.fraction()
     rows = []
     for week in weeks:
@@ -102,7 +105,7 @@ def collect(season, weeks):
                 line = d.get("line")
                 mu, sd, mp, mp_raw = d["mu"], d.get("sd"), d.get("mp"), raw_prob(d)
                 engine = "new" if (d.get("pe") == "new" and d.get("sp") == "new") else "old"
-                rk = (week, d["p"], d["s"])
+                rk = RS.key(week, d["p"], d["s"])
                 if rk in rescored_ix.index:
                     # Weeks scored again on the new path (data/rescored.csv): same player-stat, new mu and sd.
                     rr = rescored_ix.loc[rk]

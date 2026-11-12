@@ -33,9 +33,9 @@ if __name__ == "__main__":
     new = new.rename(columns={"mu_new": "mu"}).drop(columns=["sd_new"])
     new["mu"] = new.mu.round(3)
     new.insert(0, "season", a.season)
-    pub = MQ.collect(a.season, weeks)[["week", "player", "stat", "mu", "sd", "mp_raw"]]
+    pub = MQ.collect(a.season, weeks, use_rescored=False)[["week", "player", "stat", "mu", "sd", "mp_raw"]]
     pub = pub.rename(columns={"mu": "mu_pub", "sd": "sd_pub", "mp_raw": "mp_raw_pub"})
-    out = new.merge(pub.drop_duplicates(["week", "player", "stat"]), on=["week", "player", "stat"], how="left")
+    out = RS.join_on_name(new, pub, "left", "new path vs published")
     out.to_csv(RS.PATH, index=False)
     print("wrote", RS.PATH, len(out), "rows")
     print(out.groupby("week").size().to_string())

@@ -25,8 +25,8 @@
          <div class="sb"><span class="t">CAR</span><span class="sc">19</span>
            <span class="t w">GB</span><span class="sc w">27</span></div>
        (w = winner). If .sb is emitted, drop .name and .final from that card.
-       When any card has .kick, the CSS below removes the slot rows and puts all
-       cards of the week in one grid. Until then the slot rows stay.
+       Since 2026-11-12 (NFL-0001) the slot headings stay when a card has .kick: each kickoff
+       group shows its heading, with that group's cards in a grid under it.
    M5  75% meter. After each props .hits-label, before its .score:
          <span class="hits-meter" style="--p:59%"></span>
        --p is the hit rate. The tick at 75% is drawn by CSS.
@@ -369,12 +369,16 @@ html body .wrap[data-page="games"] .hits-meter:has(+ .score.good){--m-c:var(--go
 html body .wrap[data-page="games"] .hits-meter:has(+ .score.bad){--m-c:color-mix(in srgb, var(--bad) 70%, transparent)}
 html body .wrap[data-page="games"] .hits-meter::after{content:""; position:absolute; left:75%; top:-3px;
   width:1px; height:10px; background:var(--ink-3)}
-/* M4 present: one grid in kickoff order, no slot rows. */
-html body .wrap[data-page="games"] .panel:not([hidden]):has(.card .kick){display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:var(--s3); align-items:start; margin-top:var(--s5)}
+/* M4 present: each kickoff group keeps its heading, with that group's cards in a grid under it
+   (Sean 2026-11-12, ticket NFL-0001). Before this, .slot and .rows were display:contents and .slot-h was
+   display:none, so the page showed one flat grid. The card .kick chip stays. */
+html body .wrap[data-page="games"] .panel:not([hidden]):has(.card .kick){display:block; margin-top:var(--s5)}
 html body .wrap[data-page="games"] .panel:has(.card .kick) > .parlays{margin:0}
-html body .wrap[data-page="games"] .panel:has(.card .kick) :is(.slot,.slot .rows){display:contents}
-html body .wrap[data-page="games"] .panel:has(.card .kick) .slot-h{display:none}
+html body .wrap[data-page="games"] .panel:has(.card .kick) .slot{display:block; margin:var(--s6) 0 0; padding:0; border-bottom:0}
+html body .wrap[data-page="games"] .panel:has(.card .kick) .slot:first-child{margin-top:0}
+html body .wrap[data-page="games"] .panel:has(.card .kick) .slot-h{display:flex; padding:0 0 var(--s2); border-bottom:1px solid var(--line)}
+html body .wrap[data-page="games"] .panel:has(.card .kick) .slot .rows{display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:var(--s3); align-items:start; margin-top:var(--s3)}
 html body .wrap[data-page="games"] .panel > :is(.parlays,.sum-row,.empty){grid-column:1/-1}
 /* Week and season summary. .parlays is the interim box until M6. */
 html body .wrap[data-page] .parlays{display:flex; align-items:center; gap:var(--s3); margin:var(--s4) 0 0;
