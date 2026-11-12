@@ -30,7 +30,7 @@
           "kind": "text",
           "description": "One short line under the game header: what a card shows and how the cards are ordered (by stat, then role depth). The longer notes sit in How to read a card.",
           "locate": {
-            "path": "scripts/serve_reports.py:2161",
+            "path": "scripts/serve_reports.py:2187",
             "grep": "grep -n -F -- 'data-inspect-id=\"report-intro\"' scripts/serve_reports.py"
           }
         },
@@ -40,7 +40,7 @@
           "kind": "text",
           "description": "Legend row for the five history dots on each player card: the last 5 calls on this player and stat, newest at left.",
           "locate": {
-            "path": "scripts/serve_reports.py:2136",
+            "path": "scripts/serve_reports.py:2162",
             "grep": "grep -n -F -- 'data-inspect-id=\"legend-history\"' scripts/serve_reports.py"
           }
         },
@@ -50,7 +50,7 @@
           "kind": "text",
           "description": "Legend row that explains the rank badge beside each team name: the hit rate on all legs and its rank of 32.",
           "locate": {
-            "path": "scripts/serve_reports.py:2142",
+            "path": "scripts/serve_reports.py:2168",
             "grep": "grep -n -F -- 'data-inspect-id=\"legend-rank\"' scripts/serve_reports.py"
           }
         },
@@ -60,7 +60,7 @@
           "kind": "link",
           "description": "Link at the end of the legend that jumps to the notes at the bottom of the game page.",
           "locate": {
-            "path": "scripts/serve_reports.py:2146",
+            "path": "scripts/serve_reports.py:2172",
             "grep": "grep -n -F -- 'data-inspect-id=\"legend-how-to-read\"' scripts/serve_reports.py"
           }
         },
@@ -610,7 +610,7 @@
           "kind": "text",
           "description": "Small line after the peak note on a card whose rung was chosen (week 8 on): the rung the old rule (nearest -300) would have used, for example 'old: o39.5 -310'. A leg with no rung from -200 to -110 that beats the book says so instead. Not shown on earlier reports.",
           "locate": {
-            "path": "templates/report.html:596",
+            "path": "templates/report.html:595",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-old-rung\"' templates/report.html"
           }
         },
@@ -620,7 +620,7 @@
           "kind": "text",
           "description": "Matchup line: the opponent's adjusted rank of 32 and its allowed per game (DATA field dr, from badges.json def_pos). Six position-stat pairs rank that one stat allowed to that position, with a unit and label in dr (u, l): RB receptions, RB receiving yds, RB rushing yds, QB rushing yds, WR receptions, TE receptions. Other stats use the whole-position rank (QB passing, WR/TE receiving yards). The Big day / Caution badge for RBs uses the RB rushing rank too, so line and badge cannot disagree. Reports built before 2026-10-04 show the raw ratio instead; reports built before 2026-10-27 keep the old whole-position rank.",
           "locate": {
-            "path": "templates/report.html:661",
+            "path": "templates/report.html:656",
             "grep": "grep -n -F -- 'data-inspect-id=\"card-matchup\"' templates/report.html"
           }
         },
@@ -800,7 +800,7 @@
           "kind": "badge",
           "description": "Trend arrow (▲/▼) and matchup tag (Big day / Caution), on the line under the player name, last items of the .mk group. From nflprops/badges.py (data/ratings/badges.json). Hover title gives the numbers. Absent for almost everyone. Built by bdBadges(d,id) inside mk(). On the player card.",
           "locate": {
-            "path": "templates/report.html:670",
+            "path": "templates/report.html:669",
             "grep": "grep -n -F -- '\"card-badge\"' templates/report.html"
           }
         },
@@ -3194,7 +3194,7 @@
           "kind": "text",
           "description": "One-line standing disclaimer spliced after every page by with_chrome().",
           "locate": {
-            "path": "scripts/serve_reports.py:2091",
+            "path": "scripts/serve_reports.py:2094",
             "grep": "grep -n -F -- 'data-inspect-id=\"site-footer\"' scripts/serve_reports.py"
           }
         }
