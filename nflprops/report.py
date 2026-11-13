@@ -323,6 +323,18 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
              .drop_duplicates("player_key")
              .head(n_picks))
     pr["pick"] = None
+    # Why legs missed the shortlist. Shown on the page when the shortlist is
+    # empty, so an empty slip says what stopped it. Display only.
+    _why = [("no price offered", int(pr.line.isna().sum())),
+            ("changed team", int(pr.changed_team.sum())),
+            ("injury tag (Questionable, Doubtful, Out)",
+             int(pr.report_status.isin(["Questionable", "Doubtful", "Out"]).sum())),
+            (f"snap share under {MIN_SNAP:.0%}", int((pr.snap_share < MIN_SNAP).sum())),
+            (f"fewer than {MIN_GAMES} regular-season games", int((pr.n.fillna(0) < MIN_GAMES).sum())),
+            ("no rung cleared the rung rule",
+             int(((pr.rung == "none") & pr.clean).sum()) if use_rung else 0)]
+    screens = dict(legs=int(len(pr)), priced=int(pr.line.notna().sum()),
+                   reasons=[[k, n] for k, n in sorted(_why, key=lambda x: -x[1]) if n][:4])
     for i, ix in enumerate(short.index, 1):
         pr.loc[ix, "pick"] = i
 
@@ -360,7 +372,9 @@ def build(season, week, teams, lines, n_picks=6, rung_choice=None):
             # The other engine's number is no longer put on the card (2026-10-27).
             "pe": "new", "sp": "new",  # kept so model_quality and old readers see the path
         })
-    return rows, pr.loc[short.index], qb_notes
+    out = pr.loc[short.index]
+    out.attrs["screens"] = screens
+    return rows, out, qb_notes
 
 
 def _headline(away, home, season, week):
@@ -384,7 +398,7 @@ def _headline(away, home, season, week):
 
 
 def render(rows, away, home, team_a, week, season, kick=None, same_game=True,
-           target=DEFAULT_TARGET, qb_notes=None):
+           target=DEFAULT_TARGET, qb_notes=None, screens=None):
     corr = ("All of these are same-game legs, so they move together &mdash; a shootout "
             "carries them over, a grind carries them under. That makes the true joint "
             "chance <em>higher</em> than the naive figure, and it is also why FanDuel "
@@ -395,7 +409,8 @@ def render(rows, away, home, team_a, week, season, kick=None, same_game=True,
             "would be offered.")
     if qb_notes:
         corr = ("<strong>" + "</strong><br><strong>".join(qb_notes) + "</strong><br>" + corr)
-    meta = {"teamA": team_a, "nameA": away, "nameB": home, "corrnote": corr}
+    meta = {"teamA": team_a, "nameA": away, "nameB": home, "corrnote": corr,
+            "screens": screens}
     try:
         from .weather import game_summary
         meta["wx"] = game_summary(f"{season}_{int(week):02d}_{away}_{home}")
