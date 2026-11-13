@@ -26,6 +26,7 @@ import pandas as pd
 from nflprops.config import CURRENT_SEASON
 from nflprops.db import connect
 from nflprops.odds import name_key
+from nflprops import rescored as RS
 import grade_game as G
 
 VAULT = G.VAULT
@@ -52,6 +53,7 @@ def legs(season, week):
         return pd.DataFrame(), {}
     by_key = act.set_index("key")
     rows = []
+    n_picks = n_missed = 0
     for rp in sorted((ROOT / "reports").glob(f"report_{season}_w{week}_*.html")):
         tm = G.teams_of(rp)
         if tm not in final:
@@ -62,6 +64,9 @@ def legs(season, week):
             if not d.get("pick"):
                 continue
             k = name_key(d["p"])
+            n_picks += 1
+            if k not in by_key.index:
+                n_missed += 1
             a = by_key.loc[k, d["s"]] if k in by_key.index else None
             if isinstance(a, pd.Series):
                 a = a.iloc[0]
@@ -82,6 +87,7 @@ def legs(season, week):
                          "rung": d.get("rung"), "old_line": old_line,
                          "old_price": old_price, "old_hit": old_hit,
                          "old_pnl": profit(old_price, old_hit)})
+    RS.report_unmatched(f"grade_week.legs w{week}", n_missed, n_picks)
     return pd.DataFrame(rows), final
 
 
@@ -90,6 +96,7 @@ def projection_rows(season, weeks):
     any bias), the stored mu, and the actual. Not only shortlisted legs.
     Reports built before the bias carry no mu_raw, and their mu is raw."""
     rows = []
+    n_total = n_missed = 0
     for week in weeks:
         final = {(r.away_team, r.home_team)
                  for r in G.played_games(season, week).itertuples()}
@@ -102,7 +109,9 @@ def projection_rows(season, weeks):
                 continue
             for d in G.load_report(rp):
                 k = name_key(d["p"])
+                n_total += 1
                 if k not in by_key.index:
+                    n_missed += 1
                     continue
                 a = by_key.loc[k, d["s"]]
                 if isinstance(a, pd.Series):
@@ -110,6 +119,7 @@ def projection_rows(season, weeks):
                 if pd.notna(a):
                     rows.append({"stat": d["s"], "mu": d["mu"],
                                  "mu_raw": d.get("mu_raw", d["mu"]), "actual": float(a)})
+    RS.report_unmatched("grade_week.projection_rows", n_missed, n_total)
     return pd.DataFrame(rows)
 
 

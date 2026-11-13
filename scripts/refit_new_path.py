@@ -20,7 +20,7 @@ from scipy.stats import norm
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
-from nflprops import calibration as CAL, engine_source as ES  # noqa: E402
+from nflprops import calibration as CAL, engine_source as ES, rescored as RS  # noqa: E402
 from nflprops.config import CURRENT_SEASON  # noqa: E402
 from nflprops.odds import name_key  # noqa: E402
 import fit_sd_scale as F  # noqa: E402
@@ -39,14 +39,19 @@ def rescored_legs(legs, df):
     from nflprops.rescored import key
     ix = df.assign(pk=df.player.map(name_key)).set_index(["week", "pk", "stat"])
     out = []
+    missed = 0
     for l in legs:
         k = key(l["week"], l["p"], l["s"])
-        if k not in ix.index or l.get("line") is None:
+        if k not in ix.index:
+            missed += 1
+            continue
+        if l.get("line") is None:
             continue
         r = ix.loc[k]
         r = r.iloc[0] if isinstance(r, pd.DataFrame) else r
         p = float(1 - norm.cdf((l["line"] - r.mu_new) / r.sd_new))
         out.append(dict(l, mu=float(r.mu_new), mu_raw=float(r.mu_new), sd=float(r.sd_new), mp_raw=p, mp=p))
+    RS.report_unmatched("refit_new_path.rescored_legs", missed, len(legs))
     return out
 
 

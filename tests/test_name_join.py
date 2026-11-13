@@ -56,3 +56,24 @@ class JoinOnNameTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class UnmatchedCountTests(unittest.TestCase):
+    def test_refit_legs_prints_count_of_unmatched(self):
+        import contextlib
+        import io
+        import pathlib
+        import sys
+        root = pathlib.Path(__file__).resolve().parent.parent
+        sys.path.insert(0, str(root))
+        sys.path.insert(0, str(root / "scripts"))
+        import refit_new_path as R
+        df = pd.DataFrame([{"week": 1, "player": "Audric Estimé", "stat": "rushing_yards",
+                            "mu_new": 20.0, "sd_new": 10.0}])
+        legs = [{"week": 1, "p": "Audric Estime", "s": "rushing_yards", "line": 15.5},
+                {"week": 1, "p": "Nobody Else", "s": "rushing_yards", "line": 15.5}]
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            out = R.rescored_legs(legs, df)
+        self.assertEqual(len(out), 1)
+        self.assertIn("1 with no match", buf.getvalue())

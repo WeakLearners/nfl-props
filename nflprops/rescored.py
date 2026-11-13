@@ -44,6 +44,12 @@ def key(week, player, stat):
     return (week, name_key(player), stat)
 
 
+def report_unmatched(label, missed, total):
+    """Print how many rows found no match in a lookup by player name, so a lost row is visible."""
+    print(f"lookup {label}: {total - missed} of {total} rows matched, {missed} with no match")
+    return missed
+
+
 def join_on_name(left, right, how, label):
     """Join two frames on (week, player, stat) with a normalized player key.
 
