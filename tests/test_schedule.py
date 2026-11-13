@@ -140,6 +140,52 @@ class AutoRunTests(unittest.TestCase):
             run_reports.main()
             self.assertEqual(post.call_count, 1)
 
+    def test_auto_never_runs_td_markers_or_fetches_td_odds(self):
+        tmp = pathlib.Path(tempfile.mkdtemp())
+        kick = pd.Timestamp.now(tz="UTC") + pd.Timedelta(hours=2)
+        ev = pd.DataFrame([{"id": "e1", "away_team": "Away Team", "home_team": "Home Team", "ct": kick}])
+        ev["et"] = ev.ct.dt.tz_convert(ET)
+        lines = pd.DataFrame([{"player_key": "x", "stat": "receptions", "line": 3.5, "price": -300}])
+        short = pd.DataFrame([{"player": "P", "stat": "receptions", "line": 3.5, "price": -300, "conf": 0.8}])
+        with mock.patch.object(run_reports, "STATE", tmp / "state.json"), \
+             mock.patch.object(run_reports, "write_td_markers") as td, \
+             mock.patch("nflprops.odds.event_props") as props, \
+             mock.patch.object(sys, "argv", ["run_reports.py", "auto"]), \
+             mock.patch("nflprops.db.team_abbr_map", return_value={"Away Team": "AW", "Home Team": "HM"}), \
+             mock.patch.object(run_reports, "game_week", return_value=(2026, 4)), \
+             mock.patch.object(RP, "upcoming_events", return_value=ev), \
+             mock.patch.object(RP, "event_lines", return_value=(lines, "100")), \
+             mock.patch.object(RP, "build", return_value=([{"x": 1}], short, [])), \
+             mock.patch.object(RP, "render", return_value="<html></html>"), \
+             mock.patch.object(RP, "report_path", return_value=tmp / "r.html"), \
+             mock.patch("nflprops.rating.write_rankings", return_value=tmp / "rk.html"), \
+             mock.patch("nflprops.slack.post", return_value="ok"):
+            run_reports.main()
+        td.assert_not_called()
+        props.assert_not_called()
+
+    def test_nolines_game_is_not_refetched_inside_two_hours(self):
+        tmp = pathlib.Path(tempfile.mkdtemp())
+        kick = pd.Timestamp.now(tz="UTC") + pd.Timedelta(hours=2)
+        ev = pd.DataFrame([{"id": "e1", "away_team": "Away Team", "home_team": "Home Team", "ct": kick}])
+        ev["et"] = ev.ct.dt.tz_convert(ET)
+        short = pd.DataFrame()
+        with mock.patch.object(run_reports, "STATE", tmp / "state.json"), \
+             mock.patch.object(sys, "argv", ["run_reports.py", "auto"]), \
+             mock.patch("nflprops.db.team_abbr_map", return_value={"Away Team": "AW", "Home Team": "HM"}), \
+             mock.patch.object(run_reports, "game_week", return_value=(2026, 4)), \
+             mock.patch.object(RP, "upcoming_events", return_value=ev), \
+             mock.patch.object(RP, "event_lines", return_value=(pd.DataFrame(), "100")) as fetch, \
+             mock.patch.object(RP, "build", return_value=([{"x": 1}], short, [])), \
+             mock.patch.object(RP, "render", return_value="<html></html>"), \
+             mock.patch.object(RP, "report_path", return_value=tmp / "r.html"), \
+             mock.patch("nflprops.rating.write_rankings", return_value=tmp / "rk.html"), \
+             mock.patch("nflprops.slack.post", return_value="ok"):
+            run_reports.main()
+            run_reports.main()
+            run_reports.main()
+            self.assertEqual(fetch.call_count, 1)
+
     def test_moved_kickoff_does_not_repost(self):
         tmp = pathlib.Path(tempfile.mkdtemp())
         kick = pd.Timestamp.now(tz="UTC") + pd.Timedelta(hours=2)

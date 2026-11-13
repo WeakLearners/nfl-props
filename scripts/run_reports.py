@@ -20,6 +20,7 @@ publishing it as an artifact is a manual step.
 import sys, pathlib, json
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 import pandas as pd
+from nflprops import credits as CR
 
 
 def current_week(connect):
@@ -165,7 +166,10 @@ MARKERS = pathlib.Path(__file__).resolve().parent / "td" / "write_markers.py"
 
 
 def write_td_markers(season, week, run=None):
-    """Write reports/td_markers_{season}_w{week}.json via scripts/td/write_markers.py.
+    """NOT CALLED since 2026-11-13: Sean dropped the TD markers. Kept only because
+    tests/test_td_markers_hook.py imports it. Delete both together.
+
+    Write reports/td_markers_{season}_w{week}.json via scripts/td/write_markers.py.
 
     Idempotent: the writer overwrites the same week file, and keeps the
     entries of games that have already started. A failure is logged loudly
@@ -209,8 +213,15 @@ def auto(N_PICKS, DRY):
             print(f"  ! cannot place {e.away_team} @ {e.home_team}"); continue
         meta[e.id] = (a, h, *sw)
         # A projection-only report (no lines yet) is rebuilt on a later pass,
-        # once FanDuel posts lines. Any other built game is handled.
-        if st["games"].get(e.id, {}).get("nolines"):
+        # once FanDuel posts lines. Each try costs credits, so a game is tried
+        # again only when its kickoff is within 3 h and the last try was 2 h
+        # or more ago (nflprops/credits.py retry_due). Any other built game
+        # is handled.
+        prev = st["games"].get(e.id, {})
+        if prev.get("nolines"):
+            if CR.retry_due(prev.get("tried_at"), e.ct, pd.Timestamp.now(tz="UTC")):
+                continue
+            handled.add(e.id)
             continue
         if RP.report_path(sw[0], sw[1], a, h).exists() or e.id in st["games"]:
             handled.add(e.id)
@@ -226,12 +237,15 @@ def auto(N_PICKS, DRY):
         pkey = SC.posted_key(sit, set(st["posted"]), pids)
         key = pkey or key
         fresh = []
+        CR.context = key
         for e in todo.itertuples():
             if e.id not in meta:
                 continue
             a, h, season, week = meta[e.id]
             item, rem = build_game(RP, e, season, week, a, h, N_PICKS, DRY)
             if item:
+                if item.get("nolines"):
+                    item["tried_at"] = now.isoformat()
                 st["games"][e.id] = item
                 fresh.append(item)
                 wrote = True
@@ -261,13 +275,12 @@ def auto(N_PICKS, DRY):
             print(f"sitting {key}: {len(ready)}/{len(sit)} ready, waiting")
         if not DRY:
             save_state(st)
-        # Markers go out with the sitting's reports, before kickoff. Once per
-        # sitting; the writer keeps already-started games, so a re-run is safe.
-        if not DRY and not st.setdefault("markers", {}).get(key):
-            wk = next((meta[i][2:] for i in sit.id if i in meta), None)
-            if wk and write_td_markers(*wk):
-                st["markers"][key] = now.isoformat()
-                save_state(st)
+        # The anytime-TD marker step was removed 2026-11-13 (Sean). Nothing in
+        # this pass fetches anytime-TD odds. The alt-line fetch is the only
+        # Odds API spend left, and it goes through nflprops/credits.py.
+        used, by = CR.totals()
+        print(f"credits: sitting {key} used {by.get(key, 0)}, cycle total {used}, "
+              f"remaining {CR.remaining()}")
     if wrote and not DRY:
         from nflprops.rating import write_rankings
         print(f"rankings -> {write_rankings().name}")

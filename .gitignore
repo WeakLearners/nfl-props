@@ -42,3 +42,8 @@ data/.marks-*.tmp
 
 # NFL team logos: trademarked, fetched locally by scripts/fetch_logos.sh, never committed (repo is public)
 static/logos/
+
+# Odds API credit guard runtime files (nflprops/credits.py)
+data/credits.json
+data/credit_log.csv
+data/events_cache.json

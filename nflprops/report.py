@@ -16,6 +16,7 @@ from . import engine_source as ES, spread as SP
 from .features import defense_vs_position
 from .config import require, ROOT, save_board
 from .odds import name_key
+from . import credits
 from .db import connect
 from .rating import chip_lookup as rating_chips
 from .badges import card_line, get_badges, player_badges
@@ -83,8 +84,7 @@ BASE = "https://api.the-odds-api.com/v4/sports/americanfootball_nfl"
 def upcoming_events():
     """Pre-game events on the board, with kickoff in ET. Free call."""
     k = require("ODDS_API_KEY")
-    with urllib.request.urlopen(f"{BASE}/events?apiKey={k}", timeout=30) as r:
-        ev = pd.DataFrame(json.load(r))
+    ev = pd.DataFrame(credits.events_json(f"{BASE}/events?apiKey={k}"))
     if ev.empty:
         return ev
     ev["ct"] = pd.to_datetime(ev.commence_time, utc=True)
@@ -103,9 +103,10 @@ def event_lines(event_id, target=DEFAULT_TARGET, season=None, week=None, teams=N
     k = require("ODDS_API_KEY")
     u = (f"{BASE}/events/{event_id}/odds?apiKey={k}&bookmakers=fanduel"
          f"&markets={','.join(ALT)}&oddsFormat=american")
-    with urllib.request.urlopen(u, timeout=30) as r:
-        d = json.load(r)
-        rem = r.headers.get("x-requests-remaining")
+    d, rem = credits.fetch(u, f"lines {event_id}", len(ALT))
+    if d is None:
+        # Credit guard: no call was made. The caller builds the model-only report.
+        return pd.DataFrame(), rem
     if season is not None and week is not None and teams is not None:
         save_board(season, week, teams, d)
     return parse_lines(d, target), rem
