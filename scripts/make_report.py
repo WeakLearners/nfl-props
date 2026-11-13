@@ -42,14 +42,20 @@ def main():
     save = {} if dry else dict(season=SEASON, week=WEEK, teams=TEAMS)
     lines, rem = RP.event_lines(e.id, target=target, **save)
     if lines.empty:
-        sys.exit("no alternate lines on the board for that game yet")
-    rows, short, qb_notes = RP.build(SEASON, WEEK, TEAMS, lines, n_picks=n_picks,
+        print("no alternate lines on the board for that game yet: projection-only report")
+    try:
+        rows, short, qb_notes = RP.build(SEASON, WEEK, TEAMS, lines, n_picks=n_picks,
                                    rung_choice=True if "--rung" in sys.argv else None)
-    if not rows or short.empty:
-        sys.exit("nothing cleared the screens")
+    except Exception as ex:  # noqa: BLE001
+        sys.exit(f"!!! STEP FAILED: report for {TEAMS[0]}@{TEAMS[1]}: build raised {type(ex).__name__}: {ex}")
+    if not rows:
+        sys.exit(f"!!! STEP FAILED: report for {TEAMS[0]}@{TEAMS[1]}: no players matched, projection is empty")
+    if short.empty:
+        print("nothing cleared the screens: report written with an empty slip")
 
     html = RP.render(rows, e.away_team, e.home_team, TEAMS[0], WEEK, SEASON,
-                     kick=e.et, same_game=True, target=target, qb_notes=qb_notes)
+                     kick=e.et, same_game=True, target=target, qb_notes=qb_notes,
+                     screens=short.attrs.get("screens"))
     out = RP.report_path(SEASON, WEEK, *TEAMS)
     if not dry:
         out.write_text(html)
