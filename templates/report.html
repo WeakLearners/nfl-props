@@ -247,6 +247,19 @@
   .pk-models b{font-weight:600; display:inline-block; width:5ch; text-align:right; margin-left:4px}
   .pk-px{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-3);
     width:46px; text-align:right; flex:none; font-variant-numeric:tabular-nums}
+  /* Empty slip: the screens passed no leg. A recessed well inside the slip frame,
+     same padding step as the frame, text roles reused (16 / 13 / 12). */
+  .pk-empty{border:1px dashed var(--line); border-radius:4px; padding:24px;
+    background:color-mix(in srgb, var(--ink) 3%, var(--surface))}
+  .picks [hidden]{display:none!important}
+  .pk-empty-t{font-size:16px; font-weight:600; color:var(--ink); margin:0 0 4px}
+  .pk-empty-s{font-size:13px; color:var(--ink-2); margin:0; max-width:72ch; line-height:1.5}
+  .pk-why{list-style:none; margin:16px 0 0; padding:16px 0 0; border-top:1px solid var(--line);
+    display:grid; grid-template-columns:minmax(0,auto) auto; justify-content:start; gap:8px 24px; align-items:baseline}
+  .pk-why li{display:contents}
+  .pk-why .w-k{font-size:12px; color:var(--ink-2)}
+  .pk-why .w-n{font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600;
+    color:var(--ink); font-variant-numeric:tabular-nums; text-align:right}
   .picks-foot{
     display:grid; grid-template-columns:repeat(2,auto); gap:6px 28px; margin-top:16px;
     padding-top:14px; border-top:1px solid var(--line); align-items:baseline;
@@ -406,6 +419,11 @@
       share, a long record, no injury tag, no change of team, and the card and the book
       within a few points of each other. Confidence here means <em>likely to happen</em> —
       not good value. Nothing on this page establishes that any of it is mispriced.</p>
+    <div class="pk-empty" id="pk-empty" data-inspect-id="picks-empty" hidden>
+      <p class="pk-empty-t">No legs passed the screens</p>
+      <p class="pk-empty-s" id="pk-empty-s"></p>
+      <ul class="pk-why" id="pk-why" data-inspect-id="picks-empty-reasons"></ul>
+    </div>
     <div class="pk-head" data-inspect-id="picklist-head"><span>Name</span><span class="h-info">Info</span><span class="h-models">Models</span><span>Confidence</span></div>
     <ol id="picklist" data-inspect-id="picklist"></ol>
     <div class="picks-foot" data-inspect-id="picks-foot">
@@ -852,6 +870,18 @@ document.getElementById("teamB").textContent = META.nameB;
 })();
 function wxMark(d){ const w=d.wxd||0; return Math.abs(w)>=Math.max(0.03*d.mu,0.05)?' <span class="wxm" data-inspect-id="card-weather-mark" title="Weather moved this projection by '+(w>0?'+':'')+w.toFixed(1)+'">wx '+(w>0?'+':'')+w.toFixed(1)+'</span>':''; }
 const picks = DATA.filter(d=>d.pick).sort((a,b)=>a.pick-b.pick);
+(function(){
+  if(picks.length) return;
+  const sc=META.screens||{}, esc=t=>String(t).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  document.getElementById("pk-empty").hidden=false;
+  for(const q of [".picks-note",".pk-head","#picklist",".picks-foot"]) document.querySelector(".picks "+q).hidden=true;
+  const noLines = sc.priced===0;
+  document.getElementById("pk-empty-s").textContent = noLines
+    ? "FanDuel has posted no lines for this game yet, so the page shows projections only. It is rebuilt when lines arrive."
+    : (sc.priced!=null ? sc.priced+" of "+sc.legs+" legs had a price, and none cleared every screen." : "None of the legs cleared every screen.")
+      + " The cards below still show every projection.";
+  document.getElementById("pk-why").innerHTML=(sc.reasons||[]).map(r=>'<li><span class="w-k">'+esc(r[0])+'</span><span class="w-n">'+r[1]+'</span></li>').join("");
+})();
 document.getElementById("nlegs").textContent = picks.length;
 const payAll = picks.reduce((a,d)=>a*(d.price<0?1+100/(-d.price):1+d.price/100),1);
 const jointAll = picks.reduce((a,d)=>a*Math.min(d.mp,d.bp),1);

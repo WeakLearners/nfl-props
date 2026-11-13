@@ -56,6 +56,19 @@ def dec(a):
     return 1 + (100 / (-a) if a < 0 else a / 100)
 
 
+def step_failed(a, h, why):
+    """A real projection failure: loud on stdout and stderr, and a Slack alert."""
+    msg = f"STEP FAILED: report for {a}@{h}: {why}"
+    print(f"!!! {msg}")
+    sys.stderr.write(f"!!! {msg}\n")
+    try:
+        from nflprops.slack import post
+        post(text=f":rotating_light: nfl-props {msg}")
+    except Exception as ex:  # noqa: BLE001
+        sys.stderr.write(f"!!! Slack alert for {a}@{h} also failed: {ex}\n")
+    return None
+
+
 def build_game(RP, e, season, week, a, h, n_picks, dry, lines=None, rem=None, banner=None):
     """Build and write one game's report. Returns (item, rem) or (None, rem).
     item holds the Slack text so a later run can post it without refetching."""
@@ -63,27 +76,41 @@ def build_game(RP, e, season, week, a, h, n_picks, dry, lines=None, rem=None, ba
         save = {} if dry else dict(season=season, week=week, teams=[a, h])
         lines, rem = RP.event_lines(e.id, **save)
     if lines.empty:
-        print(f"  ! no alternate lines yet: {a}@{h}"); return None, rem
-    rows, short, qb_notes = RP.build(season, week, [a, h], lines, n_picks=n_picks)
-    if not rows or short.empty:
-        print(f"  ! nothing cleared the screens: {a}@{h}"); return None, rem
+        # Never a reason to skip the file: build from projections only.
+        print(f"  ! no alternate lines yet: {a}@{h} (projection-only report)")
+        lines = pd.DataFrame()
+    try:
+        rows, short, qb_notes = RP.build(season, week, [a, h], lines, n_picks=n_picks)
+    except Exception as ex:  # noqa: BLE001
+        return step_failed(a, h, f"build raised {type(ex).__name__}: {ex}"), rem
+    if not rows:
+        return step_failed(a, h, "no players matched, projection is empty"), rem
+    if short.empty:
+        print(f"  ! nothing cleared the screens: {a}@{h} (report written with an empty slip)")
     html = RP.render(rows, e.away_team, e.home_team, a, week, season,
-                     kick=e.et, same_game=True, qb_notes=qb_notes)
+                     kick=e.et, same_game=True, qb_notes=qb_notes,
+                     screens=short.attrs.get("screens"))
     if banner:
         marker = '<div class="wrap"'
         html = html.replace(marker, banner + marker, 1) if marker in html else banner + html
     out = RP.report_path(season, week, a, h)
     if not dry:
         out.write_text(html)
-    pay = short.price.map(dec).prod()
-    joint = short.conf.prod()
-    print(f"  {a} @ {h}: {len(short)} legs, pays {pay-1:.2f}x -> {out.name}")
-    lines_txt = [
-        f"`{i}.` *{r.player}* — {r.stat.replace('_',' ')} over {r.line:g}  "
-        f"`{int(r.price)}`  *{r.conf*100:.0f}%*"
-        for i, r in enumerate(short.itertuples(), 1)]
+    if short.empty:
+        pay, joint = None, None
+        print(f"  {a} @ {h}: empty slip -> {out.name}")
+        lines_txt = []
+    else:
+        pay = short.price.map(dec).prod()
+        joint = short.conf.prod()
+        print(f"  {a} @ {h}: {len(short)} legs, pays {pay-1:.2f}x -> {out.name}")
+        lines_txt = [
+            f"`{i}.` *{r.player}* — {r.stat.replace('_',' ')} over {r.line:g}  "
+            f"`{int(r.price)}`  *{r.conf*100:.0f}%*"
+            for i, r in enumerate(short.itertuples(), 1)]
     return dict(file=out.name, away=e.away_team, home=e.home_team,
                 when=f"{e.et:%a %-I:%M %p ET}", n=len(short), pay=pay, joint=joint,
+                nolines=bool(lines.empty),
                 lines="\n".join(lines_txt)), rem
 
 
@@ -92,6 +119,13 @@ def digest_blocks(items, title, rem):
     from nflprops.slack import section, header, divider
     blocks = [header(title)]
     for it in items:
+        if not it["n"]:
+            blocks += [
+                section(f"*{it['away']} at {it['home']}* · {it['when']}"),
+                section("_Slip is empty: no leg passed the screens"
+                        + (" (no lines yet)" if it.get("nolines") else "") + ". Report is written._"),
+                divider()]
+            continue
         blocks += [
             section(f"*{it['away']} at {it['home']}* · {it['when']}"),
             section(it["lines"]),
@@ -174,6 +208,10 @@ def auto(N_PICKS, DRY):
         if not sw:
             print(f"  ! cannot place {e.away_team} @ {e.home_team}"); continue
         meta[e.id] = (a, h, *sw)
+        # A projection-only report (no lines yet) is rebuilt on a later pass,
+        # once FanDuel posts lines. Any other built game is handled.
+        if st["games"].get(e.id, {}).get("nolines"):
+            continue
         if RP.report_path(sw[0], sw[1], a, h).exists() or e.id in st["games"]:
             handled.add(e.id)
 
@@ -267,6 +305,34 @@ def backfill(event_id, asof, N_PICKS):
     print("backfill done" if item else "backfill: no report")
 
 
+def backfill_board(path, N_PICKS):
+    """Report from a saved pre-kickoff board file (data/boards/). No API call, no
+    Slack post. The banner says the data now includes the game itself."""
+    import types
+    from nflprops import report as RP
+    from nflprops.db import connect, team_abbr_map
+    p = pathlib.Path(path)
+    d = json.loads(p.read_text())
+    ct = pd.Timestamp(d["commence_time"])
+    stamp = p.stem.rsplit("_", 1)[-1]
+    e = types.SimpleNamespace(id=d["id"], away_team=d["away_team"], home_team=d["home_team"],
+                              et=ct.tz_convert("America/New_York"))
+    abbr = team_abbr_map()
+    a, h = abbr[d["away_team"]], abbr[d["home_team"]]
+    season, week = game_week(connect, e, a, h)
+    with connect() as con:
+        last = pd.read_sql_query(
+            "SELECT MAX(gameday) g FROM schedules WHERE game_id IN "
+            "(SELECT DISTINCT game_id FROM player_games)", con).g[0]
+    banner = ('<div style="background:#fff3cd;color:#664d03;padding:10px 16px;font:14px sans-serif">'
+              f'Built after the game from the FanDuel board saved before kickoff ({stamp}). '
+              f'The player data includes games through {last}, so the screens can use this game itself. '
+              'Not posted to Slack. Kept for complete data.</div>')
+    item, _ = build_game(RP, e, season, week, a, h, N_PICKS, False,
+                         lines=RP.parse_lines(d), rem=None, banner=banner)
+    print("backfill done" if item else "backfill: no report")
+
+
 def main():
     from nflprops import report as RP
     from nflprops.db import connect, team_abbr_map
@@ -278,6 +344,8 @@ def main():
     N_PICKS, DRY = arg("--picks", 6), "--dry" in sys.argv
     if SLATE == "auto":
         return auto(N_PICKS, DRY)
+    if SLATE == "backfill-board":
+        return backfill_board(sys.argv[2], N_PICKS)
     if SLATE == "backfill":
         return backfill(sys.argv[2], sys.argv[3], N_PICKS)
 
